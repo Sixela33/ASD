@@ -1,0 +1,16 @@
+# server congfig
+PORT = 8080
+FRONTENDPORT = 5173
+HOST = http://localhost
+DATABASE = postgres
+REFRESH_TOKEN_SECRET = secretisimo
+ACCESS_TOKEN_SECRET = secretisimo2
+NODE_ENV = production # production
+LOGS_FOLDER = logs/
+
+# Postrgres Config
+POSTGRES_DB_PORT = 5432
+POSTGRES_DB_HOST = localhost
+POSTGRES_DB_NAME = resto
+POSTGRES_DB_USER = papo
+POSTGRES_DB_PASSWORD = papooo
