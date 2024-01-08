@@ -13,10 +13,10 @@ const useRefreshToken = () => {
         const response = await axios.get('/api/users/refresh', {
             withCredentials: true
         });
-        console.log("RES: ",response)
+       // console.log("RES: ",response)
         setAuth(prev => {
-            console.log(JSON.stringify(prev));
-            console.log(response.data.accessToken);
+            //console.log(JSON.stringify(prev));
+           // console.log(response.data.accessToken);
             const decoded = jwtDecode(response.data.accessToken)
 
             return {

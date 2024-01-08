@@ -41,7 +41,7 @@ export default function User() {
             const role = allRoles.find(role => role.rolename === selectedRole)
             try {
                 const response = await axiosPrivate.post(ADD_ROLE_URL, JSON.stringify({userid: userid, roleid: role.roleid}))
-                setMessage("Agregado con exito", false)
+                setMessage("Role added succesfully", false)
                 setReload(!reloadPage)
 
             } catch (error) {
@@ -59,7 +59,7 @@ export default function User() {
             try {
                 const response = await axiosPrivate.patch(REMOVE_ROLE_URL, JSON.stringify({userid: userid, roleid: role.roleid}))
                 console.log(response)
-                setMessage("Eliminado con exito", false)
+                setMessage("Role removed", false)
                 setReload(!reloadPage)
 
             } catch (error) {

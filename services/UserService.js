@@ -1,8 +1,7 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
-
-
+import {validateEmail, validateId, validatePassword, validateUsername} from './Validations/userValidations.js'
 class UserService {
 
     constructor() {
@@ -11,6 +10,8 @@ class UserService {
     }
 
     getUserById = async (userid) => {
+        await validateId(userid)
+
         const response = await this.model.getUserById(userid)
         const roles = await this.model.getUserRoles(userid)
         const allRoles = await this.model.getAllRoles()
@@ -24,6 +25,10 @@ class UserService {
     }
 
     registerUser = async (username, email, password) => {
+        await validateUsername(username)
+        await validateEmail(email)
+        await validatePassword(password)
+
         const prevUser = await this.model.getUserByEmail(email)
 
         if (prevUser.rows?.length != 0){
@@ -36,6 +41,8 @@ class UserService {
     }
 
     loginUser = async (email, password) => {
+        await validateEmail(email)
+        await validatePassword(password)
 
         let user = await this.model.getUserByEmail(email)
 
@@ -64,6 +71,7 @@ class UserService {
     }
 
     forgotPassword = async (email) => {
+        await validateEmail(email)
         let user = await this.model.getUserByEmail(email)
 
         if (user.rows?.length == 0) {
@@ -85,6 +93,7 @@ class UserService {
     }
 
     passwordRecovery = async (id, code, newPassword) => {
+        await validateId(id)
 
         let user = await this.model.getUserByID(id)
 

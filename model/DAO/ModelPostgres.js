@@ -29,7 +29,6 @@ class ModelPostgres {
     }
 
     setRefreshToken = async (userID, refreshToken) => {
-        
         return await CnxPostgress.db.query('UPDATE users SET refreshtoken = $1 WHERE userid = $2;', [refreshToken, userID])     
     }
 
@@ -40,7 +39,6 @@ class ModelPostgres {
     }
 
     registerUser = async (username, email, passHash) => {
-        
         // await CnxPostgress.db.query('INSERT INTO users (username, email, passhash) VALUES ($1, $2, $3);', [username, email, passHash])
         // this funciont creates the user and asigns it to the "User" role
         await CnxPostgress.db.query('SELECT createUser($1, $2, $3)', [username, email, passHash])
@@ -48,7 +46,6 @@ class ModelPostgres {
     }
 
     changePassword = async (userID, newPassHash) => {
-        
         await CnxPostgress.db.query('UPDATE users SET passhash = $1 WHERE userid = $2;', [newPassHash, userID])
     }
 
@@ -57,22 +54,18 @@ class ModelPostgres {
     // -----------------------------------------------
 
     createRole = async (roleName) => {
-        
         await CnxPostgress.db.query('INSERT INTO userrole (rolename) VALUES ($1);', [roleName])
     }
 
     getAllRoles = async () => {
-        
         return await CnxPostgress.db.query('SELECT roleid, rolename FROM userrole')
     }
 
     getRoleByID = async (roleid) => {
-        
         return await CnxPostgress.db.query('SELECT * FROM userrole WHERE roleid = $1;', [roleid])
     } 
 
     addRoleToUser = async (roleID, userID) => {
-        
         await CnxPostgress.db.query('INSERT INTO roleXuser (userid, roleid) VALUES ($1, $2);', [userID, roleID])
         return
     }
@@ -87,12 +80,10 @@ class ModelPostgres {
     }
 
     removeRoleUser = async (roleID, userID) => {
-        
         return await CnxPostgress.db.query('DELETE FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
     }
 
     userHasRole = async (roleID, userID) => {
-        
         return await CnxPostgress.db.query('SELECT * FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
     }
 
@@ -110,10 +101,10 @@ class ModelPostgres {
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (projectDescription, projectDate, projectContact, empoyeeBudget, arrangements, creatorid) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid) => {
         await CnxPostgress.db.query(
-        'INSERT INTO projects (projectDescription, projectDate, projectContact, empoyeeBudget, arrangements, creatorID) VALUES ($1, $2, $3, $4, $5, $6);', 
-        [projectDescription, projectDate, projectContact, empoyeeBudget, arrangements, creatorid])
+        'INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorID) VALUES ($1, $2, $3, $4, $5, $6, $7);', 
+        [projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorid])
         
     }
 

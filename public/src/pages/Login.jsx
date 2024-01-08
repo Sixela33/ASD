@@ -30,7 +30,10 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        if (!email || !password) {
+            setError("Please fill in all the required fields.")
+            return
+        }
         try {
             const response = await axios.post(LOGIN_URL,
                 JSON.stringify({ email, password }),

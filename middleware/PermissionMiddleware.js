@@ -21,10 +21,11 @@ class PermissionsMiddelware {
             const decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             // THIS MIGHT GO INTO THE ROLE CONTROLLER
             let userRoles = await this.model.getUserRoles(decoded.userid)
-           
-
-            console.log("Caller permissions",userRoles)
+            console.log(userRoles)
+            
             const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role)).find(val => val === true)
+            console.log("Caller permissions",userRoles)
+            console.log("Permissions required", this.permissionsRequired)
             
             //const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role));
             

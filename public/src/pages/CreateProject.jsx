@@ -1,34 +1,38 @@
 import React, { useState } from 'react';
 import ArrangementPopup from '../components/ArrangementPopup';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import useAlert from '../hooks/useAlert';
 
 const CREATE_PROJET_URL = '/api/projects/create';
-
+const PROFIT_MARGIN = 0.3
 
 export default function CreateProject() {
 
   const axiosPrivate = useAxiosPrivate();
+  const {setMessage} = useAlert()
 
   // form data
   const [projectClient, setProjectClient] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectDate, setProjectDate] = useState('');
   const [projectContact, setProjectContact] = useState('');
-  const [employeeBudget, setEmployeeBudget] = useState('');
+  const [staffBudget, setstaffBudget] = useState('');
+
+  const emptyFlowerObject = { arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: ''}
 
   // floral arrangement creation variables
   const [arrangementsList, setArrangementsList] = useState([]);
-  const [newArrangement, setNewArrangement] = useState({ arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: ''});
+  const [newArrangement, setNewArrangement] = useState(emptyFlowerObject);
   const [showArrangementPopup, setShowArrangementPopup] = useState(false);
 
   const [totalFlowerBudget, setTotalFlowerBudget] = useState(0);
- 
-  
 
   // adds the arrangement to the arrangements array and resets the values
-  const addArrangement = () => {
+  const addArrangement = async (e) => {
+    e.preventDefault();
 
     if (newArrangement.index != null){
+      console.log("noNull ", newArrangement)
       const index = newArrangement.index
       delete newArrangement.index
       const updatedArrangementsList = [...arrangementsList];
@@ -37,44 +41,27 @@ export default function CreateProject() {
       //aqui quiero que se reemplace el objeto en arrangementList en el indice por el que recibe ahoita
 
     }else {
+      console.log(newArrangement)
       setArrangementsList([...arrangementsList, { ...newArrangement }]);
     }
-    setNewArrangement({
-      arrangementType: '',
-      arrangementDescription: '',
-      flowerBudget: '',
-      arrangementQuantity: '',
-    });
-    setTotalFlowerBudget(0)
-    arrangementsList.map(arrang => {
-      setTotalFlowerBudget(totalFlowerBudget + arrang.flowerBudget)
-    } )
+    setNewArrangement(emptyFlowerObject);
+    
+    // reduce loops through the wole array and keeps track of the value "accumulator" it returns the result
+    const sum = await arrangementsList.reduce((accumulator, arrang) => accumulator + (arrang.flowerBudget * arrang.arrangementQuantity), 0)
+    setTotalFlowerBudget(sum);
 
     setShowArrangementPopup(false);
   };
-
-  const handleArrangementSubmit = (e) => {
-    e.preventDefault();
-    addArrangement();
-  };
-
   const handleInputChange = (field, value) => {
     setNewArrangement({ ...newArrangement, [field]: value });
   };
-
   // resets the arrangement values and closes the popup
   const closePopup = () => {
-    setNewArrangement({
-      arrangementType: '',
-      arrangementDescription: '',
-      flowerBudget: '',
-      arrangementQuantity: '',
-    })
+    setNewArrangement(emptyFlowerObject)
     setShowArrangementPopup(false)
   }
 
   const handleEdit = (index) => {
-    console.log(index)
     setNewArrangement({...arrangementsList[index], index: index})
     setShowArrangementPopup(true)
   }
@@ -82,12 +69,25 @@ export default function CreateProject() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      !projectClient ||
+      !projectDescription ||
+      !projectDate ||
+      !projectContact ||
+      !staffBudget
+    ) {
+      setMessage('Please fill in all the required fields.', true);
+      return;
+    }
     try {
       const response = await axiosPrivate.post(CREATE_PROJET_URL, JSON.stringify({
-        projectDescription: projectDescription, 
-        projectDate: projectDate, 
-        projectContact:projectContact, 
-        empoyeeBudget: employeeBudget, 
+        staffBudget, 
+        projectContact, 
+        projectDate, 
+        projectDescription, 
+        projectClient, 
+        profitMargin: PROFIT_MARGIN,
         arrangements: arrangementsList
       }))
       console.log(response)
@@ -119,8 +119,8 @@ export default function CreateProject() {
           <input type="text" value={projectContact} onChange={(e) => setProjectContact(e.target.value)}/>
         </div>
         <div>
-          <label>Employee Budget: </label>
-          <input type="text" value={employeeBudget} onChange={(e) => setEmployeeBudget(e.target.value)}/>
+          <label>Staff Budget: </label>
+          <input type="number" value={staffBudget} onChange={(e) => setstaffBudget(e.target.value)}/>
         </div>
 
         {/* Arrangements section */}
@@ -142,15 +142,18 @@ export default function CreateProject() {
                 <tr key={index} className='bg-gray-300' onClick={() => handleEdit(index)}>
                   <td className="py-2 px-4">{arrangement.arrangementType}</td>
                   <td className="py-2 px-4">{arrangement.arrangementDescription}</td>
-                  <td className="py-2 px-4">{arrangement.arrangementBudget}</td>
+                  <td className="py-2 px-4">{arrangement.flowerBudget}</td>
                   <td className="py-2 px-4">{arrangement.arrangementQuantity}</td>
-                  <td className="py-2 px-4">{arrangement.arrangementBudget +(arrangement.arrangementBudget * 0.3)}</td>
+
+                  <td className="py-2 px-4">{(arrangement.flowerBudget * arrangement.arrangementQuantity) + (arrangement.flowerBudget * arrangement.arrangementQuantity * PROFIT_MARGIN)}</td>
                 </tr>
 
               ))}
               <tr>
+              <td>TOTAL flower budget: </td>
               <td>{totalFlowerBudget}</td>
-              <td>{totalFlowerBudget + (totalFlowerBudget + totalFlowerBudget * 0.3)}</td>
+              <td>TOTAL client cost: </td>
+              <td>{totalFlowerBudget + (totalFlowerBudget * 0.3)}</td>
               </tr>
             </tbody>
           </table>
@@ -160,7 +163,7 @@ export default function CreateProject() {
         <button type="button" onClick={() => setShowArrangementPopup(true)} className="bg-gray-500 text-white px-4 py-2 rounded focus:outline-none">Add New Arrangement</button>
         <br/>
         {/* Popup for adding a new arrangement */}
-        <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={handleArrangementSubmit} newArrangement={newArrangement} onInputChange={handleInputChange}/>
+        <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange}/>
 
         <button type="submit" className="bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>
       </form>

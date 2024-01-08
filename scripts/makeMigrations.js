@@ -1,7 +1,7 @@
-import CnxPostgress from './model/CnxPostgress.js'
-import ModelPostgres from './model/DAO/ModelPostgres.js';
+import CnxPostgress from '../model/CnxPostgress.js';
+import ModelPostgres from '../model/DAO/ModelPostgres.js';
 import fs from "fs";
-import ROLES_LIST from './config/rolesList.js';
+import ROLES_LIST from '../config/rolesList.js'
 
 const filesFolder = "./migrations"
 const spFolder = "/storedProcedures"

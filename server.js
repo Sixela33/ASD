@@ -51,15 +51,18 @@ class Server {
         // -----------------------------------------------
         //                  ROUTES
         // -----------------------------------------------
+        const loginreq = new PermissionsMiddelware(['User']).call
+        const superuserReq = new PermissionsMiddelware(['SuperUser']).call
+
         this.app.use('/api/users', new UserRouter().start())
-        this.app.use(new PermissionsMiddelware(['User']).call)
-        this.app.use('/api/clients', new ClientRouter().start())
-        this.app.use('/api/projects', new ProjectRouter().start())
-        this.app.use(new PermissionsMiddelware(['SuperUser']).call)
-        this.app.use('/api/users/roles', new RoleRouter().start())
+        this.app.use('/api/clients', loginreq, new ClientRouter().start())
+        this.app.use('/api/projects', loginreq, new ProjectRouter().start())
+
+        this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
 
         this.app.use(function(req, res){
-            res.sendStatus(404);
+            res.redirect('/')
+            //res.sendStatus(404);
         });
         // -----------------------------------------------
         //                 MIDDLEWARES

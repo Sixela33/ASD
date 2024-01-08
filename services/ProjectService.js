@@ -6,8 +6,8 @@ class ProjectService {
         this.model = new ModelPostgres()
     }
 
-    createProject = async (projectDescription, projectDate, projectContact, empoyeeBudget, arrangements, creatorid) => {
-        await this.model.createProject(projectDescription, projectDate, projectContact, empoyeeBudget, arrangements, creatorid)
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, arrangements, creatorid) => {
+        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid)
     }
 
 }

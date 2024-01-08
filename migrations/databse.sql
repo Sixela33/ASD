@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS projects (
     projectContact VARCHAR(255),
     staffBudget FLOAT,
     profitMargin FLOAT,
+    projectClient VARCHAR(255),
     creatorID INT REFERENCES users(userID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
