@@ -13,11 +13,8 @@ import Admin from './pages/Admin/Admin';
 import User from './pages/Admin/User';
 import CreateProject from './pages/CreateProject';
 
-const ROLES = {
-  'User': 2001,
-  'Editor': 1984,
-  'Admin': 5150
-}
+import LoadFlower from './pages/Flowers/LoadFlower';
+import ViewFlowers from './pages/Flowers/ViewFlowers';
 
 function App() {
 
@@ -28,19 +25,19 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
-          {/*public routes 
-          <Route path="linkpage" element={<LinkPage />} />
-          <Route path="unauthorized" element={<Unauthorized />} />
+
+
           
-          {/* we want to protect these routes */}
+          {/* protected routes */}
           <Route element={<PersistLogin />}>
             <Route element={<RequireAuth allowedRoles={['User']} />}>
               <Route path="/" element={<Home />} />
               <Route path="register" element={<Register />} />
-
+              <Route path="/flowers/create" element={<LoadFlower/>}/>
+              <Route path="/flowers" element={<ViewFlowers/>}/>
             </Route>
 
-            <Route element={<RequireAuth allowedRoles={['User']} />}>
+            <Route element={<RequireAuth allowedRoles={['Admin']} />}>
               <Route path="admin" element={<Admin/>}/>
               <Route path="admin/:userid" element={<User/>}/>
               <Route path="project/create" element={<CreateProject/>}/>

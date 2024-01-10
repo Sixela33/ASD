@@ -1,4 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import { validateArrangement } from "./Validations/ArrangementValidations.js"
+import validateProject from "./Validations/ProjectValidations.js"
 
 class ProjectService {
 
@@ -7,7 +9,10 @@ class ProjectService {
     }
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, arrangements, creatorid) => {
-        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid)
+        await validateProject({staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid})
+        await validateArrangement(arrangements)
+        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements)
+
     }
 
 }

@@ -55,10 +55,11 @@ CREATE TABLE IF NOT EXISTS clientXproject (
 CREATE TABLE IF NOT EXISTS arrangements (
     arrangementID SERIAL PRIMARY KEY,
     projectID INT REFERENCES projects(projectID),
-    creatorID INT REFERENCES users(userID),
     arrangementType VARCHAR(255) NOT NULL,
     arrangementDescription VARCHAR(255) NOT NULL,
     flowerBudget FLOAT,
+    arrangementQuantity INT,
+    designerID INT REFERENCES users(userID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -67,6 +68,7 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(255) NOT NULL,
     flowerImage VARCHAR(255),
+    flowerColor VARCHAR(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

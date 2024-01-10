@@ -1,7 +1,8 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
-import {validateEmail, validateId, validatePassword, validateUsername} from './Validations/userValidations.js'
+import {validateEmail, validatePassword, validateUsername} from './Validations/userValidations.js'
+import { validateId } from "./Validations/IdValidation.js";
 class UserService {
 
     constructor() {
@@ -139,7 +140,12 @@ class UserService {
 
         try {
             // reads the refresh token to get the userID
-            const payload = Jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+            let payload = null
+            try {
+                payload = Jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+            } catch (error) {
+                throw { message: error.message, status: 401 }   
+            }
             //checks if it is the same that the user that had it
             if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
             let userRoles = await this.model.getUserRoles(user.userid)

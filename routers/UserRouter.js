@@ -12,8 +12,8 @@ class UserRouter {
 
     start(){
         // gets user by email
-        const adminPermission = new PermissionsMiddelware(['Admin']).call
-        const superUserPermission = new PermissionsMiddelware(['SuperUser']).call
+        const adminPermission = new PermissionsMiddelware(['Staff']).call
+        const superUserPermission = new PermissionsMiddelware(['Admin']).call
 
         this.router.get('/search/:userid?', adminPermission, this.controller.getUsers)
         this.router.get('/all', adminPermission, this.controller.getUsersList)

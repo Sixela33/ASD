@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ArrangementPopup from '../components/ArrangementPopup';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useAlert from '../hooks/useAlert';
@@ -8,77 +8,85 @@ const PROFIT_MARGIN = 0.3
 
 export default function CreateProject() {
 
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useAxiosPrivate()
   const {setMessage} = useAlert()
 
   // form data
-  const [projectClient, setProjectClient] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [projectDate, setProjectDate] = useState('');
-  const [projectContact, setProjectContact] = useState('');
-  const [staffBudget, setstaffBudget] = useState('');
+  const [projectClient, setProjectClient] = useState('')
+  const [projectDescription, setProjectDescription] = useState('')
+  const [projectDate, setProjectDate] = useState('')
+  const [projectContact, setProjectContact] = useState('')
+  const [staffBudget, setstaffBudget] = useState('')
 
-  const emptyFlowerObject = { arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: ''}
+  const emptyArrangement = { arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: ''}
 
   // floral arrangement creation variables
-  const [arrangementsList, setArrangementsList] = useState([]);
-  const [newArrangement, setNewArrangement] = useState(emptyFlowerObject);
-  const [showArrangementPopup, setShowArrangementPopup] = useState(false);
+  const [arrangementsList, setArrangementsList] = useState([])
+  const [newArrangement, setNewArrangement] = useState(emptyArrangement)
+  const [showArrangementPopup, setShowArrangementPopup] = useState(false)
 
-  const [totalFlowerBudget, setTotalFlowerBudget] = useState(0);
+  const [totalFlowerBudget, setTotalFlowerBudget] = useState(0)
+
+  useEffect(() => {
+    // reduce loops through the wole array and keeps track of the value "accumulator" it returns the result
+    const sum = arrangementsList.reduce(
+      (accumulator, arrang) =>
+        accumulator + arrang.flowerBudget * arrang.arrangementQuantity,
+      0
+    );
+    setTotalFlowerBudget(sum);
+  }, [arrangementsList])
 
   // adds the arrangement to the arrangements array and resets the values
   const addArrangement = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    if ( !newArrangement.arrangementType || !newArrangement.arrangementDescription || !newArrangement.flowerBudget || !newArrangement.arrangementQuantity) {
+      console.log(11)
+      setMessage("Please fill in all the required fields for the arrangement.", true)
+      return
+    }
 
     if (newArrangement.index != null){
-      console.log("noNull ", newArrangement)
       const index = newArrangement.index
       delete newArrangement.index
-      const updatedArrangementsList = [...arrangementsList];
-      updatedArrangementsList[index] = { ...newArrangement };
-      setArrangementsList(updatedArrangementsList);
+      const updatedArrangementsList = [...arrangementsList]
+      updatedArrangementsList[index] = { ...newArrangement }
+      setArrangementsList(updatedArrangementsList)
       //aqui quiero que se reemplace el objeto en arrangementList en el indice por el que recibe ahoita
 
     }else {
       console.log(newArrangement)
-      setArrangementsList([...arrangementsList, { ...newArrangement }]);
+      setArrangementsList([...arrangementsList, { ...newArrangement }])
     }
-    setNewArrangement(emptyFlowerObject);
+    setNewArrangement(emptyArrangement)
     
-    // reduce loops through the wole array and keeps track of the value "accumulator" it returns the result
-    const sum = await arrangementsList.reduce((accumulator, arrang) => accumulator + (arrang.flowerBudget * arrang.arrangementQuantity), 0)
-    setTotalFlowerBudget(sum);
 
-    setShowArrangementPopup(false);
-  };
+
+
+    setShowArrangementPopup(false)
+  }
   const handleInputChange = (field, value) => {
-    setNewArrangement({ ...newArrangement, [field]: value });
-  };
+    setNewArrangement({ ...newArrangement, [field]: value })
+  }
   // resets the arrangement values and closes the popup
   const closePopup = () => {
-    setNewArrangement(emptyFlowerObject)
+    setNewArrangement(emptyArrangement)
     setShowArrangementPopup(false)
   }
 
   const handleEdit = (index) => {
+    // I add an index to the object, this is used to replace the existing values in the array
     setNewArrangement({...arrangementsList[index], index: index})
     setShowArrangementPopup(true)
   }
 
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (
-      !projectClient ||
-      !projectDescription ||
-      !projectDate ||
-      !projectContact ||
-      !staffBudget
-    ) {
-      setMessage('Please fill in all the required fields.', true);
-      return;
+    if ( !projectClient || !projectDescription || !projectDate || !projectContact || !staffBudget) {
+      setMessage('Please fill in all the required fields.', true)
+      return
     }
     try {
       const response = await axiosPrivate.post(CREATE_PROJET_URL, JSON.stringify({
@@ -90,43 +98,57 @@ export default function CreateProject() {
         profitMargin: PROFIT_MARGIN,
         arrangements: arrangementsList
       }))
-      console.log(response)
+      // reseting input form (I do not redirect in case that admin wants to keep creating)
+      setMessage("Project created Succesfully", false)
+      setProjectClient("")
+      setProjectDescription("")
+      setProjectDate("")
+      setProjectContact("")
+      setstaffBudget("")
+      setArrangementsList([])
+      setNewArrangement(emptyArrangement)
+      
+      // console.log(response)
     } catch (error) {
       console.log(error)
+      setMessage(error.response?.data, true)
     }
   }
 
   return (
     <div className="max-w-md mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Create Project</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Create Project</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Existing form fields */}
-        <div>
-          <label>Client: </label>
-          <input type="text" value={projectClient} onChange={(e) => setProjectClient(e.target.value)}/>
+        <div className="flex flex-col mb-4">
+          <label className="mb-1">Client:</label>
+          <input type="text" value={projectClient} onChange={(e) => setProjectClient(e.target.value)} className="border border-gray-300 p-2 rounded"/>
         </div>
-        <div>
-          <label>Project Description: </label>
-          <input type="text" value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)}/>
+        
+        <div className="flex flex-col mb-4">
+          <label className="mb-1">Project Description:</label>
+          <input type="text" value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} className="border border-gray-300 p-2 rounded"/>
         </div>
-        <div>
-          <label>Project Date: </label>
-          <input type="date" value={projectDate} onChange={(e) => setProjectDate(e.target.value)}/>
+        
+        <div className="flex flex-col mb-4">
+          <label className="mb-1">Project Date:</label>
+          <input type="date" value={projectDate} onChange={(e) => setProjectDate(e.target.value)} className="border border-gray-300 p-2 rounded"/>
         </div>
-        <div>
-          <label>Project Contact: </label>
-          <input type="text" value={projectContact} onChange={(e) => setProjectContact(e.target.value)}/>
+        
+        <div className="flex flex-col mb-4">
+          <label className="mb-1">Project Contact:</label>
+          <input type="text" value={projectContact} onChange={(e) => setProjectContact(e.target.value)} className="border border-gray-300 p-2 rounded"/>
         </div>
-        <div>
-          <label>Staff Budget: </label>
-          <input type="number" value={staffBudget} onChange={(e) => setstaffBudget(e.target.value)}/>
+        
+        <div className="flex flex-col mb-4">
+          <label className="mb-1">Staff Budget:</label>
+          <input type="number" value={staffBudget} onChange={(e) => setstaffBudget(e.target.value)} className="border border-gray-300 p-2 rounded"/>
         </div>
 
         {/* Arrangements section */}
         <div className="bg-gray-200 p-4 rounded">
-          <h3 className="text-lg font-semibold mb-2">Arrangements</h3>
-          <table className="min-w-full border border-gray-300 bg-white">
+        <h3 className="text-lg font-semibold mb-2">Arrangements</h3>
+        <table className="min-w-full border border-gray-300 bg-white">
             <thead >
               <tr>
                 <th className="py-2 px-4">Arrangement type</th>
@@ -159,14 +181,12 @@ export default function CreateProject() {
           </table>
         </div>
 
-        {/* Button to open popup for adding a new arrangement */}
-        <button type="button" onClick={() => setShowArrangementPopup(true)} className="bg-gray-500 text-white px-4 py-2 rounded focus:outline-none">Add New Arrangement</button>
-        <br/>
-        {/* Popup for adding a new arrangement */}
+        <button type="button" onClick={() => setShowArrangementPopup(true)} className="bg-gray-500 text-white px-4 py-2 rounded focus:outline-none mb-4">Add New Arrangement</button>
+
         <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange}/>
 
         <button type="submit" className="bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>
-      </form>
+        </form>
     </div>
-  );
+  )
 }

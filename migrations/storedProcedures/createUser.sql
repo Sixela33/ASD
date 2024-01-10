@@ -1,4 +1,3 @@
--- Crear la función createUser
 CREATE OR REPLACE FUNCTION createUser(
     p_username VARCHAR(255),
     p_email VARCHAR(255),

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
+import { redirect } from 'react-router-dom';
 
 const USER_URL = 'api/users/search/';
 const ADD_ROLE_URL = "/api/users/roles/give"
@@ -30,6 +31,8 @@ export default function User() {
                 setUserRoles(response?.data?.roles);
                 setAllRoles(response?.data?.allRoles);
             } catch (error) {
+                setMessage(error.response?.data?.message, true)
+                redirect('/')
                 console.error('Error fetching data:', error);
             }
         }

@@ -1,0 +1,32 @@
+CREATE OR REPLACE FUNCTION createProject(
+    p_projectDate DATE, 
+    p_projectDescription VARCHAR(255), 
+    p_projectContact VARCHAR(255), 
+    p_staffBudget FLOAT, 
+    p_profitMargin FLOAT, 
+    p_projectClient VARCHAR(255), 
+    p_creatorid INT,
+    p_arrangements_arr JSONB[]
+) RETURNS VOID AS $$
+DECLARE
+    new_project_id INT;
+    arrangement_record JSONB;
+BEGIN
+
+    INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorID)
+    VALUES (p_projectDate, p_projectDescription, p_projectContact, p_staffBudget, p_projectClient, p_profitMargin, p_creatorid)
+    RETURNING projectID INTO new_project_id;
+
+    FOREACH arrangement_record IN ARRAY p_arrangements_arr
+    LOOP
+        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, flowerBudget, arrangementQuantity)
+        VALUES (
+            new_project_id, 
+            arrangement_record->>'arrangementType', 
+            arrangement_record->>'arrangementDescription', 
+            (arrangement_record->>'flowerBudget')::FLOAT, 
+            (arrangement_record->>'arrangementQuantity')::INT);
+    END LOOP;
+
+END;
+$$ LANGUAGE plpgsql;

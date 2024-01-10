@@ -1,5 +1,5 @@
 const ROLES_LIST = [
-    'User', 'Admin', 'SuperUser'
+    'User', 'Staff', 'Admin'
 ]
 
 export default ROLES_LIST

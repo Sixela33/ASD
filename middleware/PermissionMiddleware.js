@@ -18,7 +18,12 @@ class PermissionsMiddelware {
             if (!token) {
                 return res.status(401).json({ message: 'Unauthorised' })
             }
-            const decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+            let decoded = null
+            try {
+                decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+            } catch (error) {
+                throw { message: error.message, status: 401 }   
+            }
             // THIS MIGHT GO INTO THE ROLE CONTROLLER
             let userRoles = await this.model.getUserRoles(decoded.userid)
             console.log(userRoles)

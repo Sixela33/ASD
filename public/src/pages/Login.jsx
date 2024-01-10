@@ -13,16 +13,11 @@ const Login = () => {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";
 
-    const userRef = useRef();
     const errRef = useRef();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
-    useEffect(() => {
-        //userRef.current.focus();
-    }, [])
 
     useEffect(() => {
         setError('');
@@ -49,7 +44,7 @@ const Login = () => {
             //const roles = response?.data?.roles;
             if (accessToken) {
                 const decoded = jwtDecode(accessToken)
-                console.log(decoded)
+                //console.log(decoded)
                 setAuth({decoded, accessToken, userRoles})
             }
             setEmail('');
@@ -57,7 +52,7 @@ const Login = () => {
             navigate(from, { replace: true });
 
         } catch (error) {
-                setError(error.response.data);
+                setError(error.response?.data);
             
             errRef.current.focus();
         }

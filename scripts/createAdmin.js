@@ -10,7 +10,6 @@ const createSuperuser = async () => {
     if (process.env.DATABASE === "postgres") {
         await CnxPostgress.connect();
         const model = new ModelPostgres();
-        console.log(model)
         try {
             console.log("Creating superUser");
             const username = await rl.question("Username: ");
@@ -20,7 +19,7 @@ const createSuperuser = async () => {
             // Hashear la contraseña antes de almacenarla
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            console.log({ username, email, hashedPassword });
+            //console.log({ username, email, hashedPassword });
 
             await model.registerUser(username, email, hashedPassword);
             let user = await model.getUserByEmail(email)
@@ -28,7 +27,7 @@ const createSuperuser = async () => {
             await model.addRoleToUser(2, user.userid)
             await model.addRoleToUser(3, user.userid)
             
-            console.log("SuperUser created succesfully")
+            console.log("Admin created succesfully")
         } catch (error) {
             console.error("Error during superuser creation:", error);
         } finally {
@@ -38,4 +37,7 @@ const createSuperuser = async () => {
     }
 };
 
-await createSuperuser();
+
+(async () => {
+    await createSuperuser();
+})();

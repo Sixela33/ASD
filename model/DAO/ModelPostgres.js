@@ -67,7 +67,6 @@ class ModelPostgres {
 
     addRoleToUser = async (roleID, userID) => {
         await CnxPostgress.db.query('INSERT INTO roleXuser (userid, roleid) VALUES ($1, $2);', [userID, roleID])
-        return
     }
 
     getUserRoles = async (userID) => {
@@ -101,23 +100,33 @@ class ModelPostgres {
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid) => {
-        await CnxPostgress.db.query(
-        'INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorID) VALUES ($1, $2, $3, $4, $5, $6, $7);', 
-        [projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorid])
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements) => {
+        
+        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::VARCHAR, $7::INT, $8::JSONB[]);", [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClient, creatorid, arrangements]);
+    }
+
+    // -----------------------------------------------
+    //                   FLOWERS
+    // -----------------------------------------------
+
+    addFlower = async (image, name, color) => {
+        
+        await CnxPostgress.db.query("INSERT INTO flowers (flowerName, flowerImage, flowerColor) VALUES($1, $2, $3);", [name, image, color]);
         
     }
 
-    // -----------------------------------------------
-    //                ARRANGEMENTS
-    // -----------------------------------------------
+    getFlowersQuery = async (offset, query) => {
+        const LIMIT = 25
+        const searchString = `%${query}%`
+    
+        return await CnxPostgress.db.query("SELECT * FROM flowers WHERE flowername ILIKE $1 LIMIT $2 OFFSET $3;", [searchString, LIMIT, LIMIT * offset]);
+    };
 
-    createArrangement = async (projectID, arrangementType, arrangementDescription, arrangementBudget) => {
-        await CnxPostgress.db.query(
-            'INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, arrangementBudget) VALUES ($1, $2, $3, $4);',
-            [projectID, arrangementType, arrangementDescription, arrangementBudget]
-        )
-    }
+    getFlowers = async (offset) => {
+        const LIMIT = 25
+
+        return await CnxPostgress.db.query("SELECT * FROM flowers LIMIT $1 OFFSET $2;", [LIMIT, LIMIT * offset]);
+    };
 }
 
 export default ModelPostgres

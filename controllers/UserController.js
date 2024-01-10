@@ -32,7 +32,7 @@ class UserController {
             console.log({username, email, password})
             const newUser = await this.service.registerUser(username, email, password)
             req.logger.info(`userid:${req.user.userid} Has created a user`)
-            res.status(201).json(newUser)
+            res.status(201).send("User created successfully.")
 
         } catch (error) {
             next(error)
@@ -45,7 +45,7 @@ class UserController {
             const {accessToken, refreshToken, userRoles} = await this.service.loginUser(email, password)
             req.logger.warn(`${email} Has Logged in`)
 
-            res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+            res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
 
             res.status(200).json({accessToken, userRoles})
         } catch (error) {

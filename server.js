@@ -14,8 +14,8 @@ import requestLogger from "./loggers/requestLogger.js";
 import CnxPostgress from "./model/CnxPostgress.js"
 import UserRouter from "./routers/UserRouter.js";
 import RoleRouter from "./routers/RoleRouter.js";
-import ClientRouter from "./routers/ClientRouter.js";
 import ProjectRouter from "./routers/ProjectRouter.js";
+import FlowerRouter from "./routers/FlowerRouter.js";
 
 class Server {
 
@@ -34,7 +34,8 @@ class Server {
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors(corsOptions));
         this.app.use(cookieParser());
-        this.app.use(express.static('public/dist'))
+        this.app.use(express.static('/public/dist'))
+        this.app.use('/api/images', express.static('images'));
         this.app.use(requestLogger)
 
         if(this.logger) {
@@ -52,18 +53,20 @@ class Server {
         //                  ROUTES
         // -----------------------------------------------
         const loginreq = new PermissionsMiddelware(['User']).call
-        const superuserReq = new PermissionsMiddelware(['SuperUser']).call
+        const superuserReq = new PermissionsMiddelware(['Admin']).call
 
         this.app.use('/api/users', new UserRouter().start())
-        this.app.use('/api/clients', loginreq, new ClientRouter().start())
+        this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
 
         this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
 
+        /*
         this.app.use(function(req, res){
             res.redirect('/')
             //res.sendStatus(404);
         });
+        */
         // -----------------------------------------------
         //                 MIDDLEWARES
         // -----------------------------------------------
