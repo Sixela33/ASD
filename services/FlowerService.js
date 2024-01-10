@@ -4,7 +4,7 @@ import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
-const FLOWER_IMAGE_PATH = './images/flowerImages/';
+const FLOWER_IMAGE_PATH = './flowerImages/';
 
 class FlowerService {
     constructor() {

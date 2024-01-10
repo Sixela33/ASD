@@ -35,7 +35,7 @@ class Server {
         this.app.use(cors(corsOptions));
         this.app.use(cookieParser());
         this.app.use(express.static('/public/dist'))
-        this.app.use('/api/images', express.static('images'));
+        this.app.use('/api/flowerImages', express.static('flowerImages'));
         this.app.use(requestLogger)
 
         if(this.logger) {
