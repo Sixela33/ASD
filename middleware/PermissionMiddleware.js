@@ -22,6 +22,7 @@ class PermissionsMiddelware {
             try {
                 decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             } catch (error) {
+                console.log('yabaduba')
                 throw { message: error.message, status: 401 }   
             }
             // THIS MIGHT GO INTO THE ROLE CONTROLLER

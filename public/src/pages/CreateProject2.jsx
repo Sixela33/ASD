@@ -18,6 +18,26 @@ export default function CreateProject() {
   const [projectContact, setProjectContact] = useState('')
   const [staffBudget, setstaffBudget] = useState('')
 
+  const emptyFormData = {
+    projectClient: '', 
+    projectDescription: '',
+    projectDate: '',
+    projectContact: '',
+    staffBudget: '',
+    arrangementsList: []
+  }
+
+  const fullFormData = [fData, setfData] = useState(emptyFormData)
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+
   const emptyArrangement = { arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: ''}
 
   // floral arrangement creation variables
@@ -161,10 +181,10 @@ export default function CreateProject() {
 
               ))}
               <tr>
-              <td>TOTAL flower budget: </td>
-              <td>{totalFlowerBudget}</td>
-              <td>TOTAL client cost: </td>
-              <td>{totalFlowerBudget + (totalFlowerBudget * 0.3)}</td>
+                <td>TOTAL flower budget: </td>
+                <td>{totalFlowerBudget}</td>
+                <td>TOTAL client cost: </td>
+                <td>{totalFlowerBudget + (totalFlowerBudget * 0.3)}</td>
               </tr>
             </tbody>
           </table>

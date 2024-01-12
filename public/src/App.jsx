@@ -15,6 +15,7 @@ import CreateProject from './pages/CreateProject';
 
 import LoadFlower from './pages/Flowers/LoadFlower';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
+import AddInvoice from './pages/AddInvoice';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="register" element={<Register />} />
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers" element={<ViewFlowers/>}/>
+              <Route path="/invoice/add" element={< AddInvoice/>}></Route>
             </Route>
 
             <Route element={<RequireAuth allowedRoles={['Admin']} />}>

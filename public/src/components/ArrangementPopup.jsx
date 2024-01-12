@@ -9,7 +9,7 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
           {/* Arrangement form fields */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">Type:</label>
-            <input type="text" value={newArrangement.arrangementType} onChange={(e) => onInputChange('arrangementType', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500"/>
+            <input type="text" value={newArrangement.arrangementType} onChange={(e) => onInputChange('arrangementType', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500" required/>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">Description:</label>
@@ -17,11 +17,11 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">flower Budget:</label>
-            <input type="number" value={newArrangement.flowerBudget} onChange={(e) => onInputChange('flowerBudget', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500"/>
+            <input type="number" value={newArrangement.flowerBudget} onChange={(e) => onInputChange('flowerBudget', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500" required/>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">Quantity:</label>
-            <input type="number" value={newArrangement.arrangementQuantity} onChange={(e) => onInputChange('arrangementQuantity', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500"/>
+            <input type="number" value={newArrangement.arrangementQuantity} onChange={(e) => onInputChange('arrangementQuantity', e.target.value)} className="mt-1 p-2 w-full border rounded focus:outline-none focus:border-blue-500" required/>
           </div>
           <div className="flex justify-between">
             <button onClick={onSubmit} className="bg-blue-500 text-white px-4 py-2 rounded focus:outline-none">Add Arrangement</button>

@@ -14,7 +14,7 @@ const validateArrangement = arrangement => {
     const { error } = arrayArrangements.validate(arrangement)
     if (error) {
         throw {message: error.details[0]?.message, status: 403}
-    } 
+    }
 
     return true
 }

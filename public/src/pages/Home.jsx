@@ -6,7 +6,7 @@ export default function Home() {
     { id: 1, label: 'Admin Page', url: '/admin' },
     { id: 2, label: 'Create Project', url: '/project/create' },
     { id: 3, label: 'Flowers', url: '/flowers' },
-    { id: 4, label: 'Botón 4', url: '/' },
+    { id: 4, label: 'Add invoice', url: '/invoice/add' },
     { id: 5, label: 'Botón 5', url: '/' },
     { id: 6, label: 'Botón 6', url: '/' },
   ];

@@ -12,13 +12,13 @@ class UserRouter {
 
     start(){
         // gets user by email
-        const adminPermission = new PermissionsMiddelware(['Staff']).call
-        const superUserPermission = new PermissionsMiddelware(['Admin']).call
+        const staffPermission = new PermissionsMiddelware(['Staff']).call
+        const adminPermission = new PermissionsMiddelware(['Admin']).call
 
-        this.router.get('/search/:userid?', adminPermission, this.controller.getUsers)
-        this.router.get('/all', adminPermission, this.controller.getUsersList)
+        this.router.get('/search/:userid?', staffPermission, this.controller.getUsers)
+        this.router.get('/all', staffPermission, this.controller.getUsersList)
 
-        this.router.post('/register', superUserPermission, this.controller.registerUser)
+        this.router.post('/register', adminPermission, this.controller.registerUser)
         this.router.post('/login', this.controller.loginUser)
         this.router.get('/refresh', this.controller.handleRefresh)
         this.router.get('/logout', this.controller.handleLogout)

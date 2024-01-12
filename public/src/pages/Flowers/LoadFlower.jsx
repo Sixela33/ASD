@@ -50,7 +50,7 @@ export default function LoadFlower() {
         setMessage(error.response?.data, true)
         console.log(error);
     }
-  };
+  }
   
 
   return (
@@ -61,22 +61,20 @@ export default function LoadFlower() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col mb-4">
           <label className="mb-1">Image:</label>
-          <input type="file" name="flower" onChange={handleImageChange} className="border border-gray-300 p-2 rounded" />
+          <input type="file" name="flower" onChange={handleImageChange} className="border border-gray-300 p-2 rounded" required/>
         </div>
 
         <div className="flex flex-col mb-4">
           <label className="mb-1">Name:</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} className="border border-gray-300 p-2 rounded" />
+          <input type="text" name="name" value={formData.name} onChange={handleChange} className="border border-gray-300 p-2 rounded" required />
         </div>
 
         <div className="flex flex-col mb-4">
           <label className="mb-1">Color:</label>
-          <input type="text" name="color" value={formData.color} onChange={handleChange} className="border border-gray-300 p-2 rounded" />
+          <input type="text" name="color" value={formData.color} onChange={handleChange} className="border border-gray-300 p-2 rounded" required/>
         </div>
 
-        <button type="submit" className="bg-blue-500 text-white font-bold py-2 px-4 rounded">
-          Add Flower
-        </button>
+        <button type="submit" className="bg-blue-500 text-white font-bold py-2 px-4 rounded">Add Flower</button>
       </form>
     </div>
   );

@@ -59,19 +59,19 @@ export default function Register() {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-lg mb-1">Email:</label>
-              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400 " type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
+              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400 " type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
             </div>
             <div className="mb-4">
               <label className="block text-lg mb-1">Username:</label>
-              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400 " type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
+              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400 " type="text" value={username} onChange={(e) => setUsername(e.target.value)} required/>
             </div>
             <div className="mb-4">
               <label className="block text-lg mb-1">Password:</label>
-              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
             </div>
             <div className="mb-4">
               <label className="block text-lg mb-1">Repeat Password:</label>
-              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)}/>
+              <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} required/>
             </div>
             <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Create user</button>
           </form>

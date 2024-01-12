@@ -75,11 +75,11 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="w-full max-w-md">
           <div className="mb-4">
             <label className="block text-lg mb-1">Email:</label>
-            <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
+            <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
           </div>
           <div className="mb-4">
             <label className="block text-lg mb-1">Password:</label>
-            <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
           </div>
           <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Login</button>
           <div className="persistCheck mt-4">
