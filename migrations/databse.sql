@@ -35,12 +35,12 @@ CREATE TABLE IF NOT EXISTS clients (
 
 CREATE TABLE IF NOT EXISTS projects (
     projectID SERIAL PRIMARY KEY,
+    projectClient VARCHAR(255),
     projectDate DATE,
     projectDescription VARCHAR(255) NOT NULL,
     projectContact VARCHAR(255),
     staffBudget FLOAT,
     profitMargin FLOAT,
-    projectClient VARCHAR(255),
     creatorID INT REFERENCES users(userID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -86,11 +86,10 @@ CREATE TABLE IF NOT EXISTS flowerPrice (
 CREATE TABLE IF NOT EXISTS flowerXarrangement (
     arrangementID INT REFERENCES arrangements(arrangementID),
     flowerID INT REFERENCES flowers(flowerID),
-    priceID INT REFERENCES flowerPrice(priceID),
     amount FLOAT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (arrangementID, flowerID, priceID)
+    PRIMARY KEY (arrangementID, flowerID)
 );
 
 CREATE TABLE IF NOT EXISTS workers (

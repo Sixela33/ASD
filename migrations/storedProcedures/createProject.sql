@@ -12,11 +12,12 @@ DECLARE
     new_project_id INT;
     arrangement_record JSONB;
 BEGIN
-
+    -- INSERT THE PROJECT INTO ITS TABLE AND STORE THE ID
     INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, projectClient, profitMargin, creatorID)
     VALUES (p_projectDate, p_projectDescription, p_projectContact, p_staffBudget, p_projectClient, p_profitMargin, p_creatorid)
     RETURNING projectID INTO new_project_id;
 
+    -- STORE ALL THE ARRANGEMENTS
     FOREACH arrangement_record IN ARRAY p_arrangements_arr
     LOOP
         INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, flowerBudget, arrangementQuantity)

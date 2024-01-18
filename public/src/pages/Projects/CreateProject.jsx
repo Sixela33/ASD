@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ArrangementPopup from '../components/ArrangementPopup';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import useAlert from '../hooks/useAlert';
-
+import ArrangementPopup from '../../components/ArrangementPopup';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import useAlert from '../../hooks/useAlert';
+import { Link } from 'react-router-dom';
 const CREATE_PROJET_URL = '/api/projects/create';
 const PROFIT_MARGIN = 0.3
 
@@ -89,13 +89,13 @@ export default function CreateProject() {
       }))
       // reseting input form (I do not redirect in case that admin wants to keep creating)
       setMessage("Project created Succesfully", false)
-      setProjectClient("")
-      setProjectDescription("")
-      setProjectDate("")
-      setProjectContact("")
-      setstaffBudget("")
-      setArrangementsList([])
-      setNewArrangement(emptyArrangement)
+      // setProjectClient("")
+      // setProjectDescription("")
+      // setProjectDate("")
+      // setProjectContact("")
+      // setstaffBudget("")
+      // setArrangementsList([])
+      // setNewArrangement(emptyArrangement)
       
       // console.log(response)
     } catch (error) {
@@ -106,6 +106,8 @@ export default function CreateProject() {
 
   return (
     <div className="max-w-md mx-auto mt-8">
+    <Link to='/projects' className="mt-4 text-blue-500 hover:text-blue-700">go back</Link>
+
       <h2 className="text-2xl font-bold mb-4 text-center">Create Project</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

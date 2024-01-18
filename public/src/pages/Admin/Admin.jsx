@@ -10,7 +10,6 @@ export default function Admin() {
     const axiosPrivate = useAxiosPrivate();
     const {setMessage} = useAlert()
 
-
     useEffect(() => {
         async function getData() {
             try {
@@ -26,11 +25,11 @@ export default function Admin() {
 
     return (
         <div className="container mx-auto mt-8">
-        <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Admin</h1>
-            <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
-        </div>
-        <table className="min-w-full border border-gray-300">
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">Admin</h1>
+                <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
+            </div>
+            <table className="min-w-full border border-gray-300">
                 <thead>
                     <tr>
                         <th className="border-b p-2">User ID</th>
@@ -41,7 +40,7 @@ export default function Admin() {
                 </thead>
                 <tbody>
                     {users.map((user) => (
-                        <tr key={user.userid}>
+                        <tr key={user.userid} className='bg-gray-200'>
                             <td className="border-b p-2 text-center">{user.userid}</td>
                             <td className="border-b p-2 text-center">{user.username}</td>
                             <td className="border-b p-2 text-center">{user.email}</td>

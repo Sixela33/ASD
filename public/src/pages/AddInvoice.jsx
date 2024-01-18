@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import useAlert from '../hooks/useAlert';
+
 import InvoiceDataForm from '../components/InvoiceDataForm';
+import InvoiceProjectSelector from '../components/InvoiceProjectSelector';
 import InvoiceFlowerAssignment from '../components/InvoiceFlowerAssignment';
 
 const emptyInvoiceObject = {
@@ -17,7 +19,10 @@ export default function AddInvoice() {
   const [pdfFile, setPdfFile] = useState(null);
   const [invoiceData, setFormData] = useState(emptyInvoiceObject);
   const [dataLoaded, setDataLoaded] = useState(false)
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [projectsSelected, setProjectsSelected] = useState(false)
 
+  
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPdfFile(file);
@@ -36,9 +41,19 @@ export default function AddInvoice() {
     console.log(invoiceData);
   };
 
-  const handleContinue = (e) => {
+  const handleContinueDataForm = (e) => {
     e.preventDefault();
-    setDataLoaded(!dataLoaded)
+    setDataLoaded(true)
+  }
+
+  const handleContinueProjectSelection = (e) => {
+    e.preventDefault();
+    if (selectedProjects.length == 0){
+      setMessage('Please select a project to continue', true)
+      return
+    }
+    console.log(selectedProjects)
+    setProjectsSelected(true)
   }
 
   return (
@@ -55,11 +70,14 @@ export default function AddInvoice() {
             </div>
         </div>
 
-      <div className="w-1/2 px-4 h-1/2 my-auto">
-        {!dataLoaded ? <>
-        {pdfFile && <InvoiceDataForm onSubmit={handleContinue} invoiceData ={invoiceData} handleChange={handleChange}/>}
-        </> : <InvoiceFlowerAssignment goBack={handleContinue}/>}
-       </div>
+        <div className="w-1/2 px-4 h-1/2 my-10">
+
+          {pdfFile ? (!dataLoaded ? (
+            <InvoiceDataForm onSubmit={handleContinueDataForm} invoiceData={invoiceData} handleChange={handleChange} />
+          ) : !projectsSelected ? (
+            <InvoiceProjectSelector goBack={() => setDataLoaded(false)} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />
+          ) : <InvoiceFlowerAssignment goBack={() => setProjectsSelected(false)} chosenProjects={selectedProjects}/>): <p>?</p> }
+      </div>
     </div>
   );
 }

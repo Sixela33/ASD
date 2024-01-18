@@ -1,4 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import RoleService from "../services/RoleService.js";
 import Jwt from 'jsonwebtoken';
 import ROLES_LIST from "../config/rolesList.js";
 
@@ -6,7 +7,7 @@ import ROLES_LIST from "../config/rolesList.js";
 class PermissionsMiddelware {
     constructor(permissionRequired = []) {
         this.permissionsRequired = permissionRequired
-        this.model = new ModelPostgres()
+        this.roleService = new RoleService()
 
         this.call = this.call.bind(this);
     }
@@ -14,19 +15,18 @@ class PermissionsMiddelware {
     async call(req, res, next) {
         try {
             const token = req.header('Authorization');
-
             if (!token) {
-                return res.status(401).json({ message: 'Unauthorised' })
+                return res.status(403).json({ message: 'Unauthorised' })
             }
             let decoded = null
+
             try {
                 decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             } catch (error) {
-                console.log('yabaduba')
-                throw { message: error.message, status: 401 }   
+                throw { message: error.message, status: 403 }   
             }
             // THIS MIGHT GO INTO THE ROLE CONTROLLER
-            let userRoles = await this.model.getUserRoles(decoded.userid)
+            let userRoles = await this.roleService.getUserRoles(decoded.userid)
             console.log(userRoles)
             
             const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role)).find(val => val === true)

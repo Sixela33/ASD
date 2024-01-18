@@ -13,7 +13,8 @@ class RoleService {
     }
 
     getUserRoles = async (userid) => {
-        
+        const res = await this.model.getUserRoles(userid)
+        return res
     }
 
     createRole = async () => {

@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 export default function Home() {
   const buttons = [
     { id: 1, label: 'Admin Page', url: '/admin' },
-    { id: 2, label: 'Create Project', url: '/project/create' },
+    { id: 2, label: 'Projects', url: '/projects' },
     { id: 3, label: 'Flowers', url: '/flowers' },
     { id: 4, label: 'Add invoice', url: '/invoice/add' },
-    { id: 5, label: 'Botón 5', url: '/' },
+    { id: 5, label: 'Boton 5', url: '/' },
     { id: 6, label: 'Botón 6', url: '/' },
   ];
 

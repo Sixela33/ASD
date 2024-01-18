@@ -11,7 +11,9 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Admin from './pages/Admin/Admin';
 import User from './pages/Admin/User';
-import CreateProject from './pages/CreateProject';
+import CreateProject from './pages/Projects/CreateProject';
+import ProjectsList from './pages/Projects/ProjectsList';
+import ViewProject from './pages/Projects/ViewProject';
 
 import LoadFlower from './pages/Flowers/LoadFlower';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
@@ -26,8 +28,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
-
-
           
           {/* protected routes */}
           <Route element={<PersistLogin />}>
@@ -37,6 +37,8 @@ function App() {
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers" element={<ViewFlowers/>}/>
               <Route path="/invoice/add" element={< AddInvoice/>}></Route>
+              <Route path="/projects" element={<ProjectsList/>}></Route>
+              <Route path="/projects/:id" element={<ViewProject/>}></Route>
             </Route>
 
             <Route element={<RequireAuth allowedRoles={['Admin']} />}>

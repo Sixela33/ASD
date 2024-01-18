@@ -16,6 +16,39 @@ class ProjectController {
             next(error)
         }
     }    
+
+    getProjects = async (req, res, next) => {
+        try {
+            const { offset } = req.params
+
+            const result = await this.service.getProjects(offset)
+            res.json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getProjectArrangements = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const result = await this.service.getProjectArrangements(id)
+            res.json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+    getManyProjectsByID = async (req, res, next) => {
+        try {
+            console.log(req.body)
+            const {ids} = req.body
+            const result = await this.service.getManyProjectsByID(ids)
+            res.json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default ProjectController

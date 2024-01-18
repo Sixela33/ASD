@@ -97,14 +97,64 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
+    //                    VENDORS
+    // -----------------------------------------------
+
+    getVendors = async () => {
+        return await CnxPostgress.db.query('SELECT * FROM flowerVendor;')
+    }
+
+    createVendor = async (vendorName) => {
+        
+        await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
+
+    }
+
+    // -----------------------------------------------
     //                   PROJECTS
     // -----------------------------------------------
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements) => {
-        
+        // arrangements: [{arrangementType, arrangementDescription, flowerBudget, arrangementQuantity}, ...] VIEW REFERENCE IN PROJECT ARRANGEMENT VALIDATIONS
+ 
         await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::VARCHAR, $7::INT, $8::JSONB[]);", [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClient, creatorid, arrangements]);
     }
 
+    getProjectByID = async (id) => {
+        return await CnxPostgress.db.query("SELECT * FROM projects WHERE projectid = $1;", [id])
+    }
+
+    getManyProjectsByID = async (ids) => {
+        return await CnxPostgress.db.query("SELECT * FROM projects WHERE projectid IN (SELECT * FROM UNNEST($1::int[]));", [ids])
+    }
+
+    getProjects = async (offset) => {
+        const LIMIT = 50
+        return await CnxPostgress.db.query("SELECT * FROM projects LIMIT $1 OFFSET $2;", [LIMIT, LIMIT * offset])
+    }
+    
+    getProjectArrangements = async (id) => {
+        const res =  await CnxPostgress.db.query(`SELECT * FROM arrangements WHERE projectid = $1;`, [id])
+        return res
+        
+    }
+    
+    getProjectFlowers = async (id) => {
+        const res =  await CnxPostgress.db.query(`
+        SELECT
+        a.arrangementID,
+        f.flowerID,
+        f.flowerName,
+        f.flowerImage,
+        f.flowerColor,
+        fx.amount
+        FROM projects p
+        JOIN arrangements a ON p.projectID = a.projectID
+        LEFT JOIN flowerXarrangement fx ON a.arrangementID = fx.arrangementID
+        LEFT JOIN flowers f ON fx.flowerID = f.flowerID
+        WHERE p.projectID = $1;`, [id])
+        return res
+    }
     // -----------------------------------------------
     //                   FLOWERS
     // -----------------------------------------------
@@ -116,17 +166,26 @@ class ModelPostgres {
     }
 
     getFlowersQuery = async (offset, query) => {
-        const LIMIT = 25
+        const LIMIT = 50
         const searchString = `%${query}%`
     
-        return await CnxPostgress.db.query("SELECT * FROM flowers WHERE flowername ILIKE $1 LIMIT $2 OFFSET $3;", [searchString, LIMIT, LIMIT * offset]);
+        return await CnxPostgress.db.query("SELECT * FROM flowers WHERE flowername ILIKE $1 ORDER BY flowerName LIMIT $2 OFFSET $3;", [searchString, LIMIT, LIMIT * offset]);
     };
 
     getFlowers = async (offset) => {
-        const LIMIT = 25
+        const LIMIT = 50
 
-        return await CnxPostgress.db.query("SELECT * FROM flowers LIMIT $1 OFFSET $2;", [LIMIT, LIMIT * offset]);
+        return await CnxPostgress.db.query("SELECT * FROM flowers ORDER BY flowerName LIMIT $1 OFFSET $2;", [LIMIT, LIMIT * offset]);
     };
+
+    // -----------------------------------------------
+    //                   ARRANGEMENTS
+    // -----------------------------------------------
+
+    populateArrangements = async (arrangementID, flowerData) => {
+        // flowerData: [{flowerID, quantity}, {flowerID, quantity}...]
+        await CnxPostgress.db.query("SELECT populateArrangements($1::INT, $2::JSONB[]);", [arrangementID, flowerData]);
+    }
 }
 
 export default ModelPostgres

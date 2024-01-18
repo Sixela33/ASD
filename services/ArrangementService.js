@@ -9,6 +9,10 @@ class ArrangementService {
     createArrangement = async (projectID, arrangementType, arrangementDescription, arrangementBudget) => {
         await this.model.createArrangement(projectID, arrangementType, arrangementDescription, arrangementBudget)
     }
+
+    populateArrangement = async(arrangementid, flowers) => {
+        await this.model.populateArrangement(arrangementid, flowers)
+    }
 }
 
 export default ArrangementService

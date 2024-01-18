@@ -16,6 +16,14 @@ import UserRouter from "./routers/UserRouter.js";
 import RoleRouter from "./routers/RoleRouter.js";
 import ProjectRouter from "./routers/ProjectRouter.js";
 import FlowerRouter from "./routers/FlowerRouter.js";
+import ArrangementRouter from "./routers/ArrangementRouter.js";
+
+/*
+    This code was written by S1X3L4
+
+    If you are trying to maintain this code and have any questions just let me know :)
+    contact: alexis.janko@gmail.com
+*/
 
 class Server {
 
@@ -58,6 +66,7 @@ class Server {
         this.app.use('/api/users', new UserRouter().start())
         this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
+        this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
 
         this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
 
