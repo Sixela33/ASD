@@ -17,6 +17,9 @@ import RoleRouter from "./routers/RoleRouter.js";
 import ProjectRouter from "./routers/ProjectRouter.js";
 import FlowerRouter from "./routers/FlowerRouter.js";
 import ArrangementRouter from "./routers/ArrangementRouter.js";
+import VendorRouter from "./routers/VendorRouter.js";
+import ClientRouter from "./routers/ClientRouter.js";
+import InvoiceRouter from "./routers/InvoiceRouter.js";
 
 /*
     This code was written by S1X3L4
@@ -67,15 +70,12 @@ class Server {
         this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
         this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
-
+        this.app.use('/api/clients', loginreq, new ClientRouter().start())
+        this.app.use('/api/vendors', loginreq, new VendorRouter().start())
         this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
-
-        /*
-        this.app.use(function(req, res){
-            res.redirect('/')
-            //res.sendStatus(404);
-        });
-        */
+        this.app.use('/api/invoices', superuserReq, new InvoiceRouter().start())
+  
+        
         // -----------------------------------------------
         //                 MIDDLEWARES
         // -----------------------------------------------

@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
+import { BASE_TD_STYLE } from '../../styles';
 
 const GET_PROJECTS_URL = '/api/projects/list/';
 
 
 const ProjectsList = () => {
     const [projectsInfo, setProjectsInfo] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [page, setPage] = useState(0);
-    const [dataLeft, setDataLeft] = useState(true)
+    const page = useRef(0)
+    const isLoading = useRef(false)    
+    const dataLeft = useRef(true)    
     
     const [ref, inView] = useInView({});
 
@@ -24,24 +25,31 @@ const ProjectsList = () => {
         navigateTo(`/projects/${row?.projectid}`);
     }  
 
-    const fetchData = async () => {
-        try {
-            if (!isLoading && dataLeft) {
-                setIsLoading(true);
-                console.log(page)
-                const response = await axiosPrivate.get(GET_PROJECTS_URL + page);
+    const fetchData = () => {
+        if (isLoading.current || !dataLeft.current) {
+            return;
+        }
+    
+        isLoading.current = true;
+    
+        axiosPrivate.get(GET_PROJECTS_URL + page.current)
+            .then(response => {
+                page.current = page.current + 1;
+    
                 if (response.data?.length === 0) {
-                    setDataLeft(false);
+                    dataLeft.current = false;
+                    console.log("aaa");
+                    return;
                 }
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
-                setPage(page + 1);
-            }
-        } catch (error) {
-            setMessage(error.response?.data?.message, true);
-            console.error('Error fetching data:', error);
-        } finally {
-            setIsLoading(false);
-        }
+            })
+            .catch(error => {
+                setMessage(error.response?.data?.message, true);
+                console.error('Error fetching data:', error);
+            })
+            .finally(() => {
+                isLoading.current = false;
+            });
     };
 
     useEffect(() => {
@@ -58,7 +66,7 @@ const ProjectsList = () => {
                 <Link to="/project/create" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Project</Link>
             </div>
             <div className="overflow-y-scroll w-full">
-                <table className="w-full table-auto border-collapse">
+                <table className="w-full table-fixed border-collapse">
                     <thead>
                         <tr>
                             {['Client', 'Description', 'Contact', 'Date'].map((name, index) => (
@@ -69,17 +77,16 @@ const ProjectsList = () => {
                     <tbody>
                         {projectsInfo.map((item, index) => (
                             <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-200'>
-                                <td className=" p-2 text-center">{item?.projectclient}</td>
-                                <td className=" p-2 text-center">{item?.projectdescription}</td>
-                                <td className=" p-2 text-center">{item?.projectcontact}</td>
-                                <td className=" p-2 text-center">{item?.projectdate}</td>
+                                <td className={BASE_TD_STYLE}>{item?.projectclient}</td>
+                                <td className={BASE_TD_STYLE}>{item?.projectdescription}</td>
+                                <td className={BASE_TD_STYLE}>{item?.projectcontact}</td>
+                                <td className={BASE_TD_STYLE}>{item?.projectdate}</td>
                             </tr>
                         ))}
                         <tr ref={ref}></tr>
 
                     </tbody>
                 </table>
-                {isLoading && <p className="text-center my-4">Loading...</p>}
 
             </div>
         </div>

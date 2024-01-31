@@ -1,93 +1,141 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { Link } from 'react-router-dom';
-import {aggregateFlowerData} from '../../utls/aggregateFlowerData';
+import { aggregateFlowerData } from '../../utls/aggregateFlowerDataProject';
+import { BASE_TD_STYLE } from '../../styles';
 
-const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/'
+const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 
 export default function ViewProject() {
     const { id } = useParams();
     const axiosPrivate = useAxiosPrivate();
-    const [arrangementData, setArrangementData] = useState(null)
-    const [flowerData, setFlowerData] = useState(null)
-    const [showFlowerData, setShowFlowerData] = useState([])
+    const [arrangementData, setArrangementData] = useState([]);
+    const [flowerData, setFlowerData] = useState([]);
+    const [showFlowerData, setShowFlowerData] = useState([]);
 
     const updateArrangementData = () => {
-        const updatedArrangementData = arrangementData?.map((item) => {
-          const hasFlowers = flowerData?.some((flower) => flower.arrangementid === item.arrangementid && flower.flowerid != null);
-          return { ...item, hasFlowers };
-        });
+        const updatedArrangementData = arrangementData.map((item) => ({
+            ...item,
+            hasFlowers: flowerData.some(
+                (flower) => flower.arrangementid === item.arrangementid && flower.flowerid !== null
+            ),
+        }));
         setArrangementData(updatedArrangementData);
     };
-    
+
     useEffect(() => {
-        if (flowerData) {
-            setShowFlowerData(aggregateFlowerData(flowerData));
+        if (flowerData.length > 0) {
+            const sortedFlowers = aggregateFlowerData(flowerData)
+            console.log(sortedFlowers[0])
+            setShowFlowerData(sortedFlowers[0]);
             updateArrangementData();
-            }
-    }, [flowerData])
+        }
+    }, [flowerData]);
 
     const fetchFlowers = async () => {
         try {
-            console.log(id)
-            const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id)
-            console.log(response)
-            setArrangementData(response?.data?.arrangements)
-            setFlowerData(response?.data?.flowers)
+            const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
+            setArrangementData(response?.data?.arrangements || []);
+            setFlowerData(response?.data?.flowers || []);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchFlowers()
-    }, [])
+        fetchFlowers();
+    }, []);
 
     return (
-        <div>
-            <Link to='/projects' className="mt-4 text-blue-500 hover:text-blue-700">go back</Link>
-            <table>
-                <thead>
-                    <tr>
-                        {['type', 'Description', 'Quantity', 'Flower Budget', 'Assigned budget', 'status'].map((name, index) => (
-                            <th key={index} className="border p-2">{name}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {arrangementData?.map((item, index) => (
-                        <tr key={index} className='bg-gray-200'>
-                            <td className=" p-2 text-center">{item?.arrangementtype}</td>
-                            <td className=" p-2 text-center">{item?.arrangementdescription}</td>
-                            <td className=" p-2 text-center">{item?.arrangementquantity}</td>
-                            <td className=" p-2 text-center">{item?.flowerbudget}</td>
-                            <td className=" p-2 text-center">{item?.assignedBudget}</td>                            
-                            <td className=" p-2 text-center">{item?.hasFlowers ? "Created" : "design needed"}</td>
-
+        <div className="container mx-auto my-8 text-center">
+            <div className="mb-4 ">
+                <Link to="/projects" className="text-blue-500 hover:text-blue-700">Go back</Link>
+                <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
+            </div>
+            <div className="flex flex-col items-center mb-8">
+                <table className="w-3/4 table-fixed">
+                    <thead>
+                        <tr>
+                            {['Type', 'Description', 'Quantity', 'Flower Budget', 'Assigned Budget', 'Status'].map(
+                                (name, index) => (
+                                    <th key={index} className="border p-2">
+                                        {name}
+                                    </th>
+                                )
+                            )}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        {['Flower name', 'Total stems', 'Unit price', 'Estimated Cost'].map((name, index) => (
-                            <th key={index} className="border p-2">{name}</th>
+                    </thead>
+                    <tbody>
+                        {arrangementData.map((item, index) => (
+                            <tr key={index} className='bg-gray-300'>
+                                <td className={BASE_TD_STYLE}>{item?.arrangementtype}</td>
+                                <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
+                                <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
+                                <td className={BASE_TD_STYLE}>{item?.flowerbudget}</td>
+                                <td className={BASE_TD_STYLE}>{item?.assignedBudget}</td>
+                                <td className={BASE_TD_STYLE}>
+                                    {item?.hasFlowers ? 'Created' : 'Design Needed'}
+                                </td>
+                            </tr>
                         ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {showFlowerData?.map((item, index) => (
-                        <tr key={index} className='bg-gray-200'>
-                            <td className=" p-2 text-center">{item?.flowername}</td>
-                            <td className=" p-2 text-center">{item?.totalstems}</td>
-                            <td className=" p-2 text-center">{item?.unitprice}</td>
-                            <td className=" p-2 text-center">{item?.estimatedcost}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            <div className="flex mb-8">
+                <div className="w-1/2 pr-4">
+                    <h2 className="text-lg font-bold mb-4">Flower Data</h2>
+                    <table className="w-full">
+                        <thead>
+                            <tr>
+                                {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost'].map(
+                                    (name, index) => (
+                                        <th key={index} className="border p-2">
+                                            {name}
+                                        </th>
+                                    )
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {showFlowerData?.map((item, index) => (
+                                <tr key={index} className='bg-gray-300'>
+                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.unitprice}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.estimatedcost}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="w-1/2">
+                    {/* Duplicate the flower data table for the second set */}
+                    <h2 className="text-lg font-bold mb-4">Flower Data</h2>
+                    <table className="w-full">
+                        <thead>
+                            <tr>
+                                {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost'].map(
+                                    (name, index) => (
+                                        <th key={index} className="border p-2">
+                                            {name}
+                                        </th>
+                                    )
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {showFlowerData.map((item, index) => (
+                                <tr key={index} className='bg-gray-300'>
+                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.unitprice}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.estimatedcost}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    )
+    );
 }

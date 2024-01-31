@@ -9,7 +9,8 @@ import InvoiceFlowerAssignment from '../components/InvoiceFlowerAssignment';
 const emptyInvoiceObject = {
   invoiceNumber: '',
   vendor: '',
-  dueDate: ''
+  dueDate: '',
+  invoiceAmmount: ''
 };
 
 export default function AddInvoice() {
@@ -21,8 +22,16 @@ export default function AddInvoice() {
   const [dataLoaded, setDataLoaded] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [projectsSelected, setProjectsSelected] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0);
 
+  const handleNextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
   
+  const handlePreviousStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
+ 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPdfFile(file);
@@ -38,7 +47,7 @@ export default function AddInvoice() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(invoiceData);
+    //console.log(invoiceData);
   };
 
   const handleContinueDataForm = (e) => {
@@ -52,9 +61,15 @@ export default function AddInvoice() {
       setMessage('Please select a project to continue', true)
       return
     }
-    console.log(selectedProjects)
-    setProjectsSelected(true)
+    //console.log(selectedProjects)
+    handleNextStep()
   }
+
+  const steps = [
+    <InvoiceDataForm onSubmit={handleNextStep} invoiceData={invoiceData} handleChange={handleChange} />,
+    <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,
+    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects}/>
+  ];
 
   return (
     <div className="mx-auto mt-8 p-6 bg-white rounded-md shadow-md flex h-screen">
@@ -71,13 +86,8 @@ export default function AddInvoice() {
         </div>
 
         <div className="w-1/2 px-4 h-1/2 my-10">
-
-          {pdfFile ? (!dataLoaded ? (
-            <InvoiceDataForm onSubmit={handleContinueDataForm} invoiceData={invoiceData} handleChange={handleChange} />
-          ) : !projectsSelected ? (
-            <InvoiceProjectSelector goBack={() => setDataLoaded(false)} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />
-          ) : <InvoiceFlowerAssignment goBack={() => setProjectsSelected(false)} chosenProjects={selectedProjects}/>): <p>?</p> }
-      </div>
+          {pdfFile ? steps[currentStep] : <p>Add a file to continue</p>}
+        </div>
     </div>
   );
 }

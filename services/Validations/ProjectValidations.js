@@ -3,12 +3,12 @@ import Joi from "joi"
 const validateProject = project => {
     const ProjectSchema = Joi.object({
         staffBudget: Joi.number().min(0),
-        projectContact: Joi.string(),
+        projectContact: Joi.string().max(255),
         projectDate: Joi.date(),
-        projectDescription: Joi.string(),
-        projectClient: Joi.string(),
+        projectDescription: Joi.string().max(255),
+        clientid: Joi.number().min(0),
         profitMargin: Joi.number(),
-        creatorid: Joi.number()
+        creatorid: Joi.number().min(0)
     })
 
     const { error } = ProjectSchema.validate(project)

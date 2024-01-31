@@ -9,10 +9,10 @@ class ProjectService {
         this.model = new ModelPostgres()
     }
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, arrangements, creatorid) => {
-        await validateProject({staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid})
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid) => {
+        await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid})
         await validateArrangement(arrangements)
-        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements)
+        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements)
 
     }
 
@@ -25,14 +25,19 @@ class ProjectService {
     getProjectArrangements = async (id) => {
         await validateId(id)
         const arrangements = await this.model.getProjectArrangements(id)
-        const flowers = await this.model.getProjectFlowers(id)
+        const flowers = await this.model.getProjectFlowers([id])
         const project = await this.model.getProjectByID(id)
         return {project: project.rows, arrangements: arrangements.rows,flowers: flowers.rows }
     }
 
     getManyProjectsByID = async (ids) => {
-        const res = await this.model.getManyProjectsByID(ids)
-        return res.rows
+        const response = await this.model.getManyProjectsByID(ids)
+        return response.rows
+    }
+
+    getFlowersFromManyProjects = async (ids) => {
+        const response = await this.model.getProjectFlowers(ids)
+        return response.rows
     }
 }
 

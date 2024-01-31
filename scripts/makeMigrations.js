@@ -12,7 +12,7 @@ const makeMigrations = async () => {
         const model = new ModelPostgres()
         try {
             console.log("Making migrations using PostgreSQL");
-            const sql = fs.readFileSync(filesFolder + "/databse.sql", "utf8");
+            const sql = fs.readFileSync(filesFolder + "/database.sql", "utf8");
             await model.runQuery(sql)
 
             console.log("Creating default roles")

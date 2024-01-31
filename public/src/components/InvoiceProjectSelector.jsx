@@ -7,33 +7,40 @@ const GET_PROJECTS_URL = '/api/projects/list/';
 
 export default function InvoiceProjectSelector({ goBack, selectedProjects, setSelectedProjects, goNext}) {
     const [projectsInfo, setProjectsInfo] = useState([]);
-    const [page, setPage] = useState(0);
-    const [dataLeft, setDataLeft] = useState(true);
+    const page = useRef(0)
     const isLoading = useRef(false)    
+    const dataLeft = useRef(true)    
 
-    const [ref, inView] = useInView({});
+    const [ref, inView] = useInView({delay: 10000});
 
     const { setMessage } = useAlert();
     const axiosPrivate = useAxiosPrivate()
 
-    const fetchData = async () => {
-        try {
-            if (!isLoading.current && dataLeft) {
-                isLoading.current = true
-                const response = await axiosPrivate.get(GET_PROJECTS_URL + page);
-
-                if (response.data?.length === 0) {
-                    setDataLeft(false);
-                }
-                setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
-                setPage(page + 1);
-            }
-        } catch (error) {
-            setMessage(error.response?.data?.message, true);
-            console.error('Error fetching data:', error);
-        } finally {
-            isLoading.current = false
+    const fetchData = () => {
+        if (isLoading.current || !dataLeft.current) {
+            return;
         }
+    
+        isLoading.current = true;
+    
+        axiosPrivate.get(GET_PROJECTS_URL + page.current)
+            .then(response => {
+                page.current = page.current + 1;
+    
+                if (response.data?.length === 0) {
+                    dataLeft.current = false;
+                    return;
+                }
+    
+                setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
+            })
+            .catch(error => {
+                setMessage(error.response?.data?.message, true);
+                console.error('Error fetching data:', error);
+            })
+            .finally(() => {
+                isLoading.current = false;
+            });
     };
 
     const handleRowClick = (item) => {
@@ -50,7 +57,6 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
         fetchData()
         
     }, [inView])
-
 
     return (
         <div className='container mx-auto flex flex-col' style={{ maxHeight: '50vh' }}>

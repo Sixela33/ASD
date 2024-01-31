@@ -16,6 +16,7 @@ class ProjectRouter {
         this.router.get('/list/:offset', this.controller.getProjects)
         this.router.post('/manyByID', this.controller.getManyProjectsByID)
         this.router.get('/arrangements/:id', this.controller.getProjectArrangements)
+        this.router.post('/flowers', this.controller.getFlowersFromManyProjects)
         return this.router
     }
     

@@ -90,10 +90,14 @@ class ModelPostgres {
     //                    CLIENTS
     // -----------------------------------------------
 
-    createClient = async (clientName, clientEmail) => {
-        
-        await CnxPostgress.db.query('INSERT INTO clients (clientname, clientemail) VALUES ($1, $2);', [clientName, clientEmail])
+    createClient = async (clientName) => {
 
+        await CnxPostgress.db.query('INSERT INTO clients (clientname) VALUES ($1);', [clientName])
+
+    }
+
+    getClients = async () => {
+        return CnxPostgress.db.query('SELECT * FROM clients;')
     }
 
     // -----------------------------------------------
@@ -111,27 +115,47 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
+    //                    CLIENTS
+    // -----------------------------------------------
+
+    createClients = async (clientName) => {
+        await CnxPostgress.db.query('INSERT INTO clients (clientName) VALUES ($1); ', [clientName])
+    }
+
+    // -----------------------------------------------
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements) => {
         // arrangements: [{arrangementType, arrangementDescription, flowerBudget, arrangementQuantity}, ...] VIEW REFERENCE IN PROJECT ARRANGEMENT VALIDATIONS
  
-        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::VARCHAR, $7::INT, $8::JSONB[]);", [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClient, creatorid, arrangements]);
+        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);", [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
     }
 
     getProjectByID = async (id) => {
-        return await CnxPostgress.db.query("SELECT * FROM projects WHERE projectid = $1;", [id])
+        return await CnxPostgress.db.query(
+            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID = $1;",
+            [id]
+        );
     }
 
     getManyProjectsByID = async (ids) => {
-        return await CnxPostgress.db.query("SELECT * FROM projects WHERE projectid IN (SELECT * FROM UNNEST($1::int[]));", [ids])
+        return await CnxPostgress.db.query(
+            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));",
+            [ids]
+        );
     }
 
     getProjects = async (offset) => {
         const LIMIT = 50
-        return await CnxPostgress.db.query("SELECT * FROM projects LIMIT $1 OFFSET $2;", [LIMIT, LIMIT * offset])
+        const a =  await CnxPostgress.db.query(
+            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID LIMIT $1 OFFSET $2;",
+            [LIMIT, LIMIT * offset]
+        );
+        console.log(a.rows)
+        return a
     }
+
     
     getProjectArrangements = async (id) => {
         const res =  await CnxPostgress.db.query(`SELECT * FROM arrangements WHERE projectid = $1;`, [id])
@@ -139,20 +163,21 @@ class ModelPostgres {
         
     }
     
-    getProjectFlowers = async (id) => {
+    getProjectFlowers = async (ids) => {
         const res =  await CnxPostgress.db.query(`
         SELECT
+        p.projectID,
         a.arrangementID,
         f.flowerID,
         f.flowerName,
         f.flowerImage,
         f.flowerColor,
-        fx.amount
+        fxa.amount
         FROM projects p
         JOIN arrangements a ON p.projectID = a.projectID
-        LEFT JOIN flowerXarrangement fx ON a.arrangementID = fx.arrangementID
-        LEFT JOIN flowers f ON fx.flowerID = f.flowerID
-        WHERE p.projectID = $1;`, [id])
+        LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
+        LEFT JOIN flowers f ON fxa.flowerID = f.flowerID
+        WHERE p.projectID = ANY($1);`, [ids])
         return res
     }
     // -----------------------------------------------
@@ -185,6 +210,18 @@ class ModelPostgres {
     populateArrangements = async (arrangementID, flowerData) => {
         // flowerData: [{flowerID, quantity}, {flowerID, quantity}...]
         await CnxPostgress.db.query("SELECT populateArrangements($1::INT, $2::JSONB[]);", [arrangementID, flowerData]);
+    }
+
+    // -----------------------------------------------
+    //                ARRANGEMENT TYPES
+    // -----------------------------------------------
+
+    loadArrangementType = async (typeName) => {
+        await CnxPostgress.db.query("INSERT INTO arrangementTypes (typeName) VALUES ($1);", [typeName])
+    }
+
+    getArrangementTypes = async () => {
+        const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes;")
     }
 }
 
