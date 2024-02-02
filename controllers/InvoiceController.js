@@ -8,9 +8,8 @@ class InvoiceController {
 
     addInvoice = async (req, res, next) => {
         try {
-            const a = req.body
-            console.log(a)
-            //await this.service.addInvoice(image, name, color)
+            const {invoiceData, InvoiceFlowerData} = req.body
+            await this.service.addInvoice(invoiceData, InvoiceFlowerData)
             res.sendStatus(200)
         } catch (error) {
             console.log(error)

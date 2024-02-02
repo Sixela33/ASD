@@ -29,4 +29,4 @@ const validateArrangement = arrangement => {
     return {success: true}
 }
 
-export {validateArrangement, arrangementSchema}
+export {validateArrangement}

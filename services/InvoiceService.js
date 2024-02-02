@@ -6,11 +6,11 @@ class InvoiceService {
         this.model = new ModelPostgres()
     }
 
-
-    
-    
-    addInvoice = async () => {
-        
+    addInvoice = async (invoiceData, InvoiceFlowerData) => {
+        console.log(invoiceData)
+        console.log(InvoiceFlowerData)
+        //const parsedDisplayFlowerData = JSON.parse(displayFlowerData)
+        //console.log(parsedDisplayFlowerData)
     }
 
     getInvoices = async () => {

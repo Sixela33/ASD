@@ -5,23 +5,21 @@ import useAlert from '../hooks/useAlert';
 import InvoiceDataForm from '../components/InvoiceDataForm';
 import InvoiceProjectSelector from '../components/InvoiceProjectSelector';
 import InvoiceFlowerAssignment from '../components/InvoiceFlowerAssignment';
+import { validateInvoice } from '../utls/validations/InvoiceDataValidations';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
   vendor: '',
   dueDate: '',
-  invoiceAmmount: ''
+  invoiceAmount: ''
 };
 
 export default function AddInvoice() {
-  const axiosPrivate = useAxiosPrivateImage();
-  const { setMessage } = useAlert();
+  const {setMessage} = useAlert()
 
   const [pdfFile, setPdfFile] = useState(null);
   const [invoiceData, setFormData] = useState(emptyInvoiceObject);
-  const [dataLoaded, setDataLoaded] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const [projectsSelected, setProjectsSelected] = useState(false)
   const [currentStep, setCurrentStep] = useState(0);
 
   const handleNextStep = () => {
@@ -37,7 +35,7 @@ export default function AddInvoice() {
     setPdfFile(file);
   };
 
-  const handleChange = (e) => {
+  const handleChangeBaseInvoiceData = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...invoiceData,
@@ -45,14 +43,23 @@ export default function AddInvoice() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    //console.log(invoiceData);
-  };
+  const handleVendorChange = (vendor) => {
+    setFormData({
+      ...invoiceData,
+      'vendor': vendor["vendorid"]
+    })
+  }
 
-  const handleContinueDataForm = (e) => {
-    e.preventDefault();
-    setDataLoaded(true)
+  const handleContinueInvoiceDataForm = (e) => {
+    e.preventDefault()
+    console.log(invoiceData)
+    const result = validateInvoice(invoiceData)
+
+    if (result?.success) {
+      handleNextStep()
+    } else {
+      setMessage("All values must be filled", true)
+    }
   }
 
   const handleContinueProjectSelection = (e) => {
@@ -66,9 +73,9 @@ export default function AddInvoice() {
   }
 
   const steps = [
-    <InvoiceDataForm onSubmit={handleNextStep} invoiceData={invoiceData} handleChange={handleChange} />,
+    <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} />,
     <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,
-    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects}/>
+    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData}/>
   ];
 
   return (

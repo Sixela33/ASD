@@ -105,11 +105,12 @@ class ModelPostgres {
     // -----------------------------------------------
 
     getVendors = async () => {
-        return await CnxPostgress.db.query('SELECT * FROM flowerVendor;')
+        return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor ORDER BY vendorname;')
+        //return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor LIMIT $1 OFFSET $2 ORDER BY vendorname;')
     }
 
     createVendor = async (vendorName) => {
-        
+
         await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
 
     }
@@ -222,6 +223,15 @@ class ModelPostgres {
 
     getArrangementTypes = async () => {
         const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes;")
+        return response
+    }
+
+    // -----------------------------------------------
+    //                  INVOICES
+    // -----------------------------------------------
+
+    addInvoice = async (data) => {
+        
     }
 }
 

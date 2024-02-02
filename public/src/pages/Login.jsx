@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode"
+import useAlert from '../hooks/useAlert';
 
 import axios from '../api/axios';
 const LOGIN_URL = '/api/users/login';
@@ -17,16 +18,13 @@ const Login = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const {setMessage} = useAlert()
 
-    useEffect(() => {
-        setError('');
-    }, [email, password])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!email || !password) {
-            setError("Please fill in all the required fields.")
+            setMessage("Please fill in all the required fields.")
             return
         }
         try {
@@ -52,8 +50,11 @@ const Login = () => {
             navigate(from, { replace: true });
 
         } catch (error) {
-                setError(error.response?.data);
             
+            setMessage(error.response?.data);
+            if (!error.response) {
+                setMessage(error?.message)
+            }
             errRef.current.focus();
         }
     }
@@ -70,7 +71,6 @@ const Login = () => {
 
         <section className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="mb-8 text-3xl font-bold">Log In</h1>
-        <p ref={errRef} className={error ? 'errmsg mt-4' : 'offscreen'} aria-live="assertive">{error}</p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-md">
           <div className="mb-4">

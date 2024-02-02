@@ -1,6 +1,5 @@
 const aggregateFlowerData = (flowerData) => {
     const aggregatedData = {};
-    const uniqueFlowers = {}
 
     flowerData?.forEach(flower => {
         const { flowerid, flowername, amount, unitprice, projectid } = flower;
@@ -11,7 +10,6 @@ const aggregateFlowerData = (flowerData) => {
                 aggregatedData[projectid] = [];
             }
 
-            uniqueFlowers[flowerid] = {flowerid, unitprice: 0, flowername}
             // find the index of the flower
             const existingFlowerIndex = aggregatedData[projectid].findIndex(item => item.flowerid === flowerid);
             if (existingFlowerIndex === -1) {
@@ -32,8 +30,8 @@ const aggregateFlowerData = (flowerData) => {
 
     // Making the object into an array of arrays
     const aggregatedFlowerArray = Object.values(aggregatedData);
-    const aggregatedUniqueFlowers = Object.values(uniqueFlowers);
-    return {aggregatedFlowerArray, aggregatedUniqueFlowers};
+   
+    return aggregatedFlowerArray;
 };
 
-export { aggregateFlowerData };
+export {aggregateFlowerData} 

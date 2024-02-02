@@ -29,28 +29,31 @@ export default function Admin() {
                 <h1 className="text-2xl font-bold">Admin</h1>
                 <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
             </div>
-            <table className="min-w-full border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className="border-b p-2">User ID</th>
-                        <th className="border-b p-2">Username</th>
-                        <th className="border-b p-2">Email</th>
-                        <th className="border-b p-2">ADMIN</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr key={user.userid} className='bg-gray-200'>
-                            <td className="border-b p-2 text-center">{user.userid}</td>
-                            <td className="border-b p-2 text-center">{user.username}</td>
-                            <td className="border-b p-2 text-center">{user.email}</td>
-                            <td className="border-b p-2 text-center">
-                                <Link to={`/admin/${user.userid}`} className="mt-4 text-blue-500 hover:text-blue-700">Edit</Link>
-                            </td>
+            <div className='overflow-y-scroll h-full max-h-[70vh]'>
+                <table className="min-w-full border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th className="border-b p-2">User ID</th>
+                            <th className="border-b p-2">Username</th>
+                            <th className="border-b p-2">Email</th>
+                            <th className="border-b p-2">ADMIN</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {users.map((user) => (
+                            <tr key={user.userid} className='bg-gray-200'>
+                                <td className="border-b p-2 text-center">{user.userid}</td>
+                                <td className="border-b p-2 text-center">{user.username}</td>
+                                <td className="border-b p-2 text-center">{user.email}</td>
+                                <td className="border-b p-2 text-center">
+                                    <Link to={`/admin/${user.userid}`} className="mt-4 text-blue-500 hover:text-blue-700">Edit</Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     );
 }

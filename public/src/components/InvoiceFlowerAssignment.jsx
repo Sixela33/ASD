@@ -7,7 +7,7 @@ const ARRANGEMENT_DATA_FETCH = '/api/projects/flowers'
 const GET_PROJECTS_URL = '/api/projects/manyByID';
 const ADD_INVOICE_URL = '/api/invoices'
 
-export default function InvoiceFlowerAssignment({goBack, chosenProjects}) {
+export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData}) {
 
   const [flowerData, setFlowerData] = useState([])
   const [displayFlowerData, setDisplayFlowerData] = useState([])
@@ -51,45 +51,86 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects}) {
       e.preventDefault()
       // I find the index fo the flower id 
       const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerID)
-      
 
       if (existingFlowerIndex !== -1) {
           const updatedFlowerPriceTracker = [...flowerPriceTracker]
 
-          // Updating the flower price for that index
-          updatedFlowerPriceTracker[existingFlowerIndex] = {
-              ...updatedFlowerPriceTracker[existingFlowerIndex],
-              unitprice: e.target.value
-          };
+          updatedFlowerPriceTracker[existingFlowerIndex].unitprice = e.target.value
           setFlowerPriceTracker(updatedFlowerPriceTracker)
       }
   }
+
+  // I use this function to track the total ammount of evry stem so i dont have to iterate through the whole flower x projects array
+  const changeTotalFlowersInInvoice = (flowerID, diference) => {
+    const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerID)
+      
+    if (existingFlowerIndex !== -1) {
+        const updatedFlowerPriceTracker = [...flowerPriceTracker]
+
+        updatedFlowerPriceTracker[existingFlowerIndex].addedStems += diference
+
+        setFlowerPriceTracker(updatedFlowerPriceTracker)
+        console.log(updatedFlowerPriceTracker)
+    }
+  }
+
   const fillFlowerDemand = (e, flowerIndex) => {
       e.preventDefault();
       const { value } = e.target;
-      const filledStems = parseInt(value, 10); // Convertir a número entero base 10
 
-      if (!isNaN(filledStems)) {
-          const updatedDisplayFlowerData = [...displayFlowerData];
-          const selectedFlower = updatedDisplayFlowerData[selectedRow][flowerIndex];
-          
-          // Modificar el valor de la demanda de la flor seleccionada
-          selectedFlower.filledStems = filledStems;
+      if (!isNaN(value)) {
+        const updatedDisplayFlowerData = [...displayFlowerData];
+        const selectedFlower = updatedDisplayFlowerData[selectedRow][flowerIndex];
+        
+        // Modificar el valor de la demanda de la flor seleccionada
+        const ammountDif = value - selectedFlower.filledStems
+        changeTotalFlowersInInvoice(selectedFlower.flowerid, ammountDif)
+        selectedFlower.filledStems = value;
 
-          // Actualizar el estado displayFlowerData
-          updatedDisplayFlowerData[selectedRow][flowerIndex] = selectedFlower;
-          setDisplayFlowerData(updatedDisplayFlowerData);
+        // Actualizar el estado displayFlowerData
+        updatedDisplayFlowerData[selectedRow][flowerIndex] = selectedFlower;
+        setDisplayFlowerData(updatedDisplayFlowerData);
       }
   }
 
+  const addPrices = () => {
+    return displayFlowerData.map(project => {
+        return project.map(flowerItem => {
+            const existingPriceFlower = flowerPriceTracker.find(item => item.flowerid === flowerItem.flowerid);
+            if (existingPriceFlower) {
+                flowerItem.unitPrice = existingPriceFlower.unitprice;
+            }
+            return flowerItem;
+        });
+    });
+  }
+
+
+  const submitInvoiceCreation = async (e) => {
+    e.preventDefault();
+    try {
+      const InvoiceFlowerData = addPrices()
+      //const stringifiedDisplayFlowerData = JSON.stringify(InvoiceFlowerData);
+  
+      const response = await axiosPrivate.post(ADD_INVOICE_URL, JSON.stringify({
+        invoiceData,
+        InvoiceFlowerData
+      }));
+
+      console.log(response);
+    } catch (error) {
+      setMessage(error.response?.data?.message, true);
+    }
+  }
+
   return (
-    <div className='container mx-auto flex flex-col' style={{ maxHeight: '50vh' }}>
+    <div className='container mx-auto flex flex-col' style={{ maxHeight: '80vh' }}>
       <div className='flex justify-between items-center mb-4'>
           <button onClick={goBack} className='mt-4 text-blue-500 hover:text-blue-700'>go back</button>
           <h1 className='text-2xl font-bold '>Assign flowers</h1>
       </div>
-      <div className='overflow-y-scroll w-full'>
-        <table className='w-full table-auto border-collapse'>
+      <div className='overflow-y-scroll w-full h-1/2vh' style={{ height: '20vh' }}>
+        <table className='w-full table-fixed border-collapse' >
           <thead>
               <tr>
                   {['Client', 'Date', 'Contact', 'selected'].map((name, index) => (
@@ -110,11 +151,12 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects}) {
                   </td>
               </tr>
             ))}
+            
           </tbody>
         </table>
       </div>
-      <div>
-        <table className='w-full table-auto border-collapse'> 
+      <div className='overflow-y-scroll w-full my-3' style={{ height: '30vh' }}>
+        <table className='w-full table-fixed border-collapse'> 
             <thead>
                 <tr>
                     {['Flower name', 'Recipie stems', 'Unit price', 'Stems Used'].map((name, index) => (
@@ -126,23 +168,30 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects}) {
               {displayFlowerData[selectedRow]?.map((flower, index) => {
                 const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flower.flowerid);
 
-                return <tr key={index} className='bg-gray-300'>
-                  <td className=" p-2 text-center">{flower?.flowername}</td>
+                return <tr key={index} className='bg-gray-300 max-h-[10px]'>
+                  <td className=" p-2 text-center" >{flower?.flowername}</td>
                   <td className=" p-2 text-center">{flower?.totalstems}</td>
                   <td className=" p-2 text-center">
-                    <input className='border border-gray-300' type='number' value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
+                    <input className='border border-gray-300 w-1/2' type='number' value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
                   </td>
                   <td className=" p-2 text-center">
-                    <input className='border border-gray-300' type='number' value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)} min={0}></input> 
+                    <input className='border border-gray-300 w-1/2' type='number' value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)} min={0}></input> 
                     <button className='bg-gray-200 px-5 mx-1' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>all</button>
                   </td>
-                  
                 </tr>
               })}
+              
             </tbody>
         </table>
       </div>
-      <button className='bg-black text-white round my-5 mx-auto px-6 py-2'>Save Invoice</button>
+      <div className="flex justify-between items-center my-1">
+        <p className="font-bold">Total invoice amount: {invoiceData.invoiceAmount}</p>
+        <p className="font-bold">Registered Expenses: {flowerPriceTracker?.reduce((value, flower) => {
+          return value + flower.addedStems * flower.unitprice
+        }, 0)}</p>
+        <button className='bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded'>add flower to project</button>
+      </div>
+      <button className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded my-1 w-1/2" onClick={submitInvoiceCreation}>Save Invoice</button>
     </div>
     
   )

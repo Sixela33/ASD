@@ -11,10 +11,10 @@ const aggregateFlowerData = (flowerData) => {
                 aggregatedData[projectid] = [];
             }
             if (!unitprice){
-                unitprice = 0
+                unitprice = ''
             }
 
-            uniqueFlowers[flowerid] = {flowerid, unitprice, flowername}
+            uniqueFlowers[flowerid] = {flowerid, unitprice, flowername, addedStems: 0}
             // find the index of the flower
             const existingFlowerIndex = aggregatedData[projectid].findIndex(item => item.flowerid === flowerid);
             if (existingFlowerIndex === -1) {
@@ -22,12 +22,11 @@ const aggregateFlowerData = (flowerData) => {
                     flowerid,
                     flowername,
                     totalstems: amount,
-                    filledStems: 0,
+                    filledStems: '',
                     projectid
                 });
             } else {
                 aggregatedData[projectid][existingFlowerIndex].totalstems += amount;
-                aggregatedData[projectid][existingFlowerIndex].estimatedcost += unitprice * amount;
             }
         }
     });

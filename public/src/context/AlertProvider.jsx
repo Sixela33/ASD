@@ -7,11 +7,12 @@ export const AlertProvider = ({ children }) => {
     const [isError, setIsError] = useState(true);
 
     const closeAlert = () => {
+        console.log("closing alert")
         _setMessage(null)
-        setIsError(true)
     }
 
-    const setMessage = (_message, _isError) => {
+    const setMessage = (_message, _isError=true) => {
+        console.log(_message)
         _setMessage(_message)
         setIsError(_isError)
     }

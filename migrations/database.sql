@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS projects (
     staffBudget FLOAT,
     profitMargin FLOAT,
     creatorID INT REFERENCES users(userID),
+    isClosed BOOLEAN DEFAULT false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

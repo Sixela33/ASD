@@ -13,6 +13,7 @@ export default function ViewProject() {
     const [flowerData, setFlowerData] = useState([]);
     const [showFlowerData, setShowFlowerData] = useState([]);
 
+    // this function checks if the arrangement has flowers assigned to it
     const updateArrangementData = () => {
         const updatedArrangementData = arrangementData.map((item) => ({
             ...item,
@@ -25,9 +26,15 @@ export default function ViewProject() {
 
     useEffect(() => {
         if (flowerData.length > 0) {
+            console.log(flowerData)
             const sortedFlowers = aggregateFlowerData(flowerData)
-            console.log(sortedFlowers[0])
-            setShowFlowerData(sortedFlowers[0]);
+            console.log("SORTEDfLOWERS", sortedFlowers)
+            console.log("SORTEDfLOWERS 0", sortedFlowers[0])
+            if (sortedFlowers[0]){
+                setShowFlowerData(sortedFlowers[0]);
+            } else {
+                setShowFlowerData([])
+            }
             updateArrangementData();
         }
     }, [flowerData]);
@@ -35,6 +42,7 @@ export default function ViewProject() {
     const fetchFlowers = async () => {
         try {
             const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
+            console.log(response)
             setArrangementData(response?.data?.arrangements || []);
             setFlowerData(response?.data?.flowers || []);
         } catch (error) {
@@ -66,7 +74,7 @@ export default function ViewProject() {
                         </tr>
                     </thead>
                     <tbody>
-                        {arrangementData.map((item, index) => (
+                        {arrangementData?.map((item, index) => (
                             <tr key={index} className='bg-gray-300'>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementtype}</td>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
