@@ -6,7 +6,7 @@ export default function Alert() {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (message && !event.target.closest('.alert-container')) {
+            if (message && event.target.closest('.alert-container')) {
                 console.log(event)
                 closeAlert();
             }

@@ -28,8 +28,7 @@ export default function ViewProject() {
         if (flowerData.length > 0) {
             console.log(flowerData)
             const sortedFlowers = aggregateFlowerData(flowerData)
-            console.log("SORTEDfLOWERS", sortedFlowers)
-            console.log("SORTEDfLOWERS 0", sortedFlowers[0])
+    
             if (sortedFlowers[0]){
                 setShowFlowerData(sortedFlowers[0]);
             } else {
