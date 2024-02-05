@@ -13,6 +13,11 @@ class ArrangementService {
     populateArrangement = async(arrangementid, flowers) => {
         await this.model.populateArrangement(arrangementid, flowers)
     }
+
+    getArrangementTypes = async () => {
+        const response = await this.model.getArrangementTypes()
+        return response.rows
+    }
 }
 
 export default ArrangementService

@@ -35,7 +35,6 @@ export default function Register() {
 
       try {
         const response = await axiosPrivate.post(REGISTER_URL, JSON.stringify({email, username, password}))
-        console.log(response)
         setMessage(response.data, false)
         setEmail("")
         setPassword("")

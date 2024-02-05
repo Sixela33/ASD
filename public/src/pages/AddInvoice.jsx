@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import useAlert from '../hooks/useAlert';
 
-import InvoiceDataForm from '../components/InvoiceDataForm';
-import InvoiceProjectSelector from '../components/InvoiceProjectSelector';
-import InvoiceFlowerAssignment from '../components/InvoiceFlowerAssignment';
+import InvoiceDataForm from '../components/InvoiceCreation/InvoiceDataForm';
+import InvoiceProjectSelector from '../components/InvoiceCreation/InvoiceProjectSelector';
+import InvoiceFlowerAssignment from '../components/InvoiceCreation/InvoiceFlowerAssignment';
 import { validateInvoice } from '../utls/validations/InvoiceDataValidations';
 
 const emptyInvoiceObject = {
@@ -52,7 +52,6 @@ export default function AddInvoice() {
 
   const handleContinueInvoiceDataForm = (e) => {
     e.preventDefault()
-    console.log(invoiceData)
     const result = validateInvoice(invoiceData)
 
     if (result?.success) {
@@ -68,7 +67,6 @@ export default function AddInvoice() {
       setMessage('Please select a project to continue', true)
       return
     }
-    //console.log(selectedProjects)
     handleNextStep()
   }
 

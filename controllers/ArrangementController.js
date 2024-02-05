@@ -19,6 +19,17 @@ class ArrangementController {
         }
     }
 
+    getArrangementTypes = async (req, res, next) => {
+        try {
+            
+            const response = await this.service.getArrangementTypes()
+                
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default ArrangementController

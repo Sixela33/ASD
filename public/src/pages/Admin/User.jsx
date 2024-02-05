@@ -58,10 +58,8 @@ export default function User() {
 
         if (localSelectedRole && userRoles.includes(localSelectedRole)) {
             const role = allRoles.find(role => role.rolename === localSelectedRole)
-            console.log(role)
             try {
                 const response = await axiosPrivate.patch(REMOVE_ROLE_URL, JSON.stringify({userid: userid, roleid: role.roleid}))
-                console.log(response)
                 setMessage("Role removed", false)
                 setReload(!reloadPage)
 

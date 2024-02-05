@@ -3,7 +3,9 @@ import ArrangementPopup from '../../components/ArrangementPopup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { Link } from 'react-router-dom';
+import { validateArrangement } from '../../utls/validations/ArrangementValidations';
 import { BASE_TD_STYLE } from '../../styles';
+import SearchableDropdown from '../../components/SearchableDropdown';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
 
@@ -19,6 +21,9 @@ const initialState = {
   arrangements: [],
 }
 
+const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
+const GET_CLIENTS_LIST = '/api/clients'
+
 export default function CreateProject() {
     const axiosPrivate = useAxiosPrivate()
     const { setMessage } = useAlert()
@@ -27,6 +32,9 @@ export default function CreateProject() {
     const [newArrangement, setNewArrangement] = useState(emptyArrangement)
     const [showArrangementPopup, setShowArrangementPopup] = useState(false)
 
+    const [arrangementTypes, setArrangementTypes] = useState([])
+    const [clientsList, setClientsList] = useState([])
+ 
     const { client, description, date, contact, staffBudget, profitMargin, arrangements } = formState
 
     const [totalFlowerBudget, setTotalFlowerBudget] = useState(0)
@@ -37,19 +45,42 @@ export default function CreateProject() {
         setTotalFlowerBudget(sum)
     }, [arrangements])
 
+    const fetchData = async () => {
+        try {
+            const arrangementsResponse = await axiosPrivate.get(GET_ARRANGEMENT_TYPES_URL)
+            setArrangementTypes(arrangementsResponse?.data)
+
+            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
+            setClientsList(clientsResponse?.data)
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        fetchData()
+    }, [])
+
     const addArrangement = (e) => {
         e.preventDefault()
 
-        //if it is editing
+        const updatedArrangementsList = [...arrangements]
+
         if (newArrangement.index != null) {
             const index = newArrangement.index
             delete newArrangement.index
-            const updatedArrangementsList = [...arrangements]
             updatedArrangementsList[index] = { ...newArrangement }
-            setFormState({ ...formState, arrangements: updatedArrangementsList })
         } else {
-            setFormState({ ...formState, arrangements: [...arrangements, { ...newArrangement }] })
+            updatedArrangementsList.push(newArrangement)
         }
+
+        const validationResult = validateArrangement(newArrangement)
+        if (!validationResult.success){
+            setMessage(validationResult.message)
+            return
+        }
+        
+        setFormState({ ...formState, arrangements: updatedArrangementsList })
 
         setNewArrangement(emptyArrangement)
         setShowArrangementPopup(false)
@@ -61,6 +92,7 @@ export default function CreateProject() {
 
     const closePopup = () => {
         setNewArrangement(emptyArrangement)
+        console.log(formState.arrangements)
         setShowArrangementPopup(false)
     }
 
@@ -81,8 +113,19 @@ export default function CreateProject() {
             return
         }
 
+        // Removing the name from the arrangementType object to make it just the id
+        // The same with the client
+        const newData = {
+            ...formState,
+            client: formState.client.clientid,
+            arrangements: formState.arrangements.map(arrangement => ({
+              ...arrangement,
+              arrangementType: arrangement.arrangementType.arrangementtypeid
+            }))
+        };
+        
         try {
-            await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(formState))
+            await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
             setMessage('Project created successfully', false)
             //setFormState(initialState)
         } catch (error) {
@@ -110,7 +153,8 @@ export default function CreateProject() {
                         <div className={formRowClass}>
                             <div className={formColClass}>
                                 <label className="mb-1">Client:</label>
-                                <input type="text" value={client} onChange={(e) => handleFormEdit('client', e.target.value)} className={inputClass} required/>
+                                <SearchableDropdown options={clientsList} label="clientname" selectedVal={client} handleChange={(client) => handleFormEdit('client', client)} placeholderText="Select Client"/>
+                                <p>new client</p>
                             </div>
 
                             <div className={formColClass}>
@@ -146,10 +190,11 @@ export default function CreateProject() {
                 
                     {/* Arrangements section */}
                     <div className="p-4 rounded w-full text-center">
+                        <h3 className="text-lg font-semibold mb-2">Arrangements</h3>
 
-                            <h3 className="text-lg font-semibold mb-2">Arrangements</h3>
-   
-                        <table className="min-w-full borderbg-white">
+                        <div className='overflow-y-scroll h-full max-h-[30vh]'>
+
+                        <table className="min-w-full borderbg-white ">
                             <thead >
                                 <tr>
                                     <th className={BASE_TD_STYLE}>Arrangement type</th>
@@ -161,9 +206,9 @@ export default function CreateProject() {
                             </thead>
                             <tbody>
                                 {formState.arrangements.map((arrangement, index) => (
-                
-                                <tr key={index} className='bg-gray-300' onClick={() => handleEdit(index)}>
-                                    <td className={BASE_TD_STYLE}>{arrangement.arrangementType}</td>
+                                    
+                                    <tr key={index} className='bg-gray-300' onClick={() => handleEdit(index)}>
+                                    <td className={BASE_TD_STYLE}>{arrangement?.arrangementType.typename}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementDescription}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.flowerBudget}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementQuantity}</td>
@@ -171,21 +216,25 @@ export default function CreateProject() {
                                 </tr>
                 
                                 ))}
-                                <tr>
-                                    <td>TOTAL flower budget: </td>
-                                    <td>{totalFlowerBudget}</td>
-                                    <td>TOTAL client cost: </td>
-                                    <td>{totalFlowerBudget + (totalFlowerBudget * profitMargin)}</td>
-                                </tr>
                             </tbody>
                         </table>
+                        </div>
+
+                    </div>
+                    <div>
+                        <div>
+                            <p> TOTAL flower budget: {totalFlowerBudget}</p>
+                        </div>
+                        <div>
+                            <p>TOTAL client cost: {totalFlowerBudget + (totalFlowerBudget * profitMargin)}</p>
+                        </div>
                     </div>
                                 
-                    <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange}/>
                     <div className=' flex flex-row'>
                         <button type="button" onClick={() => setShowArrangementPopup(true)} className="mx-auto bg-gray-500 text-white px-4 py-2 rounded focus:outline-none">Add New Arrangement</button>
                         <button type="submit" className="mx-auto bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>
                     </div>
+                    <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes}/>
                 </form>
             </div>
 

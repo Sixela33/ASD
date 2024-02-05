@@ -71,9 +71,9 @@ class ModelPostgres {
 
     getUserRoles = async (userID) => {
         
-        const result = await CnxPostgress.db.query('SELECT r.roleName FROM roleXuser rxu JOIN userRole r ON rxu.roleID = r.roleID WHERE rxu.userID = $1;', [userID])
+        const response = await CnxPostgress.db.query('SELECT r.roleName FROM roleXuser rxu JOIN userRole r ON rxu.roleID = r.roleID WHERE rxu.userID = $1;', [userID])
 
-        const roles = result.rows.map(row => row.rolename);
+        const roles = response.rows.map(row => row.rolename);
         return roles;
     
     }
@@ -97,7 +97,7 @@ class ModelPostgres {
     }
 
     getClients = async () => {
-        return CnxPostgress.db.query('SELECT * FROM clients;')
+        return CnxPostgress.db.query('SELECT * FROM clients ORDER BY clientname;')
     }
 
     // -----------------------------------------------
@@ -149,23 +149,22 @@ class ModelPostgres {
 
     getProjects = async (offset) => {
         const LIMIT = 50
-        const a =  await CnxPostgress.db.query(
+        const response =  await CnxPostgress.db.query(
             "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID LIMIT $1 OFFSET $2;",
             [LIMIT, LIMIT * offset]
-        );
-        console.log(a.rows)
-        return a
+        )
+        return response
     }
 
     
     getProjectArrangements = async (id) => {
-        const res =  await CnxPostgress.db.query(`SELECT * FROM arrangements WHERE projectid = $1;`, [id])
-        return res
+        const response =  await CnxPostgress.db.query(`SELECT * FROM arrangements WHERE projectid = $1;`, [id])
+        return response
         
     }
     
     getProjectFlowers = async (ids) => {
-        const res =  await CnxPostgress.db.query(`
+        const response =  await CnxPostgress.db.query(`
         SELECT
         p.projectID,
         a.arrangementID,
@@ -179,7 +178,7 @@ class ModelPostgres {
         LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
         LEFT JOIN flowers f ON fxa.flowerID = f.flowerID
         WHERE p.projectID = ANY($1);`, [ids])
-        return res
+        return response
     }
     // -----------------------------------------------
     //                   FLOWERS
@@ -222,7 +221,7 @@ class ModelPostgres {
     }
 
     getArrangementTypes = async () => {
-        const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes;")
+        const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes ORDER BY typename;")
         return response
     }
 

@@ -8,10 +8,11 @@ import { HiChevronDown } from "react-icons/hi";
     selectedVal     : the selected value
     handleChange    : Function that recieves the selected option
     placeholderText : Text to show when no item is selected
+    InViewRef       : A ref in case the data gets called as its needed
   */
 
-const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText }) => {
-  const [query, setQuery] = useState("");
+const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText, InViewRef, query, setQuery}) => {
+
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef(null);
 
@@ -33,7 +34,7 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
     setIsOpen(false)
     setQuery("");
     handleChange(option);
-};
+  };
 
 
   const handleInputChange = (e) => {
@@ -41,11 +42,6 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
     setIsOpen(true);
   };
 
-  const filterOptions = () => {
-    return options.filter(option =>
-      option[label].toLowerCase().includes(query.toLowerCase())
-    );
-  };
 
   return (
     <div className="relative">
@@ -67,11 +63,12 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
                     <FiSearch />
                 </div>
             </div>
-              {filterOptions().map((option, index) => (
+              {options.map((option, index) => (
                 <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1 ${option[label] === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption(option)} >
                   {option[label]}
                 </div>
               ))}
+              <div ref={InViewRef}>-</div>
             </>
           )}
         </div>
@@ -80,4 +77,4 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
   );
 };
 
-export default SearchableDropdown;
+export default QuerySearchableDropdown;

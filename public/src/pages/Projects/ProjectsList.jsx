@@ -69,7 +69,7 @@ const ProjectsList = () => {
                 <table className="w-full table-fixed border-collapse">
                     <thead>
                         <tr>
-                            {['Client', 'Description', 'Contact', 'Date'].map((name, index) => (
+                            {['id', 'Client', 'Description', 'Contact', 'Date'].map((name, index) => (
                                 <th key={index} className="border p-2">{name}</th>
                             ))}
                         </tr>
@@ -77,6 +77,7 @@ const ProjectsList = () => {
                     <tbody>
                         {projectsInfo.map((item, index) => (
                             <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-200'>
+                                <td className={BASE_TD_STYLE}>{item?.projectid}</td>
                                 <td className={BASE_TD_STYLE}>{item?.projectclient}</td>
                                 <td className={BASE_TD_STYLE}>{item?.projectdescription}</td>
                                 <td className={BASE_TD_STYLE}>{item?.projectcontact}</td>

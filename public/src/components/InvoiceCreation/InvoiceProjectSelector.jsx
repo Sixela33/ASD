@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import useAlert from '../hooks/useAlert';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 
 const GET_PROJECTS_URL = '/api/projects/list/';
@@ -69,7 +69,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                 <table className='w-full table-auto border-collapse'>
                     <thead>
                         <tr>
-                            {['Client', 'Date', 'Description', 'Contact', 'selected'].map((name, index) => (
+                            {['project id', 'Client', 'Date', 'Description', 'Contact', 'selected'].map((name, index) => (
                                 <td key={index} className='border p-2'>
                                 {name}
                                 </td>
@@ -79,6 +79,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                 <tbody>
                     {projectsInfo.map((item, index) => (
                         <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-200'>
+                            <td className='p-2 text-center'>{item?.projectid}</td>
                             <td className='p-2 text-center'>{item?.projectclient}</td>
                             <td className='p-2 text-center'>{item?.projectdate}</td>
                             <td className='p-2 text-center'>{item?.projectdescription}</td>

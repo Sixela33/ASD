@@ -10,9 +10,10 @@ class ProjectController {
 
     createProject = async (req, res, next) => {
         try {
-            const { staffBudget, contact, date, description, clientid, profitMargin, arrangements} = req.body
+            console.log(req.body)
+            const { staffBudget, contact, date, description, client, profitMargin, arrangements} = req.body
             const creatorid = req.user.userid
-            await this.service.createProject(staffBudget, contact, date, description, clientid, profitMargin, arrangements, creatorid)
+            await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid)
             res.sendStatus(200)
         } catch (error) {
             next(error)

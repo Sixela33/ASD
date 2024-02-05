@@ -11,6 +11,7 @@ class ArrangementRouter {
     start(){
   
         this.router.post('/', this.controller.populateArrangement)
+        this.router.get('/types', this.controller.getArrangementTypes)
 
         return this.router
     }

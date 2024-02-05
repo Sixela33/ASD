@@ -1,6 +1,7 @@
 const aggregateFlowerData = (flowerData) => {
     const aggregatedData = {};
     const uniqueFlowers = {}
+    const projects = []
 
     flowerData?.forEach(flower => {
         let { flowerid, flowername, amount, unitprice, projectid } = flower;
@@ -32,6 +33,8 @@ const aggregateFlowerData = (flowerData) => {
     });
 
     // Making the object into an array of arrays
+    console.log("asdfasdfasdfasdfa", aggregatedData)
+    console.log(projects)
     const aggregatedFlowerArray = Object.values(aggregatedData);
     const aggregatedUniqueFlowers = Object.values(uniqueFlowers);
     return {aggregatedFlowerArray, aggregatedUniqueFlowers};

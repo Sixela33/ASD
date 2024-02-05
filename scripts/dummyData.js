@@ -9,22 +9,22 @@ const users = [
 ];
 
 const arrangements = [
-    { arrangementType: 1, arrangementDescription: 'Description1', flowerBudget: 100, arrangementQuantity: 5 },
-    { arrangementType: 1, arrangementDescription: 'Description2', flowerBudget: 150, arrangementQuantity: 3 },
-    { arrangementType: 2, arrangementDescription: 'Description3', flowerBudget: 120, arrangementQuantity: 4 }
+    { arrangementType: 1, arrangementDescription: 'Bridal', flowerBudget: 100, arrangementQuantity: 5 },
+    { arrangementType: 1, arrangementDescription: 'Blue arrangement', flowerBudget: 150, arrangementQuantity: 3 },
+    { arrangementType: 2, arrangementDescription: 'Red for the entrance', flowerBudget: 120, arrangementQuantity: 4 }
 ];
 
 const projects = [
     { staffBudget: 2000, projectContact: 'Contact1', projectDate: '2024-01-16', projectDescription: 'Project1', projectClient: 1, profitMargin: 0.2, creatorid: 1 },
     { staffBudget: 2500, projectContact: 'Contact2', projectDate: '2024-01-17', projectDescription: 'Project2', projectClient: 2, profitMargin: 0.15, creatorid: 1 },
     { staffBudget: 1800, projectContact: 'Contact3', projectDate: '2024-01-18', projectDescription: 'Project3', projectClient: 3, profitMargin: 0.18, creatorid: 1 },
-    { staffBudget: 3000, projectContact: 'Contact4', projectDate: '2024-01-19', projectDescription: 'Project4', projectClient: 4, profitMargin: 0.25, creatorid: 2 },
-    { staffBudget: 2200, projectContact: 'Contact5', projectDate: '2024-01-20', projectDescription: 'Project5', projectClient: 3, profitMargin: 0.2, creatorid: 2 },
-    { staffBudget: 2800, projectContact: 'Contact6', projectDate: '2024-01-21', projectDescription: 'Project6', projectClient: 4, profitMargin: 0.18, creatorid: 2 },
-    { staffBudget: 3200, projectContact: 'Contact7', projectDate: '2024-01-22', projectDescription: 'Project7', projectClient: 1, profitMargin: 0.22, creatorid: 3 },
-    { staffBudget: 2700, projectContact: 'Contact8', projectDate: '2024-01-23', projectDescription: 'Project8', projectClient: 3, profitMargin: 0.17, creatorid: 3 },
-    { staffBudget: 2300, projectContact: 'Contact9', projectDate: '2024-01-24', projectDescription: 'Project9', projectClient: 5, profitMargin: 0.15, creatorid: 3 },
-    { staffBudget: 3500, projectContact: 'Contact10', projectDate: '2024-01-25', projectDescription: 'Project10', projectClient: 1, profitMargin: 0.2, creatorid: 4 }
+    { staffBudget: 3000, projectContact: 'Contact4', projectDate: '2024-01-19', projectDescription: 'Project4', projectClient: 4, profitMargin: 0.25, creatorid: 1 },
+    { staffBudget: 2200, projectContact: 'Contact5', projectDate: '2024-01-20', projectDescription: 'Project5', projectClient: 3, profitMargin: 0.2, creatorid: 1 },
+    { staffBudget: 2800, projectContact: 'Contact6', projectDate: '2024-01-21', projectDescription: 'Project6', projectClient: 4, profitMargin: 0.18, creatorid: 1 },
+    { staffBudget: 3200, projectContact: 'Contact7', projectDate: '2024-01-22', projectDescription: 'Project7', projectClient: 1, profitMargin: 0.22, creatorid: 1 },
+    { staffBudget: 2700, projectContact: 'Contact8', projectDate: '2024-01-23', projectDescription: 'Project8', projectClient: 3, profitMargin: 0.17, creatorid: 1 },
+    { staffBudget: 2300, projectContact: 'Contact9', projectDate: '2024-01-24', projectDescription: 'Project9', projectClient: 5, profitMargin: 0.15, creatorid: 1 },
+    { staffBudget: 3500, projectContact: 'Contact10', projectDate: '2024-01-25', projectDescription: 'Project10', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
 ];
 
 const flowers = [
@@ -125,14 +125,10 @@ const createFlowers = async (model) => {
 
 const populateArangement = async (model) => {
     try {
-        // arrangementID, flowerData
-        const populatedArrangements = []
-        for (let i = 1; i <= 6; i++) {
-            let number = Math.floor(Math.random() * 15)
-            while (number in populatedArrangements){
-                number = Math.floor(Math.random() * 15)
-            }
-            await model.populateArrangements(number, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
+        const initialValue = 6
+        for (let i = initialValue; i <= initialValue + 15 ; i++) {
+            // arrangementID, flowerData
+            await model.populateArrangements(i, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
         }
 
     } catch (error) {
@@ -143,7 +139,7 @@ const populateArangement = async (model) => {
 
 const loadVendors = async (model) => {
     try {
-        for (let v in vendors) {
+        for (let v of vendors) {
             await model.createVendor(v)
         }
     } catch (error) {

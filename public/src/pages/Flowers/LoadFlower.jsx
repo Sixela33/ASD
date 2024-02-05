@@ -25,7 +25,6 @@ export default function LoadFlower() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file)
     setFormData({
       ...formData,
       flower: file,
@@ -43,8 +42,6 @@ export default function LoadFlower() {
 
         const response = await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend);
 
-        // Handle the response as needed
-        console.log(response.data);
         setMessage("Flower Added succesfully", false)
     } catch (error) {
         setMessage(error.response?.data, true)

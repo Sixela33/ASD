@@ -18,7 +18,7 @@ const Navbar = () => {
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
-    console.log(auth)
+    //console.log(auth)
 
     return (
         <nav className="bg-black p-4">
