@@ -22,7 +22,7 @@ const ProjectsList = () => {
 
     const handleRowClick = (row) => {
         console.log(row)
-        navigateTo(`/projects/${row?.projectid}`);
+        navigateTo(`/projects/${row?.projectid}`, {state: row});
     }  
 
     const fetchData = () => {
@@ -38,7 +38,6 @@ const ProjectsList = () => {
     
                 if (response.data?.length === 0) {
                     dataLeft.current = false;
-                    console.log("aaa");
                     return;
                 }
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
@@ -60,7 +59,7 @@ const ProjectsList = () => {
 
 
     return (
-        <div className="container mx-auto mt-8 flex flex-col" style={{maxHeight: '80vh'}}>
+        <div className="container mx-auto mt-8 flex flex-col" style={{height: '80vh'}}>
             <div className='flex justify-between items-center mb-4'>
                 <h1 className="text-2xl font-bold">ProjectsList</h1>
                 <Link to="/project/create" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Project</Link>
@@ -76,7 +75,7 @@ const ProjectsList = () => {
                     </thead>
                     <tbody>
                         {projectsInfo.map((item, index) => (
-                            <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-200'>
+                            <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-300'>
                                 <td className={BASE_TD_STYLE}>{item?.projectid}</td>
                                 <td className={BASE_TD_STYLE}>{item?.projectclient}</td>
                                 <td className={BASE_TD_STYLE}>{item?.projectdescription}</td>

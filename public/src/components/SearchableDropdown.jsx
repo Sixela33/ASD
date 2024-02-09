@@ -37,6 +37,7 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
 
 
   const handleInputChange = (e) => {
+    e.preventDefault();
     setQuery(e.target.value);
     setIsOpen(true);
   };

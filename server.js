@@ -40,13 +40,13 @@ class Server {
     }
 
     async start() {
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: '10mb' }));
         this.app.use(credentials)
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express.urlencoded({ limit: '10mb', extended: true }));
         this.app.use(cors(corsOptions));
         this.app.use(cookieParser());
         this.app.use(express.static('/public/dist'))
-        this.app.use('/api/flowerImages', express.static('flowerImages'));
+        this.app.use('/api/SavedFiles', express.static('SavedFiles'));
         this.app.use(requestLogger)
 
         if(this.logger) {

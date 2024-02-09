@@ -135,14 +135,14 @@ class ModelPostgres {
 
     getProjectByID = async (id) => {
         return await CnxPostgress.db.query(
-            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID = $1;",
+            "SELECT projects.*, clients.clientName AS projectclient, TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID = $1;",
             [id]
         );
     }
 
     getManyProjectsByID = async (ids) => {
         return await CnxPostgress.db.query(
-            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));",
+            "SELECT projects.*, clients.clientName AS projectclient, TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));",
             [ids]
         );
     }
@@ -150,7 +150,7 @@ class ModelPostgres {
     getProjects = async (offset) => {
         const LIMIT = 50
         const response =  await CnxPostgress.db.query(
-            "SELECT projects.*, clients.clientName AS projectclient FROM projects INNER JOIN clients ON projects.clientID = clients.clientID LIMIT $1 OFFSET $2;",
+            "SELECT projects.*, clients.clientName AS projectclient, TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects INNER JOIN clients ON projects.clientID = clients.clientID LIMIT $1 OFFSET $2;",
             [LIMIT, LIMIT * offset]
         )
         return response
@@ -166,18 +166,32 @@ class ModelPostgres {
     getProjectFlowers = async (ids) => {
         const response =  await CnxPostgress.db.query(`
         SELECT
-        p.projectID,
-        a.arrangementID,
-        f.flowerID,
-        f.flowerName,
-        f.flowerImage,
-        f.flowerColor,
-        fxa.amount
-        FROM projects p
-        JOIN arrangements a ON p.projectID = a.projectID
-        LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
-        LEFT JOIN flowers f ON fxa.flowerID = f.flowerID
-        WHERE p.projectID = ANY($1);`, [ids])
+            p.projectID,
+            a.arrangementID,
+            f.flowerID,
+            f.flowerName,
+            f.flowerImage,
+            f.flowerColor,
+            fxa.amount,
+            FxI.unitPrice
+            FROM projects p
+            JOIN arrangements a ON p.projectID = a.projectID
+            LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
+            LEFT JOIN flowers f ON fxa.flowerID = f.flowerID 
+            LEFT JOIN (
+                SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
+                FROM flowerXInvoice fx
+                JOIN (
+                    SELECT 
+                        MAX(loadedDate) AS max_loaded_date,
+                        flowerID
+                    FROM flowerXInvoice
+                    GROUP BY 
+                        flowerID
+                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+                GROUP BY fx.flowerID
+            ) FxI ON f.flowerID = FxI.flowerID
+            WHERE p.projectID = ANY($1);`, [ids])
         return response
     }
     // -----------------------------------------------
@@ -229,8 +243,56 @@ class ModelPostgres {
     //                  INVOICES
     // -----------------------------------------------
 
-    addInvoice = async (data) => {
-        
+    addInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, uploaderid) => {
+        console.log(InvoiceFlowerData)
+        console.log(invoiceData)
+        const response = await CnxPostgress.db.query('SELECT addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
+    }
+
+    getInvoices = async (offset, query) => {
+        const respone = await CnxPostgress.db.query(`
+        SELECT 
+            i.invoiceid, 
+            fv.vendorname, 
+            i.invoiceamount, 
+            i.invoiceNumber,
+            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
+            i.fileLocation
+            FROM invoices i 
+            LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID;`)
+        return respone
+    }
+
+    getProvidedProjects = async (invoiceID) => {
+        console.log(invoiceID)
+
+        const respone = await CnxPostgress.db.query(`
+        SELECT 
+            projects.*, 
+            clients.clientName AS projectclient, 
+            TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
+            FROM projects 
+            INNER JOIN clients ON projects.clientID = clients.clientID 
+            WHERE projects.projectID IN (
+                SELECT DISTINCT projectID 
+                FROM flowerXInvoice 
+                WHERE invoiceID = $1);`
+        , [invoiceID])
+        return respone
+    }
+
+    getFlowersXInvoice = async (invoiceid) => {
+        const respone = await CnxPostgress.db.query(
+            `SELECT
+                f.flowername,
+                FxI.projectID,
+                FxI.unitPrice,
+                FxI.numStems
+                FROM flowerXInvoice FxI
+                LEFT JOIN flowers f on f.flowerID = FxI.flowerID
+                WHERE FxI.invoiceID = $1;`, [invoiceid])
+
+        return respone
     }
 }
 

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
-import useAlert from '../hooks/useAlert';
+import useAlert from '../../hooks/useAlert';
 
-import InvoiceDataForm from '../components/InvoiceCreation/InvoiceDataForm';
-import InvoiceProjectSelector from '../components/InvoiceCreation/InvoiceProjectSelector';
-import InvoiceFlowerAssignment from '../components/InvoiceCreation/InvoiceFlowerAssignment';
-import { validateInvoice } from '../utls/validations/InvoiceDataValidations';
+import InvoiceDataForm from '../../components/InvoiceCreation/InvoiceDataForm';
+import InvoiceProjectSelector from '../../components/InvoiceCreation/InvoiceProjectSelector';
+import InvoiceFlowerAssignment from '../../components/InvoiceCreation/InvoiceFlowerAssignment';
+import { validateInvoice } from '../../utls/validations/InvoiceDataValidations';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
@@ -21,6 +20,7 @@ export default function AddInvoice() {
   const [invoiceData, setFormData] = useState(emptyInvoiceObject);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [asrcPdfFile, setAsrcPdfFile] = useState(null)
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -31,11 +31,14 @@ export default function AddInvoice() {
   };
  
   const handleFileChange = (e) => {
+    e.preventDefault()
     const file = e.target.files[0];
     setPdfFile(file);
+    setAsrcPdfFile(e.target.files[0] && URL.createObjectURL(e.target.files[0]) + '#toolbar=0')
   };
 
   const handleChangeBaseInvoiceData = (e) => {
+    e.preventDefault()
     const { name, value } = e.target;
     setFormData({
       ...invoiceData,
@@ -73,7 +76,7 @@ export default function AddInvoice() {
   const steps = [
     <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} />,
     <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,
-    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData}/>
+    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData} invoiceFile={pdfFile}/>
   ];
 
   return (
@@ -85,13 +88,13 @@ export default function AddInvoice() {
                     <input type="file" name="flower" onChange={handleFileChange} className="border border-gray-300 p-2 rounded" required/>
                 </div>
                 <div className="flex flex-row">
-                    {pdfFile && (<embed src={URL.createObjectURL(pdfFile)+ '#toolbar=0'} type="application/pdf" width="100%" height="600vh"/>)}
+                    {asrcPdfFile && (<embed src={asrcPdfFile} type="application/pdf" width="100%" height="600vh"/>)}
                 </div>
             </div>
         </div>
 
         <div className="w-1/2 px-4 h-1/2 my-10">
-          {pdfFile ? steps[currentStep] : <p>Add a file to continue</p>}
+          {asrcPdfFile ? steps[currentStep] : <p>Add a file to continue</p>}
         </div>
     </div>
   );

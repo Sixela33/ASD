@@ -9,7 +9,8 @@
     "watch": "nodemon index.js",
     "makemigrations": "node scripts/makeMigrations.js",
     "createadmin": "node scripts/createAdmin.js",
-    "dd": "node scripts/dummyData.js"
+    "dd": "node scripts/dummyData.js",
+    "loadFlowers": "mocha scripts/LoadFlowers.test.js --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -22,8 +23,10 @@
     "express": "^4.18.2",
     "express-winston": "^4.2.0",
     "faker": "^5.5.3",
+    "form-data": "^4.0.0",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^10.3.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.3",
     "supertest": "^6.3.4",

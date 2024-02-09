@@ -38,7 +38,7 @@ export default function LoadFlower() {
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name);
         formDataToSend.append('color', formData.color);
-        formDataToSend.append('flower', formData.flower); // Change 'image' to 'flower'
+        formDataToSend.append('flower', formData.flower); 
 
         const response = await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend);
 

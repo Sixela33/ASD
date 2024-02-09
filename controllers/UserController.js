@@ -42,6 +42,7 @@ class UserController {
     loginUser = async (req, res, next) => {
         try {
             const {email, password} = req.body
+            console.log(req.body)
             const {accessToken, refreshToken, userRoles} = await this.service.loginUser(email, password)
             req.logger.warn(`${email} Has Logged in`)
 

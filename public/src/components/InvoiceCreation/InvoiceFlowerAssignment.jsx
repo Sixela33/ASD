@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage'
 import useAlert from '../../hooks/useAlert'
 import { aggregateFlowerData } from '../../utls/aggregateFlowerDataInvoices'
 import InvoiceAddFlowerToProjectPopup from './InvoiceAddFlowerToProjectPopup'
@@ -8,7 +9,7 @@ const ARRANGEMENT_DATA_FETCH = '/api/projects/flowers'
 const GET_PROJECTS_URL = '/api/projects/manyByID';
 const ADD_INVOICE_URL = '/api/invoices'
 
-export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData}) {
+export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData, invoiceFile}) {
 
   const [flowerData, setFlowerData] = useState([])
   const [displayFlowerData, setDisplayFlowerData] = useState([])
@@ -20,6 +21,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
   const CHOSEN_PROJECTS_SORTED = chosenProjects.sort((a, b) => a - b)
 
   const axiosPrivate = useAxiosPrivate();
+  const axiosPrivateImage = useAxiosPrivateImage()
   const { setMessage } = useAlert();
 
   const fetchData = async () => {
@@ -118,24 +120,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     });
   }
 
-
-  const submitInvoiceCreation = async (e) => {
-    e.preventDefault();
-    try {
-      const InvoiceFlowerData = addPrices()
-      //const stringifiedDisplayFlowerData = JSON.stringify(InvoiceFlowerData);
-  
-      const response = await axiosPrivate.post(ADD_INVOICE_URL, JSON.stringify({
-        invoiceData,
-        InvoiceFlowerData
-      }));
-
-      console.log(response);
-    } catch (error) {
-      setMessage(error.response?.data?.message, true);
-    }
-  }
-
   const addFlowerToProject = (flowerData) => {
     // checking if the project already has this flower
     const flowerExists = displayFlowerData[selectedRow].findIndex(item => item.flowerid === flowerData.flowerid)
@@ -175,6 +159,32 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     newFlowerData[selectedRow].push(newFlowerObject)
 
     setDisplayFlowerData(newFlowerData)
+  }
+
+  const submitInvoiceCreation = async (e) => {
+    e.preventDefault();
+    try {
+      const InvoiceFlowerData = addPrices()
+      const formDataToSend = new FormData();
+      const totalAdded = flowerPriceTracker?.reduce((value, flower) => {
+        return value + flower.addedStems * flower.unitprice
+      }, 0)
+
+      if (invoiceData.invoiceAmount != totalAdded) {
+        setMessage("The invoice ammount and RegisteredExpenses do not coincide", true)
+        return
+      }
+      formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
+      formDataToSend.append('InvoiceFlowerData', JSON.stringify(InvoiceFlowerData));
+      formDataToSend.append('invoiceFile', invoiceFile);
+
+      const response = await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
+
+      console.log(response);
+      setMessage('Invoice Loaded successfully', false)
+    } catch (error) {
+      setMessage(error.response?.data?.message, true);
+    }
   }
 
   return (<>

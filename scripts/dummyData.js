@@ -1,6 +1,8 @@
+import path from 'path';
 import CnxPostgress from '../model/CnxPostgress.js';
 import ModelPostgres from '../model/DAO/ModelPostgres.js';
 import bcrypt from 'bcrypt';
+import fs from 'fs'
 
 const users = [
     { username: 'user1', email: 'user1@example.com', password: 'password1' },
@@ -15,16 +17,16 @@ const arrangements = [
 ];
 
 const projects = [
-    { staffBudget: 2000, projectContact: 'Contact1', projectDate: '2024-01-16', projectDescription: 'Project1', projectClient: 1, profitMargin: 0.2, creatorid: 1 },
-    { staffBudget: 2500, projectContact: 'Contact2', projectDate: '2024-01-17', projectDescription: 'Project2', projectClient: 2, profitMargin: 0.15, creatorid: 1 },
-    { staffBudget: 1800, projectContact: 'Contact3', projectDate: '2024-01-18', projectDescription: 'Project3', projectClient: 3, profitMargin: 0.18, creatorid: 1 },
-    { staffBudget: 3000, projectContact: 'Contact4', projectDate: '2024-01-19', projectDescription: 'Project4', projectClient: 4, profitMargin: 0.25, creatorid: 1 },
-    { staffBudget: 2200, projectContact: 'Contact5', projectDate: '2024-01-20', projectDescription: 'Project5', projectClient: 3, profitMargin: 0.2, creatorid: 1 },
-    { staffBudget: 2800, projectContact: 'Contact6', projectDate: '2024-01-21', projectDescription: 'Project6', projectClient: 4, profitMargin: 0.18, creatorid: 1 },
-    { staffBudget: 3200, projectContact: 'Contact7', projectDate: '2024-01-22', projectDescription: 'Project7', projectClient: 1, profitMargin: 0.22, creatorid: 1 },
-    { staffBudget: 2700, projectContact: 'Contact8', projectDate: '2024-01-23', projectDescription: 'Project8', projectClient: 3, profitMargin: 0.17, creatorid: 1 },
-    { staffBudget: 2300, projectContact: 'Contact9', projectDate: '2024-01-24', projectDescription: 'Project9', projectClient: 5, profitMargin: 0.15, creatorid: 1 },
-    { staffBudget: 3500, projectContact: 'Contact10', projectDate: '2024-01-25', projectDescription: 'Project10', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
+    { staffBudget: 2000, projectContact: 'John Doe', projectDate: '2024-01-16', projectDescription: 'Conference', projectClient: 1, profitMargin: 0.2, creatorid: 1 },
+    { staffBudget: 2500, projectContact: 'Alice Smith', projectDate: '2024-01-17', projectDescription: 'Product Launch', projectClient: 2, profitMargin: 0.15, creatorid: 1 },
+    { staffBudget: 1800, projectContact: 'Bob Johnson', projectDate: '2024-01-18', projectDescription: 'Workshop', projectClient: 3, profitMargin: 0.18, creatorid: 1 },
+    { staffBudget: 3000, projectContact: 'Emma Brown', projectDate: '2024-01-19', projectDescription: 'Trade Show', projectClient: 4, profitMargin: 0.25, creatorid: 1 },
+    { staffBudget: 2200, projectContact: 'Michael Davis', projectDate: '2024-01-20', projectDescription: 'Seminar', projectClient: 3, profitMargin: 0.2, creatorid: 1 },
+    { staffBudget: 2800, projectContact: 'Sarah Wilson', projectDate: '2024-01-21', projectDescription: 'Expo', projectClient: 4, profitMargin: 0.18, creatorid: 1 },
+    { staffBudget: 3200, projectContact: 'William Martinez', projectDate: '2024-01-22', projectDescription: 'Symposium', projectClient: 1, profitMargin: 0.22, creatorid: 1 },
+    { staffBudget: 2700, projectContact: 'Olivia Taylor', projectDate: '2024-01-23', projectDescription: 'Convention', projectClient: 3, profitMargin: 0.17, creatorid: 1 },
+    { staffBudget: 2300, projectContact: 'James Anderson', projectDate: '2024-01-24', projectDescription: 'Training Session', projectClient: 5, profitMargin: 0.15, creatorid: 1 },
+    { staffBudget: 3500, projectContact: 'Sophia White', projectDate: '2024-01-25', projectDescription: 'Hackathon', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
 ];
 
 const flowers = [
@@ -75,11 +77,11 @@ const vendors = [
 ]
 
 const CLIENTS = [
-    "client 1",
-    "client 2",
-    "client 3",
-    "client 4",
-    "client 5",
+    "Ford",
+    "Gucci",
+    "Tesla",
+    "Smart Water",
+    "Cocacola",
 ]
 
 const ARRANGEMENT_TYPES = [
@@ -113,11 +115,31 @@ const createProjects = async (model) => {
 };
 
 const createFlowers = async (model) => {
+    const flowerImagesDir = './FilesToLoad/FlowerImages'
+
     try {
-        for (let flower of flowers) {
-            let {flowerName, flowerImage, flowerColor} = flower;
-            await model.addFlower('', flowerName, flowerColor);
+        var folders = fs.readdirSync(flowerImagesDir);
+
+        for (let subfolderName of folders) {
+            console.log(subfolderName)
+            let tempPath = path.join(flowerImagesDir, subfolderName)
+            console.log(tempPath)
+            var images = fs.readdirSync(tempPath);
+            for (let flowerImage of images){
+                console.log(flowerImage)
+                let name = flowerImage.split('.')[0]
+                const imagen = fs.readFileSync(path.join(tempPath, flowerImage),{encoding: 'binary'})
+
+                //model.addFlower(flowerImage, name, subfolderName)
+                
+            }
         }
+        /*
+            for (let flower of flowers) {
+                let {flowerName, flowerImage, flowerColor} = flower;
+                await model.addFlower('', flowerName, flowerColor);
+            }
+        */
     } catch (error) {
         console.error('Error during flower creation: \n', error);
     }
@@ -177,7 +199,7 @@ const runScript = async() => {
         await createClients(model)
         await loadArrangementTypes(model)
         await createProjects(model)
-        await createFlowers(model)
+        // await createFlowers(model)
         await populateArangement(model)
         await loadVendors(model)
     } catch (error) {

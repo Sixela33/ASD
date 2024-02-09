@@ -73,20 +73,24 @@ CREATE TABLE IF NOT EXISTS flowerXarrangement (
 
 CREATE TABLE IF NOT EXISTS invoices (
     invoiceID SERIAL PRIMARY KEY,
-    invoiceDescription VARCHAR(255) NOT NULL,
+    invoiceNumber INT NOT NULL,
+    invoiceAmount FLOAT NOT NULL,
     fileLocation VARCHAR(255) NOT NULL,
     uploaderID INT REFERENCES users(userID),
     vendorID INT REFERENCES flowervendor(vendorID),
+    invoiceDate DATE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS flowerXInvoice (
+    comboID SERIAL PRIMARY KEY,
     invoiceID INT REFERENCES invoices(invoiceID),
     flowerID INT REFERENCES flowers(flowerID),
     projectID INT REFERENCES projects(projectID),
     unitPrice FLOAT,
-    PRIMARY KEY (invoiceID, flowerID)
+    numStems FLOAT,
+    loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS userRole (

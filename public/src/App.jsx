@@ -17,7 +17,9 @@ import ViewProject from './pages/Projects/ViewProject';
 
 import LoadFlower from './pages/Flowers/LoadFlower';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
-import AddInvoice from './pages/AddInvoice';
+import AddInvoice from './pages/Invoices/AddInvoice';
+import ViewInvoices from './pages/Invoices/ViewInvoices';
+import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 
 function App() {
 
@@ -36,9 +38,11 @@ function App() {
               <Route path="register" element={<Register />} />
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers" element={<ViewFlowers/>}/>
-              <Route path="/invoice/add" element={< AddInvoice/>}></Route>
               <Route path="/projects" element={<ProjectsList/>}></Route>
               <Route path="/projects/:id" element={<ViewProject/>}></Route>
+              <Route path="/invoice/add" element={< AddInvoice/>}></Route>
+              <Route path="/invoice" element={<ViewInvoices/>}></Route>
+              <Route path='/invoice/:id' element={<ViewSingleInvoice/>}></Route>
             </Route>
 
             <Route element={<RequireAuth allowedRoles={['Admin']} />}>

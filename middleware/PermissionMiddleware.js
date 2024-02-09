@@ -27,11 +27,11 @@ class PermissionsMiddelware {
             }
             // THIS MIGHT GO INTO THE ROLE CONTROLLER
             let userRoles = await this.roleService.getUserRoles(decoded.userid)
-            console.log(userRoles)
             
             const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role)).find(val => val === true)
             console.log("Caller permissions",userRoles)
             console.log("Permissions required", this.permissionsRequired)
+            console.log('has all roles', hasAllRoles)
             
             //const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role));
             

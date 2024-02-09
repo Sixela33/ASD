@@ -4,7 +4,8 @@ import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
-const FLOWER_IMAGE_PATH = './flowerImages/';
+const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
+const FLOWER_IMAGE_PATH = path.join(FILES_BASE_PATH, '/flowerImages/');
 
 class FlowerService {
     constructor() {
@@ -25,7 +26,9 @@ class FlowerService {
 
         let filename;
         do {
-            filename = `${name}_${color}_${number}.${fileExtension}`;
+            let additive = ''
+            filename = `${name}_${color}${additive}.${fileExtension}`;
+            additive = `(${number})`
             number++;
         } while (fs.existsSync(path.join(FLOWER_IMAGE_PATH, filename)));
 
