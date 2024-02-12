@@ -226,6 +226,31 @@ class ModelPostgres {
         await CnxPostgress.db.query("SELECT populateArrangements($1::INT, $2::JSONB[]);", [arrangementID, flowerData]);
     }
 
+    getArrangementDataByID = async (id) => {
+        const response = await CnxPostgress.db.query(`
+        SELECT 
+            a.*,
+            at.typeName
+        FROM arrangements a
+        LEFT JOIN arrangementTypes at ON at.arrangementTypeID = a.arrangementType
+        WHERE arrangementID = $1;`, [id])
+        return response
+    }
+
+    getFlowersByArrangementID = async(id) => {
+        const flowers = await CnxPostgress.db.query(`
+        SELECT 
+            FxA.flowerID,
+            FxA.amount,
+            f.flowerName,
+            f.flowerImage,
+            f.flowerColor
+        FROM flowerXarrangement FxA 
+        LEFT JOIN flowers f ON FxA.flowerID = f.flowerID
+        WHERE FxA.arrangementID = $1;`, [id])
+        return flowers
+    }
+
     // -----------------------------------------------
     //                ARRANGEMENT TYPES
     // -----------------------------------------------
@@ -244,9 +269,7 @@ class ModelPostgres {
     // -----------------------------------------------
 
     addInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, uploaderid) => {
-        console.log(InvoiceFlowerData)
-        console.log(invoiceData)
-        const response = await CnxPostgress.db.query('SELECT addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
+        await CnxPostgress.db.query('SELECT addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
     }
 
     getInvoices = async (offset, query) => {
@@ -256,16 +279,16 @@ class ModelPostgres {
             fv.vendorname, 
             i.invoiceamount, 
             i.invoiceNumber,
-            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-            i.fileLocation
+            u.email,
+            i.fileLocation,
+            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate
             FROM invoices i 
-            LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID;`)
+            LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
+            LEFT JOIN users u ON u.userID = i.uploaderID;`)
         return respone
     }
 
     getProvidedProjects = async (invoiceID) => {
-        console.log(invoiceID)
-
         const respone = await CnxPostgress.db.query(`
         SELECT 
             projects.*, 

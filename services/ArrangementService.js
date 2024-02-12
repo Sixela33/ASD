@@ -18,6 +18,13 @@ class ArrangementService {
         const response = await this.model.getArrangementTypes()
         return response.rows
     }
+
+    getArrangementData = async (id) => {
+        const arrangementData = await this.model.getArrangementDataByID(id)
+        const arrangementFLowerData = await this.model.getFlowersByArrangementID(id)
+
+        return {arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows}
+    }
 }
 
 export default ArrangementService

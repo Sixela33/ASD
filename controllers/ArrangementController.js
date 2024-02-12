@@ -30,6 +30,17 @@ class ArrangementController {
         }
     }
 
+    getArrangementData = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const response = await this.service.getArrangementData(id)
+                
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default ArrangementController

@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
-
+const CREATE_ARRANGEMENT_URL = '/arrangement/'
 export default function ViewProject() {
     const { id } = useParams();
     const location = useLocation();
@@ -108,7 +108,7 @@ export default function ViewProject() {
     }
 
     const handleArrangement = data => {
-
+        navigateTo(CREATE_ARRANGEMENT_URL + data?.arrangementid)
     }
 
     return (
@@ -142,7 +142,7 @@ export default function ViewProject() {
                     </thead>
                     <tbody>
                         {arrangementData?.map((item, index) => (
-                            <tr key={index} className='bg-gray-300 ' onClick={handleArrangement(item)}>
+                            <tr key={index} className='bg-gray-300 ' onClick={() => handleArrangement(item)}>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementtype}</td>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
