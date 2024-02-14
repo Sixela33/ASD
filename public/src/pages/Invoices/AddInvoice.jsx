@@ -5,11 +5,12 @@ import InvoiceDataForm from '../../components/InvoiceCreation/InvoiceDataForm';
 import InvoiceProjectSelector from '../../components/InvoiceCreation/InvoiceProjectSelector';
 import InvoiceFlowerAssignment from '../../components/InvoiceCreation/InvoiceFlowerAssignment';
 import { validateInvoice } from '../../utls/validations/InvoiceDataValidations';
+import GoBackButton from '../../components/GoBackButton';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
   vendor: '',
-  dueDate: '',
+  dueDate: new Date().toISOString().substring(0, 10),
   invoiceAmount: ''
 };
 
@@ -80,22 +81,29 @@ export default function AddInvoice() {
   ];
 
   return (
-    <div className="mx-auto mt-8 p-6 bg-white rounded-md shadow-md flex h-screen">
-        <div className="w-1/2 px-auto">
-            <div className="flex flex-col">
-                <div className="flex flex-col mb-4">
-                    <label className="mb-1">File:</label>
-                    <input type="file" name="flower" onChange={handleFileChange} className="border border-gray-300 p-2 rounded" required/>
-                </div>
-                <div className="flex flex-row">
-                    {asrcPdfFile && (<embed src={asrcPdfFile} type="application/pdf" width="100%" height="600vh"/>)}
-                </div>
-            </div>
-        </div>
+    <div>
+      <div className='text-ceneter w-full'>
+        <GoBackButton/> 
+        <h1>Load invoice</h1>
+      </div>
+      <div className="mx-auto mt-8 p-6 bg-white rounded-md shadow-md flex h-screen">
+          <div className="w-1/2 px-auto">
+              <div className="flex flex-col">
+                  <div className="flex flex-col mb-4">
+                      <label className="mb-1">File:</label>
+                      <input type="file" name="flower" onChange={handleFileChange} className="border border-gray-300 p-2 rounded" required/>
+                  </div>
+                  <div className="flex flex-row">
+                      {asrcPdfFile && (<embed src={asrcPdfFile} type="application/pdf" width="100%" height="600vh"/>)}
+                  </div>
+              </div>
+          </div>
 
-        <div className="w-1/2 px-4 h-1/2 my-10">
-          {asrcPdfFile ? steps[currentStep] : <p>Add a file to continue</p>}
-        </div>
+          <div className="w-1/2 px-4 h-1/2 my-10">
+            {asrcPdfFile ? steps[currentStep] : <p>Add a file to continue</p>}
+          </div>
+      </div>
     </div>
+
   );
 }

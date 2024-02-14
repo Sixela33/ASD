@@ -2,6 +2,7 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js";
 import fs from 'fs';
 import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
+import { handleFileLocal } from "../utils/fileHandling.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
@@ -15,32 +16,8 @@ class FlowerService {
         }
     }
 
-    saveImage = async (image, name, color) => {
-        const fileExtension = path.extname(image?.originalname).toLowerCase().substring(1);
-
-        if (!ALLOWED_IMAGE_EXTENSIONS.includes(fileExtension)) {
-            throw { message: "Invalid image file extension", status: 400 };
-        }
-
-        let number = 0;
-
-        let filename;
-        do {
-            let additive = ''
-            filename = `${name}_${color}${additive}.${fileExtension}`;
-            additive = `(${number})`
-            number++;
-        } while (fs.existsSync(path.join(FLOWER_IMAGE_PATH, filename)));
-
-        console.log(filename)
-
-        fs.writeFileSync(path.join(FLOWER_IMAGE_PATH, filename), image.buffer, "binary");
-
-        return path.join(FLOWER_IMAGE_PATH, filename);
-    };
-
     addFlower = async (image, name, color) => {
-        const savePath = await this.saveImage(image, name, color);
+        const savePath = await handleFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
         await this.model.addFlower(savePath, name, color)
     };
 
@@ -48,13 +25,7 @@ class FlowerService {
         await validateId(offset)
 
         let response = {rows: []}
-        if (query){
-            response = await this.model.getFlowersQuery(offset, query)
-            
-        } else {
-            response = await this.model.getFlowers(offset)
-
-        }
+        response = await this.model.getFlowersQuery(offset, query)
 
         return response.rows
     };

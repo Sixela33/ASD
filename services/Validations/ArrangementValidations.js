@@ -3,6 +3,7 @@ import Joi from "joi"
 const arrangementSchema = Joi.object({
     arrangementType: Joi.number().min(0),
     arrangementDescription: Joi.string(),
+    clientCost: Joi.number().min(0),
     flowerBudget: Joi.number().min(0),
     arrangementQuantity: Joi.number().min(0)
 })

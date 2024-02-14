@@ -4,7 +4,7 @@ import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import { BASE_TD_STYLE } from '../../styles';
-
+import GoBackButton from '../../components/GoBackButton'
 const GET_PROJECTS_URL = '/api/projects/list/';
 
 
@@ -61,6 +61,7 @@ const ProjectsList = () => {
     return (
         <div className="container mx-auto mt-8 flex flex-col" style={{height: '80vh'}}>
             <div className='flex justify-between items-center mb-4'>
+                <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h1 className="text-2xl font-bold">ProjectsList</h1>
                 <Link to="/project/create" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Project</Link>
             </div>

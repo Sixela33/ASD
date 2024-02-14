@@ -20,23 +20,23 @@ describe('Loading Flowers', () => {
             const response = await request.post('/api/users/login').send(loginObject)
             
             const accessToken = response.body.accessToken
-            
+
             expect(accessToken, 'accessToken').to.exist
             headers["Authorization"] = accessToken
 
             const flowerImagesDir = './FilesToLoad/FlowerImages'
             var folders = fs.readdirSync(flowerImagesDir);
-
             for (let subfolderName of folders) {
                 let tempPath = path.join(flowerImagesDir, subfolderName)
                 var images = fs.readdirSync(tempPath);
 
                 for (let flowerImage of images){
+
                     let name = flowerImage.split('.')[0]
                     let imageFilePath = path.join(tempPath, flowerImage);
                     
                     const response = await request.post('/api/flowers').set(headers).attach('flower', imageFilePath).field({'name': name}).field({'color':subfolderName});
-                    console.log(response)
+                    expect(response)
                 }
             }
         })

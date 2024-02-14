@@ -1,47 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { aggregateFlowerData } from '../../utls/aggregateFlowerDataProject';
 import { BASE_TD_STYLE } from '../../styles';
-import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'
+import useAlert from '../../hooks/useAlert';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
-const CREATE_ARRANGEMENT_URL = '/arrangement/'
+const CLOSE_PROJECT_URL = 'api/projects/close/'
+const OPEN_PROJECT_URL = 'api/projects/open/'
+
 export default function ViewProject() {
     const { id } = useParams();
-    const location = useLocation();
     const navigateTo = useNavigate();
-
-    const projectData = location?.state
-
     const axiosPrivate = useAxiosPrivate();
+    const {setMessage} = useAlert()
+
     const [arrangementData, setArrangementData] = useState([]);
     const [flowerData, setFlowerData] = useState([]);
     const [showFlowerData, setShowFlowerData] = useState([]);
+    const [projectData, setProjectData] = useState([])
 
     const [estimatedFlowerCost, setEstimatedFlowerCost] = useState(0)
     const [totalBudget, setTotalBudget] = useState(0)
 
-    useEffect(() => {
-        const fetchFlowers = async () => {
-            try {
-                const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
-                console.log(response)
-                
-                setArrangementData(response?.data?.arrangements || []);
-    
-                const totalBudget = response?.data?.arrangements.reduce((value, arrangement) => {
-                    return value + arrangement.flowerbudget
-                  }, 0)
-                setTotalBudget(totalBudget)
-                setFlowerData(response?.data?.flowers || []);
-                               
-            } catch (error) {
-                console.log(error);
-            }
-        };
+    const fetchFlowers = async () => {
+        try {
+            const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
 
+            const {arrangements, flowers, project} = response?.data
+            console.log('res', response)
+            
+            setArrangementData(arrangements || []);
+
+            const totalBudget = arrangements.reduce((value, arrangement) => {
+                return value + arrangement.flowerbudget
+              }, 0)
+            setTotalBudget(totalBudget)
+            setFlowerData(flowers || []);
+            setProjectData(project[0] || [])
+                           
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
         fetchFlowers();
     }, []);
 
@@ -108,23 +111,47 @@ export default function ViewProject() {
     }
 
     const handleArrangement = data => {
-        navigateTo(CREATE_ARRANGEMENT_URL + data?.arrangementid)
+        navigateTo("/arrangement/" + data?.arrangementid, {state:{projectID: id}})
+    }
+
+    const closeProject = async () => {
+        try {
+            let res = {}
+            if (!projectData.isclosed){
+                res = await axiosPrivate.post(CLOSE_PROJECT_URL + id)
+            } else {
+                res = await axiosPrivate.post(OPEN_PROJECT_URL + id)
+            }
+            setMessage(res.data, false)
+            navigateTo(0)
+            
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+        }
     }
 
     return (
         <div className="container mx-auto my-8 text-center">
+            {console.log(projectData)}
             <div className="mb-4 ">
-                <Link to="/projects" className="text-blue-500 hover:text-blue-700">Go back</Link>
+                <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
             </div>
             <div className="grid grid-row md:grid-cols-2 ml-10 font-bold">
                 <div className='grid-row'>
-                    <p>Client: {projectData.projectclient}</p>
-                    <p>projectdate: {projectData.projectdate}</p>
+                    <div className='grid-col'>
+                        <p>Project is closed: {projectData?.isclosed ? 'Yes' : "No" }</p>
+                    </div>
                 </div>
                 <div className='grid-row'>
-                    <p>projectcontact: {projectData.projectcontact}</p>
-                    <p>projectdescription: {projectData.projectdescription}</p>
+                    <div className='grid-col'>
+                        <p>Client: {projectData?.projectclient}</p>
+                        <p>projectdate: {projectData?.projectdate}</p>
+                    </div>
+                    <div className='grid-col'>
+                        <p>projectcontact: {projectData?.projectcontact}</p>
+                        <p>projectdescription: {projectData?.projectdescription}</p>
+                    </div>
                 </div>
             </div>
             <div className="flex flex-col items-center mb-8">
@@ -176,7 +203,7 @@ export default function ViewProject() {
                                 <tr key={index} className='bg-gray-300 '>
                                     <td className={BASE_TD_STYLE}>{item?.flowername}</td>
                                     <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.unitprice}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.unitprice || 'N/A'}</td>
                                     <td className={BASE_TD_STYLE}>{item?.estimatedcost}</td>
                                     <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
                                 </tr>
@@ -185,12 +212,13 @@ export default function ViewProject() {
                     </table>
                     <div className='flex mt-5'>
                         <div className='flex-row'>
-                            <button className='bg-gray-300 font-bold py-2 px-4'>Generate pptslides</button>
+                            <button className='bg-gray-300 font-bold py-2 px-4 mx-3'>Generate pptslides</button>
+                            <button onClick={closeProject} className='bg-gray-300 font-bold py-2 px-4'>{projectData.isclosed ? "Open project": "Close project"}</button>
                         </div>
                         <div className='flex-row text-left ml-5'>
                             <p>Estimated Flower cost: {estimatedFlowerCost}</p>
                             <p>Flower budget: {totalBudget}</p>
-                            <p>Diference: {totalBudget-estimatedFlowerCost}</p>
+                            <p className={totalBudget-estimatedFlowerCost > 0 ? '' : 'text-red-700'}>Diference: {totalBudget-estimatedFlowerCost}</p>
                         </div>
                     </div>
                 </div>
@@ -222,6 +250,6 @@ export default function ViewProject() {
                     </table>
                 </div>
             </div>
-        </div>
+        </div>    
     );
 }

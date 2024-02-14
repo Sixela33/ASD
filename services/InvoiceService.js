@@ -1,7 +1,7 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import fs from 'fs';
 import path from 'path';
-
+import { handleFileLocal } from "../utils/fileHandling.js";
+import fs from 'fs';
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
 const INVOICE_FILES_PATH = path.join(FILES_BASE_PATH, '/InvoiceFiles/');
@@ -10,38 +10,18 @@ class InvoiceService {
 
     constructor() {
         this.model = new ModelPostgres()
+        if (!fs.existsSync(INVOICE_FILES_PATH)) {
+            fs.mkdirSync(INVOICE_FILES_PATH, { recursive: true });
+        }
     }
 
     addInvoice = async (invoiceData, invoiceFlowerData, file, uploaderid) => {
-        const fileExtension = path.extname(file?.originalname).toLowerCase().substring(1);
-
-        if (!ALLOWED_IMAGE_EXTENSIONS.includes(fileExtension)) {
-            throw { message: "Invalid image file extension", status: 400 };
-        }
-
-        let folder = path.join(INVOICE_FILES_PATH + new Date().toISOString().split('T')[0]);
-
-        if (!fs.existsSync(folder)) {
-            fs.mkdirSync(folder, { recursive: true });
-        }
-
-        let number = 0;
-        let filename
-        let additive = ''
-        do {
-            filename = `${path.parse(file?.originalname).name.replace(/ /g, '_')}${additive}.${fileExtension}`;
-            additive = `(${number})`
-            number++;
-        } while (fs.existsSync(path.join(folder, filename)));
-
-        console.log(filename)
-        folder = path.join(folder, filename)
-        fs.writeFileSync(folder, file.buffer, "binary");
-
+        
+        const fileLocation = handleFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
         
         invoiceData = JSON.parse(invoiceData)
-        const response = await this.model.addInvoice(invoiceData, folder, invoiceFlowerData, uploaderid)
+        const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, uploaderid)
         return response
     }
 
@@ -51,13 +31,17 @@ class InvoiceService {
     }
 
     getProvidedProjects = async (id) => {
+        console.log(id)
+        let invoiceData = await this.model.getInvoiceData(id)
+        invoiceData = invoiceData.rows
+
         let projects = await this.model.getProvidedProjects(id)
         projects = projects.rows
         
         let flowers = await this.model.getFlowersXInvoice(id) 
         flowers = flowers.rows
         
-        return {projects, flowers}
+        return {projects, flowers, invoiceData}
     }
 }
 

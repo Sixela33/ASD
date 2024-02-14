@@ -7,7 +7,7 @@ import { debounce } from "lodash";
 
 const GET_FLOWERS_URL = '/api/flowers/'
 
-export default function FlowerListComponent({onFlowerClick, styles}) {
+export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID}) {
     if(!onFlowerClick) onFlowerClick = () => {}
     const axiosPrivate = useAxiosPrivate();
     const { setMessage } = useAlert();
@@ -74,7 +74,7 @@ export default function FlowerListComponent({onFlowerClick, styles}) {
             <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center" style={styles}>
 
                 {flowerData.map((flower, index) => (
-                    <div key={index} className="bg-white rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer" onClick={() => onFlowerClick(flower)}>
+                    <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>
                         <img src={`${BASE_URL}/api/${flower.flowerimage}`} alt={flower.flowername} className="w-full object-cover h-32"/>
                         <div className="p-4">
                             <h2 className="text-xl font-bold mb-2">{flower.flowername}</h2>

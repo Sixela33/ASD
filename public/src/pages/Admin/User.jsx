@@ -6,6 +6,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { redirect } from 'react-router-dom';
+import GoBackButton from '../../components/GoBackButton';
 
 const USER_URL = 'api/users/search/';
 const ADD_ROLE_URL = "/api/users/roles/give"
@@ -73,9 +74,9 @@ export default function User() {
 
     return (
         <div className="container mx-auto mt-8 p-4 bg-white shadow-md rounded-md">
+            <GoBackButton/>
         {userData && (
             <div>
-                <Link to='/admin' className="mt-4 text-blue-500 hover:text-blue-700">go back</Link>
                 <h1 className="text-2xl font-bold mb-4">User Profile - {userData.username}</h1>
                 <p className="text-gray-600">Email: {userData.email}</p>
 

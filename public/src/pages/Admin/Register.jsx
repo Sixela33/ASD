@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { validateEmail, validatePassword } from '../utls/utils';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import useAlert from '../hooks/useAlert';
+import { validateEmail, validatePassword } from '../../utls/utils';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import useAlert from '../../hooks/useAlert';
 import { Link } from 'react-router-dom';
+import GoBackButton from '../../components/GoBackButton';
 
 const REGISTER_URL = '/api/users/register'
 
@@ -50,9 +51,10 @@ export default function Register() {
   };
 
   return (
-      <div className="flex items-center justify-center min-h-screen">
+    <div className='container w-full mx-auto'>
+      <GoBackButton/>
+      <div className="flex items-center justify-center min-h-[90vh]">
         <div className="p-8 ">
-          <Link to="/admin" className='mt-4 text-blue-500 hover:text-blue-700'>go back</Link>
           <h2 className="text-3xl font-bold text-center mb-4">Create new user</h2>
           {error && <p className="text-red-500 text-center">{error}</p>}
           <form onSubmit={handleSubmit}>
@@ -76,5 +78,7 @@ export default function Register() {
           </form>
       </div>
     </div>
+    </div>
+
   );
 }

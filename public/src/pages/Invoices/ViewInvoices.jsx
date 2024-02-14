@@ -37,6 +37,7 @@ export default function ViewInvoices() {
     return (
         <div className='container mx-auto mt-8 p-4 bg-white shadow-md rounded-md text-center'>
             <div className="flex justify-between items-center mb-4 ">
+                <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h1 className="text-2xl font-bold flex-grow text-center">Invoices</h1>
                 <Link to="/invoice/add" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Invoice</Link>
             </div>

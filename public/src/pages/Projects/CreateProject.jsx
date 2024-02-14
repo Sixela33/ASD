@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import ArrangementPopup from '../../components/ArrangementPopup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { validateArrangement } from '../../utls/validations/ArrangementValidations';
 import { BASE_TD_STYLE } from '../../styles';
 import SearchableDropdown from '../../components/SearchableDropdown';
+import GoBackButton from '../../components/GoBackButton';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
 
-const emptyArrangement = { arrangementType: '', arrangementDescription: '', flowerBudget: '', arrangementQuantity: '' }
+const emptyArrangement = { arrangementType: '', arrangementDescription: '', clientCost: '', arrangementQuantity: '' }
 
 const initialState = {
   client: '',
@@ -17,7 +18,7 @@ const initialState = {
   date: '',
   contact: '',
   staffBudget: '',
-  profitMargin: 0.3,
+  profitMargin: 0.7,
   arrangements: [],
 }
 
@@ -27,6 +28,7 @@ const GET_CLIENTS_LIST = '/api/clients'
 export default function CreateProject() {
     const axiosPrivate = useAxiosPrivate()
     const { setMessage } = useAlert()
+    const navigateTo = useNavigate();
 
     const [formState, setFormState] = useState(initialState)
     const [newArrangement, setNewArrangement] = useState(emptyArrangement)
@@ -41,7 +43,7 @@ export default function CreateProject() {
 
     // sums all the budgets 
     useEffect(() => {
-        const sum = arrangements.reduce((accumulator, arrang) => accumulator + arrang.flowerBudget * arrang.arrangementQuantity, 0)
+        const sum = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
         setTotalFlowerBudget(sum)
     }, [arrangements])
 
@@ -65,7 +67,6 @@ export default function CreateProject() {
         e.preventDefault()
 
         const updatedArrangementsList = [...arrangements]
-
         if (newArrangement.index != null) {
             const index = newArrangement.index
             delete newArrangement.index
@@ -120,14 +121,16 @@ export default function CreateProject() {
             client: formState.client.clientid,
             arrangements: formState.arrangements.map(arrangement => ({
               ...arrangement,
-              arrangementType: arrangement.arrangementType.arrangementtypeid
+              arrangementType: arrangement.arrangementType.arrangementtypeid,
+              flowerBudget: arrangement.clientCost * profitMargin
             }))
         };
         
         try {
             await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
             setMessage('Project created successfully', false)
-            //setFormState(initialState)
+            setFormState(initialState)
+            navigateTo('/projects')
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true)
@@ -136,14 +139,14 @@ export default function CreateProject() {
 
     const formRowClass = 'flex flex-row space-x-4 mb-4 flex-1 w-full';
     const formColClass = "flex flex-col mb-4 w-full"
-    const inputClass = "border border-gray-300 p-2 rounded "
+    const inputClass = "border border-gray-300 p-2 rounded"
 
     return (
         <div className="max-w-screen mx-auto mt-8 flex flex-col space-y-4 items-center">
 
 
             <div className='flex flex-row w-1/2 text-center'>
-                <Link to='/projects' className="text-blue-500 hover:text-blue-700">go back</Link>
+                <GoBackButton/>
                 <h2 className="text-2xl font-bold mb-4 mx-auto">Create Project</h2>
             </div>
 
@@ -179,7 +182,7 @@ export default function CreateProject() {
                             
                             <div className={formColClass}>
                                 <label className="mb-1">Staff Budget:</label>
-                                <input type="number" value={staffBudget} onChange={(e) => handleFormEdit('staffBudget', e.target.value)} className={inputClass} required/>
+                                <span  className='border border-gray-300 pl-1 rounded '>$<input  className='p-2 w-96' type="number" value={staffBudget} onChange={(e) => handleFormEdit('staffBudget', e.target.value)} required/></span>
                             </div>
 
                             <div className={formColClass}>
@@ -195,13 +198,14 @@ export default function CreateProject() {
                         <div className='overflow-y-scroll h-full max-h-[30vh]'>
 
                         <table className="min-w-full borderbg-white ">
-                            <thead >
+                            <thead>
                                 <tr>
                                     <th className={BASE_TD_STYLE}>Arrangement type</th>
                                     <th className={BASE_TD_STYLE}>Description</th>
-                                    <th className={BASE_TD_STYLE}>Flower budget</th>
+                                    <th className={BASE_TD_STYLE}>Unit Client Cost</th>
                                     <th className={BASE_TD_STYLE}>Quantity</th>
-                                    <th className={BASE_TD_STYLE}>Client cost</th>
+                                    <th className={BASE_TD_STYLE}>Total Client Cost</th>
+                                    <th className={BASE_TD_STYLE}>Arrangement Budget</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -210,9 +214,10 @@ export default function CreateProject() {
                                     <tr key={index} className='bg-gray-300' onClick={() => handleEdit(index)}>
                                     <td className={BASE_TD_STYLE}>{arrangement?.arrangementType.typename}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementDescription}</td>
-                                    <td className={BASE_TD_STYLE}>{arrangement.flowerBudget}</td>
+                                    <td className={BASE_TD_STYLE}>${arrangement.clientCost}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementQuantity}</td>
-                                    <td className={BASE_TD_STYLE}>{(arrangement.flowerBudget * arrangement.arrangementQuantity) + (arrangement.flowerBudget * arrangement.arrangementQuantity * formState.profitMargin)}</td>
+                                    <td className={BASE_TD_STYLE}>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin)).toFixed(1)}</td>
                                 </tr>
                 
                                 ))}
@@ -223,13 +228,13 @@ export default function CreateProject() {
                     </div>
                     <div>
                         <div>
-                            <p> TOTAL flower budget: {totalFlowerBudget}</p>
+                            <p> TOTAL flower budget: ${parseFloat(totalFlowerBudget *  profitMargin).toFixed(2)}</p>
                         </div>
                         <div>
-                            <p>TOTAL client cost: {totalFlowerBudget + (totalFlowerBudget * profitMargin)}</p>
+                            <p>TOTAL client cost: ${totalFlowerBudget}</p>
                         </div>
                     </div>
-                                
+                       
                     <div className=' flex flex-row'>
                         <button type="button" onClick={() => setShowArrangementPopup(true)} className="mx-auto bg-gray-500 text-white px-4 py-2 rounded focus:outline-none">Add New Arrangement</button>
                         <button type="submit" className="mx-auto bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>

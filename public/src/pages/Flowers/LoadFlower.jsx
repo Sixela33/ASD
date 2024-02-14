@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import useAlert from '../../hooks/useAlert';
 import { Link } from 'react-router-dom';
+import GoBackButton from '../../components/GoBackButton';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 
@@ -52,7 +53,7 @@ export default function LoadFlower() {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
-      <Link to="/flowers" className='mt-4 text-blue-500 hover:text-blue-700'>go back</Link>
+      <GoBackButton/>
       <h2 className="text-2xl font-bold mb-4 text-center">Add Flower</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -8,7 +8,7 @@ import Alert from './components/Alert';
 import Missing from './pages/Missing';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import Register from './pages/Register';
+import Register from './pages/Admin/Register';
 import Admin from './pages/Admin/Admin';
 import User from './pages/Admin/User';
 import CreateProject from './pages/Projects/CreateProject';

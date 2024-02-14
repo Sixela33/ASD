@@ -6,7 +6,7 @@ const arrangementSchema = Joi.object({
         typename: Joi.string()
     }).required().messages({'object.required': `arrangement Type is a required field`}),
     arrangementDescription: Joi.string().required(),
-    flowerBudget: Joi.number().min(0).required(),
+    clientCost: Joi.number().min(0).required(),
     arrangementQuantity: Joi.number().min(0).required()
 })
 

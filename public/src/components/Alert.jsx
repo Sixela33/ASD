@@ -3,19 +3,19 @@ import useAlert from '../hooks/useAlert';
 
 export default function Alert() {
     const { message, isError, closeAlert } = useAlert();
-
+    const alertRef = useRef(null)
+    
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (message && event.target.closest('.alert-container')) {
-                console.log(event)
+        const handleClickOutside = (e) => {
+            if (message && alertRef.current && !alertRef.current.contains(e.target)) {
                 closeAlert();
             }
         };
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
 
         return () => {
-            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [message]);
 
@@ -26,7 +26,7 @@ export default function Alert() {
     const alertClass = `fixed top-10 right-1/2 transform translate-x-1/2 w-1/2 z-50 flex items-center ${isError ? 'bg-red-500' : 'bg-green-500'} text-white text-sm font-bold px-4 py-3 alert-container`;
 
     return (
-        <div className={alertClass} role="alert">
+        <div className={alertClass} ref={alertRef} role="alert">
             <p>{message}</p>
             <button className="ml-auto text-white-500" onClick={closeAlert}>X</button>
         </div>

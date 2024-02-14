@@ -10,7 +10,7 @@ class ArrangementController {
 
     populateArrangement = async (req, res, next) => {
         try {
-            const [arrangementid, flowers] = req.body
+            const {arrangementid, flowers} = req.body
             await this.service.populateArrangement(arrangementid, flowers)
                 
             res.sendStatus(200)

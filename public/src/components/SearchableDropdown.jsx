@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiChevronDown } from "react-icons/hi";
+import QuerySearchableDropdown from "./QuerySearchableDropdown";
 
   /*
     options         : Array of items to show in the dropdown 
@@ -29,12 +30,6 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
     }
   };
 
-  const selectOption = (option) => {
-    setIsOpen(false)
-    setQuery("");
-    handleChange(option);
-};
-
 
   const handleInputChange = (e) => {
     e.preventDefault();
@@ -49,35 +44,16 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
   };
 
   return (
-    <div className="relative">
-      <div className="z-10" ref={inputRef}>
-        <div className="relative">
-          <div className="selected-value relative">
-            <input placeholder={placeholderText} type="text" value={query || selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
-          </div>
-          <div className={`arrow absolute right-2 top-1/2 transform -translate-y-1/2 ${isOpen ? "rotate-180" : ""}`}>
-            <HiChevronDown />
-          </div>
-        </div>
-        <div className={`options absolute bg-white overflow-y-auto max-h-48 w-full ${isOpen ? "block" : "hidden"}`}>
-          {isOpen && (
-            <>
-            <div className="flex items-center">
-                <input type="text" value={query || ""} className="w-full border border-gray-300 p-1 mr-2 my-2" placeholder="Search" onChange={handleInputChange} />
-                <div className="absolute right-3 text-gray-400">
-                    <FiSearch />
-                </div>
-            </div>
-              {filterOptions().map((option, index) => (
-                <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1 ${option[label] === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption(option)} >
-                  {option[label]}
-                </div>
-              ))}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+      <QuerySearchableDropdown
+      options={filterOptions()}
+      label={label}
+      selectedVal={selectedVal}
+      handleChange={handleChange}
+      placeholderText={placeholderText}
+      InViewRef={() => {}}
+      query={query}
+      setQuery ={setQuery}
+      />
   );
 };
 

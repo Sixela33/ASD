@@ -116,33 +116,19 @@ const createProjects = async (model) => {
 
 const createFlowers = async (model) => {
     const flowerImagesDir = './FilesToLoad/FlowerImages'
-
+    // This has been passed to the LoadFlowers test file.
+    /*
     try {
-        var folders = fs.readdirSync(flowerImagesDir);
-
-        for (let subfolderName of folders) {
-            console.log(subfolderName)
-            let tempPath = path.join(flowerImagesDir, subfolderName)
-            console.log(tempPath)
-            var images = fs.readdirSync(tempPath);
-            for (let flowerImage of images){
-                console.log(flowerImage)
-                let name = flowerImage.split('.')[0]
-                const imagen = fs.readFileSync(path.join(tempPath, flowerImage),{encoding: 'binary'})
-
-                //model.addFlower(flowerImage, name, subfolderName)
-                
-            }
-        }
-        /*
             for (let flower of flowers) {
                 let {flowerName, flowerImage, flowerColor} = flower;
                 await model.addFlower('', flowerName, flowerColor);
             }
-        */
+        
     } catch (error) {
         console.error('Error during flower creation: \n', error);
     }
+    */
+   return
 };
 
 const populateArangement = async (model) => {
@@ -150,7 +136,7 @@ const populateArangement = async (model) => {
         const initialValue = 6
         for (let i = initialValue; i <= initialValue + 15 ; i++) {
             // arrangementID, flowerData
-            await model.populateArrangements(i, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
+            await model.populateArrangement(i, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
         }
 
     } catch (error) {
@@ -199,7 +185,7 @@ const runScript = async() => {
         await createClients(model)
         await loadArrangementTypes(model)
         await createProjects(model)
-        // await createFlowers(model)
+        await createFlowers(model)
         await populateArangement(model)
         await loadVendors(model)
     } catch (error) {

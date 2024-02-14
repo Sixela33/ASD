@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
+import GoBackButton from '../../components/GoBackButton';
 
 const USERS_URL = '/api/users/all';
 
@@ -26,6 +27,7 @@ export default function Admin() {
     return (
         <div className="container mx-auto mt-8">
             <div className="flex justify-between items-center mb-4">
+                <GoBackButton/>
                 <h1 className="text-2xl font-bold">Admin</h1>
                 <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
             </div>
@@ -42,10 +44,10 @@ export default function Admin() {
                     <tbody >
                         {users.map((user) => (
                             <tr key={user.userid} className='bg-gray-300'>
-                                <td className="p-2 text-center">{user.userid}</td>
-                                <td className="p-2 text-center">{user.username}</td>
-                                <td className="p-2 text-center">{user.email}</td>
-                                <td className="p-2 text-center">
+                                <td className="border-b p-2 text-center">{user.userid}</td>
+                                <td className="border-b p-2 text-center">{user.username}</td>
+                                <td className="border-b p-2 text-center">{user.email}</td>
+                                <td className="border-b p-2 text-center">
                                     <Link to={`/admin/${user.userid}`} className="mt-4 text-blue-500 hover:text-blue-700">Edit</Link>
                                 </td>
                             </tr>

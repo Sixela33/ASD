@@ -15,6 +15,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
 
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef(null);
+  const searchRef = useRef(null)
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -28,6 +29,8 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
         setQuery("")
         setIsOpen(false);
     }
+    console.log("hol")
+    console.log(isOpen)
   };
 
   const selectOption = (option) => {
@@ -42,13 +45,20 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
     setIsOpen(true);
   };
 
+  useState(() => {
+    console.log(searchRef.current)
+    if (searchRef.current) {
+      searchRef.current.focus()
+    }
+  }, [isOpen])
+
 
   return (
     <div className="relative">
       <div className="z-10" ref={inputRef}>
         <div className="relative">
           <div className="selected-value relative">
-            <input placeholder={placeholderText} type="text" value={query || selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
+            <input ref={searchRef} placeholder={placeholderText} type="text" value={query || selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
           </div>
           <div className={`arrow absolute right-2 top-1/2 transform -translate-y-1/2 ${isOpen ? "rotate-180" : ""}`}>
             <HiChevronDown />

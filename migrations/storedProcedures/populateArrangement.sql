@@ -5,6 +5,9 @@ CREATE OR REPLACE FUNCTION populateArrangements (
 DECLARE
     flower JSONB;
 BEGIN
+
+    DELETE FROM flowerXarrangement WHERE arrangementID = p_arrangementID;
+    
     FOREACH flower IN ARRAY p_flowerdata_arr
     LOOP
         INSERT INTO flowerXarrangement (arrangementID, flowerID, amount)

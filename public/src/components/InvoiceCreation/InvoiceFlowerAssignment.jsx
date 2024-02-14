@@ -4,6 +4,7 @@ import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage'
 import useAlert from '../../hooks/useAlert'
 import { aggregateFlowerData } from '../../utls/aggregateFlowerDataInvoices'
 import InvoiceAddFlowerToProjectPopup from './InvoiceAddFlowerToProjectPopup'
+import { useNavigate } from 'react-router-dom'
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/flowers'
 const GET_PROJECTS_URL = '/api/projects/manyByID';
@@ -23,10 +24,11 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
   const axiosPrivate = useAxiosPrivate();
   const axiosPrivateImage = useAxiosPrivateImage()
   const { setMessage } = useAlert();
+  const navigateTo = useNavigate()
 
   const fetchData = async () => {
     try {
-      const projects = await axiosPrivate.post(GET_PROJECTS_URL, JSON.stringify({ids: CHOSEN_PROJECTS_SORTED}))
+      const projects = await axiosPrivate.post(GET_PROJECTS_URL, JSON.stringify({ids: chosenProjects}))
       const resSorted = projects?.data.sort((a, b) => a.projectid - b.projectid )
       setProjectsInfo(resSorted)
 
@@ -89,6 +91,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     }
   }
 
+  // Change the ammount of flowers that are added to the invoice
   const fillFlowerDemand = (e, flowerIndex) => {
       e.preventDefault();
       const { value } = e.target;
@@ -108,6 +111,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
       }
   }
 
+  //Function that adds the unit price to the displayFlowerData object
   const addPrices = () => {
     return displayFlowerData.map(project => {
         return project.map(flowerItem => {
@@ -116,36 +120,37 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 flowerItem.unitPrice = existingPriceFlower.unitprice;
             }
             return flowerItem;
+
         });
     });
   }
 
   const addFlowerToProject = (flowerData) => {
     // checking if the project already has this flower
-    const flowerExists = displayFlowerData[selectedRow].findIndex(item => item.flowerid === flowerData.flowerid)
-
-    // if it doies , error
-    if (flowerExists != -1){
-      console.log("Flower already is in project")
-      return
+    const flowerExists = displayFlowerData[selectedRow].findIndex(item => item.flowerid === flowerData.flowerid);
+    
+    // if it doies, error
+    if (flowerExists !== -1) {
+      console.log("Flower already exists in the project");
+      return;
     }
 
     // checking if the price of the type of flower is being tracked
-    const existingFlowerPriceIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerData.flowerid)
-
+    const existingFlowerPriceIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerData.flowerid);
+  
     // if its not, i add it
-    if (existingFlowerPriceIndex == -1){
+    if (existingFlowerPriceIndex === -1) {
       const newPriceObject = {
         addedStems: 0,
         flowerid: flowerData.flowerid,
         flowername: flowerData.flowername,
         unitprice: ""
-      }
-      const newPrices = [...flowerPriceTracker]
-      newPrices.push(newPriceObject)
-      setFlowerPriceTracker(newPrices)
+      };
+  
+      const newPrices = [...flowerPriceTracker, newPriceObject];
+      setFlowerPriceTracker(newPrices);
     }
-
+  
     // adding the flower to the project
     const newFlowerObject = {
       filledStems: "",
@@ -153,27 +158,46 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
       flowername: flowerData.flowername,
       projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
       totalstems: 0,
-    }
-
-    const newFlowerData = [... displayFlowerData]
-    newFlowerData[selectedRow].push(newFlowerObject)
-
-    setDisplayFlowerData(newFlowerData)
-  }
+    };
+  
+    const newFlowerData = displayFlowerData.map((projectFlowers, index) => {
+      if (index === selectedRow) {
+        return [...projectFlowers, newFlowerObject];
+      }
+      return projectFlowers.slice(); // Creating shallow copy of other project arrays
+    });
+  
+    setDisplayFlowerData(newFlowerData);
+  };
+  
 
   const submitInvoiceCreation = async (e) => {
     e.preventDefault();
     try {
       const InvoiceFlowerData = addPrices()
       const formDataToSend = new FormData();
-      const totalAdded = flowerPriceTracker?.reduce((value, flower) => {
-        return value + flower.addedStems * flower.unitprice
-      }, 0)
 
-      if (invoiceData.invoiceAmount != totalAdded) {
-        setMessage("The invoice ammount and RegisteredExpenses do not coincide", true)
+      // this function checks if the total of flowers added coincide with the invoice AND
+      // if the user added stems but did not set the price
+      const validationInput = flowerPriceTracker?.reduce((value, flower) => {
+        let temp = value
+        temp.totalAdded += flower.addedStems * flower.unitprice
+        console.log(flower.addedStems)
+        if (flower.addedStems != 0 && flower.unitprice == 0) {
+          temp.AddedWithNoPrice += 1
+        }
+        return temp 
+      }, {totalAdded: 0, AddedWithNoPrice: 0})
+
+      if (invoiceData.invoiceAmount != validationInput.totalAdded) {
+        setMessage("The invoice ammount and Registered Expenses do not coincide", true)
         return
       }
+
+      if (validationInput.AddedWithNoPrice != 0){
+        setMessage("Added stems with no price assigned")
+      }
+
       formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
       formDataToSend.append('InvoiceFlowerData', JSON.stringify(InvoiceFlowerData));
       formDataToSend.append('invoiceFile', invoiceFile);
@@ -182,6 +206,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
       console.log(response);
       setMessage('Invoice Loaded successfully', false)
+      navigateTo('/invoice')
     } catch (error) {
       setMessage(error.response?.data?.message, true);
     }
@@ -238,10 +263,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                     <td className=" p-2 text-center" >{flower?.flowername}</td>
                     <td className=" p-2 text-center">{flower?.totalstems}</td>
                     <td className=" p-2 text-center">
-                      <input className='border border-gray-300 w-1/2' type='number' value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
+                      <input className='border border-gray-300 w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
                     </td>
                     <td className=" p-2 text-center">
-                      <input className='border border-gray-300 w-1/2' type='number' value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)} min={0}></input> 
+                      <input className='border border-gray-300 w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
                       <button className='bg-gray-200 px-5 mx-1' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>all</button>
                     </td>
                   </tr>

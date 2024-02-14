@@ -16,6 +16,16 @@ class ProjectService {
 
     }
 
+    closeProject = async (id) => {
+        await validateId(id)
+        await this.model.closeProject(id)
+    }
+
+    openProject = async (id) => {
+        await validateId(id)
+        await this.model.openProject(id)
+    }
+
     getProjects = async (offset) => {
         await validateId(offset)
         const response = await this.model.getProjects(offset)
