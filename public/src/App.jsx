@@ -21,6 +21,7 @@ import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
+import Test from './pages/Test';
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
               <Route path="/projects" element={<ProjectsList/>}></Route>
               <Route path="/projects/:id" element={<ViewProject/>}></Route>
               <Route path="/arrangement/:id" element={<ArrangementCreation/>}></Route>
+              <Route path="/test" element={<Test/>}></Route>
               
               <Route path="/invoice/add" element={< AddInvoice/>}></Route>
               <Route path="/invoice" element={<ViewInvoices/>}></Route>

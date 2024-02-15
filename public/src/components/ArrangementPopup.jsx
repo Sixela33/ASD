@@ -1,5 +1,5 @@
 import React from 'react';
-import SearchableDropdown from './SearchableDropdown';
+import SearchableDropdown from './Dropdowns/SearchableDropdown';
 import PopupBase from './PopupBase';
 
 const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInputChange, arrangementTypes }) => {

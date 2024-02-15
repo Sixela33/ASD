@@ -19,6 +19,8 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
+    console.log(searchRef.current)
+    searchRef.current.focus()
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -29,8 +31,6 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
         setQuery("")
         setIsOpen(false);
     }
-    console.log("hol")
-    console.log(isOpen)
   };
 
   const selectOption = (option) => {
@@ -45,12 +45,6 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
     setIsOpen(true);
   };
 
-  useState(() => {
-    console.log(searchRef.current)
-    if (searchRef.current) {
-      searchRef.current.focus()
-    }
-  }, [isOpen])
 
 
   return (

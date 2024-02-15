@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import QuerySearchableDropdown from '../QuerySearchableDropdown';
+import QuerySearchableDropdown from '../Dropdowns/QuerySearchableDropdown';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';

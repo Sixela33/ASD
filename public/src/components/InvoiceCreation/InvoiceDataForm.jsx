@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import SearchableDropdown from '../SearchableDropdown';
+import SearchableDropdown from '../Dropdowns/SearchableDropdown';
 
 const GET_VENDORS_URL = '/api/vendors';
 

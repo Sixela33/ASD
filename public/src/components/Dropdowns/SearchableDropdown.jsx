@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { FiSearch } from "react-icons/fi";
-import { HiChevronDown } from "react-icons/hi";
 import QuerySearchableDropdown from "./QuerySearchableDropdown";
 
   /*
@@ -13,29 +11,6 @@ import QuerySearchableDropdown from "./QuerySearchableDropdown";
 
 const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText }) => {
   const [query, setQuery] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleClickOutside = (e) => {
-    if (inputRef.current && !inputRef.current.contains(e.target)) {
-        setQuery("")
-        setIsOpen(false);
-    }
-  };
-
-
-  const handleInputChange = (e) => {
-    e.preventDefault();
-    setQuery(e.target.value);
-    setIsOpen(true);
-  };
 
   const filterOptions = () => {
     return options.filter(option =>

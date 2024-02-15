@@ -5,7 +5,7 @@ import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
 import { validateArrangement } from '../../utls/validations/ArrangementValidations';
 import { BASE_TD_STYLE } from '../../styles';
-import SearchableDropdown from '../../components/SearchableDropdown';
+import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import GoBackButton from '../../components/GoBackButton';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
