@@ -24,8 +24,8 @@ class FlowerService {
     getFlowers = async (offset, query) => {
         await validateId(offset)
 
-        let response = {rows: []}
-        response = await this.model.getFlowersQuery(offset, query)
+        //let response = {rows: []}
+        const response = await this.model.getFlowersQuery(offset, query)
 
         return response.rows
     };

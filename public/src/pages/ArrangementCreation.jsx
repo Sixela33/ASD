@@ -146,14 +146,14 @@ export default function ArrangementCreation() {
                                             <td className="border-b p-2 text-center">
                                                 <input type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
                                             </td>
-                                            <td className="border-b p-2 text-center">{flower.unitprice || 'N/A'}</td>
+                                            <td className="border-b p-2 text-center">${flower.unitprice || 'N/A'}</td>
                                             <td className="border-b p-2 text-center"><button onClick={() => removeFlower(index)}>remove</button></td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            <p className="mt-4">Flower Budget: {arrangementData.flowerbudget}</p>
-                            <p className="mt-4">Spent Budget: {sum}</p>
+                            <p className="mt-4">Flower Budget: ${parseFloat(arrangementData.clientcost * (1 - arrangementData.profitmargin)).toFixed(2)}</p>
+                            <p className="mt-4">Spent Budget: ${sum}</p>
                             <button className='bg-black text-white w-full p-2 rounded' onClick={submitArrangement}>Save</button>
                         </div>
                     </div>

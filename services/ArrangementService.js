@@ -1,4 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import { validateSingleArrangement } from "./Validations/ArrangementValidations.js"
+import { validateId } from "./Validations/IdValidation.js"
 
 class ArrangementService {
 
@@ -19,11 +21,18 @@ class ArrangementService {
         return response.rows
     }
 
-    getArrangementData = async (id) => {
+    getArrangementData = async (id) => {id
         const arrangementData = await this.model.getArrangementDataByID(id)
         const arrangementFLowerData = await this.model.getFlowersByArrangementID(id)
 
         return {arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows}
+    }
+
+    editArrangement = async (id, arrangementData) => {
+        await validateSingleArrangement(arrangementData)
+        await validateId(id)
+
+        await this.model.editArrangement(id, arrangementData)
     }
 }
 

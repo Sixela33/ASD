@@ -20,12 +20,12 @@ BEGIN
     -- STORE ALL THE ARRANGEMENTS
     FOREACH arrangement_record IN ARRAY p_arrangements_arr
     LOOP
-        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, flowerBudget, arrangementQuantity)
+        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
         VALUES (
             new_project_id, 
             (arrangement_record->>'arrangementType')::INT, 
             arrangement_record->>'arrangementDescription', 
-            (arrangement_record->>'flowerBudget')::FLOAT, 
+            (arrangement_record->>'clientCost')::FLOAT, 
             (arrangement_record->>'arrangementQuantity')::INT);
     END LOOP;
 

@@ -50,12 +50,14 @@ CREATE TABLE IF NOT EXISTS flowers (
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX IF NOT EXISTS idx_flowername ON flowers (flowername);
+
 CREATE TABLE IF NOT EXISTS arrangements (
     arrangementID SERIAL PRIMARY KEY,
     projectID INT REFERENCES projects(projectID),
     arrangementType INT REFERENCES arrangementTypes(arrangementTypeID),
     arrangementDescription VARCHAR(255) NOT NULL,
-    flowerBudget FLOAT,
+    clientCost FLOAT,
     arrangementQuantity INT,
     designerID INT REFERENCES users(userID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -81,6 +83,11 @@ CREATE TABLE IF NOT EXISTS invoices (
     invoiceDate DATE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS invoiceTransaction (
+    invoiceID INT REFERENCES invoices(invoiceID),
+    transactionNumber VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS flowerXInvoice (

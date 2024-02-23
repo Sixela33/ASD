@@ -5,6 +5,7 @@ import { aggregateFlowerData } from '../../utls/aggregateFlowerDataProject';
 import { BASE_TD_STYLE } from '../../styles';
 import { useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
+import EditArrangementPopup from '../../components/ProjectView/EditArrangementPopup';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -23,20 +24,23 @@ export default function ViewProject() {
 
     const [estimatedFlowerCost, setEstimatedFlowerCost] = useState(0)
     const [totalBudget, setTotalBudget] = useState(0)
+    
+    const [showArrangementEditPopup, setShowArrangementEditPopup] = useState(false)
+    const [editArrangementPopupData, setEditArrangementPopupData] = useState(null)
 
     const fetchFlowers = async () => {
         try {
             const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
 
             const {arrangements, flowers, project} = response?.data
-            console.log('res', response)
             
             setArrangementData(arrangements || []);
 
             const totalBudget = arrangements.reduce((value, arrangement) => {
-                return value + arrangement.flowerbudget
+                return value + (arrangement.clientcost * (1 - projectData.profitmargin))
               }, 0)
-            setTotalBudget(totalBudget)
+
+            setTotalBudget(parseFloat(totalBudget).toFixed(2))
             setFlowerData(flowers || []);
             setProjectData(project[0] || [])
                            
@@ -44,6 +48,7 @@ export default function ViewProject() {
             console.log(error);
         }
     };
+
     useEffect(() => {
         fetchFlowers();
     }, []);
@@ -52,11 +57,8 @@ export default function ViewProject() {
         if (flowerData.length > 0) {
             const sortedFlowers = aggregateFlowerData(flowerData)
     
-            if (sortedFlowers[0]){
-                setShowFlowerData(sortedFlowers[0]);
-            } else {
-                setShowFlowerData([])
-            }
+            setShowFlowerData(sortedFlowers[0] || []);
+   
         }
 
         if (arrangementData.length > 0){
@@ -80,6 +82,7 @@ export default function ViewProject() {
         
     };
 
+    // this func calculates the cost of each arrangement and the total cost, its used in a reduce
     const countFlowerCostAndFlowerCostyProject = (value, flower) => {
         // adding the cost of all the flowers
         let thisflowerCost = flower.amount * flower.unitprice
@@ -88,6 +91,7 @@ export default function ViewProject() {
         //adding the cost of the flowers by their arrangement
         let tempTotalFlowerCostByArrangement = value.totalFlowerCostByArrangement
         
+        // adding the flower cost to its arrangement
         if(!tempTotalFlowerCostByArrangement[flower.arrangementid]){
             tempTotalFlowerCostByArrangement[flower.arrangementid] = thisflowerCost
         } else tempTotalFlowerCostByArrangement[flower.arrangementid] = tempTotalFlowerCostByArrangement[flower.arrangementid] + thisflowerCost
@@ -123,42 +127,54 @@ export default function ViewProject() {
                 res = await axiosPrivate.post(OPEN_PROJECT_URL + id)
             }
             setMessage(res.data, false)
-            navigateTo(0)
-            
+            fetchFlowers()            
         } catch (error) {
             setMessage(error.response?.data?.message, true)
         }
     }
 
+    const handleArrangementEdit = (e, arrData) => {
+        e.stopPropagation()
+        setEditArrangementPopupData(arrData)
+        setShowArrangementEditPopup(true)
+    }
+
+    const closePopup = (refreshData) => {
+        setShowArrangementEditPopup(false)
+        if (refreshData == true) {
+            fetchFlowers()
+        }
+    }
+
     return (
         <div className="container mx-auto my-8 text-center">
-            {console.log(projectData)}
+            <EditArrangementPopup showPopup={showArrangementEditPopup} arrangementData={editArrangementPopupData} projectData={projectData} closePopup={closePopup}/>
             <div className="mb-4 ">
                 <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
             </div>
-            <div className="grid grid-row md:grid-cols-2 ml-10 font-bold">
-                <div className='grid-row'>
-                    <div className='grid-col'>
-                        <p>Project is closed: {projectData?.isclosed ? 'Yes' : "No" }</p>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold">
+                <div className='grid grid-row'>
+                    <p>Project is closed: {projectData?.isclosed ? 'Yes' : 'No'}</p>
                 </div>
-                <div className='grid-row'>
-                    <div className='grid-col'>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
                         <p>Client: {projectData?.projectclient}</p>
-                        <p>projectdate: {projectData?.projectdate}</p>
+                        <p>Project Date: {projectData?.projectdate}</p>
                     </div>
-                    <div className='grid-col'>
-                        <p>projectcontact: {projectData?.projectcontact}</p>
-                        <p>projectdescription: {projectData?.projectdescription}</p>
+                    <div className="md:col-start-2">
+                        <p>Project Contact: {projectData?.projectcontact}</p>
+                        <p>Project Description: {projectData?.projectdescription}</p>
                     </div>
                 </div>
             </div>
+
+
             <div className="flex flex-col items-center mb-8">
                 <table className="w-3/4 table-fixed">
                     <thead>
                         <tr>
-                            {['Type', 'Description', 'Quantity', 'Flower Budget', 'Assigned Budget', 'Status'].map(
+                            {['Type', 'Description', 'Quantity', 'Flower Budget', 'Assigned Budget', 'Status', 'admin'].map(
                                 (name, index) => (
                                     <th key={index} className="border p-2">
                                         {name}
@@ -170,18 +186,23 @@ export default function ViewProject() {
                     <tbody>
                         {arrangementData?.map((item, index) => (
                             <tr key={index} className='bg-gray-300 ' onClick={() => handleArrangement(item)}>
-                                <td className={BASE_TD_STYLE}>{item?.arrangementtype}</td>
+                                <td className={BASE_TD_STYLE}>{item?.typename}</td>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
                                 <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
-                                <td className={BASE_TD_STYLE}>{item?.flowerbudget}</td>
-                                <td className={BASE_TD_STYLE}>{item?.assignedBudget}</td>
+                                <td className={BASE_TD_STYLE}>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
+                                <td className={BASE_TD_STYLE}>${item?.assignedBudget}</td>
                                 <td className={BASE_TD_STYLE}>
                                     {item?.hasFlowers ? 'Created' : 'Design Needed'}
+                                </td>
+                                <td className={BASE_TD_STYLE}>
+                                    <button className="text-blue-500 hover:text-blue-700" onClick={(e) => handleArrangementEdit(e, item)}>Edit arrangement</button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+
+                
             </div>
             <div className="flex mb-8">
                 <div className="w-1/2 pr-4">
@@ -203,8 +224,8 @@ export default function ViewProject() {
                                 <tr key={index} className='bg-gray-300 '>
                                     <td className={BASE_TD_STYLE}>{item?.flowername}</td>
                                     <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.unitprice || 'N/A'}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.estimatedcost}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
                                     <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
                                 </tr>
                             ))}
@@ -216,9 +237,9 @@ export default function ViewProject() {
                             <button onClick={closeProject} className='bg-gray-300 font-bold py-2 px-4'>{projectData.isclosed ? "Open project": "Close project"}</button>
                         </div>
                         <div className='flex-row text-left ml-5'>
-                            <p>Estimated Flower cost: {estimatedFlowerCost}</p>
-                            <p>Flower budget: {totalBudget}</p>
-                            <p className={totalBudget-estimatedFlowerCost > 0 ? '' : 'text-red-700'}>Diference: {totalBudget-estimatedFlowerCost}</p>
+                            <p>Estimated Flower cost: ${parseFloat(estimatedFlowerCost).toFixed(2)}</p>
+                            <p>Flower budget: ${parseFloat(totalBudget).toFixed(2)}</p>
+                            <p className={totalBudget-estimatedFlowerCost > 0 ? '' : 'text-red-700'}>Diference: ${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</p>
                         </div>
                     </div>
                 </div>

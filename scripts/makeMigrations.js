@@ -37,6 +37,7 @@ const makeMigrations = async () => {
         } finally {
             console.log('Closing database connection.');
             await CnxPostgress.disconnect();
+            console.log('Database conection closed.');
 
         }
     }

@@ -196,6 +196,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
       if (validationInput.AddedWithNoPrice != 0){
         setMessage("Added stems with no price assigned")
+        return
       }
 
       formDataToSend.append('invoiceData', JSON.stringify(invoiceData));

@@ -1,17 +1,10 @@
 import Joi from "joi"
 
-const validateProject = project => {
-    const ProjectSchema = Joi.object({
-        staffBudget: Joi.number().min(0),
-        projectContact: Joi.string().max(255),
-        projectDate: Joi.date(),
-        projectDescription: Joi.string().max(255),
-        clientid: Joi.number().min(0),
-        profitMargin: Joi.number(),
-        creatorid: Joi.number().min(0)
-    })
+import projectSchema from '../../validationObjects/schemas.js'
 
-    const { error } = ProjectSchema.validate(project)
+const validateProject = project => {
+
+    const { error } = projectSchema.validate(project)
     if (error) {
         throw {message: error.details[0]?.message, status: 403}
     } 

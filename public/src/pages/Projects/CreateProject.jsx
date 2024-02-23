@@ -121,11 +121,11 @@ export default function CreateProject() {
             client: formState.client.clientid,
             arrangements: formState.arrangements.map(arrangement => ({
               ...arrangement,
-              arrangementType: arrangement.arrangementType.arrangementtypeid,
-              flowerBudget: arrangement.clientCost * profitMargin
+              arrangementType: arrangement.arrangementType.arrangementtypeid
             }))
         };
-        
+        console.log("ND", newData)
+
         try {
             await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
             setMessage('Project created successfully', false)
@@ -203,9 +203,10 @@ export default function CreateProject() {
                                     <th className={BASE_TD_STYLE}>Arrangement type</th>
                                     <th className={BASE_TD_STYLE}>Description</th>
                                     <th className={BASE_TD_STYLE}>Unit Client Cost</th>
+                                    <th className={BASE_TD_STYLE}>Unit ArrangementBudget</th>
                                     <th className={BASE_TD_STYLE}>Quantity</th>
                                     <th className={BASE_TD_STYLE}>Total Client Cost</th>
-                                    <th className={BASE_TD_STYLE}>Arrangement Budget</th>
+                                    <th className={BASE_TD_STYLE}>TOTAL Arrangement Budget</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -215,6 +216,7 @@ export default function CreateProject() {
                                     <td className={BASE_TD_STYLE}>{arrangement?.arrangementType.typename}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementDescription}</td>
                                     <td className={BASE_TD_STYLE}>${arrangement.clientCost}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat((arrangement.clientCost) *  (1-formState.profitMargin)).toFixed(1)}</td>
                                     <td className={BASE_TD_STYLE}>{arrangement.arrangementQuantity}</td>
                                     <td className={BASE_TD_STYLE}>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
                                     <td className={BASE_TD_STYLE}>${parseFloat((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin)).toFixed(1)}</td>

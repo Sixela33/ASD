@@ -21,12 +21,11 @@ import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
-import Test from './pages/Test';
 
 function App() {
 
   return (
-    <>
+    <div className='max-h-screen'>
       <Navbar/>
       <Alert/>
       <Routes>
@@ -40,13 +39,14 @@ function App() {
               <Route path="register" element={<Register />} />
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers" element={<ViewFlowers/>}/>
+              
               <Route path="/projects" element={<ProjectsList/>}></Route>
               <Route path="/projects/:id" element={<ViewProject/>}></Route>
-              <Route path="/arrangement/:id" element={<ArrangementCreation/>}></Route>
-              <Route path="/test" element={<Test/>}></Route>
               
-              <Route path="/invoice/add" element={< AddInvoice/>}></Route>
+              <Route path="/arrangement/:id" element={<ArrangementCreation/>}></Route>
+              
               <Route path="/invoice" element={<ViewInvoices/>}></Route>
+              <Route path="/invoice/add" element={< AddInvoice/>}></Route>
               <Route path='/invoice/:id' element={<ViewSingleInvoice/>}></Route>
             </Route>
 
@@ -63,7 +63,7 @@ function App() {
           <Route path="*" element={<Missing />} />
         </Route>
       </Routes>
-    </>
+    </div>
   );
 }
 

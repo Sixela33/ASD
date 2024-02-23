@@ -1,65 +1,157 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
-import BaseTable from '../../components/Tables/BaseTable';
+import TableHeaderSort from '../../components/Tables/TableHeaderSort';
+import { debounce } from 'lodash';
+import ConfirmationPopup from '../../components/ConfirmationPopup';
 
-const GET_INVOICES_URL = '/api/invoices/invoices/1/';
+const GET_INVOICES_URL = '/api/invoices/invoices/';
+const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
 
 const colData = {
-        "invoice ID": "invoiceid", 
-        "vendor": "vendorname", 
-        "invoice Amount": "invoiceamount", 
-        "invoice Date": "invoicedate", 
-        "invoice Number": "invoicenumber"
+        "Invoice ID": "invoiceid", 
+        "Vendor": "vendorname", 
+        "Invoice Amount": "invoiceamount", 
+        "Invoice Date": "invoicedate", 
+        "Invoice Number": "invoicenumber",
+        "Has transaction": "",
+        "": ""
     }
 
+const defaultSortConfig = { key: null, direction: 'asc' }
+
 export default function ViewInvoices() {
-    const [invoiceData, setInvoiceData] = useState([]);
-    const [showCheckboxes, setShowCheckboxes] = useState(false)
+    let [sortConfig, setSortConfig] = useState(defaultSortConfig)
+    const [invoiceData, setInvoiceData] = useState([])
+    const [bankTransactionData, setBankTransactionData] = useState('')
+    const [selectedInvoices, setSelectedInvoices] = useState([])
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
+
+    const page = useRef(0)
+    const dataLeft = useRef(false)
 
     const {setMessage} = useAlert()
-    const axiosPrivate = useAxiosPrivate();
+    const axiosPrivate = useAxiosPrivate()
+    const navigateTo = useNavigate()
+    
 
-    const navigateTo = useNavigate();
-
-    const fetchData = async () => {
+    const fetchData = async (sortConfig) => {
         try {
-            const response = await axiosPrivate.get(GET_INVOICES_URL);
+            if (!dataLeft.current) {
+                return;
+            }
+
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction );
+            
+            if (response.data?.length === 0) {
+                dataLeft.current = false;
+                return;
+            }
+            page.current = page.current + 1;
             setInvoiceData(response?.data);
         } catch (error) {
             setMessage(error.response?.data);
         }
     };
 
+    const debounced = useCallback(debounce(fetchData, 200), []);
+
     useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        setInvoiceData([])
+        page.current = 0
+        dataLeft.current=true
+        debounced(sortConfig)
+        
+    }, [sortConfig])
+
     const handleInvoiceSelection = (invoiceData) => {
-        if(!showCheckboxes){
-            navigateTo(`/invoice/${invoiceData.invoiceid}`, {state: invoiceData})
+        navigateTo(`/invoice/${invoiceData.invoiceid}`)
+    }
+
+    const handleCheckboxClick = (e, invoiceID) => {
+        setSelectedInvoices(prevState => {
+            if (e.target.checked) {
+                return { ...prevState, [invoiceID]: true };
+            } else {
+                const { [invoiceID]: omit, ...rest } = prevState;
+                return rest;
+            }
+        });
+    }
+
+     const isInvoiceSelected = (invoiceID) => {
+        return selectedInvoices.hasOwnProperty(invoiceID);
+    }
+
+    const addBankTransactions = async () => {
+        try {
+            const selectedInvoicesTemp = Object.keys(selectedInvoices)
+     
+            await axiosPrivate.post(LINK_BAKK_TX_URL, JSON.stringify({bankTransactionData, selectedInvoices: selectedInvoicesTemp}))
+            setMessage('Bank transacion added succesfully.', false)
+            setBankTransactionData('')
+            setSelectedInvoices({})
+            page.current = page.current - 1;
+            fetchData(sortConfig)
+
+       
+        } catch (error) {
+            console.log(error)
+            setMessage(error.response?.data)
         }
     }
 
     return (
         <div className='container mx-auto mt-8 p-4 bg-white shadow-md rounded-md text-center'>
+            <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
+                <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
+                <br/>
+                <p>Do you want to procede?</p>
+            </ConfirmationPopup>
             <div className="flex justify-between items-center mb-4 ">
                 <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h1 className="text-2xl font-bold flex-grow text-center">Invoices</h1>
-                <Link to="/invoice/add" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Invoice</Link>
+                <Link to="/invoice/add" className="bg-black text-white font-bold py-2 px-4 rounded">Load Invoice</Link>
             </div>
-            <div style={{ height: '60vh' }}>
-                <BaseTable
-                    headers={colData}
-                    data={invoiceData}
-                    onRowClick={handleInvoiceSelection}
+            
+            <div className='overflow-auto h-[70vh] w-full'>
+                {console.log(selectedInvoices)}
+                <TableHeaderSort
+                    headers={colData} 
+                    setSortConfig={setSortConfig} 
+                    defaultSortConfig={defaultSortConfig} 
+                    sortConfig={sortConfig} 
                 >
-                
-                </BaseTable>
+
+                    {invoiceData.map((invoice, index) => {
+                    return <tr key={index} className='bg-gray-300 ' onClick={() => handleInvoiceSelection(invoice)}>
+                        <td className={'border p-2'}>{invoice?.invoiceid}</td>
+                        <td className={'border p-2'}>{invoice?.vendorname}</td>
+                        <td className={'border p-2'}>${parseFloat(invoice?.invoiceamount).toFixed(2)}</td>
+                        <td className={'border p-2'}>{invoice?.invoicedate}</td>
+                        <td className={'border p-2'}>{invoice?.invoicenumber}</td>
+                        {invoice?.hastransaction ? 
+                            <td className={'border p-2 bg-green-500'}>true</td> : 
+                            <td className={'border p-2 bg-red-500'}>false</td>
+                        }
+                        <td className={'border p-2'} onClick={e => {e.stopPropagation()}}>
+                            {console.log(invoice.invoiceid in selectedInvoices)}
+                            <input type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
+                        </td>
+
+                     </tr>
+                    })}
+
+                </TableHeaderSort>                    
             </div>
-            <button onClick={() => setShowCheckboxes(!showCheckboxes)} className="bg-gray-400 text-white font-bold py-2 px-4 rounded ">Link bank transaction</button>
+            <input className='border border-black' type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
+            <button onClick={() => setShowConfirmationPopup(true)} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
         </div>
     );
 }

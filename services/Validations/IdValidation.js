@@ -1,10 +1,8 @@
-import Joi from "joi"
-
+import schemas from "../../validationObjects/schemas.js"
 
 const validateId = id => {
-    const idSchema = Joi.number().min(0).required()
 
-    const { error } = idSchema.validate(id)
+    const { error } = schemas.idSchema.validate(id)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}

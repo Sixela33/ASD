@@ -14,21 +14,23 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const [ref, inView] = useInView({});
 
     const offset = useRef(0);
-    const query = useRef('');
 
     const flowersLeft = useRef(true)
     const firstLoad = useRef(false)
     const [flowerData, setFlowerData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const fetchFlowers = async () => {
+    const fetchFlowers = async (searchQ) => {
+        console.log(searchQ)
         try {
-            const response = await axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + query.current);
-            console.log(response.data)
+            const response = await axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ);
+
             if(response?.data.length == 0) {
                 flowersLeft.current = false
                 return
             }
+
+            console.log("res",response.data)
             setFlowerData(prevData => [...prevData, ...response.data]);
         } catch (error) {
             setMessage(error.response?.data?.message, true);
@@ -38,18 +40,16 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
         }
     }
 
-    const debounced = useCallback(debounce(fetchFlowers, 500), []);
+    const debounced = useCallback(debounce(fetchFlowers, 300), []);
 
     useEffect(() => {
-        console.log("aca")
-        debounced()
+        fetchFlowers(searchQuery)
         offset.current += 1;
     }, []);
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
-            console.log('asdf')
-            debounced()
+            debounced(searchQuery)
             offset.current += 1;
         }
     }, [inView]);
@@ -58,12 +58,11 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
         setFlowerData([])
         offset.current = 0
         flowersLeft.current = true
-        debounced()
+        debounced(searchQuery)
     }, [searchQuery]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value)
-        query.current = e.target.value
     }
 
     return (

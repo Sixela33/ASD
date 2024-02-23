@@ -41,6 +41,18 @@ class ArrangementController {
         }
     }
 
+    editArrangement = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const arrangementData = req.body
+            const response = await this.service.editArrangement(id, arrangementData)
+                
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default ArrangementController

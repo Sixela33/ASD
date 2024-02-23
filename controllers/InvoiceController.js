@@ -20,8 +20,10 @@ class InvoiceController {
     }    
     getInvoices = async (req, res, next) => {
         try {
-            const {offset, query} = req.params
-            const response = await this.service.getInvoices(offset, query)
+            const {offset} = req.params
+            const { orderBy, order } = req.query
+
+            const response = await this.service.getInvoices(offset,  orderBy, order)
             res.json(response)
         } catch (error) {
             next(error)
@@ -30,9 +32,19 @@ class InvoiceController {
 
     getProvidedProjects = async (req, res, next) => {
         try {
-            console.log("params", req.params)
             const { id } = req.params
             const response = await this.service.getProvidedProjects(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    linkBaknTransaction = async (req, res, next) => {
+        try {
+            const { bankTransactionData, selectedInvoices } = req.body
+            console.log("bodei", req.body)
+            const response = await this.service.linkBaknTransaction(bankTransactionData, selectedInvoices)
             res.json(response)
         } catch (error) {
             next(error)

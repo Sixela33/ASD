@@ -13,7 +13,7 @@ class ArrangementRouter {
         this.router.post('/creation', this.controller.populateArrangement)
         this.router.get('/types', this.controller.getArrangementTypes)
         this.router.get('/creation/:id', this.controller.getArrangementData)
-        //this.router.post('/creation', this.controller.)
+        this.router.patch('/edit/:id', this.controller.editArrangement)
 
         return this.router
     }

@@ -26,9 +26,9 @@ class ProjectService {
         await this.model.openProject(id)
     }
 
-    getProjects = async (offset) => {
+    getProjects = async (offset, orderBy, order, showOpenOnly) => {
         await validateId(offset)
-        const response = await this.model.getProjects(offset)
+        const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly)
         return response.rows
     }
 
@@ -39,6 +39,7 @@ class ProjectService {
         const project = await this.model.getProjectByID(id)
         return {project: project.rows, arrangements: arrangements.rows,flowers: flowers.rows }
     }
+    
 
     getManyProjectsByID = async (ids) => {
         const response = await this.model.getManyProjectsByID(ids)

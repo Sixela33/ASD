@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <AlertProvider>
           <Routes>
-            <Route path="/*" element={<App />} />
+            <Route path="/*" element={<App />}/>
           </Routes>
         </AlertProvider>
       </AuthProvider>

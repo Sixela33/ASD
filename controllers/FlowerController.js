@@ -22,6 +22,7 @@ class FlowerController {
         try {
             const {offset, query} = req.params
             const response = await this.service.getFlowers(offset, query)
+            //console.log(response)
             res.json(response)
         } catch (error) {
             next(error)

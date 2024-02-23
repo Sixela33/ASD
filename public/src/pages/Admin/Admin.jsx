@@ -31,9 +31,9 @@ export default function Admin() {
                 <h1 className="text-2xl font-bold">Admin</h1>
                 <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
             </div>
-            <div className='overflow-y-scroll h-full max-h-[70vh]'>
-                <table className="min-w-full">
-                    <thead>
+            <div className='overflow-y-scroll max-h-[70vh]'>
+                <table className="w-full table-fixed border-collapse text-center">
+                    <thead className='sticky top-0 bg-white'>
                         <tr>
                             <th className="p-2">User ID</th>
                             <th className="p-2">Username</th>
@@ -43,7 +43,7 @@ export default function Admin() {
                     </thead>
                     <tbody >
                         {users.map((user) => (
-                            <tr key={user.userid} className='bg-gray-300'>
+                            <tr key={user.userid} className='bg-gray-300 border'>
                                 <td className="border-b p-2 text-center">{user.userid}</td>
                                 <td className="border-b p-2 text-center">{user.username}</td>
                                 <td className="border-b p-2 text-center">{user.email}</td>

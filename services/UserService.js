@@ -1,7 +1,7 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
-import {validateEmail, validatePassword, validateUsername} from './Validations/userValidations.js'
+import {validateEmail, validatePassword, validateUsername, validateFullUser} from './Validations/userValidations.js'
 import { validateId } from "./Validations/IdValidation.js";
 class UserService {
 
@@ -26,9 +26,7 @@ class UserService {
     }
 
     registerUser = async (username, email, password) => {
-        await validateUsername(username)
-        await validateEmail(email)
-        await validatePassword(password)
+        await validateFullUser({username, email, password})
 
         const prevUser = await this.model.getUserByEmail(email)
 

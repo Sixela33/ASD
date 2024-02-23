@@ -42,8 +42,9 @@ class ProjectController {
 
     getProjects = async (req, res, next) => {
         try {
-            const { offset } = req.params
-            const result = await this.service.getProjects(offset)
+            const { offset} = req.params
+            const { orderBy, order, showOpenOnly } = req.query
+            const result = await this.service.getProjects(offset, orderBy, order, showOpenOnly)
             res.json(result)
         } catch (error) {
             next(error)

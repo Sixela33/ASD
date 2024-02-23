@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
-import { BASE_TD_STYLE } from '../../styles';
-import GoBackButton from '../../components/GoBackButton'
+import QueryDataSortTable from '../../components/Tables/QueryDataSortTable';
+import { debounce } from 'lodash';
+
 const GET_PROJECTS_URL = '/api/projects/list/';
-
-
+const defaultSortCOnfig = { key: null, direction: 'asc' }
 const ProjectsList = () => {
     const [projectsInfo, setProjectsInfo] = useState([]);
-    const page = useRef(0)
-    const isLoading = useRef(false)    
+    const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
+    const [showOpenOnly, setShowOpenOnly] = useState(true)
+    const page = useRef(0) 
     const dataLeft = useRef(true)    
     
     const [ref, inView] = useInView({});
@@ -21,18 +22,14 @@ const ProjectsList = () => {
     const navigateTo = useNavigate();
 
     const handleRowClick = (row) => {
-        console.log(row)
         navigateTo(`/projects/${row?.projectid}`, {state: row});
-    }  
+    }
 
-    const fetchData = () => {
-        if (isLoading.current || !dataLeft.current) {
+    const fetchData = useCallback((sortConfig, showOpen) => {
+        if (!dataLeft.current) {
             return;
         }
-    
-        isLoading.current = true;
-    
-        axiosPrivate.get(GET_PROJECTS_URL + page.current)
+        axiosPrivate.get(GET_PROJECTS_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&showOpenOnly=' + showOpen )
             .then(response => {
                 page.current = page.current + 1;
     
@@ -40,55 +37,63 @@ const ProjectsList = () => {
                     dataLeft.current = false;
                     return;
                 }
+                console.log(response.data)
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
             })
             .catch(error => {
                 setMessage(error.response?.data?.message, true);
                 console.error('Error fetching data:', error);
             })
-            .finally(() => {
-                isLoading.current = false;
-            });
-    };
+    });
+
+    const debounced = useCallback(debounce(fetchData, 200), []);
+
+    useEffect(() => {
+        setProjectsInfo([])
+        page.current = 0
+        dataLeft.current=true
+        debounced(sortConfig, showOpenOnly)
+        
+    }, [sortConfig, showOpenOnly])
 
     useEffect(() => {
         if (inView) {
-            fetchData();
+            debounced(sortConfig, showOpenOnly)
         }
     }, [inView]);
 
 
     return (
-        <div className="container mx-auto mt-8 flex flex-col" style={{height: '80vh'}}>
+        <div className="container mx-auto mt-8 flex flex-col" style={{ height: '80vh' }}>
             <div className='flex justify-between items-center mb-4'>
                 <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h1 className="text-2xl font-bold">ProjectsList</h1>
                 <Link to="/project/create" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Project</Link>
             </div>
-            <div className="overflow-y-scroll w-full">
-                <table className="w-full table-fixed border-collapse">
-                    <thead>
-                        <tr>
-                            {['id', 'Client', 'Description', 'Contact', 'Date'].map((name, index) => (
-                                <th key={index} className="border p-2">{name}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {projectsInfo.map((item, index) => (
-                            <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-300'>
-                                <td className={BASE_TD_STYLE}>{item?.projectid}</td>
-                                <td className={BASE_TD_STYLE}>{item?.projectclient}</td>
-                                <td className={BASE_TD_STYLE}>{item?.projectdescription}</td>
-                                <td className={BASE_TD_STYLE}>{item?.projectcontact}</td>
-                                <td className={BASE_TD_STYLE}>{item?.projectdate}</td>
-                            </tr>
-                        ))}
-                        <tr ref={ref}></tr>
+            <div className="flex items-center mb-4">
+                <label className="mr-2">Show closed Projects:</label>
+                <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
+            </div>
+            <div className='overflow-y-scroll h-[70vh] w-full mt-2'>
 
-                    </tbody>
-                </table>
+                <QueryDataSortTable
+                    headers={{
+                        "id": "projectid",
+                        "Client": "projectclient",
+                        "Description": "projectdescription",
+                        "Contact": "projectcontact",
+                        "Date": "projectdate"
+                    }}
+                    data={projectsInfo}
+                    onRowClick={handleRowClick}
+                    setSortConfig={setSortConfig}
+                    InViewRef={ref}
+                    showViewRef={dataLeft.current}
+                    sortConfig={sortConfig}
+                    defaultSortConfig={defaultSortCOnfig}
+                >
 
+                </QueryDataSortTable>
             </div>
         </div>
     );

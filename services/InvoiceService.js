@@ -25,8 +25,8 @@ class InvoiceService {
         return response
     }
 
-    getInvoices = async (offset, query) => {
-        const result = await this.model.getInvoices(offset, query)
+    getInvoices = async (offset, orderBy, order) => {
+        const result = await this.model.getInvoices(offset,  orderBy, order)
         return result.rows 
     }
 
@@ -40,8 +40,17 @@ class InvoiceService {
         
         let flowers = await this.model.getFlowersXInvoice(id) 
         flowers = flowers.rows
-        
-        return {projects, flowers, invoiceData}
+
+        let bankTransactions = await this.model.getInvoiceBankTransactions(id)
+        bankTransactions = bankTransactions.rows
+
+        return {projects, flowers, invoiceData, bankTransactions}
+    }
+
+    linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {
+        await this.model.linkBaknTransaction(bankTransactionData, selectedInvoices)
+
+        return
     }
 }
 

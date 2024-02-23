@@ -1,9 +1,8 @@
-import Joi from "joi"
+import schemas from "../../validationObjects/schemas.js"
 
 const validateEmail = email => {
-    const emailSchema = Joi.string().email().required()
 
-    const { error } = emailSchema.validate(email)
+    const { error } = schemas.emailSchema.validate(email)
     if (error) {
         throw {message: error.details[0].message, status: 403}
     } 
@@ -12,9 +11,8 @@ const validateEmail = email => {
 }
 
 const validatePassword = pass => {
-    const passSchema = Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
 
-    const { error } = passSchema.validate(pass)
+    const { error } = schemas.passSchema.validate(pass)
     if (error) {
         throw {message: error.details[0].message, status: 403}
     } 
@@ -23,9 +21,19 @@ const validatePassword = pass => {
 }
 
 const validateUsername = username => {
-    const usernameSchema = Joi.string().alphanum().min(3).max(30).required()
 
-    const { error } = usernameSchema.validate(username)
+    const { error } = schemas.usernameSchema.validate(username)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 403}
+    } 
+
+    return true
+}
+
+const validateFullUser = user => {
+    
+    const { error } = schemas.fullUserSchema.validate(user)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}
@@ -35,5 +43,4 @@ const validateUsername = username => {
 }
 
 
-
-export {validateEmail, validatePassword, validateUsername}
+export {validateEmail, validatePassword, validateUsername, validateFullUser}

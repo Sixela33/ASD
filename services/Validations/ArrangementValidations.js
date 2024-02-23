@@ -1,16 +1,9 @@
 import Joi from "joi"
-
-const arrangementSchema = Joi.object({
-    arrangementType: Joi.number().min(0),
-    arrangementDescription: Joi.string(),
-    clientCost: Joi.number().min(0),
-    flowerBudget: Joi.number().min(0),
-    arrangementQuantity: Joi.number().min(0)
-})
+import schemas from "../../validationObjects/schemas.js"
 
 const validateArrangement = arrangement => {
     const arrayArrangements = Joi.array().items(
-        arrangementSchema
+        schemas.arrangementSchema
     )
     const { error } = arrayArrangements.validate(arrangement)
     if (error) {
@@ -20,4 +13,15 @@ const validateArrangement = arrangement => {
     return true
 }
 
-export {validateArrangement, arrangementSchema}
+const validateSingleArrangement = arrangement => {
+    
+    
+    const { error } = schemas.arrangementSchema.validate(arrangement)
+    if (error) {
+        throw {message: error.details[0]?.message, status: 403}
+    }
+
+    return true
+}
+
+export {validateArrangement, validateSingleArrangement}

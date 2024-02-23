@@ -11,9 +11,9 @@ const users = [
 ];
 
 const arrangements = [
-    { arrangementType: 1, arrangementDescription: 'Bridal', flowerBudget: 100, arrangementQuantity: 5 },
-    { arrangementType: 1, arrangementDescription: 'Blue arrangement', flowerBudget: 150, arrangementQuantity: 3 },
-    { arrangementType: 2, arrangementDescription: 'Red for the entrance', flowerBudget: 120, arrangementQuantity: 4 }
+    { arrangementType: 1, arrangementDescription: 'Bridal', clientCost: 100, arrangementQuantity: 5 },
+    { arrangementType: 1, arrangementDescription: 'Blue arrangement', clientCost: 150, arrangementQuantity: 3 },
+    { arrangementType: 2, arrangementDescription: 'Red for the entrance', clientCost: 120, arrangementQuantity: 4 }
 ];
 
 const projects = [
