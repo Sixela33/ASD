@@ -72,12 +72,11 @@ export default function ViewSingleInvoice() {
                     <div className="grid grid-row md:grid-cols-2 gap-8 px-20 ml-10 font-bold w-full">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
-                            <p>Invoice amount: {invoiceData.invoiceamount}</p>
+                            <p>Invoice amount: ${parseFloat(invoiceData.invoiceamount).toFixed(2)}</p>
                         </div>
                         <div className='grid-row'>
                             <p>Date loaded: {invoiceData.invoicedate}</p>
                             <p>Loaded By: {invoiceData.email}</p>
-                            
                         </div>
                     </div>
                     <div className='overflow-auto max-h-[20vh] w-full'>

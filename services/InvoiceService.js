@@ -25,8 +25,8 @@ class InvoiceService {
         return response
     }
 
-    getInvoices = async (offset, orderBy, order) => {
-        const result = await this.model.getInvoices(offset,  orderBy, order)
+    getInvoices = async (offset, orderBy, order, searchQuery, searchBy) => {
+        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy)
         return result.rows 
     }
 

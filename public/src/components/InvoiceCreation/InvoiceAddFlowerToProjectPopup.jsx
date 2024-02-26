@@ -8,7 +8,7 @@ import PopupBase from '../PopupBase';
 const GET_FLOWERS_URL = '/api/flowers';
 
 export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunction, closePopup}) {
-    
+    const [showPopup2, setShowPopup2] = useState(false)
     const [flowerData, setFlowerData] = useState([]);
     const [selectedFlower, setSelectedFlower] = useState('')
 
@@ -89,7 +89,6 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
                 InViewRef={ref} 
                 query={searchQuery}
                 setQuery={setSearchQuery}/>
-
             <div className="flex justify-between mt-4">
                 <button onClick={exitPopup} className="bg-gray-400 text-white px-4 py-2 rounded focus:outline-none">close</button>
                 <button className="bg-black text-white px-4 py-2 rounded focus:outline-none" onClick={submitSelection}>add flower</button>

@@ -19,7 +19,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    console.log(searchRef.current)
+    //console.log(searchRef.current)
     searchRef.current.focus()
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -49,7 +49,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
 
   return (
     <div className="relative">
-      <div className="z-10" ref={inputRef}>
+      <div ref={inputRef}>
         <div className="relative">
           <div className="selected-value relative">
             <input ref={searchRef} placeholder={placeholderText} type="text" value={query || selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>

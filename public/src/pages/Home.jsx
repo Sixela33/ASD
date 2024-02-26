@@ -15,7 +15,7 @@ export default function Home() {
     <div className="container mx-auto p-8 flex justify-center">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {buttons.map((button) => (
-          <Link key={button.id} to={button.url} 
+          button.url != '/' && <Link key={button.id} to={button.url} 
           className="block bg-gray-300 text-black h-[20vw] w-[20vw] flex items-center justify-center square-btn hover:bg-gray-400 focus:outline-none focus:border-none">
             {button.label}
           </Link>

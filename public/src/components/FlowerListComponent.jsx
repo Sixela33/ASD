@@ -21,16 +21,14 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const [searchQuery, setSearchQuery] = useState('');
 
     const fetchFlowers = async (searchQ) => {
-        console.log(searchQ)
         try {
             const response = await axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ);
-
+            offset.current += 1
             if(response?.data.length == 0) {
                 flowersLeft.current = false
                 return
             }
 
-            console.log("res",response.data)
             setFlowerData(prevData => [...prevData, ...response.data]);
         } catch (error) {
             setMessage(error.response?.data?.message, true);
@@ -41,24 +39,25 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     }
 
     const debounced = useCallback(debounce(fetchFlowers, 300), []);
+    const debouncedInitial = useCallback(debounce(fetchFlowers, 100), []);
 
     useEffect(() => {
-        fetchFlowers(searchQuery)
-        offset.current += 1;
+        debouncedInitial(searchQuery)
     }, []);
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
             debounced(searchQuery)
-            offset.current += 1;
         }
     }, [inView]);
 
     useEffect(() => {
-        setFlowerData([])
-        offset.current = 0
-        flowersLeft.current = true
-        debounced(searchQuery)
+        if (firstLoad.current) {
+            setFlowerData([])
+            offset.current = 0
+            flowersLeft.current = true
+            debounced(searchQuery)
+        }
     }, [searchQuery]);
 
     const handleSearch = (e) => {
@@ -66,11 +65,11 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     }
 
     return (
-        <div className="mx-auto my-4">
+        <div className="mx-auto my-4 px-10">
             <div className="mb-3">
                 <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch} className="border rounded p-2"/>
             </div>
-            <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center" style={styles}>
+            <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center items-center" style={styles}>
 
                 {flowerData.map((flower, index) => (
                     <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>

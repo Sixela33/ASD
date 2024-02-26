@@ -28,7 +28,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
         axiosPrivate.get(GET_PROJECTS_URL + page.current + '?showOpenOnly=true' + '&orderBy='+ sortConfigg.key + '&order=' + sortConfigg.direction)
             .then(response => {
                 page.current = page.current + 1;
-                console.log("data: ", response.data)
+
                 if (response.data?.length === 0) {
                     dataLeft.current = false;
                     return;
@@ -42,7 +42,8 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
             })
     };
 
-    const debounced = useCallback(debounce(fetchData, 500), []);
+    const debounced = useCallback(debounce(fetchData, 100), []);
+    const initualDebounced = useCallback(debounce(fetchData, 100), []);
 
     const handleRowClick = (item) => {
         setSelectedProjects((prevSelectedProjects) => {
@@ -63,11 +64,10 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
 
     useEffect(() => {
         debounced(sortConfig)
-        
     }, [inView])
 
     useEffect(() => {
-        fetchData(sortConfig)
+        debounced(sortConfig)
         
     }, [])
 

@@ -35,14 +35,16 @@ export default function ViewProject() {
             const {arrangements, flowers, project} = response?.data
             
             setArrangementData(arrangements || []);
-
-            const totalBudget = arrangements.reduce((value, arrangement) => {
-                return value + (arrangement.clientcost * (1 - projectData.profitmargin))
-              }, 0)
-
-            setTotalBudget(parseFloat(totalBudget).toFixed(2))
             setFlowerData(flowers || []);
             setProjectData(project[0] || [])
+            
+            const totalBudget = arrangements.reduce((value, arrangement) => {
+                return value + (arrangement.clientcost * (1 - project[0]?.profitmargin))
+              }, 0)
+
+            console.log("totalBudget", totalBudget)
+            setTotalBudget(totalBudget)
+
                            
         } catch (error) {
             console.log(error);

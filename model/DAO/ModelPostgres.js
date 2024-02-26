@@ -199,7 +199,6 @@ class ModelPostgres {
 
         let queryBase = "SELECT p.*, c.clientName AS projectclient, TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects p INNER JOIN clients c ON p.clientID = c.clientID"
 
-        console.log(showOpenOnly)
         if (showOpenOnly == 'true') {
             queryBase += " WHERE p.isClosed = false"
         }
@@ -214,7 +213,6 @@ class ModelPostgres {
 
         queryBase += " LIMIT $1 OFFSET $2;"
         const response =  await CnxPostgress.db.query( queryBase, [LIMIT, LIMIT * offset])
-        console.log('res', response.rows)
         return response
     }
 
@@ -228,7 +226,6 @@ class ModelPostgres {
             LEFT JOIN arrangementTypes at ON at.arrangementTypeID = a.arrangementType
             WHERE a.projectid = $1;`, [id])
         return response
-        
     }
     
     getProjectFlowers = async (ids) => {
@@ -304,8 +301,6 @@ class ModelPostgres {
             vals = [LIMIT, LIMIT * offset]
         }
 
-        console.log(searchString)
-        console.log(sqlQuery)
         return await CnxPostgress.db.query(sqlQuery, vals);
     }
 
@@ -420,7 +415,7 @@ class ModelPostgres {
 
 
 
-    getInvoices = async (offset,  orderBy, order) => {
+    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
 
@@ -429,7 +424,13 @@ class ModelPostgres {
             vendorname: " ORDER BY fv.vendorname",
             invoiceamount: " ORDER BY i.invoiceamount",
             invoicedate: " ORDER BY invoicedate",
-            invoicenumber: " ORDER BY i.invoicenumber"
+            invoicenumber: " ORDER BY i.invoicenumber",
+            hastransaction: " ORDER BY hastransaction"
+        }
+
+        const invoiceSearchColumns = {
+            "invoiceid": " i.invoiceid",
+            "invoicenumber": " i.invoicenumber",
         }
 
         let queryBase = `
@@ -452,6 +453,11 @@ class ModelPostgres {
             SELECT DISTINCT invoiceID FROM invoiceTransaction
         ) it ON it.invoiceID = i.invoiceID`
         
+        const queryString = `%${searchQuery}%`
+        if (invoiceSearchColumns[searchBy] && searchQuery) {
+            queryBase += ' WHERE CAST(' + invoiceSearchColumns[searchBy] + ' AS TEXT) LIKE $1';
+        }
+
         if (invoiceColumns[orderBy]) {
             queryBase += invoiceColumns[orderBy]
             if (order && order === 'desc'){
@@ -459,8 +465,17 @@ class ModelPostgres {
             }
         }
         
-        queryBase += " LIMIT $1 OFFSET $2;"
-        const response = await CnxPostgress.db.query(queryBase, [LIMIT, offset])
+        let queryValues = []
+        if (invoiceSearchColumns[searchBy] && searchQuery) {
+            queryBase += " LIMIT $2 OFFSET $3;"
+            queryValues = [queryString, LIMIT, offset]
+            
+        }else {
+            queryBase += " LIMIT $1 OFFSET $2;"
+            queryValues = [LIMIT, offset]
+        }
+
+        const response = await CnxPostgress.db.query(queryBase, queryValues)
 
         return response
         

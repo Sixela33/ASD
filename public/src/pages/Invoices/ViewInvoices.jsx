@@ -16,9 +16,14 @@ const colData = {
         "Invoice Amount": "invoiceamount", 
         "Invoice Date": "invoicedate", 
         "Invoice Number": "invoicenumber",
-        "Has transaction": "",
+        "Has transaction": "hastransaction",
         "": ""
     }
+
+const searchByOptions = [
+    {displayName: "Invoice ID", value: "invoiceid"}, 
+    {displayName: "Invoice Number", value: "invoicenumber"}
+] 
 
 const defaultSortConfig = { key: null, direction: 'asc' }
 
@@ -28,6 +33,8 @@ export default function ViewInvoices() {
     const [bankTransactionData, setBankTransactionData] = useState('')
     const [selectedInvoices, setSelectedInvoices] = useState([])
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
+    const [searchByInputvalue, setSearchByInputValue] = useState('')
+    const [selectedSearchFilter, setSelectedSearchFilter] = useState(searchByOptions[0].value)
 
     const page = useRef(0)
     const dataLeft = useRef(false)
@@ -35,15 +42,14 @@ export default function ViewInvoices() {
     const {setMessage} = useAlert()
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
-    
 
-    const fetchData = async (sortConfig) => {
+    const fetchData = async (sortConfig, searchValue, searchCol) => {
         try {
             if (!dataLeft.current) {
                 return;
             }
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction );
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol);
             
             if (response.data?.length === 0) {
                 dataLeft.current = false;
@@ -66,9 +72,9 @@ export default function ViewInvoices() {
         setInvoiceData([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig)
+        debounced(sortConfig, searchByInputvalue, selectedSearchFilter)
         
-    }, [sortConfig])
+    }, [sortConfig, searchByInputvalue, selectedSearchFilter])
 
     const handleInvoiceSelection = (invoiceData) => {
         navigateTo(`/invoice/${invoiceData.invoiceid}`)
@@ -98,8 +104,7 @@ export default function ViewInvoices() {
             setBankTransactionData('')
             setSelectedInvoices({})
             page.current = page.current - 1;
-            fetchData(sortConfig)
-
+            fetchData(sortConfig, searchByInputvalue, selectedSearchFilter)
        
         } catch (error) {
             console.log(error)
@@ -119,7 +124,14 @@ export default function ViewInvoices() {
                 <h1 className="text-2xl font-bold flex-grow text-center">Invoices</h1>
                 <Link to="/invoice/add" className="bg-black text-white font-bold py-2 px-4 rounded">Load Invoice</Link>
             </div>
-            
+            <div className='m-2 text-left'>
+                <input className='border border-gray rounded mr-2'type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
+                <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
+                    {searchByOptions.map(item => {
+                        return <option value={item.value}>{item.displayName}</option>
+                    })}
+                </select>
+            </div>
             <div className='overflow-auto h-[70vh] w-full'>
                 {console.log(selectedInvoices)}
                 <TableHeaderSort
@@ -144,7 +156,6 @@ export default function ViewInvoices() {
                             {console.log(invoice.invoiceid in selectedInvoices)}
                             <input type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
                         </td>
-
                      </tr>
                     })}
 
