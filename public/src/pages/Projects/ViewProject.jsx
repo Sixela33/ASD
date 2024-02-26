@@ -42,7 +42,6 @@ export default function ViewProject() {
                 return value + (arrangement.clientcost * (1 - project[0]?.profitmargin))
               }, 0)
 
-            console.log("totalBudget", totalBudget)
             setTotalBudget(totalBudget)
 
                            
@@ -155,11 +154,8 @@ export default function ViewProject() {
                 <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold">
-                <div className='grid grid-row'>
-                    <p>Project is closed: {projectData?.isclosed ? 'Yes' : 'No'}</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <p>Project is closed: {projectData?.isclosed ? 'Yes' : 'No'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-10">
                     <div>
                         <p>Client: {projectData?.projectclient}</p>
                         <p>Project Date: {projectData?.projectdate}</p>
@@ -168,13 +164,13 @@ export default function ViewProject() {
                         <p>Project Contact: {projectData?.projectcontact}</p>
                         <p>Project Description: {projectData?.projectdescription}</p>
                     </div>
-                </div>
+            
             </div>
 
 
-            <div className="flex flex-col items-center mb-8">
-                <table className="w-3/4 table-fixed">
-                    <thead>
+            <div className="flex flex-col items-center mb-8 overflow-auto h-[20vh]">
+                <table className="w-full table-fixed">
+                    <thead className='sticky top-0 bg-white'>
                         <tr>
                             {['Type', 'Description', 'Quantity', 'Flower Budget', 'Assigned Budget', 'Status', 'admin'].map(
                                 (name, index) => (
@@ -207,32 +203,35 @@ export default function ViewProject() {
                 
             </div>
             <div className="flex mb-8">
-                <div className="w-1/2 pr-4">
+                <div className="pr-4 w-1/2 ">
                     <h2 className="text-lg font-bold mb-4">Flower Data</h2>
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost', 'Change Stem'].map(
-                                    (name, index) => (
-                                        <th key={index} className="border p-2">
-                                            {name}
-                                        </th>
-                                    )
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {showFlowerData?.map((item, index) => (
-                                <tr key={index} className='bg-gray-300 '>
-                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
-                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
-                                    <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
+                    <div className='overflow-auto h-[20vh] w-full mt-2'>
+                        <table className="w-full table-fixed">
+                            <thead className='sticky top-0 bg-white'>
+                                <tr>
+                                    {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost', 'Change Stem'].map(
+                                        (name, index) => (
+                                            <th key={index} className="border p-2">
+                                                {name}
+                                            </th>
+                                        )
+                                    )}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {showFlowerData?.map((item, index) => (
+                                    <tr key={index} className='bg-gray-300 '>
+                                        <td className={BASE_TD_STYLE}>{item?.flowername}</td>
+                                        <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
+                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
+                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
+                                        <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div className='flex mt-5'>
                         <div className='flex-row'>
                             <button className='bg-gray-300 font-bold py-2 px-4 mx-3'>Generate pptslides</button>
@@ -245,33 +244,38 @@ export default function ViewProject() {
                         </div>
                     </div>
                 </div>
-                <div className="w-1/2">
-                    {/* Duplicate the flower data table for the second set */}
-                    <h2 className="text-lg font-bold mb-4">Worker data (WIP)</h2>
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost'].map(
-                                    (name, index) => (
-                                        <th key={index} className="border p-2">
-                                            {name}
-                                        </th>
-                                    )
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {showFlowerData.map((item, index) => (
-                                <tr key={index} className='bg-gray-300 '>
-                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.unitprice}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.estimatedcost}</td>
+
+                
+
+                    <div className="w-1/2">
+                        <h2 className="text-lg font-bold mb-4">Worker data (WIP)</h2>
+                        <div className='overflow-auto h-[20vh] w-full mt-2'>
+                        <table className="w-full table-fixed">
+                            <thead className='sticky top-0 bg-white'>
+                                <tr>
+                                    {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost', 'Change Stem'].map(
+                                        (name, index) => (
+                                            <th key={index} className="border p-2">
+                                                {name}
+                                            </th>
+                                        )
+                                    )}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {showFlowerData?.map((item, index) => (
+                                    <tr key={index} className='bg-gray-300 '>
+                                        <td className={BASE_TD_STYLE}>{item?.flowername}</td>
+                                        <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
+                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
+                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
+                                        <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
             </div>
         </div>    
     );

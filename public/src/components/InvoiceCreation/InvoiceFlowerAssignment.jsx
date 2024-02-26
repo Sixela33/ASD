@@ -56,10 +56,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     })
 
     while (sortedArray.length < CHOSEN_PROJECTS_SORTED.length) {
-      console.log(sortedArray)
       sortedArray.push([])
     }
-    console.log(sortedArray)
     setFlowerPriceTracker(aggregatedUniqueFlowers)
     setDisplayFlowerData(sortedArray)
 
@@ -131,7 +129,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     
     // if it doies, error
     if (flowerExists !== -1) {
-      console.log("Flower already exists in the project");
+      //console.log("Flower already exists in the project");
+      setMessage("Flower already exists in the project")
       return;
     }
 
@@ -182,7 +181,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
       const validationInput = flowerPriceTracker?.reduce((value, flower) => {
         let temp = value
         temp.totalAdded += flower.addedStems * flower.unitprice
-        console.log(flower.addedStems)
         if (flower.addedStems != 0 && flower.unitprice == 0) {
           temp.AddedWithNoPrice += 1
         }
@@ -205,7 +203,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
       const response = await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
 
-      console.log(response);
       setMessage('Invoice Loaded successfully', false)
       navigateTo('/invoice')
     } catch (error) {

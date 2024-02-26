@@ -112,6 +112,22 @@ export default function ViewInvoices() {
         }
     }
 
+    const tryToAddBankTX = () => {
+        if (Object.keys(selectedInvoices).length == 0 ) {
+            setMessage('Please select the projects you want to link with this bank transaction')
+            return
+        }
+        
+        if (!bankTransactionData || bankTransactionData == '') {
+            setMessage('Please fill the bank transaction information to procede')
+            return
+        } 
+
+        setShowConfirmationPopup(true)
+
+    }
+
+
     return (
         <div className='container mx-auto mt-8 p-4 bg-white shadow-md rounded-md text-center'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
@@ -127,13 +143,12 @@ export default function ViewInvoices() {
             <div className='m-2 text-left'>
                 <input className='border border-gray rounded mr-2'type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
                 <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
-                    {searchByOptions.map(item => {
-                        return <option value={item.value}>{item.displayName}</option>
+                    {searchByOptions.map((item, index) => {
+                        return <option value={item.value} key={index}>{item.displayName}</option>
                     })}
                 </select>
             </div>
             <div className='overflow-auto h-[70vh] w-full'>
-                {console.log(selectedInvoices)}
                 <TableHeaderSort
                     headers={colData} 
                     setSortConfig={setSortConfig} 
@@ -153,7 +168,6 @@ export default function ViewInvoices() {
                             <td className={'border p-2 bg-red-500'}>false</td>
                         }
                         <td className={'border p-2'} onClick={e => {e.stopPropagation()}}>
-                            {console.log(invoice.invoiceid in selectedInvoices)}
                             <input type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
                         </td>
                      </tr>
@@ -162,7 +176,7 @@ export default function ViewInvoices() {
                 </TableHeaderSort>                    
             </div>
             <input className='border border-black' type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
-            <button onClick={() => setShowConfirmationPopup(true)} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
+            <button onClick={tryToAddBankTX} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
         </div>
     );
 }

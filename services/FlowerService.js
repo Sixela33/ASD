@@ -17,7 +17,10 @@ class FlowerService {
     }
 
     addFlower = async (image, name, color) => {
-        const savePath = await handleFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
+        let savePath = ''
+        if (image) {
+            savePath = await handleFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
+        }
         await this.model.addFlower(savePath, name, color)
     };
 

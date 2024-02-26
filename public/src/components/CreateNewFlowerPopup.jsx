@@ -1,12 +1,12 @@
 import React from 'react'
 import PopupBase from './PopupBase'
-import LoadFlower from '../pages/Flowers/LoadFlower'
+import NewFlowerForm from './NewFlowerForm'
 
-export default function CreateNewFlowerPopup({showPopup}) {
+export default function CreateNewFlowerPopup({showPopup, closePopup}) {
     
   return (
     <PopupBase showPopup={showPopup}>
-        <LoadFlower/>
+        <NewFlowerForm cancelButton={closePopup}/>
     </PopupBase>
   )
 }

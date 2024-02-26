@@ -37,7 +37,6 @@ const ProjectsList = () => {
                     dataLeft.current = false;
                     return;
                 }
-                console.log(response.data)
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
             })
             .catch(error => {

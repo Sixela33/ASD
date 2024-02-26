@@ -21,7 +21,7 @@ export default function TableHeaderSort({ headers, setSortConfig, defaultSortCon
 
     const defaultStyles = {
         tbodyStyles: "",
-        theadStyles: " top-0 bg-white hover:cursor-pointer",
+        theadStyles: "top-0 bg-white hover:cursor-pointer",
         tableStyles: "w-full table-fixed border-collapse text-center",
     };
 
