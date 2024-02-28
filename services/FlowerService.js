@@ -2,7 +2,8 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js";
 import fs from 'fs';
 import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
-import { handleFileLocal } from "../utils/fileHandling.js";
+import { handleNewFileLocal } from "../utils/fileHandling.js";
+import { handleReplaceFile } from "../utils/fileHandling.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
@@ -19,19 +20,38 @@ class FlowerService {
     addFlower = async (image, name, color) => {
         let savePath = ''
         if (image) {
-            savePath = await handleFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
+            savePath = await handleNewFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
         }
         await this.model.addFlower(savePath, name, color)
     };
 
+    editFlower = async (image, name, color, prevFlowerPath, id ) => {
+
+        let filepath = prevFlowerPath
+
+        if (image) {
+            filepath = handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath, FLOWER_IMAGE_PATH)
+        }
+
+        await this.model.editFlower(name, color, id, filepath)
+    }
+
     getFlowers = async (offset, query) => {
         await validateId(offset)
 
-        //let response = {rows: []}
         const response = await this.model.getFlowersQuery(offset, query)
 
         return response.rows
     };
+
+    getFlowerData = async (id) => {
+        await validateId(id)
+
+        const data = await this.model.getFlowerData(id)
+        const prices = await this.model.getFlowerPrices(id)
+
+        return {flowerData: data.rows, flowerPrices: prices.rows}
+    }
 }
 
 export default FlowerService;

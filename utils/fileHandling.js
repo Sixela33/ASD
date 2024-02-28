@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export const handleFileLocal = (file, allowedExtensions, basePath) => {
+export const handleNewFileLocal = (file, allowedExtensions, basePath) => {
     const fileExtension = path.extname(file?.originalname).toLowerCase().substring(1);
 
     if (!allowedExtensions.includes(fileExtension)) {
@@ -19,7 +19,7 @@ export const handleFileLocal = (file, allowedExtensions, basePath) => {
     let additive = ''
 
     do {
-        filename = `${path.parse(file?.originalname).name.replace(/ /g, '_')}${additive}.${fileExtension}`;
+        filename = `${path.parse(file?.originalname).name.replace(/ /g, '_').replace(/[#?&]/g, '')}${additive}.${fileExtension}`;
         additive = `(${number})`
         number++;
     } while (fs.existsSync(path.join(folder, filename)));
@@ -27,4 +27,14 @@ export const handleFileLocal = (file, allowedExtensions, basePath) => {
     folder = path.join(folder, filename)
     fs.writeFileSync(folder, file.buffer, "binary");
     return folder
+}
+
+export const handleReplaceFile = (file, allowedExtensions, filepath, basePath) => {
+    const newFile = handleNewFileLocal(file, allowedExtensions, basePath)
+    if (newFile && filepath) {
+        fs.unlink(filepath, (err) => {if(err) throw err})
+    }
+
+    return newFile
+
 }

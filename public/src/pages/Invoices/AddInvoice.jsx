@@ -92,17 +92,11 @@ export default function AddInvoice() {
             <div className="flex flex-col space-y-4">
               <div className="flex flex-col">
                 <label className="mb-1">Select or drop file: :</label>
-                <input
-                  type="file"
-                  name="flower"
-                  onChange={handleFileChange}
-                  className="border border-gray-300 p-2 rounded"
-                  required
-                />
+                <input type="file" name="flower" onChange={handleFileChange} className="border border-gray-300 p-2 rounded" required />
               </div>
               <div className="flex flex-row">
                 {asrcPdfFile && (
-                  <embed src={asrcPdfFile} type="application/pdf" width="100%" height="600vh" />
+                  <embed src={asrcPdfFile} type="application/pdf" width="100%" height="500vh" />
                 )}
               </div>
             </div>

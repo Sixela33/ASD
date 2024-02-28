@@ -13,9 +13,10 @@ const ADD_INVOICE_URL = '/api/invoices'
 export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData, invoiceFile}) {
 
   const [flowerData, setFlowerData] = useState([])
+  const [projectsInfo, setProjectsInfo] = useState([])
+
   const [displayFlowerData, setDisplayFlowerData] = useState([])
   const [selectedRow, setSelectedRow] = useState(0)
-  const [projectsInfo, setProjectsInfo] = useState([])
   const [addFlowerPopup, toggleAddFlowerPopup] = useState(false)
   const [flowerPriceTracker, setFlowerPriceTracker] = useState([])
 

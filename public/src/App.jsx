@@ -21,11 +21,12 @@ import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
+import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
 
 function App() {
 
   return (
-    <div className='max-h-screen'>
+    <div className='h-screen'>
       <Navbar/>
       <Alert/>
       <Routes>
@@ -39,6 +40,7 @@ function App() {
               <Route path="register" element={<Register />} />
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers" element={<ViewFlowers/>}/>
+              <Route path="/flowers/:id" element={<SingleFlowerPage/>}/>
               
               <Route path="/projects" element={<ProjectsList/>}></Route>
               <Route path="/projects/:id" element={<ViewProject/>}></Route>

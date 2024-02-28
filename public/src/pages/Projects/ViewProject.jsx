@@ -154,8 +154,8 @@ export default function ViewProject() {
                 <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
             </div>
-            <p>Project is closed: {projectData?.isclosed ? 'Yes' : 'No'}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-10">
+            <p>Project status: {projectData?.isclosed ? 'Open' : 'Closed'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
                     <div>
                         <p>Client: {projectData?.projectclient}</p>
                         <p>Project Date: {projectData?.projectdate}</p>
@@ -275,7 +275,7 @@ export default function ViewProject() {
                             </tbody>
                         </table>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>    
     );

@@ -1,6 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import path from 'path';
-import { handleFileLocal } from "../utils/fileHandling.js";
+import { handleNewFileLocal } from "../utils/fileHandling.js";
 import fs from 'fs';
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
@@ -17,7 +17,7 @@ class InvoiceService {
 
     addInvoice = async (invoiceData, invoiceFlowerData, file, uploaderid) => {
         
-        const fileLocation = handleFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+        const fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
         
         invoiceData = JSON.parse(invoiceData)

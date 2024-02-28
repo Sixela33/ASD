@@ -5,7 +5,7 @@ import { useInView } from 'react-intersection-observer'
 import { BASE_URL } from '../api/axios'
 import { debounce } from "lodash";
 
-const GET_FLOWERS_URL = '/api/flowers/'
+const GET_FLOWERS_URL = '/api/flowers/many/'
 
 export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID}) {
     if(!onFlowerClick) onFlowerClick = () => {}

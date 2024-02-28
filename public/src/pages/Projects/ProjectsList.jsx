@@ -73,7 +73,7 @@ const ProjectsList = () => {
                 <label className="mr-2">Show closed Projects:</label>
                 <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
             </div>
-            <div className='overflow-y-scroll h-[70vh] w-full mt-2'>
+            <div className='overflow-auto h-[70vh] w-full mt-2'>
 
                 <QueryDataSortTable
                     headers={{

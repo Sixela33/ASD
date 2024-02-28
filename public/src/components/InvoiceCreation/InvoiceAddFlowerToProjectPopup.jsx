@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import PopupBase from '../PopupBase';
 import CreateNewFlowerPopup from '../CreateNewFlowerPopup';
 
-const GET_FLOWERS_URL = '/api/flowers';
+const GET_FLOWERS_URL = '/api/flowers/many/';
 
 export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunction, closePopup}) {
     const [showPopup2, setShowPopup2] = useState(false)
@@ -31,7 +31,7 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
         
         try {
             isLoading.current = true
-            const response = await axiosPrivate.get(`${GET_FLOWERS_URL}/${page.current}/${searchQuery}`)
+            const response = await axiosPrivate.get(`${GET_FLOWERS_URL}${page.current}/${searchQuery}`)
             
             page.current = page.current + 1
             if (response.data?.length === 0) {

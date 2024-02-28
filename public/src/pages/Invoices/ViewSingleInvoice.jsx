@@ -65,6 +65,7 @@ export default function ViewSingleInvoice() {
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
+                    {console.log("location", `${BASE_URL}/api/${invoiceData.filelocation}`)}
                     <embed src={`${BASE_URL}/api/${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
                     <button onClick={downloadFile} className="bg-black text-white font-bold py-2 px-4 rounded mt-3">Download invoice</button>
                 </div>

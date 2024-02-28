@@ -129,8 +129,8 @@ export default function CreateProject() {
         try {
             await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
             setMessage('Project created successfully', false)
-            setFormState(initialState)
-            navigateTo('/projects')
+            //setFormState(initialState)
+            //navigateTo('/projects')
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true)
@@ -152,7 +152,7 @@ export default function CreateProject() {
 
             <div className='flex space-x-4'>
                 <div className="flex-1">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form className="space-y-4">
                         <div className={formRowClass}>
                             <div className={formColClass}>
                                 <label className="mb-1">Client:</label>
@@ -239,7 +239,7 @@ export default function CreateProject() {
                        
                     <div className=' flex flex-row'>
                         <button type="button" onClick={() => setShowArrangementPopup(true)} className="mx-auto bg-gray-500 text-white px-4 py-2 rounded focus:outline-none">Add New Arrangement</button>
-                        <button type="submit" className="mx-auto bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>
+                        <button onClick={handleSubmit} className="mx-auto bg-black text-white px-4 py-2 rounded focus:outline-none">Save Project</button>
                     </div>
                     <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes}/>
                 </form>

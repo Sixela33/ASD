@@ -269,6 +269,26 @@ class ModelPostgres {
         await CnxPostgress.db.query("INSERT INTO flowers (flowerName, flowerImage, flowerColor) VALUES($1, $2, $3);", [name, image, color]);
         
     }
+    
+    editFlower = async (name, color, id, filepath) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query("UPDATE flowers SET flowerName=$1, flowerImage=$2, flowerColor=$3 WHERE flowerID=$4;", [name, filepath, color, id])
+    }
+
+    getFlowerData = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query("SELECT * FROM flowers WHERE flowerID = $1;", [id])
+    }
+
+    getFlowerPrices = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`SELECT 
+        fxi.unitPrice, 
+        i.createdAt 
+        FROM flowerXInvoice fxi 
+        LEFT JOIN invoices i ON fxi.invoiceID = i.invoiceID
+        WHERE fxi.flowerID = $1;`, [id])
+    }
 
     getFlowersQuery = async (offset, query) => {
         this.validateDatabaseConnection()

@@ -69,7 +69,7 @@ const Login = () => {
 
     return (
 
-        <section className="flex flex-col items-center justify-center min-h-[90vh]">
+        <section className="flex flex-col items-center justify-center">
             <h1 className="mb-8 text-3xl font-bold">Log In</h1>
 
             <form onSubmit={handleSubmit} className="w-full max-w-md">

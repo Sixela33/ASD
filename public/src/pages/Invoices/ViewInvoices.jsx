@@ -148,7 +148,7 @@ export default function ViewInvoices() {
                     })}
                 </select>
             </div>
-            <div className='overflow-auto h-[70vh] w-full'>
+            <div className='overflow-auto h-[60vh] w-full'>
                 <TableHeaderSort
                     headers={colData} 
                     setSortConfig={setSortConfig} 
@@ -175,8 +175,10 @@ export default function ViewInvoices() {
 
                 </TableHeaderSort>                    
             </div>
-            <input className='border border-black' type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
-            <button onClick={tryToAddBankTX} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
+            <div className='my-2'>
+                <input className='border border-black' type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
+                <button onClick={tryToAddBankTX} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
+            </div>
         </div>
     );
 }
