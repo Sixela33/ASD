@@ -111,7 +111,7 @@ export default function SingleFlowerPage() {
                         {previewImage ? (
                             <img src={previewImage} alt="Preview" className="w-64 h-64 object-cover rounded-lg shadow-lg" />
                         ): newFlowerData.flowerimage && (
-                            <img src={`${BASE_URL}/api/${newFlowerData.flowerimage}`} alt="Preview" className="w-64 h-64 object-cover rounded-lg shadow-lg" />
+                            <img src={`${BASE_URL}/api/${newFlowerData.flowerimage}`} alt="Preview" loading='lazy' className="w-64 h-64 object-cover rounded-lg shadow-lg" />
                         )}
                         {}                        
                         <button className='bg-gray-500 text-white font-bold py-2 px-4 rounded mt-4' onClick={() => setShowNewFlowerPopup(true)}>Change image</button>

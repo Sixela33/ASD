@@ -5,9 +5,8 @@ import SearchableDropdown from '../Dropdowns/SearchableDropdown';
 
 const GET_VENDORS_URL = '/api/vendors';
 
-export default function InvoiceDataForm({ onSubmit, invoiceData, handleChange, handleVendorChange }) {
+export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoiceData, handleChange, handleVendorChange, selectedVendor }) {
   const [vendors, setVendors] = useState([]);
-  const [selectedVendor, setSelectedVendor] = useState('');
   const axiosPrivate = useAxiosPrivate();
   const { setMessage } = useAlert();
 
@@ -26,7 +25,6 @@ export default function InvoiceDataForm({ onSubmit, invoiceData, handleChange, h
   }, []);
 
   const handleSelectVendor = (vendor) => {
-    setSelectedVendor(vendor)
     handleVendorChange(vendor)
   }
 
@@ -52,6 +50,9 @@ export default function InvoiceDataForm({ onSubmit, invoiceData, handleChange, h
         </div>
         <button onClick={onSubmit} className="bg-black text-white font-bold py-2 px-4 rounded">
           Continue
+        </button> 
+        <button onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} className="bg-red-500 text-white font-bold py-2 px-4 rounded">
+          Save Incomplete invoice
         </button>
       </form>
     </div>

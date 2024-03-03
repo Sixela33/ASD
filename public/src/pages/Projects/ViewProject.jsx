@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { redirect, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { aggregateFlowerData } from '../../utls/aggregateFlowerDataProject';
+import { aggregateFlowerData } from '../../utls/aggregateFlowerDataArrangements';
 import { BASE_TD_STYLE } from '../../styles';
 import { useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
 import EditArrangementPopup from '../../components/ProjectView/EditArrangementPopup';
+import TableHeaderSort from '../../components/Tables/TableHeaderSort';
+import Tooltip from '../../components/Tooltip';
+import ConfirmationPopup from '../../components/ConfirmationPopup'
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
 const OPEN_PROJECT_URL = 'api/projects/open/'
+const DELETE_ARRANGEMENT_URL = 'api/arrangements/'
 
 export default function ViewProject() {
     const { id } = useParams();
@@ -21,12 +25,20 @@ export default function ViewProject() {
     const [flowerData, setFlowerData] = useState([]);
     const [showFlowerData, setShowFlowerData] = useState([]);
     const [projectData, setProjectData] = useState([])
+    
+    const [flowersByArrangement, setFlowersByArrangement] = useState(null)
+    const [actualHoveredArr, setActualHoveredArr] = useState(null)
 
     const [estimatedFlowerCost, setEstimatedFlowerCost] = useState(0)
     const [totalBudget, setTotalBudget] = useState(0)
     
     const [showArrangementEditPopup, setShowArrangementEditPopup] = useState(false)
     const [editArrangementPopupData, setEditArrangementPopupData] = useState(null)
+
+    const [deletePopupData, setDeletePopupData] = useState({show: false, deleteID: null})
+
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
     const fetchFlowers = async () => {
         try {
@@ -56,10 +68,9 @@ export default function ViewProject() {
 
     useEffect(() => {
         if (flowerData.length > 0) {
-            const sortedFlowers = aggregateFlowerData(flowerData)
-    
-            setShowFlowerData(sortedFlowers[0] || []);
-   
+            const {aggregatedFlowerArray, separatedByArrangement, flowersByArrangement} = aggregateFlowerData(flowerData)
+            setShowFlowerData(aggregatedFlowerArray || []);
+            setFlowersByArrangement(flowersByArrangement)
         }
 
         if (arrangementData.length > 0){
@@ -140,6 +151,19 @@ export default function ViewProject() {
         setShowArrangementEditPopup(true)
     }
 
+    const handleArrangementDelete = async () => {
+        try {
+            console.log(deletePopupData)
+            await axiosPrivate.delete(DELETE_ARRANGEMENT_URL + deletePopupData.deleteID)
+            setDeletePopupData({show: false, deleteID: null})
+            setMessage("Arrangement deleted successfully", false)
+            fetchFlowers();
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+
+        }
+    }
+
     const closePopup = (refreshData) => {
         setShowArrangementEditPopup(false)
         if (refreshData == true) {
@@ -147,89 +171,87 @@ export default function ViewProject() {
         }
     }
 
+    const handleMouseMove = (e) => {
+      setTooltipPosition({ x: e.clientX, y: e.clientY });
+    };
+  
+    const handleMouseEnter = (hoveredArrangement) => {
+        setShowTooltip(true);
+        setActualHoveredArr(hoveredArrangement)
+    };
+  
+    const handleMouseLeave = () => {
+      setShowTooltip(false);
+      setActualHoveredArr(null)
+
+    };
+    
     return (
         <div className="container mx-auto my-8 text-center">
             <EditArrangementPopup showPopup={showArrangementEditPopup} arrangementData={editArrangementPopupData} projectData={projectData} closePopup={closePopup}/>
+            <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
+                actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flowe, index) => {
+                return <p key={index}>{flowe.flowername} x {flowe.amount}</p>})}
+            </Tooltip>
+            <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
+                Are you sure you want to Delete this arrangement from the database?
+            </ConfirmationPopup>
             <div className="mb-4 ">
                 <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
             </div>
-            <p>Project status: {projectData?.isclosed ? 'Open' : 'Closed'}</p>
+            <p>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
-                    <div>
-                        <p>Client: {projectData?.projectclient}</p>
-                        <p>Project Date: {projectData?.projectdate}</p>
-                    </div>
-                    <div className="md:col-start-2">
-                        <p>Project Contact: {projectData?.projectcontact}</p>
-                        <p>Project Description: {projectData?.projectdescription}</p>
-                    </div>
-            
+                <div>
+                    <p>Client: {projectData?.projectclient}</p>
+                    <p>Project Date: {projectData?.projectdate}</p>
+                </div>
+                <div className="md:col-start-2">
+                    <p>Project Contact: {projectData?.projectcontact}</p>
+                    <p>Project Description: {projectData?.projectdescription}</p>
+                </div>
             </div>
-
-
             <div className="flex flex-col items-center mb-8 overflow-auto h-[20vh]">
-                <table className="w-full table-fixed">
-                    <thead className='sticky top-0 bg-white'>
-                        <tr>
-                            {['Type', 'Description', 'Quantity', 'Flower Budget', 'Assigned Budget', 'Status', 'admin'].map(
-                                (name, index) => (
-                                    <th key={index} className="border p-2">
-                                        {name}
-                                    </th>
-                                )
-                            )}
+                <TableHeaderSort
+                headers={{'Type': ' ', 'Description': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ', 'Status': ' ', 'admin': ' '}}>
+                    {arrangementData?.map((item, index) => (
+                        <tr key={index} className='bg-gray-300 ' 
+                            onClick={() => handleArrangement(item)}      
+                            onMouseMove={handleMouseMove}
+                            onMouseEnter={() => handleMouseEnter(item.arrangementid)}
+                            onMouseLeave={handleMouseLeave}>
+                            <td className={BASE_TD_STYLE}>{item?.typename}</td>
+                            <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
+                            <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
+                            <td className={BASE_TD_STYLE}>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
+                            <td className={BASE_TD_STYLE}>${item?.assignedBudget}</td>
+                            <td className={BASE_TD_STYLE}>
+                                {item?.hasFlowers ? 'Created' : 'Design Needed'}
+                            </td>
+                            <td className={BASE_TD_STYLE} onMouseEnter={handleMouseLeave}>
+                                <button className="text-blue-500 hover:text-blue-700" onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
+                                <button className="text-blue-500 hover:text-blue-700 m-2" onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {arrangementData?.map((item, index) => (
-                            <tr key={index} className='bg-gray-300 ' onClick={() => handleArrangement(item)}>
-                                <td className={BASE_TD_STYLE}>{item?.typename}</td>
-                                <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
-                                <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
-                                <td className={BASE_TD_STYLE}>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
-                                <td className={BASE_TD_STYLE}>${item?.assignedBudget}</td>
-                                <td className={BASE_TD_STYLE}>
-                                    {item?.hasFlowers ? 'Created' : 'Design Needed'}
-                                </td>
-                                <td className={BASE_TD_STYLE}>
-                                    <button className="text-blue-500 hover:text-blue-700" onClick={(e) => handleArrangementEdit(e, item)}>Edit arrangement</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                
+                    ))}
+                </TableHeaderSort>
             </div>
             <div className="flex mb-8">
                 <div className="pr-4 w-1/2 ">
                     <h2 className="text-lg font-bold mb-4">Flower Data</h2>
                     <div className='overflow-auto h-[20vh] w-full mt-2'>
-                        <table className="w-full table-fixed">
-                            <thead className='sticky top-0 bg-white'>
-                                <tr>
-                                    {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost', 'Change Stem'].map(
-                                        (name, index) => (
-                                            <th key={index} className="border p-2">
-                                                {name}
-                                            </th>
-                                        )
-                                    )}
+                        <TableHeaderSort
+                            headers={{'Flower Name': ' ', 'Total Stems': ' ', 'Unit Price': ' ', 'Estimated Cost': ' ', 'Change Stem': ' '}}>
+                            {showFlowerData?.map((item, index) => (
+                                <tr key={index} className='bg-gray-300 '>
+                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
+                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
+                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
+                                    <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {showFlowerData?.map((item, index) => (
-                                    <tr key={index} className='bg-gray-300 '>
-                                        <td className={BASE_TD_STYLE}>{item?.flowername}</td>
-                                        <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
-                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
-                                        <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
-                                    </tr>
                                 ))}
-                            </tbody>
-                        </table>
+                        </TableHeaderSort>
                     </div>
 
                     <div className='flex mt-5'>
@@ -242,38 +264,6 @@ export default function ViewProject() {
                             <p>Flower budget: ${parseFloat(totalBudget).toFixed(2)}</p>
                             <p className={totalBudget-estimatedFlowerCost > 0 ? '' : 'text-red-700'}>Diference: ${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</p>
                         </div>
-                    </div>
-                </div>
-
-                
-
-                    <div className="w-1/2">
-                        <h2 className="text-lg font-bold mb-4">Worker data (WIP)</h2>
-                        <div className='overflow-auto h-[20vh] w-full mt-2'>
-                        <table className="w-full table-fixed">
-                            <thead className='sticky top-0 bg-white'>
-                                <tr>
-                                    {['Flower Name', 'Total Stems', 'Unit Price', 'Estimated Cost', 'Change Stem'].map(
-                                        (name, index) => (
-                                            <th key={index} className="border p-2">
-                                                {name}
-                                            </th>
-                                        )
-                                    )}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {showFlowerData?.map((item, index) => (
-                                    <tr key={index} className='bg-gray-300 '>
-                                        <td className={BASE_TD_STYLE}>{item?.flowername}</td>
-                                        <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
-                                        <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
-                                        <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>

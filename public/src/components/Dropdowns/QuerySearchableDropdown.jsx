@@ -19,12 +19,18 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    //console.log(searchRef.current)
-    searchRef.current.focus()
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (searchRef.current) {
+        searchRef.current.focus();
+      }}
+  }, [isOpen]);
 
   const handleClickOutside = (e) => {
     if (inputRef.current && !inputRef.current.contains(e.target)) {
@@ -45,14 +51,12 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
     setIsOpen(true);
   };
 
-
-
   return (
     <div className="relative">
       <div ref={inputRef}>
         <div className="relative">
           <div className="selected-value relative">
-            <input ref={searchRef} placeholder={placeholderText} type="text" value={query || selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
+            <input placeholder={placeholderText} type="text" value={selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
           </div>
           <div className={`arrow absolute right-2 top-1/2 transform -translate-y-1/2 ${isOpen ? "rotate-180" : ""}`}>
             <HiChevronDown />
@@ -62,10 +66,11 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
           {isOpen && (
             <>
             <div className="flex items-center">
-                <input type="text" value={query || ""} className="w-full border border-gray-300 p-1 mr-2 my-2" placeholder="Search" onChange={handleInputChange} />
+                <input ref={searchRef} type="text" value={query || ""} className="w-full border border-gray-300 p-1 mr-2 my-2" placeholder="Search" onChange={handleInputChange} />
                 <div className="absolute right-3 text-gray-400">
                     <FiSearch />
                 </div>
+                
             </div>
               {options.map((option, index) => (
                 <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1 ${option[label] === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption(option)} >

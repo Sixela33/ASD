@@ -74,7 +74,6 @@ class Server {
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
         this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
         this.app.use('/api/invoices', superuserReq, new InvoiceRouter().start())
-  
         
         // -----------------------------------------------
         //                 MIDDLEWARES

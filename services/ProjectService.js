@@ -34,9 +34,13 @@ class ProjectService {
 
     getProjectArrangements = async (id) => {
         await validateId(id)
-        const arrangements = await this.model.getProjectArrangements(id)
-        const flowers = await this.model.getProjectFlowers([id])
-        const project = await this.model.getProjectByID(id)
+        let arrangements = this.model.getProjectArrangements(id)
+        let flowers = this.model.getProjectFlowers([id])
+        let project = this.model.getProjectByID(id)
+
+        arrangements = await arrangements
+        flowers = await flowers
+        project = await project
         return {project: project.rows, arrangements: arrangements.rows,flowers: flowers.rows }
     }
     

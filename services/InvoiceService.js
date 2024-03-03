@@ -15,36 +15,98 @@ class InvoiceService {
         }
     }
 
-    addInvoice = async (invoiceData, invoiceFlowerData, file, uploaderid) => {
+    addInvoice = async (invoiceData, invoiceFlowerData, file, updaterID) => {
         
         const fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
         
         invoiceData = JSON.parse(invoiceData)
-        const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, uploaderid)
+        const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, updaterID)
         return response
     }
 
-    getInvoices = async (offset, orderBy, order, searchQuery, searchBy) => {
-        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy)
+    addIncompleteInvoice= async (invoiceData, file, updaterID) => {
+        invoiceData = JSON.parse(invoiceData)
+        
+        let newFileLoc = invoiceData.fileLocation
+        
+        if (file) {
+            newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+        } 
+        
+        if (invoiceData.invoiceid) {
+            await this.model.editIncompleteInvoice(invoiceData, newFileLoc, updaterID, invoiceData.invoiceid)
+
+        } else {
+            await this.model.addIncompleteInvoice(invoiceData, newFileLoc, updaterID)
+            
+        }
+
+        return 
+    }
+
+    editInvoice = async (invoiceData, invoiceFlowerData, file, editorID) => {
+        
+        invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
+        invoiceData = JSON.parse(invoiceData)
+        
+        let newFileLoc = invoiceData.fileLocation
+        
+        if (file) {
+            newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+        } 
+
+        console.log(invoiceData)
+        console.log("fileLocation", invoiceData.fileLocation)
+        console.log("fileLocation2", newFileLoc)
+        const response = await this.model.editInvoice(invoiceData, newFileLoc, invoiceFlowerData, editorID)
+        return response
+    }
+
+    getInvoices = async (offset, orderBy, order, searchQuery, searchBy, specificVendor) => {
+        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor)
         return result.rows 
     }
 
     getProvidedProjects = async (id) => {
         console.log(id)
-        let invoiceData = await this.model.getInvoiceData(id)
+        let invoiceData = this.model.getInvoiceData(id)
+        let projects = this.model.getProvidedProjects(id)
+        let flowers = this.model.getFlowersXInvoice(id) 
+        let bankTransactions = this.model.getInvoiceBankTransactions(id)
+        
+        invoiceData = await invoiceData
         invoiceData = invoiceData.rows
 
-        let projects = await this.model.getProvidedProjects(id)
+        projects = await projects
         projects = projects.rows
-        
-        let flowers = await this.model.getFlowersXInvoice(id) 
+
+        flowers = await flowers
         flowers = flowers.rows
 
-        let bankTransactions = await this.model.getInvoiceBankTransactions(id)
+        bankTransactions = await bankTransactions
         bankTransactions = bankTransactions.rows
 
         return {projects, flowers, invoiceData, bankTransactions}
+    }
+
+    getInvoiceData = async (id) => {
+
+        let invoiceData = this.model.getInvoiceData(id)
+        let projects = this.model.getInvoiceProjects(id)
+        let flowers = this.model.getFlowersXInvoice(id) 
+        
+        invoiceData = await invoiceData
+        invoiceData = invoiceData.rows
+
+        projects = await projects
+        projects = projects.rows
+        projects = projects.map(project => project.projectid)
+    
+        flowers = await flowers
+        flowers = flowers.rows
+
+        return {projects, flowers, invoiceData}
     }
 
     linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {

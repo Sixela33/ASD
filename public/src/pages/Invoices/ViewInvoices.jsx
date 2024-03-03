@@ -9,6 +9,7 @@ import ConfirmationPopup from '../../components/ConfirmationPopup';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
+const GET_VENDORS_URL = '/api/vendors';
 
 const colData = {
         "Invoice ID": "invoiceid", 
@@ -36,6 +37,9 @@ export default function ViewInvoices() {
     const [searchByInputvalue, setSearchByInputValue] = useState('')
     const [selectedSearchFilter, setSelectedSearchFilter] = useState(searchByOptions[0].value)
 
+    const [allVendors, setAllVendors] = useState([])
+    const [selectedVendor, setSelectedVendor] = useState('')
+
     const page = useRef(0)
     const dataLeft = useRef(false)
 
@@ -43,13 +47,13 @@ export default function ViewInvoices() {
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
 
-    const fetchData = async (sortConfig, searchValue, searchCol) => {
+    const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor) => {
         try {
             if (!dataLeft.current) {
                 return;
             }
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol);
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol + '&specificVendor=' + selectedVendor);
             
             if (response.data?.length === 0) {
                 dataLeft.current = false;
@@ -68,16 +72,30 @@ export default function ViewInvoices() {
         fetchData();
     }, []);
 
+    const fetchVendors = async () => {
+        try {
+            const response = await axiosPrivate.get(GET_VENDORS_URL);
+            setAllVendors(response?.data);
+        } catch (error) {
+            setMessage(error.response?.data?.message, true);
+            console.error('Error fetching data:', error);
+        }
+    }
+        
+    useEffect(() => {
+        fetchVendors()
+    }, [])
+
     useEffect(() => {
         setInvoiceData([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, searchByInputvalue, selectedSearchFilter)
+        debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor)
         
-    }, [sortConfig, searchByInputvalue, selectedSearchFilter])
+    }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor])
 
     const handleInvoiceSelection = (invoiceData) => {
-        navigateTo(`/invoice/${invoiceData.invoiceid}`)
+        navigateTo(`/invoice/view/${invoiceData.invoiceid}`)
     }
 
     const handleCheckboxClick = (e, invoiceID) => {
@@ -138,15 +156,29 @@ export default function ViewInvoices() {
             <div className="flex justify-between items-center mb-4 ">
                 <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
                 <h1 className="text-2xl font-bold flex-grow text-center">Invoices</h1>
-                <Link to="/invoice/add" className="bg-black text-white font-bold py-2 px-4 rounded">Load Invoice</Link>
+                <Link to="/invoice/add/" className="bg-black text-white font-bold py-2 px-4 rounded">Load Invoice</Link>
             </div>
             <div className='m-2 text-left'>
-                <input className='border border-gray rounded mr-2'type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
-                <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
-                    {searchByOptions.map((item, index) => {
-                        return <option value={item.value} key={index}>{item.displayName}</option>
-                    })}
-                </select>
+    
+                    <input className='border border-gray rounded mr-2'type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
+                    <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
+                        {searchByOptions.map((item, index) => {
+                            return <option value={item.value} key={index}>{item.displayName}</option>
+                        })}
+                    </select>
+  
+                    <span className='ml-4'>Filter by vendor: </span>
+                    <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
+                        <option value={''}>Select Vendor</option>
+                        {allVendors.map((item, index) => {
+                            console.log(item)
+                            return <option value={item.vendorid} key={index}>{item.vendorname}</option>
+                        })}
+                    </select>
+                
+            </div>
+            <div className='m-2 text-left'>
+                
             </div>
             <div className='overflow-auto h-[60vh] w-full'>
                 <TableHeaderSort

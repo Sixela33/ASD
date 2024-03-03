@@ -97,6 +97,10 @@ export default function ArrangementCreation() {
         const newSelectedFlowers = [...selectedFlowers]
         newSelectedFlowers[index].quantity = e.target.value
         setSelectedFlowers(newSelectedFlowers)
+        
+        if(e.target.value <= 0) {
+            removeFlower(index)
+        }
     }
 
     const sum = selectedFlowers.reduce((accumulator, flower) => accumulator + ((flower.unitprice || 0) * flower.quantity), 0)

@@ -1,10 +1,12 @@
 import Joi from "joi"
 
 const invoiceSchema = Joi.object({
-    invoiceNumber: Joi.string().required(),
+    invoiceNumber: Joi.number().required().min(0),
     vendor: Joi.number().required().min(0),
     dueDate: Joi.date().required(),
-    invoiceAmount: Joi.number().required().min(0)
+    invoiceAmount: Joi.number().required().min(0),
+    invoiceid: Joi.number().min(0).optional(),
+    fileLocation: Joi.string().optional()
 })
 
 const validateInvoice = invoice => {

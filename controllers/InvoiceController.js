@@ -17,13 +17,38 @@ class InvoiceController {
             console.log(error)
             next(error)
         }
+    }   
+    
+    addIncompleteInvoice= async (req, res, next) => {
+        try {
+            const file = req.file
+            const {invoiceData} = req.body
+            const creatorid = req.user.userid
+            await this.service.addIncompleteInvoice(invoiceData, file, creatorid)
+            res.sendStatus(200)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }   
+
+    editInvoice = async (req, res, next) => {
+        try {
+            const file = req.file
+            const {invoiceData, InvoiceFlowerData} = req.body
+            const editorID = req.user.userid
+            await this.service.editInvoice(invoiceData, InvoiceFlowerData, file, editorID)
+            res.sendStatus(200)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
     }    
     getInvoices = async (req, res, next) => {
         try {
             const {offset} = req.params
-            const { orderBy, order, searchQuery, searchBy } = req.query
-
-            const response = await this.service.getInvoices(offset,  orderBy, order, searchQuery, searchBy)
+            const { orderBy, order, searchQuery, searchBy, specificVendor } = req.query
+            const response = await this.service.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor)
             res.json(response)
         } catch (error) {
             next(error)
@@ -34,6 +59,16 @@ class InvoiceController {
         try {
             const { id } = req.params
             const response = await this.service.getProvidedProjects(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getInvoiceData = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const response = await this.service.getInvoiceData(id)
             res.json(response)
         } catch (error) {
             next(error)

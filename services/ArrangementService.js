@@ -22,8 +22,11 @@ class ArrangementService {
     }
 
     getArrangementData = async (id) => {id
-        const arrangementData = await this.model.getArrangementDataByID(id)
-        const arrangementFLowerData = await this.model.getFlowersByArrangementID(id)
+        let arrangementData = this.model.getArrangementDataByID(id)
+        let arrangementFLowerData = this.model.getFlowersByArrangementID(id)
+
+        arrangementData = await arrangementData
+        arrangementFLowerData = await arrangementFLowerData
 
         return {arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows}
     }
@@ -33,6 +36,12 @@ class ArrangementService {
         await validateId(id)
 
         await this.model.editArrangement(id, arrangementData)
+    }
+
+    deleteArrangement = async (id) => {
+        await validateId(id)
+
+        await this.model.deleteArrangement(id)
     }
 }
 

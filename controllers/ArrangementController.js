@@ -53,6 +53,17 @@ class ArrangementController {
         }
     }
 
+    deleteArrangement = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const response = await this.service.deleteArrangement(id)
+                
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default ArrangementController

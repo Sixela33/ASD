@@ -227,7 +227,7 @@ class ModelPostgres {
             WHERE a.projectid = $1;`, [id])
         return response
     }
-    
+
     getProjectFlowers = async (ids) => {
         this.validateDatabaseConnection()
         const response =  await CnxPostgress.db.query(`
@@ -388,7 +388,12 @@ class ModelPostgres {
         arrangementQuantity = $4
         WHERE arrangementID = $5;`, 
         [arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, id])
+    }
 
+    deleteArrangement = async (id) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`SELECT deleteArrangement($1::INT);`,[id])
+        return
     }
 
     // -----------------------------------------------
@@ -415,17 +420,53 @@ class ModelPostgres {
         await CnxPostgress.db.query('SELECT addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
     }
 
+    addIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+            INSERT INTO invoices (
+                fileLocation, 
+                invoiceAmount, 
+                uploaderID, 
+                vendorID, 
+                invoiceDate, 
+                invoiceNumber)
+            VALUES ($1, $2, $3, $4, $5, $6);`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber])
+    }
+
+    editIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid, invoiceid) => {
+        this.validateDatabaseConnection();
+        await CnxPostgress.db.query(`
+            UPDATE invoices 
+            SET 
+                fileLocation = $1,
+                invoiceAmount = $2,
+                uploaderID = $3,
+                vendorID = $4,
+                invoiceDate = $5,
+                invoiceNumber = $6
+            WHERE 
+                invoiceID = $7;`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceid]);
+    }
+
+    editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('SELECT editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
+    }
+
     getInvoiceData = async (id) => {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`
         SELECT 
             i.invoiceid, 
             fv.vendorname, 
+            i.vendorID,
             i.invoiceamount, 
             i.invoiceNumber,
             u.email,
             i.fileLocation,
-            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate
+            TO_CHAR(i.invoicedate, 'YYYY-MM-DD') AS invoicedate
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
@@ -434,8 +475,16 @@ class ModelPostgres {
     }
 
 
+    getInvoiceProjects = async (invoiceID) => {
+        this.validateDatabaseConnection()
+        const respone = await CnxPostgress.db.query(`SELECT DISTINCT projectID FROM flowerXInvoice WHERE invoiceID = $1;`, [invoiceID])
+        return respone
+    }
 
-    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy) => {
+
+
+
+    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
 
@@ -472,10 +521,24 @@ class ModelPostgres {
         LEFT JOIN (
             SELECT DISTINCT invoiceID FROM invoiceTransaction
         ) it ON it.invoiceID = i.invoiceID`
-        
+    
+        const queryParams = []
+        let queryConditions = []
+    
+        // Agregar filtro para el vendor específico si se proporciona
+        if (specificVendor) {
+            queryConditions.push('i.vendorID = $1')
+            queryParams.push(specificVendor)
+        }
+    
         const queryString = `%${searchQuery}%`
         if (invoiceSearchColumns[searchBy] && searchQuery) {
-            queryBase += ' WHERE CAST(' + invoiceSearchColumns[searchBy] + ' AS TEXT) LIKE $1';
+            queryConditions.push(`CAST(${invoiceSearchColumns[searchBy]} AS TEXT) LIKE $${queryParams.length + 1}`)
+            queryParams.push(queryString)
+        }
+    
+        if (queryConditions.length > 0) {
+            queryBase += ' WHERE ' + queryConditions.join(' AND ')
         }
 
         if (invoiceColumns[orderBy]) {
@@ -485,17 +548,10 @@ class ModelPostgres {
             }
         }
         
-        let queryValues = []
-        if (invoiceSearchColumns[searchBy] && searchQuery) {
-            queryBase += " LIMIT $2 OFFSET $3;"
-            queryValues = [queryString, LIMIT, offset]
-            
-        }else {
-            queryBase += " LIMIT $1 OFFSET $2;"
-            queryValues = [LIMIT, offset]
-        }
+        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`
+        queryParams.push(LIMIT, offset)
 
-        const response = await CnxPostgress.db.query(queryBase, queryValues)
+        const response = await CnxPostgress.db.query(queryBase, queryParams)
 
         return response
         
@@ -505,12 +561,14 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`
         SELECT 
-            projects.*, 
+            p.projectcontact, 
+            p.projectdate, 
+            p.projectdescription,
             clients.clientName AS projectclient, 
-            TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
-            FROM projects 
-            INNER JOIN clients ON projects.clientID = clients.clientID 
-            WHERE projects.projectID IN (
+            TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate 
+            FROM projects p
+            INNER JOIN clients ON p.clientID = clients.clientID 
+            WHERE p.projectID IN (
                 SELECT DISTINCT projectID 
                 FROM flowerXInvoice 
                 WHERE invoiceID = $1);`
@@ -525,9 +583,11 @@ class ModelPostgres {
                 f.flowerid,
                 f.flowername,
                 FxI.unitPrice,
-                FxI.numStems
+                FxI.numStems,
+                p.projectID
                 FROM flowerXInvoice FxI
-                LEFT JOIN flowers f on f.flowerID = FxI.flowerID
+                LEFT JOIN flowers f ON f.flowerID = FxI.flowerID
+                LEFT JOIN projects p ON p.projectID = FxI.projectID
                 WHERE FxI.invoiceID = $1;`, [invoiceid])
 
         return respone

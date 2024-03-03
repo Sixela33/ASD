@@ -47,8 +47,11 @@ class FlowerService {
     getFlowerData = async (id) => {
         await validateId(id)
 
-        const data = await this.model.getFlowerData(id)
-        const prices = await this.model.getFlowerPrices(id)
+        let data = this.model.getFlowerData(id)
+        let prices = this.model.getFlowerPrices(id)
+
+        data = await data
+        prices = await prices
 
         return {flowerData: data.rows, flowerPrices: prices.rows}
     }

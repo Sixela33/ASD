@@ -13,9 +13,13 @@ class UserService {
     getUserById = async (userid) => {
         await validateId(userid)
 
-        const response = await this.model.getUserById(userid)
-        const roles = await this.model.getUserRoles(userid)
-        const allRoles = await this.model.getAllRoles()
+        let response = this.model.getUserById(userid)
+        let roles = this.model.getUserRoles(userid)
+        let allRoles = this.model.getAllRoles()
+
+        response = await response
+        roles = await roles
+        allRoles = await allRoles
 
         return {user: response.rows, roles: roles, allRoles: allRoles.rows}
     }
@@ -61,7 +65,6 @@ class UserService {
             const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d'})
             await this.model.setRefreshToken(user.userid, refreshToken)
 
-            console.log(user)
             return {accessToken, refreshToken, userRoles}
         } else {
             throw { message: "Invalid login data", status: 401 };
