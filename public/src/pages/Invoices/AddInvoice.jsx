@@ -7,8 +7,9 @@ import InvoiceFlowerAssignment from '../../components/InvoiceCreation/InvoiceFlo
 import { validateInvoice } from '../../utls/validations/InvoiceDataValidations';
 import GoBackButton from '../../components/GoBackButton';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { BASE_URL, axiosPrivateImage } from '../../api/axios';
+import { BASE_URL } from '../../api/axios';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
+import { useNavigate } from 'react-router-dom';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
@@ -25,6 +26,7 @@ export default function AddInvoice() {
   const { id } = useParams();
   const axiosPrivate = useAxiosPrivate()
   const axiosPrivateImage = useAxiosPrivateImage()
+  const navigateTo = useNavigate()
 
   const [pdfFile, setPdfFile] = useState(null);
   const [prevInvoiceFile, setPrevInvoiceFile] = useState(null)
@@ -134,7 +136,7 @@ export default function AddInvoice() {
 
     await axiosPrivateImage.post(SAVE_INCOMPLETE_INVOICE, formDataToSend);
     
-    setMessage('Success')
+    setMessage('Success', false)
     navigateTo('/invoice')
     
   }

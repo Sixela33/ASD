@@ -25,17 +25,16 @@ class PermissionsMiddelware {
             } catch (error) {
                 throw { message: error.message, status: 403 }   
             }
-            // THIS MIGHT GO INTO THE ROLE CONTROLLER
-            let userRoles = await this.roleService.getUserRoles(decoded.userid)
+
+            let userPermissionLevel = await this.roleService.getUserPermissionLevel(decoded.userid)
             
-            const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role)).find(val => val === true)
-            console.log("Caller permissions",userRoles)
+            const hasPermission = userPermissionLevel >= this.permissionsRequired
+
+            console.log("Caller permissions", userPermissionLevel)
             console.log("Permissions required", this.permissionsRequired)
-            console.log('has all roles', hasAllRoles)
-            
-            //const hasAllRoles = this.permissionsRequired.map(role => userRoles.includes(role));
-            
-            if (!hasAllRoles) {
+            console.log('has all roles', hasPermission)
+                        
+            if (!hasPermission) {
                 return res.status(401).json({ message: 'Insufficient permissions' });
             }
     

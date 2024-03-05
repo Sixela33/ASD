@@ -7,108 +7,87 @@ import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { redirect } from 'react-router-dom';
 import GoBackButton from '../../components/GoBackButton';
+//import PopupBase from '../../components/PopupBase';
+import ConfirmationPopup from '../../components/ConfirmationPopup';
 
 const USER_URL = 'api/users/search/';
 const ADD_ROLE_URL = "/api/users/roles/give"
-const REMOVE_ROLE_URL = "/api/users/roles/removePermission"
+const CHANGE_ROLE_URL = "/api/users/roles/changePermissions"
 
 export default function User() {
     const { userid } = useParams();
     const axiosPrivate = useAxiosPrivate();
+    const {setMessage} = useAlert()
     
     const [userData, setUserData] = useState(null);
-    const [userRoles, setUserRoles] = useState([]);
     const [allRoles, setAllRoles] = useState([]);
-    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedRole, setSelectedRole] = useState(undefined);
     const [reloadPage, setReload] = useState(false)
+    const [showRolePopup, setShwoRolePopup] = useState(false)
 
-    const {setMessage} = useAlert()
+    const getData = async () => {
+        try {
+            const response = await axiosPrivate.get(USER_URL + userid);
+            console.log(response.data)
+            setUserData(response?.data?.user[0]);
+            setAllRoles(response?.data?.allRoles);
+        } catch (error) {
+            setMessaguserDatae(error.response?.data?.message, true)
+            redirect('/admin')
+            console.error('Error fetching data:', error);
+        }
+    }
 
     useEffect(() => {
-        async function getData() {
-            try {
-                const response = await axiosPrivate.get(USER_URL + userid);
-                setUserData(response?.data?.user[0]);
-                setUserRoles(response?.data?.roles);
-                setAllRoles(response?.data?.allRoles);
-            } catch (error) {
-                setMessage(error.response?.data?.message, true)
-                redirect('/')
-                console.error('Error fetching data:', error);
-            }
-        }
         getData();
-    }, [reloadPage]);
+    }, []);
 
-    const handleAddRole = async () => {
-        if (selectedRole && !userRoles.includes(selectedRole)) {
-            const role = allRoles.find(role => role.rolename === selectedRole)
-            try {
-                const response = await axiosPrivate.post(ADD_ROLE_URL, JSON.stringify({userid: userid, roleid: role.roleid}))
-                setMessage("Role added succesfully", false)
-                setReload(!reloadPage)
-
-            } catch (error) {
-                console.log(error)
-                setMessage(error?.response?.data?.message, true)
-            }
+    const handleChangeRole = async () => {
+        if (!selectedRole) {
+            return
         }
+       try {
+            const response = await axiosPrivate.patch(CHANGE_ROLE_URL, JSON.stringify({newRoleid: selectedRole, userid: userData.userid}))
+            setMessage('Role changed Successfully!', false)
+            getData()
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+
+       }
     };
+
+    const handleCancelPopup = async () => {
+        setSelectedRole('')
+        setShwoRolePopup(false)
+    }
 
     const handleRemoveRole = async (localSelectedRole) => {
 
-        if (localSelectedRole && userRoles.includes(localSelectedRole)) {
-            const role = allRoles.find(role => role.rolename === localSelectedRole)
-            try {
-                const response = await axiosPrivate.patch(REMOVE_ROLE_URL, JSON.stringify({userid: userid, roleid: role.roleid}))
-                setMessage("Role removed", false)
-                setReload(!reloadPage)
-
-            } catch (error) {
-                console.log(error)
-                setMessage(error?.response?.data?.message, true)
-            }
-            
-        }
+    
     };
 
     return (
         <div className="container mx-auto mt-8 p-4 bg-white shadow-md rounded-md">
             <GoBackButton/>
+            <ConfirmationPopup showPopup ={showRolePopup} closePopup={handleCancelPopup} confirm={handleChangeRole}>
+                <h1>Select new role</h1>
+                <select className="mr-2 px-2 py-1 border border-gray-300 rounded" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                    <option value={undefined} >Select a role</option>
+                    {allRoles.map((role) => (
+                        <option key={role.roleid} value={role.roleid}>
+                            {role.rolename}
+                        </option>
+                    ))}
+                </select>
+            </ConfirmationPopup>
         {userData && (
             <div>
                 <h1 className="text-2xl font-bold mb-4">User Profile - {userData.username}</h1>
                 <p className="text-gray-600">Email: {userData.email}</p>
 
                 <div className="mt-6">
-                    <h2 className="text-lg font-semibold mb-2">User Roles</h2>
-                    <ul className="list-disc pl-6">
-                        {userRoles.map((role) => (
-                            <li key={role} className="text-gray-700 flex items-center">
-                                <span>{role}</span>
-                                <button className="ml-2 text-red-500" onClick={() => handleRemoveRole(role)}>
-                                    <FontAwesomeIcon icon={faTrashAlt} />
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="mt-6">
-                    <h2 className="text-lg font-semibold mb-2">All Roles</h2>
-                    <div className="flex items-center">
-                        <select className="mr-2 px-2 py-1 border border-gray-300 rounded" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
-                            <option value="" disabled>Select a role</option>
-                            {allRoles.map((role) => (
-                                <option key={role.roleid} value={role.rolename}>
-                                    {role.rolename}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={handleAddRole}>
-                            Add Role
-                        </button>
-                    </div>
+                    <h2 className="text-lg font-semibold mb-2">User Role: {userData.rolename}</h2>
+                    <button onClick={() => {setShwoRolePopup(true)}}>Change Role</button>
                 </div>
             </div>
         )}

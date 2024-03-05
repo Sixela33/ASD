@@ -14,14 +14,13 @@ class UserService {
         await validateId(userid)
 
         let response = this.model.getUserById(userid)
-        let roles = this.model.getUserRoles(userid)
+        //  let roles = this.model.getUserRoles(userid)
         let allRoles = this.model.getAllRoles()
 
         response = await response
-        roles = await roles
         allRoles = await allRoles
 
-        return {user: response.rows, roles: roles, allRoles: allRoles.rows}
+        return {user: response.rows, allRoles: allRoles.rows}
     }
 
     getUsers = async () => {
@@ -59,13 +58,12 @@ class UserService {
         
         if (hasRightPass) {
             delete user.passhash
-            let userRoles = await this.model.getUserRoles(user.userid)
 
             const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d'})
             await this.model.setRefreshToken(user.userid, refreshToken)
 
-            return {accessToken, refreshToken, userRoles}
+            return {accessToken, refreshToken}
         } else {
             throw { message: "Invalid login data", status: 401 };
         }
@@ -149,13 +147,13 @@ class UserService {
             }
             //checks if it is the same that the user that had it
             if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
-            let userRoles = await this.model.getUserRoles(user.userid)
+            // let userRoles = await this.model.getUserRoles(user.userid)
             delete user.passhash
             
             // creates new temporary token
             const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
     
-            return {accessToken, userRoles}
+            return {accessToken}
         } catch (error) {
 
             throw { message: error.message, status: 403 }        

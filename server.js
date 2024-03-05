@@ -21,6 +21,7 @@ import VendorRouter from "./routers/VendorRouter.js";
 import ClientRouter from "./routers/ClientRouter.js";
 import InvoiceRouter from "./routers/InvoiceRouter.js";
 
+import ROLES_LIST from "./config/rolesList.js";
 /*
     This code was written by S1X3L4
 
@@ -63,16 +64,16 @@ class Server {
         // -----------------------------------------------
         //                  ROUTES
         // -----------------------------------------------
-        const loginreq = new PermissionsMiddelware(['User']).call
-        const superuserReq = new PermissionsMiddelware(['Admin']).call
+        const loginreq = new PermissionsMiddelware(ROLES_LIST['User']).call
+        const superuserReq = new PermissionsMiddelware(ROLES_LIST['Admin']).call
 
         this.app.use('/api/users', new UserRouter().start())
+        this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
         this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
         this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
         this.app.use('/api/clients', loginreq, new ClientRouter().start())
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
-        this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
         this.app.use('/api/invoices', superuserReq, new InvoiceRouter().start())
         
         // -----------------------------------------------

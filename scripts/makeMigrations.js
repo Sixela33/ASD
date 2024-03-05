@@ -16,10 +16,10 @@ const makeMigrations = async () => {
             await model.runQuery(sql)
 
             console.log("Creating default roles")
-            ROLES_LIST.forEach(async (r) => {
-                console.log("created role: ", r)
-                await model.createRole(r)
-            })
+ 
+            for (const [key, value] of Object.entries(ROLES_LIST)) {
+                await model.createRole(key, value)
+            }
 
             console.log("Creating stored procedures")
             var files = fs.readdirSync(filesFolder + spFolder);

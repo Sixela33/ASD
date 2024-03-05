@@ -224,11 +224,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
         formDataToSend.append('InvoiceFlowerData', JSON.stringify(invoiceFlowerData));
         formDataToSend.append('invoiceFile', invoiceFile);
-        console.log("invoiceData", invoiceData)
-        console.log("InvoiceFlowerData", invoiceFlowerData)
-        console.log("invoiceFile", invoiceFile)
 
-        if (loadedFlowers.length == 0) {
+        if (!invoiceData.invoiceid) {
             await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
             setMessage('Invoice Loaded successfully', false)
         } else {

@@ -73,7 +73,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
                 {flowerData.map((flower, index) => (
                     <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>
-                        <img src={`${BASE_URL}/api/${flower.flowerimage}`} alt={flower.flowername} className="w-full object-cover h-32"/>
+                        <img src={`${BASE_URL}/api/${flower.flowerimage}`} alt={flower.flowername} loading="lazy" className="w-full object-cover h-32"/>
                         <div className="p-4">
                             <h2 className="text-xl font-bold mb-2">{flower.flowername}</h2>
                             <p className="text-gray-600">{flower.flowercolor}</p>

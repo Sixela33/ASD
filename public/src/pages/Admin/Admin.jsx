@@ -15,6 +15,7 @@ export default function Admin() {
         async function getData() {
             try {
                 const response = await axiosPrivate.get(USERS_URL);
+                console.log(response.data)
                 setUsers(response?.data);
             } catch (error) {
                 setMessage(error.response?.data?.message, true)
@@ -38,6 +39,7 @@ export default function Admin() {
                             <th className="p-2">User ID</th>
                             <th className="p-2">Username</th>
                             <th className="p-2">Email</th>
+                            <th className="p-2">User role</th>
                             <th className="p-2">ADMIN</th>
                         </tr>
                     </thead>
@@ -47,6 +49,7 @@ export default function Admin() {
                                 <td className="border-b p-2 text-center">{user.userid}</td>
                                 <td className="border-b p-2 text-center">{user.username}</td>
                                 <td className="border-b p-2 text-center">{user.email}</td>
+                                <td className="border-b p-2 text-center">{user.rolename}</td>
                                 <td className="border-b p-2 text-center">
                                     <Link to={`/admin/${user.userid}`} className="mt-4 text-blue-500 hover:text-blue-700">Edit</Link>
                                 </td>

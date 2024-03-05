@@ -17,10 +17,15 @@ class InvoiceService {
 
     addInvoice = async (invoiceData, invoiceFlowerData, file, updaterID) => {
         
-        const fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
-        invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
-        
         invoiceData = JSON.parse(invoiceData)
+        invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
+
+        let fileLocation = invoiceData.fileLocation
+
+        if (file){
+            fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+        }
+
         const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, updaterID)
         return response
     }

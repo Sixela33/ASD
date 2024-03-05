@@ -1,6 +1,7 @@
 import express from 'express'
 import UserController from '../controllers/UserController.js'
 import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
+import ROLES_LIST from '../config/rolesList.js'
 
 // all the user routes
 class UserRouter {
@@ -12,8 +13,8 @@ class UserRouter {
 
     start(){
         // gets user by email
-        const staffPermission = new PermissionsMiddelware(['Staff']).call
-        const adminPermission = new PermissionsMiddelware(['Admin']).call
+        const staffPermission = new PermissionsMiddelware(ROLES_LIST['Staff']).call
+        const adminPermission = new PermissionsMiddelware(ROLES_LIST['Admin']).call
 
         this.router.get('/search/:userid?', staffPermission, this.controller.getUsers)
         this.router.get('/all', staffPermission, this.controller.getUsersList)

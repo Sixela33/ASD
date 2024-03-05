@@ -20,9 +20,10 @@ class RoleRouter {
         */
         
         this.router.post('/create', this.controller.createRole)
-        this.router.post('/give', this.controller.addRoleToUser)
-        this.router.patch('/removePermission', this.controller.removeRoleUser)
-        this.router.delete('/', this.controller.removeRole)
+        this.router.get('/', this.controller.getAllPermissionLevels)
+        this.router.patch('/changePermissions', this.controller.changeUserPermissions)
+        // this.router.post('/give', this.controller.addRoleToUser)
+        // this.router.delete('/', this.controller.removeRole)
         return this.router
     }
     

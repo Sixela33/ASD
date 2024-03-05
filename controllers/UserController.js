@@ -82,8 +82,7 @@ class UserController {
     handleRefresh = async (req, res, next) => {
         try {
             const cookies = req.cookies;
-            if (!cookies?.jwt) return res.sendStatus(401);
-            
+            //if (!cookies?.jwt) return res.sendStatus(401);
             const {accessToken, userRoles} = await this.service.handleRefresh(cookies.jwt)
             res.json({accessToken, userRoles})
         } catch (error) {

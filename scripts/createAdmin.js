@@ -24,8 +24,7 @@ const createSuperuser = async () => {
             await model.registerUser(username, email, hashedPassword);
             let user = await model.getUserByEmail(email)
             user = user.rows[0]
-            await model.addRoleToUser(2, user.userid)
-            await model.addRoleToUser(3, user.userid)
+            await model.setUserPermissionLevel(user.userid, ROLES_LIST['Admin'])
             
             console.log("Admin created succesfully")
         } catch (error) {

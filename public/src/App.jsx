@@ -23,6 +23,7 @@ import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
 import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
 
+import ROLES_LIST from '../../config/rolesList';
 function App() {
 
   return (
@@ -35,7 +36,7 @@ function App() {
           
           {/* protected routes */}
           <Route element={<PersistLogin />}>
-            <Route element={<RequireAuth allowedRoles={['User']} />}>
+            <Route element={<RequireAuth allowedRoles={ROLES_LIST['User']} />}>
               <Route path="/" element={<Home />} />
               <Route path="register" element={<Register />} />
               <Route path="/flowers/create" element={<LoadFlower/>}/>
@@ -52,7 +53,7 @@ function App() {
               <Route path='/invoice/view/:id' element={<ViewSingleInvoice/>}></Route>
             </Route>
 
-            <Route element={<RequireAuth allowedRoles={['Admin']} />}>
+            <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
               <Route path="admin" element={<Admin/>}/>
               <Route path="admin/:userid" element={<User/>}/>
               <Route path="project/create" element={<CreateProject/>}/>

@@ -1,3 +1,4 @@
+import ROLES_LIST from "../../config/rolesList.js";
 import CnxPostgress from "../CnxPostgress.js";
 
 class ModelPostgres {
@@ -23,17 +24,32 @@ class ModelPostgres {
 
     getUserByEmail = async (email) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT * FROM users WHERE email = $1;', [email])        
+        return await CnxPostgress.db.query(`SELECT email, userid, username, passhash FROM users WHERE email = $1;`, [email])        
     }
 
     getUserById = async (userID) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT * FROM users WHERE userid = $1;', [userID])        
+        return await CnxPostgress.db.query(`
+        SELECT 
+            u.email, 
+            ur.roleCode as permissionlevel, 
+            ur.roleName,
+            u.userid, 
+            u.username 
+        FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
+        WHERE u.userid = $1;`, [userID])        
     }
 
     getUserByRefreshToken = async (refreshToken) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT * FROM users WHERE refreshtoken = $1;', [refreshToken])     
+        return await CnxPostgress.db.query(`
+            SELECT 
+                u.email, 
+                ur.roleCode as permissionlevel, 
+                u.userid, 
+                u.username 
+            FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
+            WHERE u.refreshtoken = $1;`, [refreshToken])     
     }
 
     setRefreshToken = async (userID, refreshToken) => {
@@ -43,16 +59,23 @@ class ModelPostgres {
 
     getUsers = async () => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query("SELECT * FROM users;")
+        return await CnxPostgress.db.query(`
+        SELECT 
+            u.email, 
+            ur.roleCode as permissionlevel, 
+            ur.roleName,
+            u.userid, 
+            u.username 
+        FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID;`)
 
     }
 
     registerUser = async (username, email, passHash) => {
         this.validateDatabaseConnection()
-        // await CnxPostgress.db.query('INSERT INTO users (username, email, passhash) VALUES ($1, $2, $3);', [username, email, passHash])
-        // this funciont creates the user and asigns it to the "User" role
-        await CnxPostgress.db.query('SELECT createUser($1, $2, $3)', [username, email, passHash])
-                
+
+        await CnxPostgress.db.query(`
+        INSERT INTO users (username, email, passhash, permissionLevel)
+        VALUES ($1, $2, $3, $4);`, [username, email, passHash, ROLES_LIST['User']])    
     }
 
     changePassword = async (userID, newPassHash) => {
@@ -64,44 +87,70 @@ class ModelPostgres {
     //                USER PERMISSIONS
     // -----------------------------------------------
 
-    createRole = async (roleName) => {
+    
+    getUserPermissionLevel = async (userID) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('INSERT INTO userrole (rolename) VALUES ($1);', [roleName])
+        const res = await CnxPostgress.db.query(`
+            SELECT 
+                ur.roleCode as permissionlevel
+            FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID
+            WHERE u.userID = $1;`, [userID])
+
+        return res.rows.map(p => p.permissionlevel)
     }
 
+    changeUserPermissions = async (newRoleid, userid) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('UPDATE users SET permissionLevel = $1 WHERE userid = $2;', [newRoleid, userid])
+    }
+
+    setUserPermissionLevel = async (userID, permissionLevel) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`UPDATE users SET permissionLevel = (SELECT roleID FROM userRole WHERE roleCode = $1) WHERE userid = $2;`, [permissionLevel, userID])
+    }
+
+    createRole = async (roleName, roleCode) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('INSERT INTO userrole (rolename, roleCode) VALUES ($1, $2);', [roleName, roleCode])
+    }
+    
     getAllRoles = async () => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT roleid, rolename FROM userrole')
+        return await CnxPostgress.db.query('SELECT roleid, rolename, roleCode FROM userrole')
     }
 
-    getRoleByID = async (roleid) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT * FROM userrole WHERE roleid = $1;', [roleid])
-    } 
+    /*
 
-    addRoleToUser = async (roleID, userID) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query('INSERT INTO roleXuser (userid, roleid) VALUES ($1, $2);', [userID, roleID])
-    }
 
-    getUserRoles = async (userID) => {
-        this.validateDatabaseConnection()        
-        const response = await CnxPostgress.db.query('SELECT r.roleName FROM roleXuser rxu JOIN userRole r ON rxu.roleID = r.roleID WHERE rxu.userID = $1;', [userID])
+        getRoleByID = async (roleid) => {
+            this.validateDatabaseConnection()
+            return await CnxPostgress.db.query('SELECT * FROM userrole WHERE roleid = $1;', [roleid])
+        } 
 
-        const roles = response.rows.map(row => row.rolename);
-        return roles;
-    
-    }
+        addRoleToUser = async (roleID, userID) => {
+            this.validateDatabaseConnection()
+            await CnxPostgress.db.query('INSERT INTO roleXuser (userid, roleid) VALUES ($1, $2);', [userID, roleID])
+        }
 
-    removeRoleUser = async (roleID, userID) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('DELETE FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
-    }
+        getUserRoles = async (userID) => {
+            this.validateDatabaseConnection()        
+            const response = await CnxPostgress.db.query('SELECT r.roleCode FROM roleXuser rxu JOIN userRole r ON rxu.roleID = r.roleID WHERE rxu.userID = $1;', [userID])
 
-    userHasRole = async (roleID, userID) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT * FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
-    }
+            const roles = response.rows.map(row => row.rolecode);
+            return roles;
+        
+        }
+
+        removeRoleUser = async (roleID, userID) => {
+            this.validateDatabaseConnection()
+            return await CnxPostgress.db.query('DELETE FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
+        }
+
+        userHasRole = async (roleID, userID) => {
+            this.validateDatabaseConnection()
+            return await CnxPostgress.db.query('SELECT * FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
+        }
+    */
 
     // -----------------------------------------------
     //                    CLIENTS
@@ -197,7 +246,12 @@ class ModelPostgres {
             projectdate : ' ORDER BY p.projectDate'
         }
 
-        let queryBase = "SELECT p.*, c.clientName AS projectclient, TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects p INNER JOIN clients c ON p.clientID = c.clientID"
+        let queryBase = `
+        SELECT 
+            p.*, 
+            c.clientName AS projectclient, 
+            TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate 
+            FROM projects p INNER JOIN clients c ON p.clientID = c.clientID`
 
         if (showOpenOnly == 'true') {
             queryBase += " WHERE p.isClosed = false"
@@ -266,6 +320,7 @@ class ModelPostgres {
 
     addFlower = async (image, name, color) => {
         this.validateDatabaseConnection()
+        console.log(image, name, color)
         await CnxPostgress.db.query("INSERT INTO flowers (flowerName, flowerImage, flowerColor) VALUES($1, $2, $3);", [name, image, color]);
         
     }

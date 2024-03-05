@@ -15,7 +15,8 @@ BEGIN
         uploaderID = p_uploaderId,
         vendorID = (p_invoiceData->>'vendor')::INT,
         invoiceDate = (p_invoiceData->>'dueDate')::DATE,
-        invoiceNumber = (p_invoiceData->>'invoiceNumber')::INT
+        invoiceNumber = (p_invoiceData->>'invoiceNumber')::INT,
+        lastEdit = CURRENT_TIMESTAMP
     WHERE
         invoiceID = (p_invoiceData->>'invoiceid')::INT;
 

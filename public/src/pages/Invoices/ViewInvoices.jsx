@@ -116,7 +116,7 @@ export default function ViewInvoices() {
     const addBankTransactions = async () => {
         try {
             const selectedInvoicesTemp = Object.keys(selectedInvoices)
-     
+
             await axiosPrivate.post(LINK_BAKK_TX_URL, JSON.stringify({bankTransactionData, selectedInvoices: selectedInvoicesTemp}))
             setMessage('Bank transacion added succesfully.', false)
             setBankTransactionData('')
@@ -147,7 +147,7 @@ export default function ViewInvoices() {
 
 
     return (
-        <div className='container mx-auto mt-8 p-4 bg-white shadow-md rounded-md text-center'>
+        <div className='container mx-auto mt-8 p-4 bg-white text-center'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
                 <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
                 <br/>
@@ -171,7 +171,6 @@ export default function ViewInvoices() {
                     <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
                         <option value={''}>Select Vendor</option>
                         {allVendors.map((item, index) => {
-                            console.log(item)
                             return <option value={item.vendorid} key={index}>{item.vendorname}</option>
                         })}
                     </select>
