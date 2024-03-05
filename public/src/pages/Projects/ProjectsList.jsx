@@ -5,6 +5,7 @@ import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import QueryDataSortTable from '../../components/Tables/QueryDataSortTable';
 import { debounce } from 'lodash';
+import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 
 const GET_PROJECTS_URL = '/api/projects/list/';
 const defaultSortCOnfig = { key: null, direction: 'asc' }
@@ -37,6 +38,7 @@ const ProjectsList = () => {
                     dataLeft.current = false;
                     return;
                 }
+                console.log(response.data)
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
             })
             .catch(error => {
@@ -61,6 +63,17 @@ const ProjectsList = () => {
         }
     }, [inView]);
 
+    const projectStatusStyles = {
+        0: "bg-red-500",
+        1: "bg-yellow-500",
+        2: "bg-green-500"
+    }
+
+    const projectStatusText = {
+        0: "No arrangements Created",
+        1: "Designs Needed",
+        2: "Complete"
+    }
 
     return (
         <div className="container mx-auto mt-8 flex flex-col" style={{ height: '80vh' }}>
@@ -74,25 +87,38 @@ const ProjectsList = () => {
                 <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
             </div>
             <div className='overflow-auto h-[70vh] w-full mt-2'>
-
-                <QueryDataSortTable
-                    headers={{
-                        "id": "projectid",
-                        "Client": "projectclient",
-                        "Description": "projectdescription",
-                        "Contact": "projectcontact",
-                        "Date": "projectdate"
-                    }}
-                    data={projectsInfo}
-                    onRowClick={handleRowClick}
-                    setSortConfig={setSortConfig}
-                    InViewRef={ref}
-                    showViewRef={dataLeft.current}
-                    sortConfig={sortConfig}
-                    defaultSortConfig={defaultSortCOnfig}
+                <TableHeaderSort
+                headers={{
+                    "id": "projectid",
+                    "Client": "projectclient",
+                    "Description": "projectdescription",
+                    "Contact": "projectcontact",
+                    "Date": "projectdate",
+                    "Status": "projectstatus"
+                }} 
+                setSortConfig={setSortConfig}
+                sortConfig={sortConfig} 
+                defaultSortConfig={defaultSortCOnfig}
                 >
-
-                </QueryDataSortTable>
+                {projectsInfo.map((item, rowIndex) => (
+                    <tr key={rowIndex} className='bg-gray-300 border' onClick={() => handleRowClick(item)}>
+                        <td className="p-2">{item.projectid}</td>
+                        <td className="p-2">{item.projectclient}</td>
+                        <td className="p-2">{item.projectdescription}</td>
+                        <td className="p-2">{item.projectcontact}</td>
+                        <td className="p-2">{item.projectdate}</td>
+                        <td className={`p-2 ${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
+                    </tr>
+                ))}
+                
+                {dataLeft.current && (
+                    <tr ref={ref}>
+                        
+                        <td className="border p-2"> Loading </td>
+                       
+                    </tr>
+                )}
+        </TableHeaderSort>
             </div>
         </div>
     );

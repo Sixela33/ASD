@@ -243,15 +243,34 @@ class ModelPostgres {
             projectclient : ' ORDER BY c.clientName',
             projectdescription : ' ORDER BY p.projectDescription',
             projectcontact : ' ORDER BY p.projectContact',
-            projectdate : ' ORDER BY p.projectDate'
+            projectdate : ' ORDER BY p.projectDate',
+            projectstatus: ' ORDER BY projectstatus'
         }
 
         let queryBase = `
         SELECT 
             p.*, 
             c.clientName AS projectclient, 
-            TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate 
-            FROM projects p INNER JOIN clients c ON p.clientID = c.clientID`
+            TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
+            CASE
+                WHEN num_arrangements IS NULL THEN 0
+                WHEN num_arrangements_with_no_flowers > 0 THEN 1
+                ELSE 2
+            END AS projectStatus
+        FROM 
+            projects p 
+        INNER JOIN 
+            clients c ON p.clientID = c.clientID
+        LEFT JOIN (
+            SELECT 
+                projectID,
+                COUNT(*) AS num_arrangements,
+                COUNT(CASE WHEN arrangementID NOT IN (SELECT arrangementID FROM flowerXarrangement) THEN 1 END) AS num_arrangements_with_no_flowers
+            FROM 
+                arrangements
+            GROUP BY 
+                projectID
+        ) AS arr_counts ON p.projectID = arr_counts.projectID`
 
         if (showOpenOnly == 'true') {
             queryBase += " WHERE p.isClosed = false"
