@@ -59,6 +59,7 @@ export default function CreateProject() {
             console.log(error)
         }
     }
+    
     useEffect(() => {
         fetchData()
     }, [])
@@ -129,8 +130,8 @@ export default function CreateProject() {
         try {
             await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
             setMessage('Project created successfully', false)
-            //setFormState(initialState)
-            //navigateTo('/projects')
+            setFormState(initialState)
+            navigateTo('/projects')
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true)

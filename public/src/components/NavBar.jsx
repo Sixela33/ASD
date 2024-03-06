@@ -33,9 +33,8 @@ const Navbar = () => {
                         </svg>
                     </button>
                 </div>
-
                 <div className={`lg:flex ${isOpen ? 'flex' : 'hidden'} items-right`}>
-                    {auth?.userRoles && <Link onClick={signOut} className="text-white">LogOut</Link>}
+                    {auth.decoded && <Link onClick={signOut} className="text-white">LogOut</Link>}
                 </div>
             </div>
         </nav>

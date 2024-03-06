@@ -176,9 +176,6 @@ export default function ViewInvoices() {
                     </select>
                 
             </div>
-            <div className='m-2 text-left'>
-                
-            </div>
             <div className='overflow-auto h-[60vh] w-full'>
                 <TableHeaderSort
                     headers={colData} 

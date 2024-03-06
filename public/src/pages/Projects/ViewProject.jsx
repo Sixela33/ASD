@@ -145,6 +145,10 @@ export default function ViewProject() {
         }
     }
 
+    const handleCreateArrangement = () => {
+        
+    }
+
     const handleArrangementEdit = (e, arrData) => {
         e.stopPropagation()
         setEditArrangementPopupData(arrData)
@@ -211,6 +215,7 @@ export default function ViewProject() {
                     <p>Project Description: {projectData?.projectdescription}</p>
                 </div>
             </div>
+            <button onClick={handleCreateArrangement}>Create new Arrangement</button>
             <div className="flex flex-col items-center mb-8 overflow-auto h-[20vh]">
                 <TableHeaderSort
                 headers={{'Type': ' ', 'Description': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ', 'Status': ' ', 'admin': ' '}}>

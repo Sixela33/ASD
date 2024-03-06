@@ -48,15 +48,17 @@ function App() {
               
               <Route path="/arrangement/:id" element={<ArrangementCreation/>}></Route>
               
-              <Route path="/invoice" element={<ViewInvoices/>}></Route>
-              <Route path="/invoice/add/:id?" element={< AddInvoice/>}></Route>
-              <Route path='/invoice/view/:id' element={<ViewSingleInvoice/>}></Route>
             </Route>
 
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
               <Route path="admin" element={<Admin/>}/>
               <Route path="admin/:userid" element={<User/>}/>
               <Route path="project/create" element={<CreateProject/>}/>
+
+              <Route path="/invoice" element={<ViewInvoices/>}></Route>
+              <Route path="/invoice/add/:id?" element={< AddInvoice/>}></Route>
+              <Route path='/invoice/view/:id' element={<ViewSingleInvoice/>}></Route>
+              
             </Route>
 
           </Route>
