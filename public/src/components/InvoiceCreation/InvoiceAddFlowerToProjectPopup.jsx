@@ -80,7 +80,7 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
     return (
         <PopupBase showPopup={showPopup}>
             <CreateNewFlowerPopup showPopup={showPopup2} closePopup={() => setShowPopup2(false)}/>
-            <h3 className="text-2xl font-semibold mb-4">Select flower</h3>
+            <h3 >Select flower</h3>
             <QuerySearchableDropdown 
                 options={flowerData} 
                 label='flowername' 
@@ -90,10 +90,10 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
                 InViewRef={ref} 
                 query={searchQuery}
                 setQuery={setSearchQuery}/>
-            <button onClick={() => {setShowPopup2(true)}} className="text-blue-500 hover:text-blue-700">Add new flower</button>
-            <div className="flex justify-between mt-4">
-                <button onClick={exitPopup} className="bg-gray-400 text-white px-4 py-2 rounded focus:outline-none">close</button>
-                <button className="bg-black text-white px-4 py-2 rounded focus:outline-none" onClick={submitSelection}>add flower</button>
+            <button onClick={() => {setShowPopup2(true)}} className='go-back-button'>Add new flower</button>
+            <div className='buttons-holder'>
+                <button className='buton-secondary' onClick={exitPopup} >close</button>
+                <button className='buton-main' onClick={submitSelection}>add flower</button>
             </div>
         </PopupBase>
 

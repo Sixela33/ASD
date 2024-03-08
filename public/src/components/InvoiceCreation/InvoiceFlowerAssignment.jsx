@@ -240,19 +240,19 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     }
 
     return (
-    <>
-        <div className='container mx-auto flex flex-col' style={{ maxHeight: '80vh' }}>
+        <div className='container mx-auto flex flex-col h-[80vh]'>
             <InvoiceAddFlowerToProjectPopup showPopup={addFlowerPopup} submitFunction={flower => addFlowerToProject(flower)} closePopup={() =>toggleAddFlowerPopup(false)}/>
-            <div className='flex justify-between items-center mb-4'>
-                <button onClick={goBack} className='mt-4 text-blue-500 hover:text-blue-700'>go back</button>
-                <h1 className='text-2xl font-bold '>Assign flowers</h1>
+            <div className='title-container'>
+                <button onClick={goBack} className='go-back-button'>go back</button>
+                <h1 >Assign flowers</h1>
+                <p></p>
             </div>
-            <div className='overflow-y-scroll w-full h-1/2vh' style={{ height: '20vh' }}>
-            <table className='w-full table-fixed border-collapse' >
+            <div className='table-container h-[20vh]'>
+            <table >
                 <thead>
                     <tr>
                         {['Project id', 'Client', 'Date', 'Contact', 'selected'].map((name, index) => (
-                            <td key={index} className='border p-2'>
+                            <td key={index} >
                             {name}
                             </td>
                         ))}
@@ -260,7 +260,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 </thead>
                 <tbody>
                 {projectsInfo?.map((item, index) => (
-                    <tr key={index} onClick={() => setSelectedRow(index)} className='bg-gray-200'>
+                    <tr key={index} onClick={() => setSelectedRow(index)} >
                         <td className='p-2 text-center'>{item?.projectid}</td>
                         <td className='p-2 text-center'>{item?.projectclient}</td>
                         <td className='p-2 text-center'>{item?.projectdate}</td>
@@ -274,12 +274,12 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 </tbody>
             </table>
             </div>
-            <div className='overflow-y-scroll w-full my-3' style={{ height: '30vh' }}>
-            <table className='w-full table-fixed border-collapse'> 
+            <div className='table-container h-[30vh]'>
+            <table> 
                 <thead>
                     <tr>
                         {['Flower name', 'Recipie stems', 'Unit price', 'Stems Used'].map((name, index) => (
-                            <th key={index} className="border p-2">{name}</th>
+                            <th key={index} >{name}</th>
                         ))}
                     </tr>
                 </thead>
@@ -287,15 +287,15 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                     {displayFlowerData[selectedRow]?.map((flower, index) => {
                         const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flower.flowerid);
 
-                        return <tr key={index} className='bg-gray-300 max-h-[10px]'>
-                            <td className=" p-2 text-center" >{flower?.flowername}</td>
-                            <td className=" p-2 text-center">{flower?.totalstems}</td>
-                            <td className=" p-2 text-center">
-                            $<input className='border border-gray-300 w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
+                        return <tr key={index} className='h-[10vh]'>
+                            <td>{flower?.flowername}</td>
+                            <td>{flower?.totalstems}</td>
+                            <td>
+                            $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
                             </td>
-                            <td className=" p-2 text-center">
-                            <input className='border border-gray-300 w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
-                            <button className='bg-gray-200 px-5 mx-1' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>all</button>
+                            <td>
+                            <input className='w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
+                            <button className='buton-secondary' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>all</button>
                             </td>
                         </tr>
                     })}
@@ -304,14 +304,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             </table>
             </div>
             <div className="flex justify-between items-center my-1">
-            <p className="font-bold">Total invoice amount: ${invoiceData.invoiceAmount}</p>
-            <p className="font-bold">Registered Expenses: ${parseFloat(flowerPriceTracker?.reduce((value, flower) => {
-                return value + flower.addedStems * flower.unitprice
-            }, 0)).toFixed(2)}</p>
-            <button className='bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
+                <p className="font-bold">Total invoice amount: ${invoiceData.invoiceAmount}</p>
+                <p className="font-bold">Registered Expenses: ${parseFloat(flowerPriceTracker?.reduce((value, flower) => {
+                    return value + flower.addedStems * flower.unitprice
+                }, 0)).toFixed(2)}</p>
+                <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded my-1 w-1/2" onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
-    </>
   )
 }

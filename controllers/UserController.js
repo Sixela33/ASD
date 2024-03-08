@@ -43,12 +43,12 @@ class UserController {
         try {
             const {email, password} = req.body
             console.log(req.body)
-            const {accessToken, refreshToken, userRoles} = await this.service.loginUser(email, password)
+            const {accessToken, refreshToken} = await this.service.loginUser(email, password)
             req.logger.warn(`${email} Has Logged in`)
 
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
 
-            res.status(200).json({accessToken, userRoles})
+            res.status(200).json({accessToken})
         } catch (error) {
             next(error)
         }

@@ -102,7 +102,7 @@ export default function SingleFlowerPage() {
             <ChangeImagePopup showPopup={showNewFlowerPopup} closePopup={() => setShowNewFlowerPopup(false)} setNewImage={setNewImage}></ChangeImagePopup>
 
             <div className="m-10">
-                <Link to="/flowers" className="text-blue-500 mb-4 ml-4">Go Back</Link>
+                <Link to="/flowers" className='go-back-button'>Go Back</Link>
             </div>
 
             <div className="container mx-auto flex">
@@ -114,21 +114,21 @@ export default function SingleFlowerPage() {
                             <img src={`${BASE_URL}/api/${newFlowerData.flowerimage}`} alt="Preview" loading='lazy' className="w-64 h-64 object-cover rounded-lg shadow-lg" />
                         )}
                         {}                        
-                        <button className='bg-gray-500 text-white font-bold py-2 px-4 rounded mt-4' onClick={() => setShowNewFlowerPopup(true)}>Change image</button>
+                        <button  className='buton-secondary' onClick={() => setShowNewFlowerPopup(true)}>Change image</button>
                         <div className="p-4 text-center">
                             <div className="mb-4">
                                 <label>Name: </label>
-                                <input className="rounded-lg p-2" value={newFlowerData.flowername} onChange={(e) => editFlowerData('flowername', e.target.value)} />
+                                <input className='w-full' value={newFlowerData.flowername} onChange={(e) => editFlowerData('flowername', e.target.value)} />
                             </div>
                             <div>
                                 <label>Color: </label>
-                                <input className="rounded-lg p-2" value={newFlowerData.flowercolor} onChange={(e) => editFlowerData('flowercolor', e.target.value)} />
+                                <input className='w-full' value={newFlowerData.flowercolor} onChange={(e) => editFlowerData('flowercolor', e.target.value)} />
                             </div>
                         </div>
                     </div>
-                    <div className='text-center'>
-                        <button className='bg-gray-500 text-white font-bold py-2 px-4 rounded mx-2' onClick={() => setShowConfirmationPopup(true)}>Remove</button>
-                        <button className='bg-black text-white font-bold py-2 px-4 rounded mx-2' onClick={saveChanges}>Save</button>
+                    <div className='buttons-holder'>
+                        <button className='buton-secondary' onClick={() => setShowConfirmationPopup(true)}>Remove</button>
+                        <button className='buton-main' onClick={saveChanges}>Save</button>
                     </div>
                 </div>
                 <div className="w-1/2">

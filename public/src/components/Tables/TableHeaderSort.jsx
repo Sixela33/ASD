@@ -9,6 +9,7 @@ import { HiChevronDown } from "react-icons/hi";
 // sortConfig: object that dictates wich row is being used as sortin parameter. shape: { key: 'sortedBy', direction: 'asc' }
 // styles: object that allows the user to customize the styles of evry component
 
+
 export default function TableHeaderSort({ headers, setSortConfig, defaultSortConfig, sortConfig, children, styles }) {
 
     if (!sortConfig){
@@ -50,7 +51,7 @@ export default function TableHeaderSort({ headers, setSortConfig, defaultSortCon
         <thead className={mergedStyles.theadStyles}>
             <tr>
                 {Object.keys(headers).map((colData, index) => (
-                    <th key={index} className="border p-2 relative text-center" onClick={() => handleSort(headers[colData])}>
+                    <th key={index}  onClick={() => handleSort(headers[colData])}>
                         <div className="flex items-center justify-center">
                             <span>{colData}</span>
                             {sortConfig.key === headers[colData] &&

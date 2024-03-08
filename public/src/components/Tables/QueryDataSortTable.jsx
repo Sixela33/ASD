@@ -54,7 +54,7 @@ export default function QueryDataSortTable({ headers, data, onRowClick, setSortC
                 {showViewRef && (
                     <tr>
                         {Object.keys(headers).map((obj, colIndex) => (
-                            <td key={`vr-${colIndex}`} ref={InViewRef} className="border p-2"> Loading </td>
+                            <td key={`vr-${colIndex}`} ref={InViewRef} > Loading </td>
                         ))}
                     </tr>
                 )}

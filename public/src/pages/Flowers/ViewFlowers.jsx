@@ -11,11 +11,11 @@ export default function ViewFlowers() {
     }
 
     return (
-        <div className="container mx-auto my-4">
-            <div className="flex justify-between mb-4">
-                <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
-
-                <Link to="/flowers/create" className="bg-black text-white font-bold py-2 px-4 rounded">Add new flower</Link>
+        <div className='container mx-auto mt-8 p-4 text-center'>
+            <div className='title-container'>
+                <button onClick={() => navigateTo('/')} className='go-back-button'>go back</button>
+                <h1>Flower Catalog</h1>
+                <Link to="/flowers/create" className='buton-main'>Add new flower</Link>
             </div>
 
             <FlowerListComponent  styles={{ maxHeight: '70vh' }} onFlowerClick={onFlowerClick} />

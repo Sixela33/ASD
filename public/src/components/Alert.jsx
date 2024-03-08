@@ -23,7 +23,7 @@ export default function Alert() {
         return null;
     }
 
-    const alertClass = `fixed top-10 right-1/2 transform translate-x-1/2 w-1/2 z-50 flex items-center ${isError ? 'bg-red-500' : 'bg-green-500'} text-white text-sm font-bold px-4 py-3 alert-container`;
+    const alertClass = `${isError ? 'bg-red-500' : 'bg-green-500'} fixed top-10 right-1/2 transform translate-x-1/2 w-1/2 z-50 flex items-center text-white text-sm font-bold px-4 py-3 alert-container`;
 
     return (
         <div className={alertClass} ref={alertRef} role="alert">

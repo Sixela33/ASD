@@ -31,29 +31,31 @@ export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoi
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 text-center">Invoice Data</h2>
+      <h2 className='mb-4'>Invoice Data</h2>
       <form className="space-y-4">
         <div className="flex flex-col mb-4">
           <SearchableDropdown options={vendors} label={'vendorname'} selectedVal={selectedVendor} handleChange={(vendor)=> {handleSelectVendor(vendor)}} placeholderText="Select vendor"/>
         </div>
         <div className="flex flex-col mb-4">
           <label className="mb-1">Invoice Number:</label>
-          <input type="text" name="invoiceNumber" value={invoiceData.invoiceNumber} onChange={handleChange} className="border border-gray-300 p-2 rounded" required />
+          <input type="text" name="invoiceNumber" value={invoiceData.invoiceNumber} onChange={handleChange} className="w-full" required />
         </div>
         <div className="flex flex-col mb-4">
           <label className="mb-1">Due Date:</label>
-          <input type="date" name="dueDate" value={invoiceData.dueDate} onChange={handleChange} className="border border-gray-300 p-2 rounded" required />
+          <input type="date" name="dueDate" value={invoiceData.dueDate} onChange={handleChange} className="w-full" required />
         </div>
         <div className="flex flex-col mb-4">
           <label className="mb-1">Invoice Amount:</label>
-          <input type="number" name="invoiceAmount" value={invoiceData.invoiceAmount} onChange={handleChange} className="border border-gray-300 p-2 rounded" required />
+          <input type="number" name="invoiceAmount" value={invoiceData.invoiceAmount} onChange={handleChange} className="w-full" required />
         </div>
-        <button onClick={onSubmit} className="bg-black text-white font-bold py-2 px-4 rounded">
-          Continue
-        </button> 
-        <button onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} className="bg-red-500 text-white font-bold py-2 px-4 rounded">
-          Save Incomplete invoice
-        </button>
+        <div className='buttons-holder'>
+          <button className='buton-main' onClick={onSubmit} >
+            Continue
+          </button> 
+          <button className='buton-secondary' onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} >
+            Save Incomplete invoice
+          </button>
+        </div>
       </form>
     </div>
   );

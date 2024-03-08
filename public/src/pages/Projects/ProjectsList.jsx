@@ -76,17 +76,17 @@ const ProjectsList = () => {
     }
 
     return (
-        <div className="container mx-auto mt-8 flex flex-col" style={{ height: '80vh' }}>
-            <div className='flex justify-between items-center mb-4'>
-                <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
-                <h1 className="text-2xl font-bold">ProjectsList</h1>
-                <Link to="/project/create" className="bg-black text-white font-bold py-2 px-4 rounded">Create new Project</Link>
+        <div className='container mx-auto mt-8 p-4 text-center flex flex-col'>
+            <div  className="title-container">
+                <button onClick={() => navigateTo('/')} className="go-back-button">go back</button>
+                <h1 >ProjectsList</h1>
+                <Link to="/project/create" className='buton-main'>Create new Project</Link>
             </div>
             <div className="flex items-center mb-4">
                 <label className="mr-2">Show closed Projects:</label>
                 <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
             </div>
-            <div className='overflow-auto h-[70vh] w-full mt-2'>
+            <div className='table-container h-[70vh]'>
                 <TableHeaderSort
                 headers={{
                     "id": "projectid",
@@ -101,21 +101,19 @@ const ProjectsList = () => {
                 defaultSortConfig={defaultSortCOnfig}
                 >
                 {projectsInfo.map((item, rowIndex) => (
-                    <tr key={rowIndex} className='bg-gray-300 border' onClick={() => handleRowClick(item)}>
-                        <td className="p-2">{item.projectid}</td>
-                        <td className="p-2">{item.projectclient}</td>
-                        <td className="p-2">{item.projectdescription}</td>
-                        <td className="p-2">{item.projectcontact}</td>
-                        <td className="p-2">{item.projectdate}</td>
-                        <td className={`p-2 ${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
+                    <tr key={rowIndex}  onClick={() => handleRowClick(item)}>
+                        <td>{item.projectid}</td>
+                        <td>{item.projectclient}</td>
+                        <td>{item.projectdescription}</td>
+                        <td>{item.projectcontact}</td>
+                        <td>{item.projectdate}</td>
+                        <td className={`${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
                     </tr>
                 ))}
                 
                 {dataLeft.current && (
                     <tr ref={ref}>
-                        
-                        <td className="border p-2"> Loading </td>
-                       
+                        <></>
                     </tr>
                 )}
         </TableHeaderSort>

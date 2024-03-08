@@ -4,6 +4,6 @@ export default function GoBackButton() {
     const navigateTo = useNavigate();
 
   return (
-    <button onClick={() => navigateTo(-1)} className="text-blue-500 hover:text-blue-700">go back</button>
+    <button className='go-back-button' onClick={() => navigateTo(-1)} >go back</button>
   )
 }

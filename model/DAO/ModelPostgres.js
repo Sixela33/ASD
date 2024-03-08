@@ -24,8 +24,19 @@ class ModelPostgres {
 
     getUserByEmail = async (email) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`SELECT email, userid, username, passhash FROM users WHERE email = $1;`, [email])        
+        const response =  await CnxPostgress.db.query(`
+        SELECT
+            u.email, 
+            ur.roleCode as permissionlevel, 
+            u.userid, 
+            u.username,
+            u.passhash
+        FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
+        WHERE email = $1;`, [email])        
     }
+
+    
+
 
     getUserById = async (userID) => {
         this.validateDatabaseConnection()
@@ -198,7 +209,8 @@ class ModelPostgres {
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);", [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
+        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
+         [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
     }
 
     closeProject = async (id) => {

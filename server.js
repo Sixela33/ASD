@@ -65,6 +65,7 @@ class Server {
         //                  ROUTES
         // -----------------------------------------------
         const loginreq = new PermissionsMiddelware(ROLES_LIST['User']).call
+        const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
         const superuserReq = new PermissionsMiddelware(ROLES_LIST['Admin']).call
 
         this.app.use('/api/users', new UserRouter().start())
@@ -74,7 +75,7 @@ class Server {
         this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
         this.app.use('/api/clients', loginreq, new ClientRouter().start())
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
-        this.app.use('/api/invoices', superuserReq, new InvoiceRouter().start())
+        this.app.use('/api/invoices', staffuserReq, new InvoiceRouter().start())
         
         // -----------------------------------------------
         //                 MIDDLEWARES

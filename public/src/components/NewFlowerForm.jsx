@@ -51,27 +51,27 @@ export default function NewFlowerForm({cancelButton}) {
     }
 
   return (
-    <div>
-        <h2 className="text-2xl font-bold mb-4 text-center">Add Flower</h2>
-
-        <form className="space-y-4">
+    <div className='container mx-auto mt-8 p-4 text-center'>
+        <h2>Add Flower</h2>
+        <form className="space-y-4 flex flex-col items-center">
             <div className="flex flex-col mb-4">
                 <label className="mb-1">Image:</label>
-                <input type="file" name="flower" onChange={handleImageChange} className="border border-gray-300 p-2 rounded" required/>
+                <input className='w-full' type="file" name="flower" onChange={handleImageChange} required/>
             </div>
 
             <div className="flex flex-col mb-4">
                 <label className="mb-1">Name:</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="border border-gray-300 p-2 rounded" required />
+                <input className='w-full' type="text" name="name" value={formData.name} onChange={handleChange} required />
             </div>
 
             <div className="flex flex-col mb-4">
                 <label className="mb-1">Color:</label>
-                <input type="text" name="color" value={formData.color} onChange={handleChange} className="border border-gray-300 p-2 rounded" required/>
+                <input className='w-full' type="text" name="color" value={formData.color} onChange={handleChange} required/>
             </div>
-
-            <button className="bg-gray-500 text-white font-bold py-2 px-4 rounded" onClick={cancelButton}>Cancel</button>
-            <button className="bg-black text-white font-bold py-2 px-4 rounded" onClick={handleSubmit}>Add Flower</button>
+            <div className='buttons-holder'>
+              <button className='buton-secondary' onClick={cancelButton}>Cancel</button>
+              <button className='buton-main' onClick={handleSubmit}>Add Flower</button>
+            </div>
         </form>
     </div>
   )

@@ -3,55 +3,62 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import GoBackButton from '../../components/GoBackButton';
+import Register from './Register';
 
 const USERS_URL = '/api/users/all';
 
 export default function Admin() {
-    const [users, setUsers] = useState([]);
+    
     const axiosPrivate = useAxiosPrivate();
     const {setMessage} = useAlert()
+    
+    const [users, setUsers] = useState([]);
+    const [showRegisterPopup, setShowRegisterPopup] = useState(false)
+
+    async function getData() {
+        try {
+            const response = await axiosPrivate.get(USERS_URL);
+            setUsers(response?.data);
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+            console.error('Error fetching data:', error);
+        }
+    }
 
     useEffect(() => {
-        async function getData() {
-            try {
-                const response = await axiosPrivate.get(USERS_URL);
-                console.log(response.data)
-                setUsers(response?.data);
-            } catch (error) {
-                setMessage(error.response?.data?.message, true)
-                console.error('Error fetching data:', error);
-            }
-        }
         getData();
-    }, [axiosPrivate]);
+    }, []);
 
     return (
-        <div className="container mx-auto mt-8">
-            <div className="flex justify-between items-center mb-4">
+        <div className='container mx-auto mt-8 p-4 text-center'>
+            <Register
+                showPopup={showRegisterPopup}
+                closePopup={() => setShowRegisterPopup(false)}/>
+            <div className='title-container'>
                 <GoBackButton/>
-                <h1 className="text-2xl font-bold">Admin</h1>
-                <Link to="/register" className="bg-black text-white font-bold py-2 px-4 rounded">Create new User</Link>
+                <h1 >Admin</h1>
+                <button onClick={() => {setShowRegisterPopup(true)}} className='buton-main '>Create new User</button>
             </div>
-            <div className='overflow-y-scroll max-h-[70vh]'>
-                <table className="w-full table-fixed border-collapse text-center">
-                    <thead className='sticky top-0 bg-white'>
+            <div className='table-container h-[70vh]'>
+                <table>
+                    <thead >
                         <tr>
-                            <th className="p-2">User ID</th>
-                            <th className="p-2">Username</th>
-                            <th className="p-2">Email</th>
-                            <th className="p-2">User role</th>
-                            <th className="p-2">ADMIN</th>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>User role</th>
+                            <th>ADMIN</th>
                         </tr>
                     </thead>
                     <tbody >
                         {users.map((user) => (
-                            <tr key={user.userid} className='bg-gray-300 border'>
-                                <td className="border-b p-2 text-center">{user.userid}</td>
-                                <td className="border-b p-2 text-center">{user.username}</td>
-                                <td className="border-b p-2 text-center">{user.email}</td>
-                                <td className="border-b p-2 text-center">{user.rolename}</td>
-                                <td className="border-b p-2 text-center">
-                                    <Link to={`/admin/${user.userid}`} className="mt-4 text-blue-500 hover:text-blue-700">Edit</Link>
+                            <tr key={user.userid} >
+                                <td >{user.userid}</td>
+                                <td >{user.username}</td>
+                                <td >{user.email}</td>
+                                <td >{user.rolename}</td>
+                                <td >
+                                    <Link to={`/admin/${user.userid}`} className='go-back-button'>Edit</Link>
                                 </td>
                             </tr>
                         ))}

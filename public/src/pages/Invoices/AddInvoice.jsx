@@ -149,10 +149,11 @@ export default function AddInvoice() {
   ];
 
   return (
-    <div>
-      <div className="text-center w-full">
+    <div className='container mx-auto mt-8 p-4 text-center'>
+      <div className="title-container">
         <GoBackButton />
-        <h1 className="text-3xl font-bold">Load invoice</h1>
+        <h1 >Load invoice</h1>
+        <p></p>
       </div>
       <div className="flex justify-center items-center mt-8">
         <div className="bg-white flex w-full">
@@ -160,7 +161,7 @@ export default function AddInvoice() {
             <div className="flex flex-col space-y-4">
               <div className="flex flex-col">
                 <label className="mb-1">Select or drop file: :</label>
-                <input type="file" name="flower" onChange={handleFileChange} className="border border-gray-300 p-2 rounded" required />
+                <input type="file" name="flower" onChange={handleFileChange} className="w-full" required />
               </div>
               <div className="flex flex-row">
                 {DisplayPdfFile ? (

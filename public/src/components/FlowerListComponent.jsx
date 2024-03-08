@@ -66,11 +66,12 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     return (
         <div className="mx-auto my-4 px-10">
-            <div className="mb-3">
-                <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch} className="border rounded p-2"/>
+            <div className="mb-3 flex justify-start items-center">
+                <label >Search by name: </label>
+                <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
             </div>
-            <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center items-center" style={styles}>
 
+            <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center items-center" style={styles}>
                 {flowerData.map((flower, index) => (
                     <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>
                         <img src={`${BASE_URL}/api/${flower.flowerimage}`} alt={flower.flowername} loading="lazy" className="w-full object-cover h-32"/>
@@ -80,7 +81,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                         </div>
                     </div>
                 ))}
-                {flowersLeft.current && <div ref={ref}>-</div>}
+                {flowersLeft.current && <div ref={ref}><></></div>}
             </div>
         </div>
 

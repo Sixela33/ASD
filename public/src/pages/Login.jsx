@@ -69,17 +69,17 @@ const Login = () => {
 
     return (
 
-        <section className="flex flex-col items-center justify-center">
-            <h1 className="mb-8 text-3xl font-bold">Log In</h1>
+        <section className=" mt-[20vh] flex flex-col items-center justify-center">
+            <h1 className='mb-8'>Log In</h1>
 
             <form onSubmit={handleSubmit} className="w-full max-w-md">
             <div className="mb-4">
-                <label className="block text-lg mb-1">Email:</label>
-                <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                <label>Email:</label>
+                <input className="w-full  bg-gray-300 rounded-md text-lg" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
             </div>
             <div className="mb-4">
                 <label className="block text-lg mb-1">Password:</label>
-                <input className="w-full px-4 py-3 bg-gray-300 rounded-md text-lg focus:outline-none focus:border-blue-400" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+                <input className="w-full bg-gray-300 text-lg mb-1" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
             </div>
             <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Login</button>
             <div className="persistCheck mt-4">
@@ -87,7 +87,7 @@ const Login = () => {
                 <label htmlFor="persist">Trust This Device</label>
             </div>
             </form>
-            <Link to="/changePass" className="mt-4 text-blue-500 hover:text-blue-700">Forgot Password?</Link>
+            <Link to="/changePass" className='go-back-button mt-4' >Forgot your Password?</Link>
       </section>
 
     )

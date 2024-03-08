@@ -109,9 +109,9 @@ export default function ArrangementCreation() {
         <>
             {arrangementData && (
                 <div className="mx-auto my-8 text-center">
-                    <div className="mb-4 ">
-                        <button onClick={() => navigateTo(-1)} className="text-blue-500 hover:text-blue-700">go back</button>
-                        <h2 className="text-2xl font-bold mb-4 text-center">Create Arrangement</h2>
+                    <div className="mb-4">
+                        <button onClick={() => navigateTo(-1)} className='go-back-button'>go back</button>
+                        <h2 >Create Arrangement</h2>
                     </div>
                     <p>Arrangement Description: {arrangementData.arrangementdescription}</p>
                     <p>Arrangement type: {arrangementData.typename}</p>
@@ -126,40 +126,43 @@ export default function ArrangementCreation() {
                         <div className="md:col-span-1 rounded shadow p-4 flex flex-col justify-center items-center">
                             <div>
                                 <p>unitPrice: {actualSelectedFlower?.unitprice ? actualSelectedFlower?.unitprice : 'N/A'}</p>
-                                <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="border border-black rounded p-2 mr-2 text-center w-20" />
+                                <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" />
                                 <button onClick={addFlower} disabled={quantityToAdd <= 0} className={`bg-gray-300 px-4 py-2 mr-2 my-1 rounded ${quantityToAdd <= 0 && 'cursor-not-allowed opacity-50'}`} >
                                     ADD
                                 </button>
                             </div>
                         </div>
-                        <div className="md:col-span-1 flex flex-col justify-center items-center">
-                            <table className="w-full table-fixed">
-                                <thead>
-                                    <tr>
-                                        {["Flower Name", "Flower Quantity", "Last recorded price", "remove"].map((name, index) => (
-                                            <th key={index} className="border p-2">
-                                                {name}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className='overflow-y-scroll' style={{ height: '30vh' }}>
-                                    {selectedFlowers.map((flower, index) => (
-                                        <tr key={index} className="bg-gray-300" onClick={() => { }}>
-                                            <td className="border-b p-2 text-center">{flower.flowername}</td>
-                                            <td className="border-b p-2 text-center">
-                                                <input type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
-                                            </td>
-                                            <td className="border-b p-2 text-center">${flower.unitprice || 'N/A'}</td>
-                                            <td className="border-b p-2 text-center"><button onClick={() => removeFlower(index)}>remove</button></td>
+                        <div>
+                            <div className='table-container h-[50vh]'>
+                                <table className="w-full">
+                                    <thead>
+                                        <tr>
+                                            {["Flower Name", "Flower Quantity", "Last recorded price", "remove"].map((name, index) => (
+                                                <th key={index} >
+                                                    {name}
+                                                </th>
+                                            ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody >
+                                        {selectedFlowers.map((flower, index) => (
+                                            <tr key={index}  onClick={() => { }}>
+                                                <td >{flower.flowername}</td>
+                                                <td >
+                                                    <input type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
+                                                </td>
+                                                <td >${flower.unitprice || 'N/A'}</td>
+                                                <td ><button className='go-back-button' onClick={() => removeFlower(index)}>remove</button></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                             <p className="mt-4">Flower Budget: ${parseFloat(arrangementData.clientcost * (1 - arrangementData.profitmargin)).toFixed(2)}</p>
                             <p className="mt-4">Spent Budget: ${sum}</p>
-                            <button className='bg-black text-white w-full p-2 rounded' onClick={submitArrangement}>Save</button>
+                            <button className='buton-main' onClick={submitArrangement}>Save</button>
                         </div>
+
                     </div>
                 </div>
             )}

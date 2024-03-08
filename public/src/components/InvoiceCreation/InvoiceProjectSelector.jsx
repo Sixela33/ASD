@@ -72,12 +72,13 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
     }, [])
 
     return (
-        <div className='container mx-auto flex flex-col' style={{ maxHeight: '50vh' }}>
-            <div className='flex justify-between items-center mb-4'>
-                <button onClick={goBack} className='mt-4 text-blue-500 hover:text-blue-700'>go back</button>
-                <h1 className='text-2xl font-bold '>Choose projects</h1>
+        <div>
+            <div className='title-container'>
+                <button className='go-back-button' onClick={goBack} >go back</button>
+                <h1 >Choose projects</h1>
+                <p></p>
             </div>
-            <div className='overflow-y-scroll w-full'>
+            <div className='table-container h-[50vh]'>
 
                 <TableHeaderSort
                 headers ={{
@@ -93,7 +94,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                 sortConfig ={sortConfig}
                 > 
                     {projectsInfo.map((item, index) => (
-                        <tr key={index} onClick={() => handleRowClick(item)} className='bg-gray-200'>
+                        <tr key={index} onClick={() => handleRowClick(item)} >
                             <td className='p-2 text-center'>{item?.projectid}</td>
                             <td className='p-2 text-center'>{item?.projectclient}</td>
                             <td className='p-2 text-center'>{item?.projectdate}</td>
@@ -104,10 +105,10 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                             </td>
                         </tr>
                     ))}
-                    <tr ref={ref}></tr>
+                    <tr ref={ref}><></></tr>
                 </TableHeaderSort>
             </div>
-        <button onClick={goNext} className='bg-black text-white font-bold py-2 my-3 px-4 rounded'>Continue</button>
+        <button onClick={goNext} className='buton-main my-3'>Continue</button>
         </div>
     );
 }

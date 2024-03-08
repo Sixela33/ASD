@@ -147,20 +147,20 @@ export default function ViewInvoices() {
 
 
     return (
-        <div className='container mx-auto mt-8 p-4 bg-white text-center'>
+        <div className='container mx-auto mt-8 p-4 text-center'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
                 <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
                 <br/>
                 <p>Do you want to procede?</p>
             </ConfirmationPopup>
-            <div className="flex justify-between items-center mb-4 ">
-                <button onClick={() => navigateTo('/')} className="text-blue-500 hover:text-blue-700">go back</button>
-                <h1 className="text-2xl font-bold flex-grow text-center">Invoices</h1>
-                <Link to="/invoice/add/" className="bg-black text-white font-bold py-2 px-4 rounded">Load Invoice</Link>
+            <div className="title-container">
+                <button onClick={() => navigateTo('/')} className="go-back-button">go back</button>
+                <h1>Invoices</h1>
+                <Link to="/invoice/add/" className="buton-main">Load Invoice</Link>
             </div>
             <div className='m-2 text-left'>
     
-                    <input className='border border-gray rounded mr-2'type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
+                    <input type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
                     <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
                         {searchByOptions.map((item, index) => {
                             return <option value={item.value} key={index}>{item.displayName}</option>
@@ -176,7 +176,7 @@ export default function ViewInvoices() {
                     </select>
                 
             </div>
-            <div className='overflow-auto h-[60vh] w-full'>
+            <div className='table-container h-[60vh]'>
                 <TableHeaderSort
                     headers={colData} 
                     setSortConfig={setSortConfig} 
@@ -185,7 +185,7 @@ export default function ViewInvoices() {
                 >
 
                     {invoiceData.map((invoice, index) => {
-                    return <tr key={index} className='bg-gray-300 ' onClick={() => handleInvoiceSelection(invoice)}>
+                    return <tr key={index}  onClick={() => handleInvoiceSelection(invoice)}>
                         <td className={'border p-2'}>{invoice?.invoiceid}</td>
                         <td className={'border p-2'}>{invoice?.vendorname}</td>
                         <td className={'border p-2'}>${parseFloat(invoice?.invoiceamount).toFixed(2)}</td>
@@ -204,8 +204,8 @@ export default function ViewInvoices() {
                 </TableHeaderSort>                    
             </div>
             <div className='my-2'>
-                <input className='border border-black' type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
-                <button onClick={tryToAddBankTX} className="bg-black text-white font-bold py-2 px-4 rounded ml-3">Link bank transaction</button>
+                <input  type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
+                <button onClick={tryToAddBankTX} className='buton-main ml-3'>Link bank transaction</button>
             </div>
         </div>
     );

@@ -58,19 +58,22 @@ export default function ViewSingleInvoice() {
     }
 
     return (
-        <div className="container mx-auto">
-            <div className='flex flex-col items-center justify-between'>
-                <button onClick={() => navigateTo('/invoice')} className="text-blue-500 hover:text-blue-700">go back</button>
-                <h1 className="text-center text-3xl my-8">Invoice Overview</h1>
+        <div className='container mx-auto mt-8 p-4 text-center'>
+            <div className='title-container '>
+                <button className='go-back-button' onClick={() => navigateTo('/invoice')} >go back</button>
+                <h1 >Invoice Overview</h1>
+                <p></p>
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
                     <embed src={`${BASE_URL}/api/${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
-                    <button onClick={downloadFile} className="bg-black text-white font-bold py-2 px-4 rounded mt-3">Download invoice</button>
-                    <button onClick={() => navigateTo('/invoice/add/' + id)} className="bg-gray-500 text-white font-bold py-2 px-4 rounded mt-3">Edit invoice</button>
+                    <div className='buttons-holder'>
+                        <button className="buton-main mt-3" onClick={downloadFile} >Download invoice</button>
+                        <button className="buton-secondary mt-3" onClick={() => navigateTo('/invoice/add/' + id)} >Edit invoice</button>
+                    </div>
                 </div>
                 <div className='mx-10 w-full md:w-2/4 grid grid-col md:grid-rows-2 '> 
-                    <div className="grid grid-row md:grid-cols-2 gap-8 px-20 ml-10 font-bold w-full">
+                    <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-center font-bold ">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
                             <p>Invoice amount: ${parseFloat(invoiceData.invoiceamount).toFixed(2)}</p>
@@ -80,7 +83,7 @@ export default function ViewSingleInvoice() {
                             <p>Loaded By: {invoiceData.email}</p>
                         </div>
                     </div>
-                    <div className='overflow-auto max-h-[20vh] w-full'>
+                    <div className='table-container h-[20vh] '>
                         <LocalDataSortTable
                             headers = {{
                                 "Project Client": "projectclient", 
@@ -92,7 +95,7 @@ export default function ViewSingleInvoice() {
                             data={projectsProvided}
                             />
                     </div>
-                    <div className='overflow-auto max-h-[20vh] w-full mt-3'>
+                    <div className='table-container h-[20vh] mt-3'>
                         <TableHeaderSort
                             headers = {{
                                 "flowername": "flowername", 
@@ -101,7 +104,7 @@ export default function ViewSingleInvoice() {
                             }}
                         >
                             {invoiceFlowers.map((item, index) => {
-                                return <tr key={index} className='bg-gray-300 border' onClick={() => onRowClick(item)}>
+                                return <tr key={index}  onClick={() => onRowClick(item)}>
                                     <td>{item.flowername}</td>
                                     <td>$ {parseFloat(item.unitprice).toFixed(2)}</td>
                                     <td>{item.numstems}</td>

@@ -56,7 +56,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
       <div ref={inputRef}>
         <div className="relative">
           <div className="selected-value relative">
-            <input placeholder={placeholderText} type="text" value={selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full border border-gray-300 p-2 rounded pl-8 cursor-pointer" readOnly/>
+            <input placeholder={placeholderText} type="text" value={selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full " readOnly/>
           </div>
           <div className={`arrow absolute right-2 top-1/2 transform -translate-y-1/2 ${isOpen ? "rotate-180" : ""}`}>
             <HiChevronDown />
@@ -77,7 +77,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
                   {option[label]}
                 </div>
               ))}
-              <div ref={InViewRef}>-</div>
+              <div ref={InViewRef}><></></div>
             </>
           )}
         </div>

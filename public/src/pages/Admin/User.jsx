@@ -67,8 +67,7 @@ export default function User() {
     };
 
     return (
-        <div className="container mx-auto mt-8 p-4 bg-white shadow-md rounded-md">
-            <GoBackButton/>
+        <div className='container mx-auto mt-8 p-4 text-center'>
             <ConfirmationPopup showPopup ={showRolePopup} closePopup={handleCancelPopup} confirm={handleChangeRole}>
                 <h1>Select new role</h1>
                 <select className="mr-2 px-2 py-1 border border-gray-300 rounded" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
@@ -80,14 +79,19 @@ export default function User() {
                     ))}
                 </select>
             </ConfirmationPopup>
+            <div className='title-container'>
+                <GoBackButton/>
+                <h1>User Profile</h1>
+                <p></p>
+            </div>
         {userData && (
             <div>
-                <h1 className="text-2xl font-bold mb-4">User Profile - {userData.username}</h1>
+                <p >User Name: {userData.username}</p>
                 <p className="text-gray-600">Email: {userData.email}</p>
 
                 <div className="mt-6">
-                    <h2 className="text-lg font-semibold mb-2">User Role: {userData.rolename}</h2>
-                    <button onClick={() => {setShwoRolePopup(true)}}>Change Role</button>
+                    <p >User Role: {userData.rolename}</p>
+                    <button className='buton-secondary' onClick={() => {setShwoRolePopup(true)}}>Change Role</button>
                 </div>
             </div>
         )}

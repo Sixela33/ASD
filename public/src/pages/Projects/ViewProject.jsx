@@ -191,7 +191,7 @@ export default function ViewProject() {
     };
     
     return (
-        <div className="container mx-auto my-8 text-center">
+        <div className='container mx-auto mt-8 p-4 text-center'>
             <EditArrangementPopup showPopup={showArrangementEditPopup} arrangementData={editArrangementPopupData} projectData={projectData} closePopup={closePopup}/>
             <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
                 actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flowe, index) => {
@@ -200,9 +200,9 @@ export default function ViewProject() {
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?
             </ConfirmationPopup>
-            <div className="mb-4 ">
-                <button onClick={() => navigateTo('/projects')} className="text-blue-500 hover:text-blue-700">go back</button>
-                <h2 className="text-2xl font-bold mb-4 text-center">Project Overview</h2>
+            <div className='title-container '>
+                <button className='go-back-button' onClick={() => navigateTo('/projects')} >go back</button>
+                <h2 >Project Overview</h2>
             </div>
             <p>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
@@ -216,26 +216,26 @@ export default function ViewProject() {
                 </div>
             </div>
             <button onClick={handleCreateArrangement}>Create new Arrangement</button>
-            <div className="flex flex-col items-center mb-8 overflow-auto h-[20vh]">
+            <div className='table-container h-[20vh]'>
                 <TableHeaderSort
                 headers={{'Type': ' ', 'Description': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ', 'Status': ' ', 'admin': ' '}}>
                     {arrangementData?.map((item, index) => (
-                        <tr key={index} className='bg-gray-300 ' 
+                        <tr key={index}  
                             onClick={() => handleArrangement(item)}      
                             onMouseMove={handleMouseMove}
                             onMouseEnter={() => handleMouseEnter(item.arrangementid)}
                             onMouseLeave={handleMouseLeave}>
-                            <td className={BASE_TD_STYLE}>{item?.typename}</td>
-                            <td className={BASE_TD_STYLE}>{item?.arrangementdescription}</td>
-                            <td className={BASE_TD_STYLE}>{item?.arrangementquantity}</td>
-                            <td className={BASE_TD_STYLE}>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
-                            <td className={BASE_TD_STYLE}>${item?.assignedBudget}</td>
-                            <td className={BASE_TD_STYLE}>
+                            <td>{item?.typename}</td>
+                            <td>{item?.arrangementdescription}</td>
+                            <td>{item?.arrangementquantity}</td>
+                            <td>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
+                            <td>${item?.assignedBudget}</td>
+                            <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>
                             <td className={BASE_TD_STYLE} onMouseEnter={handleMouseLeave}>
-                                <button className="text-blue-500 hover:text-blue-700" onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button className="text-blue-500 hover:text-blue-700 m-2" onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
+                                <button className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
+                                <button className='go-back-button ml-2' onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
                             </td>
                         </tr>
                     ))}
@@ -243,17 +243,17 @@ export default function ViewProject() {
             </div>
             <div className="flex mb-8">
                 <div className="pr-4 w-1/2 ">
-                    <h2 className="text-lg font-bold mb-4">Flower Data</h2>
-                    <div className='overflow-auto h-[20vh] w-full mt-2'>
+                    <h2>Flower Data</h2>
+                    <div className='table-container h-[20vh] mt-2'>
                         <TableHeaderSort
                             headers={{'Flower Name': ' ', 'Total Stems': ' ', 'Unit Price': ' ', 'Estimated Cost': ' ', 'Change Stem': ' '}}>
                             {showFlowerData?.map((item, index) => (
-                                <tr key={index} className='bg-gray-300 '>
-                                    <td className={BASE_TD_STYLE}>{item?.flowername}</td>
-                                    <td className={BASE_TD_STYLE}>{item?.totalstems}</td>
-                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.unitprice).toFixed(2)}</td>
-                                    <td className={BASE_TD_STYLE}>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
-                                    <td className={BASE_TD_STYLE}><button className="text-blue-500 hover:text-blue-700">Change stem</button></td>
+                                <tr key={index} >
+                                    <td>{item?.flowername}</td>
+                                    <td>{item?.totalstems}</td>
+                                    <td>${parseFloat(item?.unitprice).toFixed(2)}</td>
+                                    <td>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
+                                    <td><button className='go-back-button'>Change stem</button></td>
                                 </tr>
                                 ))}
                         </TableHeaderSort>
@@ -261,8 +261,8 @@ export default function ViewProject() {
 
                     <div className='flex mt-5'>
                         <div className='flex-row'>
-                            <button className='bg-gray-300 font-bold py-2 px-4 mx-3'>Generate pptslides</button>
-                            <button onClick={closeProject} className='bg-gray-300 font-bold py-2 px-4'>{projectData.isclosed ? "Open project": "Close project"}</button>
+                            <button className='buton-secondary mx-3' >Generate pptslides</button>
+                            <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
                         </div>
                         <div className='flex-row text-left ml-5'>
                             <p>Estimated Flower cost: ${parseFloat(estimatedFlowerCost).toFixed(2)}</p>

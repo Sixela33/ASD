@@ -12,7 +12,7 @@ const RequireAuth = ({ allowedRoles }) => {
         return <Navigate to="/" state={{ from: location }} replace />
     } 
 
-    //console.log("auth", auth.decoded.permissionlevel)
+    //console.log("auth", auth)
     // console.log("allowedRoles", allowedRoles)
     return (
         auth?.decoded?.permissionlevel >= allowedRoles
