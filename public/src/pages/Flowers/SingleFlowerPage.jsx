@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import ConfirmationPopup from '../../components/ConfirmationPopup';
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import ChangeImagePopup from './Popups/ChangeImagePopup';
 import { BASE_URL } from '../../api/axios';
 import useAlert from '../../hooks/useAlert';

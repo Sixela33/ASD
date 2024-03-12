@@ -8,6 +8,8 @@ class VendorController {
 
     addVendor = async (req, res, next) => {
         try {
+            const {vendorname} = req.body
+            this.service.addVendor(vendorname)
             res.sendStatus(200)
         } catch (error) {
             next(error)
@@ -23,7 +25,38 @@ class VendorController {
         }
     }
 
-    
+    editVendor = async (req, res, next) => {
+        try {
+            const {vendorname, vendorid} = req.body
+
+            await this.service.editVendor(vendorname, vendorid)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    removeVendor = async (req, res, next) => {
+        try {
+            const {id} = req.params
+
+            await this.service.removeVendor(id)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    reactivateVendor  = async (req, res, next) => {
+        try {
+            const {id} = req.params
+
+            await this.service.reactivateVendor(id)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default VendorController

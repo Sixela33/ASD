@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import PopupBase from '../PopupBase';
-import CreateNewFlowerPopup from '../CreateNewFlowerPopup';
+import CreateNewFlowerPopup from '../Popups/CreateNewFlowerPopup';
 
 const GET_FLOWERS_URL = '/api/flowers/many/';
 

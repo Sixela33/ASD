@@ -24,7 +24,7 @@ class ModelPostgres {
 
     getUserByEmail = async (email) => {
         this.validateDatabaseConnection()
-        const response =  await CnxPostgress.db.query(`
+        return await CnxPostgress.db.query(`
         SELECT
             u.email, 
             ur.roleCode as permissionlevel, 
@@ -34,9 +34,6 @@ class ModelPostgres {
         FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
         WHERE email = $1;`, [email])        
     }
-
-    
-
 
     getUserById = async (userID) => {
         this.validateDatabaseConnection()
@@ -130,39 +127,6 @@ class ModelPostgres {
         return await CnxPostgress.db.query('SELECT roleid, rolename, roleCode FROM userrole')
     }
 
-    /*
-
-
-        getRoleByID = async (roleid) => {
-            this.validateDatabaseConnection()
-            return await CnxPostgress.db.query('SELECT * FROM userrole WHERE roleid = $1;', [roleid])
-        } 
-
-        addRoleToUser = async (roleID, userID) => {
-            this.validateDatabaseConnection()
-            await CnxPostgress.db.query('INSERT INTO roleXuser (userid, roleid) VALUES ($1, $2);', [userID, roleID])
-        }
-
-        getUserRoles = async (userID) => {
-            this.validateDatabaseConnection()        
-            const response = await CnxPostgress.db.query('SELECT r.roleCode FROM roleXuser rxu JOIN userRole r ON rxu.roleID = r.roleID WHERE rxu.userID = $1;', [userID])
-
-            const roles = response.rows.map(row => row.rolecode);
-            return roles;
-        
-        }
-
-        removeRoleUser = async (roleID, userID) => {
-            this.validateDatabaseConnection()
-            return await CnxPostgress.db.query('DELETE FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
-        }
-
-        userHasRole = async (roleID, userID) => {
-            this.validateDatabaseConnection()
-            return await CnxPostgress.db.query('SELECT * FROM roleXuser WHERE roleid = $1 AND userid = $2;', [roleID, userID])
-        }
-    */
-
     // -----------------------------------------------
     //                    CLIENTS
     // -----------------------------------------------
@@ -188,10 +152,25 @@ class ModelPostgres {
         //return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor LIMIT $1 OFFSET $2 ORDER BY vendorname;')
     }
 
-    createVendor = async (vendorName) => {
+    addVender = async (vendorName) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
 
+    }
+
+    editVendor = async (vendorname, vendorid) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
+    }
+
+    removeVendor = async (id) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=false WHERE vendorID=$1;", [id])
+    }
+
+    reactivateVendor = async (id) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=true WHERE vendorID=$1;", [id])
     }
 
     // -----------------------------------------------
@@ -345,6 +324,31 @@ class ModelPostgres {
             WHERE p.projectID = ANY($1);`, [ids])
         return response
     }
+
+    addArrangementToProject = async (id, arrangementData) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
+        VALUES ($1, $2, $3, $4, $5);`, 
+        [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity])
+    }
+
+    editProjectData = async (id, prjectData) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+        UPDATE projects SET 
+            clientID = $1,
+            projectDate = $2,
+            projectDescription = $3,
+            projectContact = $4,
+            staffBudget = $5,
+            profitMargin = $6,
+            lastEdit = CURRENT_TIMESTAMP
+        WHERE projects.projectID = $7
+        `, [prjectData.clientid, prjectData.projectDate, prjectData.projectDescription, prjectData.projectContact, prjectData.staffBudget, prjectData.profitMargin, id]
+        )
+    }
+
     // -----------------------------------------------
     //                   FLOWERS
     // -----------------------------------------------

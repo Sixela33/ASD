@@ -1,71 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import useAlert from '../../hooks/useAlert';
-import GoBackButton from '../../components/GoBackButton';
-import Register from './Register';
-
-const USERS_URL = '/api/users/all';
-
+import { useNavigate } from 'react-router-dom';
 export default function Admin() {
-    
-    const axiosPrivate = useAxiosPrivate();
-    const {setMessage} = useAlert()
-    
-    const [users, setUsers] = useState([]);
-    const [showRegisterPopup, setShowRegisterPopup] = useState(false)
+  const navigateTo = useNavigate();
 
-    async function getData() {
-        try {
-            const response = await axiosPrivate.get(USERS_URL);
-            setUsers(response?.data);
-        } catch (error) {
-            setMessage(error.response?.data?.message, true)
-            console.error('Error fetching data:', error);
-        }
-    }
 
-    useEffect(() => {
-        getData();
-    }, []);
+  const buttons = [
+    { id: 1, label: 'Users', url: '/admin/users' },
+    { id: 2, label: 'Vendors', url: '/admin/vendors' },
+    { id: 3, label: 'button', url: '/' },
+  ];
 
-    return (
-        <div className='container mx-auto mt-8 p-4 text-center'>
-            <Register
-                showPopup={showRegisterPopup}
-                closePopup={() => setShowRegisterPopup(false)}/>
-            <div className='title-container'>
-                <GoBackButton/>
-                <h1 >Admin</h1>
-                <button onClick={() => {setShowRegisterPopup(true)}} className='buton-main '>Create new User</button>
-            </div>
-            <div className='table-container h-[70vh]'>
-                <table>
-                    <thead >
-                        <tr>
-                            <th>User ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>User role</th>
-                            <th>ADMIN</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        {users.map((user) => (
-                            <tr key={user.userid} >
-                                <td >{user.userid}</td>
-                                <td >{user.username}</td>
-                                <td >{user.email}</td>
-                                <td >{user.rolename}</td>
-                                <td >
-                                    <Link to={`/admin/${user.userid}`} className='go-back-button'>Edit</Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
+  return (
+    <>
+      <div className="container mx-auto p-8 flex justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {buttons.map((button) => (
+            button.url != '/' && <Link key={button.id} to={button.url} 
+            className="block bg-gray-300 text-black h-[20vw] w-[20vw] flex items-center justify-center square-btn hover:bg-gray-400 focus:outline-none focus:border-none">
+              {button.label}
+            </Link>
+          ))}
         </div>
-    );
+      </div>
+    </>
+  );
 }

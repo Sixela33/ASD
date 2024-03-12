@@ -77,7 +77,7 @@ input:focus  {
 
 .buttons-holder {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     margin-top: 2rem;
     margin-right: auto;
     margin-left: auto;

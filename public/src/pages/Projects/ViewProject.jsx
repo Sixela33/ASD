@@ -8,7 +8,9 @@ import useAlert from '../../hooks/useAlert';
 import EditArrangementPopup from '../../components/ProjectView/EditArrangementPopup';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import Tooltip from '../../components/Tooltip';
-import ConfirmationPopup from '../../components/ConfirmationPopup'
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
+import FloatingMenuButton from '../../components/FloatingMenuButton';
+import EditProjectData from '../../components/ProjectView/EditProjectData';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -39,6 +41,8 @@ export default function ViewProject() {
 
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+    const [showEditProjectPopup, setShowEditProjectPopup] = useState(false)
 
     const fetchFlowers = async () => {
         try {
@@ -145,19 +149,34 @@ export default function ViewProject() {
         }
     }
 
-    const handleCreateArrangement = () => {
-        
-    }
-
     const handleArrangementEdit = (e, arrData) => {
         e.stopPropagation()
         setEditArrangementPopupData(arrData)
         setShowArrangementEditPopup(true)
     }
 
+    const handleCreateArrangement = () => {
+        setEditArrangementPopupData(undefined)
+        setShowArrangementEditPopup(true)
+    }
+
+    const closeNewArrPopup = (refreshData) => {
+        setShowArrangementEditPopup(false)
+        setEditArrangementPopupData(undefined)
+        if (refreshData == true) {
+            fetchFlowers()
+        }
+    }
+
+    const closeEditProject = (refreshData) => {
+        setShowEditProjectPopup(false)
+        if (refreshData == true) {
+            fetchFlowers()
+        }
+    }
+
     const handleArrangementDelete = async () => {
         try {
-            console.log(deletePopupData)
             await axiosPrivate.delete(DELETE_ARRANGEMENT_URL + deletePopupData.deleteID)
             setDeletePopupData({show: false, deleteID: null})
             setMessage("Arrangement deleted successfully", false)
@@ -165,13 +184,6 @@ export default function ViewProject() {
         } catch (error) {
             setMessage(error.response?.data?.message, true)
 
-        }
-    }
-
-    const closePopup = (refreshData) => {
-        setShowArrangementEditPopup(false)
-        if (refreshData == true) {
-            fetchFlowers()
         }
     }
 
@@ -189,10 +201,25 @@ export default function ViewProject() {
       setActualHoveredArr(null)
 
     };
+
+    const buttonOptions = [
+        {text: 'Add New Arrangement', action: handleCreateArrangement}, 
+        {text: 'Edit project Data', action: () =>{setShowEditProjectPopup(true)}}
+    ]
     
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
-            <EditArrangementPopup showPopup={showArrangementEditPopup} arrangementData={editArrangementPopupData} projectData={projectData} closePopup={closePopup}/>
+            <EditArrangementPopup 
+                showPopup={showArrangementEditPopup} 
+                arrangementData={editArrangementPopupData} 
+                projectData={projectData} 
+                closePopup={closeNewArrPopup}/>
+            <EditProjectData
+                showPopup={showEditProjectPopup}
+                closePopup={closeEditProject}
+                projectData={projectData}>
+
+            </EditProjectData>
             <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
                 actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flowe, index) => {
                 return <p key={index}>{flowe.flowername} x {flowe.amount}</p>})}
@@ -200,6 +227,7 @@ export default function ViewProject() {
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?
             </ConfirmationPopup>
+            <FloatingMenuButton options={buttonOptions}/>
             <div className='title-container '>
                 <button className='go-back-button' onClick={() => navigateTo('/projects')} >go back</button>
                 <h2 >Project Overview</h2>
@@ -215,7 +243,6 @@ export default function ViewProject() {
                     <p>Project Description: {projectData?.projectdescription}</p>
                 </div>
             </div>
-            <button onClick={handleCreateArrangement}>Create new Arrangement</button>
             <div className='table-container h-[20vh]'>
                 <TableHeaderSort
                 headers={{'Type': ' ', 'Description': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ', 'Status': ' ', 'admin': ' '}}>
@@ -233,9 +260,9 @@ export default function ViewProject() {
                             <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>
-                            <td className={BASE_TD_STYLE} onMouseEnter={handleMouseLeave}>
-                                <button className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button className='go-back-button ml-2' onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
+                            <td className={BASE_TD_STYLE}>
+                                <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
+                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
                             </td>
                         </tr>
                     ))}

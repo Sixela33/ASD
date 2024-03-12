@@ -3,7 +3,6 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
-import QueryDataSortTable from '../../components/Tables/QueryDataSortTable';
 import { debounce } from 'lodash';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 

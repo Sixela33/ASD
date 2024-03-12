@@ -8,7 +8,7 @@ import useAlert from '../../hooks/useAlert';
 import { redirect } from 'react-router-dom';
 import GoBackButton from '../../components/GoBackButton';
 //import PopupBase from '../../components/PopupBase';
-import ConfirmationPopup from '../../components/ConfirmationPopup';
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 
 const USER_URL = 'api/users/search/';
 const ADD_ROLE_URL = "/api/users/roles/give"

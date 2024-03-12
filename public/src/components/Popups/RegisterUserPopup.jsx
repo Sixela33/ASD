@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import {validateEmail, validatePassword} from '../../utls/utils'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import ConfirmationPopup from '../../components/ConfirmationPopup';
+import ConfirmationPopup from './ConfirmationPopup';
 
 const REGISTER_URL = '/api/users/register';
 
 const defaultUserData = { email: '', password: '', password2: '', username: '' };
 
-export default function Register({ showPopup, closePopup }) {
+export default function RegisterUserPopup({ showPopup, closePopup }) {
   const [userData, setUserData] = useState(defaultUserData);
   const axiosPrivate = useAxiosPrivate();
   const { setMessage } = useAlert();
@@ -30,7 +30,7 @@ export default function Register({ showPopup, closePopup }) {
       setMessage(response.data, false);
       setUserData(defaultUserData);
     } catch (error) {
-      console.log("[ERROR]: \n", error);
+      // console.log("[ERROR]: \n", error);
       setMessage(error.response?.data, true);
     }
   };

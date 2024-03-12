@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import TableHeaderSort from './TableHeaderSort';
 import { faLeftRight } from '@fortawesome/free-solid-svg-icons';
+import { sortData } from '../../utls/sortData';
 
 // HiChevronDown
-// headers : [{Colname: objColneme1, Colname: objColneme2, ...}]
+// headers : {Colname: objColneme1, Colname: objColneme2, ...}
 // data : {objColneme1: data, objColneme2: data, ...}, {objColneme1: data, objColneme2: data, ...}
 // InViewRef: viewRef in case father has to procedurally load data
 // handleSort: function to alter sorting config. it should recieve the colObjectName as a param
@@ -17,23 +18,6 @@ export default function LocalDataSortTable({ headers, data, onRowClick, children
 
     if (!data) data =[]
 
-    let sortedData = () => {
-      let sortableData = [...data];
-      if (sortConfig.key) {
-          sortableData.sort((a, b) => {
-              const key = sortConfig.key;
-              if (a[key] < b[key]) {
-                  return sortConfig.direction === 'asc' ? -1 : 1;
-              }
-              if (a[key] > b[key]) {
-                  return sortConfig.direction === 'asc' ? 1 : -1;
-              }
-              return 0;
-          });
-      }
-      return sortableData;
-  };
-
     if (!InViewRef) {
         showViewRef = false
     }
@@ -46,14 +30,9 @@ export default function LocalDataSortTable({ headers, data, onRowClick, children
         sortConfig = {key: '', direction: 'asc' }
     }
 
-    const defaultStyles = {
-        tbodyStyles: "",
-        trStyles: "bg-gray-300 border",
-    };
-
     const mergedStyles = {
-        tbodyStyles: `${defaultStyles.tbodyStyles} ${styles?.tbodyStyles || ''}`,
-        trStyles: `${defaultStyles.trStyles} ${styles?.trStyles || ''}`,
+        tbodyStyles: `${styles?.tbodyStyles}`,
+        trStyles: `${styles?.trStyles}`,
     };
 
     return (
@@ -65,10 +44,10 @@ export default function LocalDataSortTable({ headers, data, onRowClick, children
             setSortConfig={setSortConfig}
             defaultSortConfig = {defaultSortConfig}
             >
-                {sortedData().map((item, rowIndex) => (
+                {sortData(data, sortConfig).map((item, rowIndex) => (
                     <tr key={rowIndex} className={mergedStyles.trStyles} onClick={() => onRowClick(item)}>
                         {Object.keys(headers).map((colData, colIndex) => (
-                            <td key={`${rowIndex}-${colIndex}`} className="p-2">
+                            <td key={`${rowIndex}-${colIndex}`}>
                                 {item[headers[colData]]}
                             </td>
                         ))}
@@ -76,10 +55,8 @@ export default function LocalDataSortTable({ headers, data, onRowClick, children
                 ))}
                 
                 {showViewRef && (
-                    <tr>
-                        {Object.keys(headers).map((obj, colIndex) => (
-                            <td key={`vr-${colIndex}`} ref={InViewRef} > Loading </td>
-                        ))}
+                    <tr ref={InViewRef}>
+
                     </tr>
                 )}
         </TableHeaderSort>

@@ -28,6 +28,8 @@ class ProjectRouter {
         this.router.post('/close/:id', this.controller.closeProject)
         this.router.post('/open/:id', this.controller.openProject)
 
+        this.router.post('/addArrangement/:id', this.controller.addArrangementToProject)
+        this.router.patch('/:id', this.controller.editProjectData)
         return this.router
     }
     

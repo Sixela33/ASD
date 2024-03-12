@@ -10,11 +10,13 @@ class VendorRouter {
 
     start(){
         
-        this.router.post('/', this.controller.addVendor)
         this.router.get('/', this.controller.getVendors)
+        this.router.post('/', this.controller.addVendor)
+        this.router.patch('/edit', this.controller.editVendor)
+        this.router.patch('/activate', this.controller.editVendor)
+        this.router.delete('/remove/:id', this.controller.removeVendor)
         return this.router
     }
-    
     
 }
 

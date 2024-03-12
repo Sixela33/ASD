@@ -81,6 +81,28 @@ class ProjectController {
             next(error)
         }
     }
+
+    addArrangementToProject = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const arrangementData = req.body
+            await this.service.addArrangementToProject(id, arrangementData)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    editProjectData = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const prjectData = req.body
+            await this.service.editProjectData(id, prjectData)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default ProjectController

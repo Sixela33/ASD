@@ -8,8 +8,9 @@ import Alert from './components/Alert';
 import Missing from './pages/Missing';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import Admin from './pages/Admin/Admin';
+import Users from './pages/Admin/Users';
 import User from './pages/Admin/User';
+import Admin from './pages/Admin/Admin';
 import CreateProject from './pages/Projects/CreateProject';
 import ProjectsList from './pages/Projects/ProjectsList';
 import ViewProject from './pages/Projects/ViewProject';
@@ -23,6 +24,8 @@ import ArrangementCreation from './pages/ArrangementCreation';
 import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
 import './app.css'
 import ROLES_LIST from '../../config/rolesList';
+import Vendors from './pages/Admin/Vendors';
+
 function App() {
 
   return (
@@ -54,8 +57,11 @@ function App() {
             </Route>
 
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
-              <Route path="admin" element={<Admin/>}/>
-              <Route path="admin/:userid" element={<User/>}/>
+              <Route path="admin/" element={<Admin/>}/>
+              <Route path="admin/users" element={<Users/>}/>
+              <Route path="admin/users/:userid" element={<User/>}/>
+              <Route path="admin/vendors" element={<Vendors/>}/>
+              
               <Route path="project/create/:id?" element={<CreateProject/>}/>      
 
             </Route>

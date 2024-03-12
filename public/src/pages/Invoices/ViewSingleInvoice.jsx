@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
+import FloatingMenuButton from '../../components/FloatingMenuButton';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
 
@@ -57,8 +58,15 @@ export default function ViewSingleInvoice() {
         window.open(`${BASE_URL}/api/${invoiceData.filelocation}`, '_blank', 'noreferrer')
     }
 
+    const buttonOptions = [
+        {text: 'Download Invoice', action: downloadFile}, 
+        {text: 'Edit invoice', action: () => navigateTo('/invoice/add/' + id)}
+    ]
+
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
+            <FloatingMenuButton options={buttonOptions}/>
+
             <div className='title-container '>
                 <button className='go-back-button' onClick={() => navigateTo('/invoice')} >go back</button>
                 <h1 >Invoice Overview</h1>
@@ -67,10 +75,6 @@ export default function ViewSingleInvoice() {
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
                     <embed src={`${BASE_URL}/api/${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
-                    <div className='buttons-holder'>
-                        <button className="buton-main mt-3" onClick={downloadFile} >Download invoice</button>
-                        <button className="buton-secondary mt-3" onClick={() => navigateTo('/invoice/add/' + id)} >Edit invoice</button>
-                    </div>
                 </div>
                 <div className='mx-10 w-full md:w-2/4 grid grid-col md:grid-rows-2 '> 
                     <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-center font-bold ">
@@ -79,7 +83,7 @@ export default function ViewSingleInvoice() {
                             <p>Invoice amount: ${parseFloat(invoiceData.invoiceamount).toFixed(2)}</p>
                         </div>
                         <div className='grid-row'>
-                            <p>Date loaded: {invoiceData.invoicedate}</p>
+                            <p>Invoice Date: {invoiceData.invoicedate}</p>
                             <p>Loaded By: {invoiceData.email}</p>
                         </div>
                     </div>
@@ -89,7 +93,6 @@ export default function ViewSingleInvoice() {
                                 "Project Client": "projectclient", 
                                 "Project Contact": "projectcontact", 
                                 "Project Description": "projectdescription", 
-                                "invoice Date": "projectdescription", 
                                 "Project Date": "projectdate"}
                             }
                             data={projectsProvided}

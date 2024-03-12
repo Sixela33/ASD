@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ArrangementPopup from '../../components/ArrangementPopup';
+import ArrangementPopup from '../../components/Popups/ArrangementPopup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
@@ -200,13 +200,13 @@ export default function CreateProject() {
                             <table >
                                 <thead>
                                     <tr>
-                                        <th >Arrangement type</th>
-                                        <th >Description</th>
-                                        <th >Unit Client Cost</th>
-                                        <th >Unit ArrangementBudget</th>
-                                        <th >Quantity</th>
-                                        <th >Total Client Cost</th>
-                                        <th >TOTAL Arrangement Budget</th>
+                                        <th>Arrangement type</th>
+                                        <th>Description</th>
+                                        <th>Unit Client Cost</th>
+                                        <th>Unit ArrangementBudget</th>
+                                        <th>Quantity</th>
+                                        <th>Total Client Cost</th>
+                                        <th>TOTAL Arrangement Budget</th>
                                     </tr>
                                 </thead>
                                 <tbody>

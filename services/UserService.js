@@ -47,7 +47,6 @@ class UserService {
         await validatePassword(password)
 
         let user = await this.model.getUserByEmail(email)
-
         if (user.rows?.length == 0) {
             throw { message: "Invalid login data", status: 401 };
         }

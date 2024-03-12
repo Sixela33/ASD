@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import { validateArrangement } from "./Validations/ArrangementValidations.js"
+import { validateArrangement, validateSingleArrangement } from "./Validations/ArrangementValidations.js"
 import { validateId } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
 
@@ -53,6 +53,20 @@ class ProjectService {
     getFlowersFromManyProjects = async (ids) => {
         const response = await this.model.getProjectFlowers(ids)
         return response.rows
+    }
+
+    addArrangementToProject = async (id, arrangementData) => {
+        await validateSingleArrangement(arrangementData)
+        await validateId(id)
+
+        await this.model.addArrangementToProject(id, arrangementData)
+    }
+
+    editProjectData = async (id, prjectData) => {
+        await validateId(id)
+        await validateProject(prjectData)
+
+        await this.model.editProjectData(id, prjectData)
     }
 }
 

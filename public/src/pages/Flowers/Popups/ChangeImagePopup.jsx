@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PopupBase from '../../../components/PopupBase';
-import ConfirmationPopup from '../../../components/ConfirmationPopup';
+import ConfirmationPopup from '../../../components/Popups/ConfirmationPopup';
 
 export default function ChangeImagePopup({ showPopup, closePopup, setNewImage }) {
     const [uploadedFile, setUploadedFile] = useState(null);

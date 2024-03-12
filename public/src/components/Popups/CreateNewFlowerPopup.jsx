@@ -1,6 +1,6 @@
 import React from 'react'
-import PopupBase from './PopupBase'
-import NewFlowerForm from './NewFlowerForm'
+import PopupBase from '../PopupBase'
+import NewFlowerForm from '../NewFlowerForm'
 
 export default function CreateNewFlowerPopup({showPopup, closePopup, flowerData}) {
     

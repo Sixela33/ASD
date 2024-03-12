@@ -5,7 +5,7 @@ import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
-import ConfirmationPopup from '../../components/ConfirmationPopup';
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
@@ -186,14 +186,14 @@ export default function ViewInvoices() {
 
                     {invoiceData.map((invoice, index) => {
                     return <tr key={index}  onClick={() => handleInvoiceSelection(invoice)}>
-                        <td className={'border p-2'}>{invoice?.invoiceid}</td>
-                        <td className={'border p-2'}>{invoice?.vendorname}</td>
-                        <td className={'border p-2'}>${parseFloat(invoice?.invoiceamount).toFixed(2)}</td>
-                        <td className={'border p-2'}>{invoice?.invoicedate}</td>
-                        <td className={'border p-2'}>{invoice?.invoicenumber}</td>
+                        <td>{invoice?.invoiceid}</td>
+                        <td>{invoice?.vendorname}</td>
+                        <td>${parseFloat(invoice?.invoiceamount).toFixed(2)}</td>
+                        <td>{invoice?.invoicedate}</td>
+                        <td>{invoice?.invoicenumber}</td>
                         {invoice?.hastransaction ? 
-                            <td className={'border p-2 bg-green-500'}>true</td> : 
-                            <td className={'border p-2 bg-red-500'}>false</td>
+                            <td className={'bg-green-500'}>true</td> : 
+                            <td className={'bg-red-500'}>false</td>
                         }
                         <td className={'border p-2'} onClick={e => {e.stopPropagation()}}>
                             <input type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
