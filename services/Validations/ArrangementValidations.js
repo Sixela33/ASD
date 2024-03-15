@@ -1,9 +1,9 @@
 import Joi from "joi"
-import schemas from "../../validationObjects/schemas.js"
+import { arrangementSchema, flowerToPopulateArrangementSchema } from "../../validationObjects/ArrangementSchemas.js"
 
 const validateArrangement = arrangement => {
     const arrayArrangements = Joi.array().items(
-        schemas.arrangementSchema
+        arrangementSchema
     )
     const { error } = arrayArrangements.validate(arrangement)
     if (error) {
@@ -16,7 +16,7 @@ const validateArrangement = arrangement => {
 const validateSingleArrangement = arrangement => {
     
     
-    const { error } = schemas.arrangementSchema.validate(arrangement)
+    const { error } = arrangementSchema.validate(arrangement)
     if (error) {
         throw {message: error.details[0]?.message, status: 403}
     }
@@ -24,4 +24,15 @@ const validateSingleArrangement = arrangement => {
     return true
 }
 
-export {validateArrangement, validateSingleArrangement}
+const validateFlowersToPopulateArrangement = flowers => {
+    const arrayFlowers = Joi.array().items(flowerToPopulateArrangementSchema)
+
+    const { error } = arrayFlowers.validate(flowers)
+    if (error) {
+        throw {message: error.details[0]?.message, status: 403}
+    }
+
+    return true
+}
+
+export {validateArrangement, validateSingleArrangement, validateFlowersToPopulateArrangement}

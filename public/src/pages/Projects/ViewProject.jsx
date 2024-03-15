@@ -72,7 +72,7 @@ export default function ViewProject() {
 
     useEffect(() => {
         if (flowerData.length > 0) {
-            const {aggregatedFlowerArray, separatedByArrangement, flowersByArrangement} = aggregateFlowerData(flowerData)
+            const {aggregatedFlowerArray, flowersByArrangement} = aggregateFlowerData(flowerData)
             setShowFlowerData(aggregatedFlowerArray || []);
             setFlowersByArrangement(flowersByArrangement)
         }
@@ -206,7 +206,7 @@ export default function ViewProject() {
         {text: 'Add New Arrangement', action: handleCreateArrangement}, 
         {text: 'Edit project Data', action: () =>{setShowEditProjectPopup(true)}}
     ]
-    
+
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
             <EditArrangementPopup 
@@ -221,8 +221,8 @@ export default function ViewProject() {
 
             </EditProjectData>
             <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
-                actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flowe, index) => {
-                return <p key={index}>{flowe.flowername} x {flowe.amount}</p>})}
+                actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
+                return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
             </Tooltip>
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?

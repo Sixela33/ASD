@@ -121,11 +121,19 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query('INSERT INTO userrole (rolename, roleCode) VALUES ($1, $2);', [roleName, roleCode])
     }
-    
+
+    getAllRoles = async () => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query('SELECT roleName, roleCode AS permissionlevel FROM userRole')
+    }
+
+
+    /*
     getAllRoles = async () => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query('SELECT roleid, rolename, roleCode FROM userrole')
     }
+    */
 
     // -----------------------------------------------
     //                    CLIENTS
@@ -139,7 +147,7 @@ class ModelPostgres {
 
     getClients = async () => {
         this.validateDatabaseConnection()
-        return CnxPostgress.db.query('SELECT * FROM clients ORDER BY clientname;')
+        return CnxPostgress.db.query('SELECT clientID, clientName FROM clients ORDER BY clientname;')
     }
 
     // -----------------------------------------------
@@ -205,15 +213,36 @@ class ModelPostgres {
     getProjectByID = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(
-            "SELECT projects.*, clients.clientName AS projectclient, TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID = $1;",
-            [id]
+            `SELECT 
+                projects.projectid, 
+                projects.clientid, 
+                projects.projectdescription, 
+                projects.projectcontact, 
+                projects.profitmargin, 
+                projects.staffbudget, 
+                projects.creatorid, 
+                projects.isclosed, 
+                clients.clientName AS projectclient, 
+                TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
+                FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                WHERE projects.projectID = $1;`,
+                [id]
         );
     }
 
     getManyProjectsByID = async (ids) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(
-            "SELECT projects.*, clients.clientName AS projectclient, TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate FROM projects INNER JOIN clients ON projects.clientID = clients.clientID WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));",
+            `SELECT 
+                projects.projectid, 
+                projects.clientid, 
+                projects.projectdate, 
+                projects.projectdescription, 
+                projects.projectcontact, 
+                clients.clientName AS projectclient, 
+                TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
+                FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));`,
             [ids]
         );
     }
@@ -240,7 +269,11 @@ class ModelPostgres {
 
         let queryBase = `
         SELECT 
-            p.*, 
+            p.projectid,
+            p.clientid,
+            p.projectdescription,
+            p.projectcontact,
+            p.isclosed, 
             c.clientName AS projectclient, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
             CASE
@@ -284,7 +317,14 @@ class ModelPostgres {
     getProjectArrangements = async (id) => {
         this.validateDatabaseConnection()
         const response =  await CnxPostgress.db.query(`
-            SELECT a.*,
+            SELECT 
+            a.arrangementid,
+            a.projectid,
+            a.arrangementdescription,
+            a.clientcost,
+            a.arrangementquantity,
+            a.designerid,
+            a.arrangementtype,
             at.typeName AS typename
             FROM arrangements a 
             LEFT JOIN arrangementTypes at ON at.arrangementTypeID = a.arrangementType
@@ -300,7 +340,6 @@ class ModelPostgres {
             a.arrangementID,
             f.flowerID,
             f.flowerName,
-            f.flowerImage,
             f.flowerColor,
             fxa.amount,
             FxI.unitPrice
@@ -333,7 +372,7 @@ class ModelPostgres {
         [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity])
     }
 
-    editProjectData = async (id, prjectData) => {
+    editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query(`
         UPDATE projects SET 
@@ -345,7 +384,7 @@ class ModelPostgres {
             profitMargin = $6,
             lastEdit = CURRENT_TIMESTAMP
         WHERE projects.projectID = $7
-        `, [prjectData.clientid, prjectData.projectDate, prjectData.projectDescription, prjectData.projectContact, prjectData.staffBudget, prjectData.profitMargin, id]
+        `, [projectData.clientid, projectData.projectDate, projectData.projectDescription, projectData.projectContact, projectData.staffBudget, projectData.profitMargin, id]
         )
     }
 
@@ -355,7 +394,6 @@ class ModelPostgres {
 
     addFlower = async (image, name, color) => {
         this.validateDatabaseConnection()
-        console.log(image, name, color)
         await CnxPostgress.db.query("INSERT INTO flowers (flowerName, flowerImage, flowerColor) VALUES($1, $2, $3);", [name, image, color]);
         
     }
@@ -367,7 +405,7 @@ class ModelPostgres {
 
     getFlowerData = async (id) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query("SELECT * FROM flowers WHERE flowerID = $1;", [id])
+        return await CnxPostgress.db.query("SELECT flowerid, flowername, flowerimage, flowercolor FROM flowers WHERE flowerID = $1;", [id])
     }
 
     getFlowerPrices = async (id) => {
@@ -384,7 +422,7 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const LIMIT = 50
         const searchString = `%${query}%`
-        let sqlQuery = "SELECT f.*, FxI.unitPrice FROM flowers f ";
+        let sqlQuery = "SELECT f.flowerid, f.flowername, f.flowerimage, f.flowercolor, FxI.unitPrice FROM flowers f ";
 
         sqlQuery += `LEFT JOIN (
             SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
@@ -428,7 +466,13 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const response = await CnxPostgress.db.query(`
         SELECT 
-            a.*,
+            a.arrangementid,
+            a.projectid,
+            a.arrangementtype,
+            a.arrangementdescription,
+            a.clientcost,
+            a.arrangementquantity,
+            a.designerid,
             at.typeName,
             p.profitMargin
         FROM arrangements a
@@ -598,8 +642,6 @@ class ModelPostgres {
         fv.vendorname, 
         i.invoiceamount, 
         i.invoiceNumber,
-        u.email,
-        i.fileLocation,
         TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
         CASE 
             WHEN it.invoiceID IS NOT NULL THEN TRUE 

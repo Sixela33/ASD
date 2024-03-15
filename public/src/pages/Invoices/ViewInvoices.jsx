@@ -54,7 +54,6 @@ export default function ViewInvoices() {
             }
 
             const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol + '&specificVendor=' + selectedVendor);
-            
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;

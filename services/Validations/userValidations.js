@@ -1,8 +1,8 @@
-import schemas from "../../validationObjects/schemas.js"
+import { emailSchema, passSchema, usernameSchema, fullUserSchema } from "../../validationObjects/UserShemas.js"
 
 const validateEmail = email => {
 
-    const { error } = schemas.emailSchema.validate(email)
+    const { error } = emailSchema.validate(email)
     if (error) {
         throw {message: error.details[0].message, status: 403}
     } 
@@ -12,7 +12,7 @@ const validateEmail = email => {
 
 const validatePassword = pass => {
 
-    const { error } = schemas.passSchema.validate(pass)
+    const { error } = passSchema.validate(pass)
     if (error) {
         throw {message: error.details[0].message, status: 403}
     } 
@@ -22,7 +22,7 @@ const validatePassword = pass => {
 
 const validateUsername = username => {
 
-    const { error } = schemas.usernameSchema.validate(username)
+    const { error } = usernameSchema.validate(username)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}
@@ -33,7 +33,7 @@ const validateUsername = username => {
 
 const validateFullUser = user => {
     
-    const { error } = schemas.fullUserSchema.validate(user)
+    const { error } = fullUserSchema.validate(user)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}

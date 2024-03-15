@@ -1,5 +1,4 @@
 import express from 'express'
-import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
 import ProjectController from '../controllers/ProjectController.js'
 
 class ProjectRouter {
@@ -10,13 +9,11 @@ class ProjectRouter {
     }
 
     start(){
-  
-        
+   
         this.router.post('/create', this.controller.createProject)
 
         // Wrongly posts, should be gets
         this.router.post('/manyByID', this.controller.getManyProjectsByID)
-        this.router.post('/flowers', this.controller.getFlowersFromManyProjects)
         
         // get many projects for display
         this.router.get('/list/:offset', this.controller.getProjects)

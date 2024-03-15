@@ -9,7 +9,8 @@ class RoleController {
     createRole = async (req, res, next) => {
         try {
             const { roleName, roleCode } = req.body
-
+            await this.service.createRole(roleName, roleCode)
+            res.sendStatus(200)
         } catch (error) {
             next(error)
         }

@@ -22,8 +22,6 @@ class FlowerController {
         try {
             const image = req.file
             const { name, color, prevFlowerPath, id } = req.body
-            console.log(req.body)
-            console.log(req.file)
             await this.service.editFlower(image, name, color, prevFlowerPath, id)
             res.sendStatus(200)
         } catch (error) {
@@ -44,7 +42,6 @@ class FlowerController {
 
     getFlowerData = async (req, res, next) => {
         try {
-            console.log("id", req.params)
             const { id } = req.params
             const response = await this.service.getFlowerData(id)
             res.json(response)

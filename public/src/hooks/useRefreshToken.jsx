@@ -16,14 +16,15 @@ const useRefreshToken = () => {
             });
  
        // console.log("RES: ",response)
+       console.log(response.data)
         setAuth(prev => {
-           const decoded = jwtDecode(response.data.accessToken)
+           const decoded = jwtDecode(response.data)
 
 
             return {
                 ...prev,
                 decoded: decoded,
-                accessToken: response.data.accessToken
+                accessToken: response.data
             }
         });
         return response.data.accessToken;

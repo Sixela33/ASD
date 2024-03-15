@@ -15,12 +15,13 @@ class UserService {
 
         let response = this.model.getUserById(userid)
         //  let roles = this.model.getUserRoles(userid)
-        let allRoles = this.model.getAllRoles()
+        //let allRoles = this.model.getAllRoles()
 
         response = await response
-        allRoles = await allRoles
+        //allRoles = await allRoles
 
-        return {user: response.rows, allRoles: allRoles.rows}
+        //return {user: response.rows, allRoles: allRoles.rows}
+        return {user: response.rows}
     }
 
     getUsers = async () => {

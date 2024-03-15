@@ -65,18 +65,8 @@ class ProjectController {
     getManyProjectsByID = async (req, res, next) => {
         try {
             const {ids} = req.body
-            const result = await this.service.getManyProjectsByID(ids)
-            res.json(result)
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    getFlowersFromManyProjects = async (req, res, next) => {
-        try {
-            const { ids } = req.body
-            const result = await this.service.getFlowersFromManyProjects(ids)
-            res.json(result)
+            let response = await this.service.getManyProjectsAndItsFlowers(ids)
+            res.json(response)
         } catch (error) {
             next(error)
         }
@@ -96,8 +86,8 @@ class ProjectController {
     editProjectData = async (req, res, next) => {
         try {
             const { id } = req.params
-            const prjectData = req.body
-            await this.service.editProjectData(id, prjectData)
+            const projectData = req.body
+            await this.service.editProjectData(id, projectData)
             res.sendStatus(200)
         } catch (error) {
             next(error)

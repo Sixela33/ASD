@@ -7,7 +7,6 @@ class VendorService {
     }
 
     addVendor = async (vendorName) => {
-        console.log(vendorName)
         await this.model.addVender(vendorName)
     }
 

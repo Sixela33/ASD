@@ -6,7 +6,7 @@ import path from "path";
 
 const request = supertest(process.env.HOST + ':' + process.env.PORT)
 
-var headers = {
+let headers = {
     "Authorization": "",
     "headers": { 'Content-Type': 'application/json' },
     "withCredentials": true

@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors";
 import corsOptions from "./config/corsOptions.js"
 import cookieParser from "cookie-parser";
+import messageLogger from "./loggers/messageLogger.js";
+
 
 import errorHandler from "./middleware/ErrorHandler.js";
 import credentials from "./middleware/credentials.js";
@@ -31,11 +33,10 @@ import ROLES_LIST from "./config/rolesList.js";
 
 class Server {
 
-    constructor(port, host, persistance, logger) {
+    constructor(port, host, persistance) {
         this.port = port
         this.host = host
         this.persistance = persistance
-        this.logger = logger
 
         this.app = express()
     }
@@ -50,12 +51,12 @@ class Server {
         this.app.use('/api/SavedFiles', express.static('SavedFiles'));
         this.app.use(requestLogger)
 
-        if(this.logger) {
-            this.app.use((req, res, next) => {
-                req.logger = this.logger
-                next()
-            })
-        }
+        
+        this.app.use((req, res, next) => {
+            req.logger = messageLogger
+            next()
+        })
+        
 
         if (this.persistance == 'postgres') {
             await CnxPostgress.connect();
@@ -73,6 +74,7 @@ class Server {
         this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
         this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
+
         this.app.use('/api/clients', loginreq, new ClientRouter().start())
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
         this.app.use('/api/invoices', staffuserReq, new InvoiceRouter().start())

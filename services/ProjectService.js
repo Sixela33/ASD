@@ -1,6 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import { validateArrangement, validateSingleArrangement } from "./Validations/ArrangementValidations.js"
-import { validateId } from "./Validations/IdValidation.js"
+import { validateId, validateIdArray } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
 
 class ProjectService {
@@ -43,17 +43,6 @@ class ProjectService {
         project = await project
         return {project: project.rows, arrangements: arrangements.rows,flowers: flowers.rows }
     }
-    
-
-    getManyProjectsByID = async (ids) => {
-        const response = await this.model.getManyProjectsByID(ids)
-        return response.rows
-    }
-
-    getFlowersFromManyProjects = async (ids) => {
-        const response = await this.model.getProjectFlowers(ids)
-        return response.rows
-    }
 
     addArrangementToProject = async (id, arrangementData) => {
         await validateSingleArrangement(arrangementData)
@@ -62,11 +51,26 @@ class ProjectService {
         await this.model.addArrangementToProject(id, arrangementData)
     }
 
-    editProjectData = async (id, prjectData) => {
+    editProjectData = async (id, projectData) => {
         await validateId(id)
-        await validateProject(prjectData)
+        await validateProject(projectData)
 
-        await this.model.editProjectData(id, prjectData)
+        await this.model.editProjectData(id, projectData)
+    }
+
+    getManyProjectsAndItsFlowers = async (ids) => {
+        await validateIdArray(ids)
+
+        let projects = this.model.getManyProjectsByID(ids)
+        let flowers = this.model.getProjectFlowers(ids)
+
+        projects = await projects
+        projects = projects.rows
+        
+        flowers = await flowers
+        flowers = flowers.rows
+        
+        return {projects, flowers}
     }
 }
 

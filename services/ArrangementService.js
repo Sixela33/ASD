@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import { validateSingleArrangement } from "./Validations/ArrangementValidations.js"
+import { validateSingleArrangement, validateFlowersToPopulateArrangement } from "./Validations/ArrangementValidations.js"
 import { validateId } from "./Validations/IdValidation.js"
 
 class ArrangementService {
@@ -8,11 +8,9 @@ class ArrangementService {
         this.model = new ModelPostgres()
     }
 
-    createArrangement = async (projectID, arrangementType, arrangementDescription, arrangementBudget) => {
-        await this.model.createArrangement(projectID, arrangementType, arrangementDescription, arrangementBudget)
-    }
-
     populateArrangement = async(arrangementid, flowers) => {
+        await validateId(arrangementid)
+        await validateFlowersToPopulateArrangement(flowers)
         await this.model.populateArrangement(arrangementid, flowers)
     }
 
@@ -27,7 +25,7 @@ class ArrangementService {
 
         arrangementData = await arrangementData
         arrangementFLowerData = await arrangementFLowerData
-
+        console.log({arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows})
         return {arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows}
     }
 

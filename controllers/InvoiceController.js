@@ -46,7 +46,7 @@ class InvoiceController {
     }    
     getInvoices = async (req, res, next) => {
         try {
-            const {offset} = req.params
+            const { offset } = req.params
             const { orderBy, order, searchQuery, searchBy, specificVendor } = req.query
             const response = await this.service.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor)
             res.json(response)
@@ -78,7 +78,6 @@ class InvoiceController {
     linkBaknTransaction = async (req, res, next) => {
         try {
             const { bankTransactionData, selectedInvoices } = req.body
-            console.log("bodei", req.body)
             const response = await this.service.linkBaknTransaction(bankTransactionData, selectedInvoices)
             res.json(response)
         } catch (error) {

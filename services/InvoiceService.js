@@ -61,9 +61,6 @@ class InvoiceService {
             newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         } 
 
-        console.log(invoiceData)
-        console.log("fileLocation", invoiceData.fileLocation)
-        console.log("fileLocation2", newFileLoc)
         const response = await this.model.editInvoice(invoiceData, newFileLoc, invoiceFlowerData, editorID)
         return response
     }

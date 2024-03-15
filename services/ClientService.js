@@ -1,13 +1,14 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-
+import { validateClient } from "./Validations/clientValidations.js"
 class ClientService {
 
     constructor() {
         this.model = new ModelPostgres()
     }
 
-    addClients = async () => {
-
+    addClients = async (clientName) => {
+        await validateClient(clientName)
+        await this.model.createClient(clientName)
     }
 
     getClients = async () => {

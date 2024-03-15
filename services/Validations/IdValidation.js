@@ -11,4 +11,14 @@ const validateId = id => {
     return true
 }
 
-export {validateId}
+const validateIdArray = ids => {
+    const { error } = schemas.idArrays.validate(ids)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 403}
+    } 
+
+    return true
+}
+
+export {validateId, validateIdArray}

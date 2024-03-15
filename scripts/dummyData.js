@@ -148,7 +148,7 @@ const populateArangement = async (model) => {
 const loadVendors = async (model) => {
     try {
         for (let v of vendors) {
-            await model.createVendor(v)
+            await model.addVender(v)
         }
     } catch (error) {
         console.error('error while loading providers: \n', error)

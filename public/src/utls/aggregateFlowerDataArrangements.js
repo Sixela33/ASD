@@ -1,6 +1,5 @@
 const aggregateFlowerData = (flowerData) => {
     const aggregatedData = []
-    const separatedByArrangement = {}
     const flowersByArrangement = {}
 
     flowerData?.forEach(flower => {
@@ -20,11 +19,9 @@ const aggregateFlowerData = (flowerData) => {
                     estimatedcost: unitprice * amount,
                     projectid
                 });
-                separatedByArrangement[flowerid] = [arrangementid]
             } else {
                 aggregatedData[existingFlowerIndex].totalstems += amount;
                 aggregatedData[existingFlowerIndex].estimatedcost += unitprice * amount;
-                separatedByArrangement[flowerid].push(arrangementid)
             }
             if (!flowersByArrangement[arrangementid]) {
                 flowersByArrangement[arrangementid] = [flower]
@@ -37,10 +34,8 @@ const aggregateFlowerData = (flowerData) => {
 
     // Making the object into an array of arrays
     const aggregatedFlowerArray = Object.values(aggregatedData);
-    console.log("separatedByArrangement", separatedByArrangement)
-    console.log("flowersByArrangement", flowersByArrangement)
    
-    return {aggregatedFlowerArray, separatedByArrangement, flowersByArrangement};
+    return {aggregatedFlowerArray, flowersByArrangement};
 };
 
 export {aggregateFlowerData} 

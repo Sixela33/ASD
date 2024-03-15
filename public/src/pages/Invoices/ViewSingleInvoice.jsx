@@ -51,7 +51,9 @@ export default function ViewSingleInvoice() {
     }
 
     useEffect(() => {
-        fetchProjectsProvided()
+        if (id) {
+            fetchProjectsProvided()
+        }
     }, [])
 
     const downloadFile = () => {

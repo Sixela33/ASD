@@ -23,8 +23,6 @@ const initialState = {
   arrangements: [],
 }
 
-
-
 export default function CreateProject() {
     const axiosPrivate = useAxiosPrivate()
     const { setMessage } = useAlert()

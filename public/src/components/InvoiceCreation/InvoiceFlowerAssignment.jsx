@@ -7,7 +7,6 @@ import InvoiceAddFlowerToProjectPopup from './InvoiceAddFlowerToProjectPopup'
 import { useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
 
-const ARRANGEMENT_DATA_FETCH = '/api/projects/flowers'
 const GET_PROJECTS_URL = '/api/projects/manyByID';
 const ADD_INVOICE_URL = '/api/invoices'
 const UPDATE_INVOICE_URL = '/api/invoices'
@@ -32,17 +31,18 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
     const fetchData = useCallback(async () => {
         try {
-        const projects = await axiosPrivate.post(GET_PROJECTS_URL, JSON.stringify({ids: chosenProjects}))
-        const resSorted = projects?.data.sort((a, b) => a.projectid - b.projectid )
-        setProjectsInfo(resSorted)
+            const response = await axiosPrivate.post(GET_PROJECTS_URL, JSON.stringify({ids: chosenProjects}))
+            const {projects, flowers} = response.data
+            const resSorted = projects.sort((a, b) => a.projectid - b.projectid )
+            setProjectsInfo(resSorted)
 
-        const response = await axiosPrivate.post(ARRANGEMENT_DATA_FETCH, JSON.stringify({ids: chosenProjects}))
-        console.log("yee haw", [...response?.data, ...loadedFlowers])
-        setFlowerData([...response?.data, ...loadedFlowers])
-            
+            // const response = await axiosPrivate.post(ARRANGEMENT_DATA_FETCH, JSON.stringify({ids: chosenProjects}))
+            console.log("yee haw", [...flowers, ...loadedFlowers])
+            setFlowerData([...flowers, ...loadedFlowers])
+                
         } catch (error) {
-        setMessage(error.response?.data?.message, true);
-        //console.error('Error fetching data:', error);
+            setMessage(error.response?.data?.message, true);
+            //console.error('Error fetching data:', error);
         }
     })
 
@@ -133,9 +133,9 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         
         // if it doies, error
         if (flowerExists !== -1) {
-        //console.log("Flower already exists in the project");
-        setMessage("Flower already exists in the project")
-        return;
+            //console.log("Flower already exists in the project");
+            setMessage("Flower already exists in the project")
+            return;
         }
 
         // checking if the price of the type of flower is being tracked
@@ -143,15 +143,15 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     
         // if its not, i add it
         if (existingFlowerPriceIndex === -1) {
-        const newPriceObject = {
-            addedStems: 0,
-            flowerid: flowerData.flowerid,
-            flowername: flowerData.flowername,
-            unitprice: ""
-        };
+            const newPriceObject = {
+                addedStems: 0,
+                flowerid: flowerData.flowerid,
+                flowername: flowerData.flowername,
+                unitprice: ""
+            };
     
-        const newPrices = [...flowerPriceTracker, newPriceObject];
-        setFlowerPriceTracker(newPrices);
+            const newPrices = [...flowerPriceTracker, newPriceObject];
+            setFlowerPriceTracker(newPrices);
         }
     
         // adding the flower to the project
@@ -164,10 +164,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         };
         
         const newFlowerData = displayFlowerData.map((projectFlowers, index) => {
-        if (index === selectedRow) {
-            return [...projectFlowers, newFlowerObject];
-        }
-        return projectFlowers.slice(); // Creating shallow copy of other project arrays
+            if (index === selectedRow) {
+                return [...projectFlowers, newFlowerObject];
+            }
+            return projectFlowers.slice(); // Creating shallow copy of other project arrays
         });
     
         setDisplayFlowerData(newFlowerData);
@@ -177,14 +177,17 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         const result = displayFlowerData.flatMap(project => {
             return project.map(flowerItem => {
                 const existingPriceFlower = flowerPriceTracker.find(item => item.flowerid === flowerItem.flowerid);
-                if (existingPriceFlower) {
-                    flowerItem.unitPrice = existingPriceFlower.unitprice;
-                }
-    
+                
+                // cleaning up the flower data object
                 if (!(flowerItem.filledStems == '' || flowerItem.filledStems == 0)) {
-                    return flowerItem;
+                    return {
+                        flowerid: flowerItem.flowerid, 
+                        projectid: flowerItem.projectid, 
+                        unitPrice: existingPriceFlower.unitprice,
+                        filledStems: flowerItem.filledStems
+                    };
                 }
-            }).filter(Boolean); // Elimina elementos nulos o indefinidos
+            }).filter(Boolean); // Filtering indefined values
         });
     
         return result;
@@ -193,49 +196,47 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     const submitInvoiceCreation = async (e) => {
         e.preventDefault();
         try {
-        let invoiceFlowerData = addPrices()
-        const formDataToSend = new FormData();
+            let invoiceFlowerData = addPrices()
+            const formDataToSend = new FormData();
 
-        invoiceFlowerData = invoiceFlowerData.flat(0)
-        
-        // this function checks if the total of flowers added coincide with the invoice AND
-        // if the user added stems but did not set the price
-        const validationInput = flowerPriceTracker?.reduce((value, flower) => {
-            let temp = value
-            temp.totalAdded += flower.addedStems * flower.unitprice
-            if (flower.addedStems != 0 && flower.unitprice == 0) {
-            temp.AddedWithNoPrice += 1
+            invoiceFlowerData = invoiceFlowerData.flat(0)
+            
+            // this function checks if the total of flowers added coincide with the invoice AND
+            // if the user added stems but did not set the price
+            const validationInput = flowerPriceTracker?.reduce((value, flower) => {
+                let temp = value
+                temp.totalAdded += flower.addedStems * flower.unitprice
+                if (flower.addedStems != 0 && flower.unitprice == 0) {
+                temp.AddedWithNoPrice += 1
+                }
+                return temp 
+            }, {totalAdded: 0, AddedWithNoPrice: 0})
+
+            if (invoiceData.invoiceAmount != validationInput.totalAdded) {
+                setMessage("The invoice ammount and Registered Expenses do not coincide", true)
+                return
             }
-            return temp 
-        }, {totalAdded: 0, AddedWithNoPrice: 0})
 
-        if (invoiceData.invoiceAmount != validationInput.totalAdded) {
-            setMessage("The invoice ammount and Registered Expenses do not coincide", true)
-            return
-        }
+            if (validationInput.AddedWithNoPrice != 0){
+                setMessage("Added stems with no price assigned")
+                return
+            }
 
-        if (validationInput.AddedWithNoPrice != 0){
-            setMessage("Added stems with no price assigned")
-            return
-        }
+            formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
+            formDataToSend.append('InvoiceFlowerData', JSON.stringify(invoiceFlowerData));
+            formDataToSend.append('invoiceFile', invoiceFile);
 
+            if (!invoiceData.invoiceid) {
+                await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
+                setMessage('Invoice Loaded successfully', false)
+            } else {
+                await axiosPrivateImage.patch(UPDATE_INVOICE_URL, formDataToSend);
+                setMessage('Invoice Updated successfully', false)
+            }
 
-
-        formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
-        formDataToSend.append('InvoiceFlowerData', JSON.stringify(invoiceFlowerData));
-        formDataToSend.append('invoiceFile', invoiceFile);
-
-        if (!invoiceData.invoiceid) {
-            await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
-            setMessage('Invoice Loaded successfully', false)
-        } else {
-            await axiosPrivateImage.patch(UPDATE_INVOICE_URL, formDataToSend);
-            setMessage('Invoice Updated successfully', false)
-        }
-
-        navigateTo('/invoice')
+            navigateTo('/invoice')
         } catch (error) {
-        setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data?.message, true);
         }
     }
 
@@ -287,7 +288,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                     {displayFlowerData[selectedRow]?.map((flower, index) => {
                         const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flower.flowerid);
 
-                        return <tr key={index} className='h-[10vh]'>
+                        return <tr key={index}>
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>

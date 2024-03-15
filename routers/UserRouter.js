@@ -16,11 +16,10 @@ class UserRouter {
         const staffPermission = new PermissionsMiddelware(ROLES_LIST['Staff']).call
         const adminPermission = new PermissionsMiddelware(ROLES_LIST['Admin']).call
 
-        this.router.get('/search/:userid?', staffPermission, this.controller.getUsers)
-        this.router.get('/all', staffPermission, this.controller.getUsersList)
-
-        this.router.post('/register', adminPermission, this.controller.registerUser)
-        this.router.post('/login', this.controller.loginUser)
+        this.router.get('/search/:userid?', staffPermission, this.controller.getUsers) //
+        this.router.get('/all', staffPermission, this.controller.getUsersList) //
+        this.router.post('/register', adminPermission, this.controller.registerUser) //
+        this.router.post('/login', this.controller.loginUser) // 
         this.router.get('/refresh', this.controller.handleRefresh)
         this.router.get('/logout', this.controller.handleLogout)
         

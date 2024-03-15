@@ -2,6 +2,7 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js";
 import fs from 'fs';
 import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
+import { validateFlower } from "./Validations/FlowerValidations.js";
 import { handleNewFileLocal } from "../utils/fileHandling.js";
 import { handleReplaceFile } from "../utils/fileHandling.js";
 
@@ -18,6 +19,7 @@ class FlowerService {
     }
 
     addFlower = async (image, name, color) => {
+        await validateFlower({name, color})
         let savePath = ''
         if (image) {
             savePath = await handleNewFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
@@ -26,7 +28,8 @@ class FlowerService {
     };
 
     editFlower = async (image, name, color, prevFlowerPath, id ) => {
-
+        await validateFlower({name, color})
+        await validateId(id)
         let filepath = prevFlowerPath
 
         if (image) {

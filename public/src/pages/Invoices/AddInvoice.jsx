@@ -67,7 +67,6 @@ export default function AddInvoice() {
   }
 
   useEffect(() => {
-    console.log('id', id)
     if(id) {
       fetchProjectsProvided()
     }
