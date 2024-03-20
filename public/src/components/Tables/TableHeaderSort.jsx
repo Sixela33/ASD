@@ -21,9 +21,9 @@ export default function TableHeaderSort({ headers, setSortConfig, defaultSortCon
     if (!setSortConfig) setSortConfig = () => {}
 
     const defaultStyles = {
-        theadStyles: "sticky top-0 bg-white hover:cursor-pointer",
+        theadStyles: "hover:cursor-pointer",
         tbodyStyles: "",
-        tableStyles: "w-full table-fixed border-collapse text-center",
+        tableStyles: "border-collapse text-center",
     };
 
     const mergedStyles = {

@@ -11,7 +11,7 @@
     "createadmin": "node scripts/createAdmin.js",
     "dd": "node scripts/dummyData.js",
     "loadFlowers": "mocha scripts/LoadFlowers.test.js --timeout 10000",
-    "test": "mocha tests/api-clients.test.js --timeout 10000"
+    "test": "mocha tests --timeout 10000"
   },
   "author": "",
   "license": "ISC",

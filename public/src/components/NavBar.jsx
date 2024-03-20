@@ -21,20 +21,20 @@ const Navbar = () => {
     //console.log(auth)
 
     return (
-        <nav className="bg-black p-4">
+        <nav className="p-4">
             <div className="container flex justify-between items-center ">
-                <Link to="/" className="text-white text-lg font-bold">
+                <Link to="/" className="text-lg font-bold">
                     <img src='./asd.png' className="h-20" alt="ASD"></img>
                 </Link>
                 <div className="lg:hidden">
-                    <button onClick={toggleMenu} className="text-white focus:outline-none focus:border-none">
+                    <button onClick={toggleMenu} className="focus:outline-none focus:border-none">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                         </svg>
                     </button>
                 </div>
                 <div className={`lg:flex ${isOpen ? 'flex' : 'hidden'} items-right`}>
-                    {auth.decoded && <Link onClick={signOut} className="text-white">LogOut</Link>}
+                    {auth.decoded && <Link onClick={signOut}>LogOut</Link>}
                 </div>
             </div>
         </nav>

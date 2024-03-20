@@ -43,8 +43,8 @@ class ProjectController {
     getProjects = async (req, res, next) => {
         try {
             const { offset} = req.params
-            const { orderBy, order, showOpenOnly } = req.query
-            const result = await this.service.getProjects(offset, orderBy, order, showOpenOnly)
+            const { orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription } = req.query
+            const result = await this.service.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription)
             res.json(result)
         } catch (error) {
             next(error)
@@ -88,6 +88,17 @@ class ProjectController {
             const { id } = req.params
             const projectData = req.body
             await this.service.editProjectData(id, projectData)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    changeFlowerInProject = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const {previousflowerid, newflowerid} = req.body
+            await this.service.changeFlowerInProject(id, previousflowerid, newflowerid)
             res.sendStatus(200)
         } catch (error) {
             next(error)

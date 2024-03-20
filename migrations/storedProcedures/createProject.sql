@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION createProject(
+CREATE OR REPLACE PROCEDURE createProject(
     p_projectDate DATE, 
     p_projectDescription VARCHAR(255), 
     p_projectContact VARCHAR(255), 
@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION createProject(
     p_projectClient INT, 
     p_creatorid INT,
     p_arrangements_arr JSONB[]
-) RETURNS VOID AS $$
+) AS $$
 DECLARE
     new_project_id INT;
     arrangement_record JSONB;

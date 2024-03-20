@@ -36,6 +36,7 @@ export default function ViewInvoices() {
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
     const [searchByInputvalue, setSearchByInputValue] = useState('')
     const [selectedSearchFilter, setSelectedSearchFilter] = useState(searchByOptions[0].value)
+    const [showOnlyWithMissingLink, setShowOnlyWithMissingLink] = useState(false)
 
     const [allVendors, setAllVendors] = useState([])
     const [selectedVendor, setSelectedVendor] = useState('')
@@ -47,13 +48,13 @@ export default function ViewInvoices() {
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
 
-    const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor) => {
+    const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor, showOnlyWithMissingLink) => {
         try {
             if (!dataLeft.current) {
                 return;
             }
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol + '&specificVendor=' + selectedVendor);
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol + '&specificVendor=' + selectedVendor + '&onlyMissing=' +showOnlyWithMissingLink);
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;
@@ -89,9 +90,9 @@ export default function ViewInvoices() {
         setInvoiceData([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor)
+        debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
         
-    }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor])
+    }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink])
 
     const handleInvoiceSelection = (invoiceData) => {
         navigateTo(`/invoice/view/${invoiceData.invoiceid}`)
@@ -152,27 +153,33 @@ export default function ViewInvoices() {
                 <br/>
                 <p>Do you want to procede?</p>
             </ConfirmationPopup>
-            <div className="title-container">
-                <button onClick={() => navigateTo('/')} className="go-back-button">go back</button>
-                <h1>Invoices</h1>
-                <Link to="/invoice/add/" className="buton-main">Load Invoice</Link>
+            <div className="grid grid-cols-3 mb-4">
+                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">go back</button>
+                <h1 className='col-span-1'>Invoices</h1>
+                <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Load Invoice</Link>
             </div>
-            <div className='m-2 text-left'>
-    
-                    <input type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
-                    <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
-                        {searchByOptions.map((item, index) => {
-                            return <option value={item.value} key={index}>{item.displayName}</option>
-                        })}
-                    </select>
-  
-                    <span className='ml-4'>Filter by vendor: </span>
-                    <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
-                        <option value={''}>Select Vendor</option>
-                        {allVendors.map((item, index) => {
-                            return <option value={item.vendorid} key={index}>{item.vendorname}</option>
-                        })}
-                    </select>
+            <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
+                    <div className='flex items-center space-x-1'>
+                        <input type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
+                        <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
+                            {searchByOptions.map((item, index) => {
+                                return <option value={item.value} key={index}>{item.displayName}</option>
+                            })}
+                        </select>
+                    </div>
+                    <div className='flex items-center space-x-1'>
+                        <span className='ml-4'>Filter by vendor: </span>
+                        <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
+                            <option value={''}>Select Vendor</option>
+                            {allVendors.map((item, index) => {
+                                return <option value={item.vendorid} key={index}>{item.vendorname}</option>
+                            })}
+                        </select>
+                    </div>
+                    <div className='flex items-center space-x-1'>
+                        <label className="mr-2">Only show invoices with no projects</label>
+                        <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
+                    </div>
                 
             </div>
             <div className='table-container h-[60vh]'>

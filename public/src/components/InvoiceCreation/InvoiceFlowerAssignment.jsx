@@ -37,7 +37,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             setProjectsInfo(resSorted)
 
             // const response = await axiosPrivate.post(ARRANGEMENT_DATA_FETCH, JSON.stringify({ids: chosenProjects}))
-            console.log("yee haw", [...flowers, ...loadedFlowers])
             setFlowerData([...flowers, ...loadedFlowers])
                 
         } catch (error) {
@@ -74,8 +73,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         while (sortedArray.length < CHOSEN_PROJECTS_SORTED.length) {
             sortedArray.push([])
         }
-        console.log("aggregatedUniqueFlowers", aggregatedUniqueFlowers)
-        console.log("sortedArray", sortedArray)
+
         setFlowerPriceTracker(aggregatedUniqueFlowers)
         setDisplayFlowerData(sortedArray)
 
@@ -236,17 +234,16 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
             navigateTo('/invoice')
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
         }
     }
 
     return (
         <div className='container mx-auto flex flex-col h-[80vh]'>
             <InvoiceAddFlowerToProjectPopup showPopup={addFlowerPopup} submitFunction={flower => addFlowerToProject(flower)} closePopup={() =>toggleAddFlowerPopup(false)}/>
-            <div className='title-container'>
-                <button onClick={goBack} className='go-back-button'>go back</button>
-                <h1 >Assign flowers</h1>
-                <p></p>
+            <div className='grid grid-cols-3 mb-4'>
+                <button onClick={goBack} className='go-back-button col-span-1'>go back</button>
+                <h1 className='col-span-1'>Assign flowers</h1>
             </div>
             <div className='table-container h-[20vh]'>
             <table >

@@ -99,11 +99,11 @@ CREATE TABLE IF NOT EXISTS invoiceTransaction (
 );
 
 CREATE TABLE IF NOT EXISTS flowerXInvoice (
-    comboID SERIAL PRIMARY KEY,
     invoiceID INT REFERENCES invoices(invoiceID),
     flowerID INT REFERENCES flowers(flowerID),
     projectID INT REFERENCES projects(projectID),
     unitPrice FLOAT,
     numStems FLOAT,
-    loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (invoiceID, flowerID, projectID)
 );

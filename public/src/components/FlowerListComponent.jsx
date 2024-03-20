@@ -71,7 +71,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                 <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 background-gray overflow-y-scroll w-full text-center items-center" style={styles}>
+            <div className="flex flex-wrap gap-4 overflow-auto w-full justify-center" style={styles}>
                 {flowerData.map((flower, index) => (
                     <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>
                         <img src={`${BASE_URL}/api/${flower.flowerimage}`} alt={flower.flowername} loading="lazy" className="w-full object-cover h-32"/>

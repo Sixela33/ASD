@@ -6,7 +6,7 @@ const projectSchema = Joi.object({
     projectContact: Joi.string().max(255),
     projectDate: Joi.date().required(),
     projectDescription: Joi.string().max(255).required(),
-    clientid: schemas.idSchema,
+    clientid: schemas.idSchema.required(),
     profitMargin: Joi.number().required(),
     creatorid: Joi.number().min(0)
 })

@@ -2,6 +2,9 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import path from 'path';
 import { handleNewFileLocal } from "../utils/fileHandling.js";
 import fs from 'fs';
+import { validateInvoice, validateFlowers, validateBankTransaction } from "./Validations/InvoiceValidations.js";
+import { validateId, validateIdArray } from "./Validations/IdValidation.js";
+
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
 const INVOICE_FILES_PATH = path.join(FILES_BASE_PATH, '/InvoiceFiles/');
@@ -20,11 +23,19 @@ class InvoiceService {
         invoiceData = JSON.parse(invoiceData)
         invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
 
+        await validateInvoice(invoiceData)
+        await validateFlowers(invoiceFlowerData)
+
         let fileLocation = invoiceData.fileLocation
 
         if (file){
             fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         }
+
+        if(!fileLocation) {
+            throw {message: "A file is required to load an invoice", status: 403}
+        }
+        console.log("invoiceFlowerData", invoiceFlowerData)
 
         const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, updaterID)
         return response
@@ -32,13 +43,19 @@ class InvoiceService {
 
     addIncompleteInvoice= async (invoiceData, file, updaterID) => {
         invoiceData = JSON.parse(invoiceData)
-        
+
+        await validateInvoice(invoiceData)
+
         let newFileLoc = invoiceData.fileLocation
         
         if (file) {
             newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         } 
         
+        if(!newFileLoc) {
+            throw {message: "A file is required to load an invoice", status: 403}
+        }
+
         if (invoiceData.invoiceid) {
             await this.model.editIncompleteInvoice(invoiceData, newFileLoc, updaterID, invoiceData.invoiceid)
 
@@ -55,23 +72,32 @@ class InvoiceService {
         invoiceFlowerData = JSON.parse(invoiceFlowerData).flat(Infinity)
         invoiceData = JSON.parse(invoiceData)
         
+        await validateInvoice(invoiceData)
+        await validateFlowers(invoiceFlowerData)
+        await validateId(invoiceData.invoiceid)
+
         let newFileLoc = invoiceData.fileLocation
         
         if (file) {
             newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         } 
 
+        if(!newFileLoc) throw {}
+
         const response = await this.model.editInvoice(invoiceData, newFileLoc, invoiceFlowerData, editorID)
         return response
     }
 
-    getInvoices = async (offset, orderBy, order, searchQuery, searchBy, specificVendor) => {
-        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor)
+    getInvoices = async (offset, orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing) => {
+        await validateId(offset)
+
+        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing)
         return result.rows 
     }
 
     getProvidedProjects = async (id) => {
-        console.log(id)
+        await validateId(id)
+
         let invoiceData = this.model.getInvoiceData(id)
         let projects = this.model.getProvidedProjects(id)
         let flowers = this.model.getFlowersXInvoice(id) 
@@ -93,6 +119,7 @@ class InvoiceService {
     }
 
     getInvoiceData = async (id) => {
+        await validateId(id)
 
         let invoiceData = this.model.getInvoiceData(id)
         let projects = this.model.getInvoiceProjects(id)
@@ -112,6 +139,10 @@ class InvoiceService {
     }
 
     linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {
+
+        await validateIdArray(selectedInvoices)
+        await validateBankTransaction(bankTransactionData)
+
         await this.model.linkBaknTransaction(bankTransactionData, selectedInvoices)
 
         return

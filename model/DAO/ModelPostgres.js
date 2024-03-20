@@ -124,7 +124,7 @@ class ModelPostgres {
 
     getAllRoles = async () => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT roleName, roleCode AS permissionlevel FROM userRole')
+        return await CnxPostgress.db.query('SELECT roleName, roleid, roleCode AS permissionlevel FROM userRole')
     }
 
 
@@ -196,7 +196,7 @@ class ModelPostgres {
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("SELECT createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
+        await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
          [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
     }
 
@@ -247,15 +247,7 @@ class ModelPostgres {
         );
     }
 
-    /*
-        projectid
-        projectclient
-        projectdescription
-        projectcontact
-        projectdate
-    */
-
-    getProjects = async (offset, orderBy, order, showOpenOnly) => {
+    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
         const projectSortColumns = {
@@ -296,8 +288,30 @@ class ModelPostgres {
                 projectID
         ) AS arr_counts ON p.projectID = arr_counts.projectID`
 
+        const queryParams = []
+        let queryConditions = []
+
         if (showOpenOnly == 'true') {
-            queryBase += " WHERE p.isClosed = false"
+            queryConditions.push('p.isClosed = false')
+        }
+        
+        if(searchByID && searchByID != '') {
+            queryConditions.push(`p.projectid = $${queryParams.length + 1}`)
+            queryParams.push(searchByID)
+        }
+        
+        if(searchByContact && searchByContact != '') {
+            queryConditions.push(`p.projectcontact ILIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${searchByContact}%`)
+        }
+
+        if(searchByDescription && searchByDescription != '') {
+            queryConditions.push(`p.projectdescription ILIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${searchByDescription}%`)
+        }
+
+        if (queryConditions.length > 0) {
+            queryBase += ' WHERE ' + queryConditions.join(' AND ')
         }
 
         if (projectSortColumns[orderBy]) {
@@ -307,9 +321,11 @@ class ModelPostgres {
             }
         }
        
+        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
 
-        queryBase += " LIMIT $1 OFFSET $2;"
-        const response =  await CnxPostgress.db.query( queryBase, [LIMIT, LIMIT * offset])
+        queryParams.push(LIMIT, offset*LIMIT)
+
+        const response =  await CnxPostgress.db.query( queryBase, queryParams)
         return response
     }
 
@@ -388,6 +404,11 @@ class ModelPostgres {
         )
     }
 
+    changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`CALL change_flower_in_project($1::INT, $2::INT, $3::INT);`, [projectid, previousflowerid, newflowerid])
+    }
+
     // -----------------------------------------------
     //                   FLOWERS
     // -----------------------------------------------
@@ -458,8 +479,7 @@ class ModelPostgres {
 
     populateArrangement = async (arrangementID, flowerData) => {
         this.validateDatabaseConnection()
-        // flowerData: [{flowerID, quantity}, {flowerID, quantity}...]
-        await CnxPostgress.db.query("SELECT populateArrangements($1::INT, $2::JSONB[]);", [arrangementID, flowerData]);
+        await CnxPostgress.db.query("CALL populateArrangements($1::INT, $2::JSONB[]);", [arrangementID, flowerData]);
     }
 
     getArrangementDataByID = async (id) => {
@@ -526,7 +546,7 @@ class ModelPostgres {
 
     deleteArrangement = async (id) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`SELECT deleteArrangement($1::INT);`,[id])
+        await CnxPostgress.db.query(`CALL deleteArrangement($1::INT);`,[id])
         return
     }
 
@@ -551,7 +571,8 @@ class ModelPostgres {
 
     addInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, uploaderid) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('SELECT addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
+        await CnxPostgress.db.query('CALL addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
+
     }
 
     addIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid) => {
@@ -586,7 +607,7 @@ class ModelPostgres {
 
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('SELECT editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
+        await CnxPostgress.db.query('CALL editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
     }
 
     getInvoiceData = async (id) => {
@@ -618,7 +639,7 @@ class ModelPostgres {
 
 
 
-    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor) => {
+    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
 
@@ -638,15 +659,15 @@ class ModelPostgres {
 
         let queryBase = `
         SELECT 
-        i.invoiceid, 
-        fv.vendorname, 
-        i.invoiceamount, 
-        i.invoiceNumber,
-        TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-        CASE 
-            WHEN it.invoiceID IS NOT NULL THEN TRUE 
-            ELSE FALSE 
-        END AS hasTransaction
+            i.invoiceid, 
+            fv.vendorname, 
+            i.invoiceamount, 
+            i.invoiceNumber,
+            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
+            CASE 
+                WHEN it.invoiceID IS NOT NULL THEN TRUE 
+                ELSE FALSE 
+            END AS hasTransaction
         FROM invoices i 
         LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
         LEFT JOIN users u ON u.userID = i.uploaderID
@@ -654,9 +675,15 @@ class ModelPostgres {
             SELECT DISTINCT invoiceID FROM invoiceTransaction
         ) it ON it.invoiceID = i.invoiceID`
     
+        
         const queryParams = []
         let queryConditions = []
-    
+
+        if(onlyMissing == 'true') {
+            queryBase += " LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID"
+            queryConditions.push('fxi.invoiceID IS NULL ')
+        }
+
         // Agregar filtro para el vendor específico si se proporciona
         if (specificVendor) {
             queryConditions.push('i.vendorID = $1')
@@ -680,7 +707,7 @@ class ModelPostgres {
             }
         }
         
-        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`
+        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
         queryParams.push(LIMIT, offset)
 
         const response = await CnxPostgress.db.query(queryBase, queryParams)
@@ -727,7 +754,7 @@ class ModelPostgres {
 
     linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`SELECT linkBankTx($1::VARCHAR(255), $2::INT[])`, [bankTransactionData, selectedInvoices])
+        await CnxPostgress.db.query(`CALL linkBankTx($1::VARCHAR(255), $2::INT[])`, [bankTransactionData, selectedInvoices])
     }
 
     getInvoiceBankTransactions = async (id) => {

@@ -1,6 +1,7 @@
 import { expect } from "chai"
 import supertest from "supertest"
 import "dotenv/config"
+import faker from "faker"
 
 const request = supertest(process.env.HOST + ':' + process.env.PORT)
 
@@ -30,8 +31,8 @@ describe('Client Routes /api/clients', () => {
     describe('POST /', () => {
         it('should create a new client', async () => {
 
-            const newClientName = 'Torticolis'
-            const response = await request.post('/api/clients').set('Authorization', `${adminToken}`).send({clientName: newClientName})
+            const newClientName = faker.commerce.department()
+            const response = await request.post('/api/clients').set('Authorization', `${adminToken}`).send({clientname: newClientName})
 
             expect(response.status).to.equal(200)
         })

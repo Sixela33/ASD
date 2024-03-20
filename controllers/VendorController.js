@@ -9,7 +9,7 @@ class VendorController {
     addVendor = async (req, res, next) => {
         try {
             const {vendorname} = req.body
-            this.service.addVendor(vendorname)
+            await this.service.addVendor(vendorname)
             res.sendStatus(200)
         } catch (error) {
             next(error)

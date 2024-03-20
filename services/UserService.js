@@ -15,13 +15,13 @@ class UserService {
 
         let response = this.model.getUserById(userid)
         //  let roles = this.model.getUserRoles(userid)
-        //let allRoles = this.model.getAllRoles()
+        let allRoles = this.model.getAllRoles()
 
         response = await response
-        //allRoles = await allRoles
+        allRoles = await allRoles
 
-        //return {user: response.rows, allRoles: allRoles.rows}
-        return {user: response.rows}
+        return {user: response.rows, allRoles: allRoles.rows}
+        //return {user: response.rows}
     }
 
     getUsers = async () => {
@@ -59,7 +59,7 @@ class UserService {
         if (hasRightPass) {
             delete user.passhash
 
-            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' })
             const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d'})
             await this.model.setRefreshToken(user.userid, refreshToken)
 

@@ -1,7 +1,5 @@
-import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import RoleService from "../services/RoleService.js";
 import Jwt from 'jsonwebtoken';
-import ROLES_LIST from "../config/rolesList.js";
 
 // this middleware checks if the user has the permissions needed to access the route
 class PermissionsMiddelware {
@@ -30,9 +28,9 @@ class PermissionsMiddelware {
             
             const hasPermission = userPermissionLevel >= this.permissionsRequired
 
-            console.log("Caller permissions", userPermissionLevel)
-            console.log("Permissions required", this.permissionsRequired)
-            console.log('has all roles', hasPermission)
+            // console.log("Caller permissions", userPermissionLevel)
+            // console.log("Permissions required", this.permissionsRequired)
+            // console.log('has all roles', hasPermission)
                         
             if (!hasPermission) {
                 return res.status(401).json({ message: 'Insufficient permissions' });

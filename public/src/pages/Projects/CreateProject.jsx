@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { validateArrangement } from '../../utls/validations/ArrangementValidations';
 import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import GoBackButton from '../../components/GoBackButton';
+import AddClientPopup from '../../components/Popups/AddClientPopup';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
@@ -35,10 +36,12 @@ export default function CreateProject() {
     const [arrangementTypes, setArrangementTypes] = useState([])
     const [clientsList, setClientsList] = useState([])
  
-    const { client, description, date, contact, staffBudget, profitMargin, arrangements } = formState
-
+    
     const [totalFlowerBudget, setTotalFlowerBudget] = useState(0)
     const [totalTotalProfit, setTotalProfit] = useState(0)
+    const [showNewClientPopup, setShowNewClientPopup] = useState(false)
+    
+    const { client, description, date, contact, staffBudget, profitMargin, arrangements } = formState
 
     // sums all the budgets 
     useEffect(() => {
@@ -55,12 +58,20 @@ export default function CreateProject() {
             const arrangementsResponse = await axiosPrivate.get(GET_ARRANGEMENT_TYPES_URL)
             setArrangementTypes(arrangementsResponse?.data)
 
-            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
-            setClientsList(clientsResponse?.data)
+            await getClientList()
             
         } catch (error) {
-            setMessage('Error fetching data')
+            setMessage(error.response?.data?.message, true);
             navigateTo(-1)
+        }
+    }
+    const getClientList = async () => {
+        try {
+            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
+            setClientsList(clientsResponse?.data)
+        } catch (error) {
+            setMessage(error.response?.data?.message, true);
+
         }
     }
     
@@ -123,7 +134,6 @@ export default function CreateProject() {
               arrangementType: arrangement.arrangementType.arrangementtypeid
             }))
         };
-        console.log("ND", newData)
 
         try {
             await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
@@ -136,26 +146,37 @@ export default function CreateProject() {
         }
     }
 
+    const handleCloseNewClientPopup = (shouldRefresh) => {
+        
+        if(shouldRefresh) {
+            getClientList()
+        }
+        
+        setShowNewClientPopup(false)
+    }
+
     const formRowClass = 'flex flex-row space-x-4 mb-1 flex-1 w-full';
     const formColClass = "flex flex-col mb-1 w-full"
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
-
-            <div className="title-container">
-                <GoBackButton/>
-                <h2 className="text-2xl font-bold mb-4 mx-auto">Create Project</h2>
-                <p></p>
+            <AddClientPopup
+            showPopup={showNewClientPopup}
+            closePopup={handleCloseNewClientPopup}
+            />
+            <div className="grid grid-cols-3 mb-2">
+                <GoBackButton className='col-span-1'/>
+                <h2 className='col-span-1'>Create Project</h2>
             </div>
 
             <div className='flex space-x-4'>
                 <div className="flex-1">
-                    <form className="space-y-4">
+                    <div className="space-y-4">
                         <div className={formRowClass}>
                             <div className={formColClass}>
                                 <label className="mb-1">Client:</label>
                                 <SearchableDropdown options={clientsList} label="clientname" selectedVal={client} handleChange={(client) => handleFormEdit('client', client)} placeholderText="Select Client"/>
-                                <p>new client</p>
+                                <button onClick={() => setShowNewClientPopup(true)} className='go-back-button'>Add new Client</button>
                             </div>
 
                             <div className={formColClass}>
@@ -193,7 +214,7 @@ export default function CreateProject() {
                     <div className="p-4 rounded w-full text-center">
                         <h3 >Arrangements</h3>
 
-                        <div className='table-container max-h-[20vh]'>
+                        <div className='table-container h-[20vh]'>
 
                             <table >
                                 <thead>
@@ -233,11 +254,11 @@ export default function CreateProject() {
                     </div>
                        
                     <div className=' flex flex-row'>
-                        <button className='buton-secondary' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
+                        <button className='buton-secondary mr-3' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
                         <button className='buton-main' onClick={handleSubmit} >Save Project</button>
                     </div>
                     <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes}/>
-                </form>
+                </div>
             </div>
 
             </div>

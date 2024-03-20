@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
-import FloatingMenuButton from '../../components/FloatingMenuButton'
+import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
 import AddVendorPopup from '../../components/Popups/AddVendorPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
@@ -61,11 +61,9 @@ export default function Vendors() {
                 closePopup={handleCloseVendorPopup} 
                 editVendorData={editVendorData}/>
                 
-            <div className='title-container'>
-                <GoBackButton/>
-                <h1>Vendors</h1>
-                <p></p>
-
+            <div className='grid grid-cols-3 mb-4'>
+                <GoBackButton className='col-span-1'/>
+                <h1 className='col-span-1'>Vendors</h1>
             </div>
             <div className='table-container h-[70vh]'>
           
@@ -79,7 +77,6 @@ export default function Vendors() {
                             <td>{vendor.vendorid}</td>
                             <td>{vendor.vendorname}</td>
                             <td>
-                                <button className='go-back-button mx-2'>Remove</button>
                                 <button onClick={() => handleEditVendor(vendor)} className='go-back-button'>Edit</button>
                             </td>
                         </tr>

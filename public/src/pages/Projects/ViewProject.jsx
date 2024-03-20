@@ -9,13 +9,15 @@ import EditArrangementPopup from '../../components/ProjectView/EditArrangementPo
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import Tooltip from '../../components/Tooltip';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
-import FloatingMenuButton from '../../components/FloatingMenuButton';
+import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import EditProjectData from '../../components/ProjectView/EditProjectData';
+import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
 const OPEN_PROJECT_URL = 'api/projects/open/'
 const DELETE_ARRANGEMENT_URL = 'api/arrangements/'
+const CHANGE_FLOWER_IN_PROJECT_URL = 'api/projects/editflower/'
 
 export default function ViewProject() {
     const { id } = useParams();
@@ -43,6 +45,8 @@ export default function ViewProject() {
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
     const [showEditProjectPopup, setShowEditProjectPopup] = useState(false)
+    const [showChangeFlowersPopup, setChangeFlowersPopup] = useState(false)
+    const [changeFlowerID, setChangeFlowerID] = useState(null)
 
     const fetchFlowers = async () => {
         try {
@@ -199,8 +203,26 @@ export default function ViewProject() {
     const handleMouseLeave = () => {
       setShowTooltip(false);
       setActualHoveredArr(null)
-
     };
+
+    const toggleFlowerChange = async (flowerid) => {
+        setChangeFlowerID(flowerid)
+        setChangeFlowersPopup(true)
+    }
+
+    const submitChangeStemInArrangements = async (newFlower) => {
+        console.log("newFlower", newFlower)
+        console.log("changeFlowerID", changeFlowerID)
+        try {
+            await axiosPrivate.post(CHANGE_FLOWER_IN_PROJECT_URL + id, JSON.stringify({previousflowerid:changeFlowerID, newflowerid:newFlower.flowerid}))
+            setMessage('Flower Changed successfully.')
+            fetchFlowers()
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+        } finally {
+            setChangeFlowerID(null)
+        }
+    }
 
     const buttonOptions = [
         {text: 'Add New Arrangement', action: handleCreateArrangement}, 
@@ -227,12 +249,20 @@ export default function ViewProject() {
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?
             </ConfirmationPopup>
+            <InvoiceAddFlowerToProjectPopup
+                showPopup={showChangeFlowersPopup}
+                submitFunction={submitChangeStemInArrangements}
+                closePopup={() => {
+                    setChangeFlowersPopup(false)
+                    setChangeFlowerID(null)
+                }}
+            />
             <FloatingMenuButton options={buttonOptions}/>
-            <div className='title-container '>
-                <button className='go-back-button' onClick={() => navigateTo('/projects')} >go back</button>
-                <h2 >Project Overview</h2>
+            <div className='grid grid-cols-3 mb-4'>
+                <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >go back</button>
+                <h2 className='col-span-1'>Project Overview</h2>
             </div>
-            <p>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
+            <p className={projectData?.isclosed ? 'text-red-500' : 'text-green-700'}>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
                 <div>
                     <p>Client: {projectData?.projectclient}</p>
@@ -280,7 +310,7 @@ export default function ViewProject() {
                                     <td>{item?.totalstems}</td>
                                     <td>${parseFloat(item?.unitprice).toFixed(2)}</td>
                                     <td>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
-                                    <td><button className='go-back-button'>Change stem</button></td>
+                                    <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
                                 </tr>
                                 ))}
                         </TableHeaderSort>
@@ -294,7 +324,7 @@ export default function ViewProject() {
                         <div className='flex-row text-left ml-5'>
                             <p>Estimated Flower cost: ${parseFloat(estimatedFlowerCost).toFixed(2)}</p>
                             <p>Flower budget: ${parseFloat(totalBudget).toFixed(2)}</p>
-                            <p className={totalBudget-estimatedFlowerCost > 0 ? '' : 'text-red-700'}>Diference: ${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</p>
+                            <p className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>Diference: ${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</p>
                         </div>
                     </div>
                 </div>

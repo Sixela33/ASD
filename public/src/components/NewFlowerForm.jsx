@@ -52,27 +52,27 @@ export default function NewFlowerForm({cancelButton}) {
 
   return (
     <div className='container mx-auto mt-8 p-4 text-center'>
-        <h2>Add Flower</h2>
-        <form className="space-y-4 flex flex-col items-center">
-            <div className="flex flex-col mb-4">
+        <h2 className='mb-4'>Add Flower</h2>
+        <div className="flex flex-col items-center">
+            <div className="flex flex-col mb-4 w-1/4">
                 <label className="mb-1">Image:</label>
                 <input className='w-full' type="file" name="flower" onChange={handleImageChange} required/>
             </div>
 
-            <div className="flex flex-col mb-4">
+            <div className="flex flex-col mb-4 w-1/4">
                 <label className="mb-1">Name:</label>
                 <input className='w-full' type="text" name="name" value={formData.name} onChange={handleChange} required />
             </div>
 
-            <div className="flex flex-col mb-4">
+            <div className="flex flex-col mb-4 w-1/4">
                 <label className="mb-1">Color:</label>
                 <input className='w-full' type="text" name="color" value={formData.color} onChange={handleChange} required/>
             </div>
-            <div className='buttons-holder'>
+            <div className='buttons-holder w-1/4'>
               <button className='buton-secondary' onClick={cancelButton}>Cancel</button>
               <button className='buton-main' onClick={handleSubmit}>Add Flower</button>
             </div>
-        </form>
+        </div>
     </div>
   )
 }

@@ -17,8 +17,12 @@ const makeMigrations = async () => {
 
             console.log("Creating default roles")
  
-            for (const [key, value] of Object.entries(ROLES_LIST)) {
-                await model.createRole(key, value)
+            for (let [key, value] of Object.entries(ROLES_LIST)) {
+                try {
+                    await model.createRole(key, value)
+                } catch (error) {
+                    console.log('Roles where already created, skipping')
+                }
             }
 
             console.log("Creating stored procedures")

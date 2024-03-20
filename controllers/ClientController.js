@@ -8,8 +8,8 @@ class ClientController {
 
     addClient = async (req, res, next) => {
         try {
-            const {clientName} = req.body
-            await this.service.addClients(clientName)
+            const {clientname} = req.body
+            await this.service.addClients(clientname)
             res.sendStatus(200)
         } catch (error) {
             next(error)

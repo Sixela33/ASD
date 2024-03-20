@@ -8,7 +8,7 @@ const REGISTER_URL = '/api/users/register';
 
 const defaultUserData = { email: '', password: '', password2: '', username: '' };
 
-export default function RegisterUserPopup({ showPopup, closePopup }) {
+export default function RegisterUserPopup({ showPopup, closePopup, continueSubmit }) {
   const [userData, setUserData] = useState(defaultUserData);
   const axiosPrivate = useAxiosPrivate();
   const { setMessage } = useAlert();
@@ -29,6 +29,7 @@ export default function RegisterUserPopup({ showPopup, closePopup }) {
       const response = await axiosPrivate.post(REGISTER_URL, userData);
       setMessage(response.data, false);
       setUserData(defaultUserData);
+      if(continueSubmit) continueSubmit()
     } catch (error) {
       // console.log("[ERROR]: \n", error);
       setMessage(error.response?.data, true);

@@ -2,7 +2,7 @@ import Joi from "joi"
 import schemas from "./schemas.js"
 
 const arrangementSchema = Joi.object({
-    arrangementType: schemas.idSchema,
+    arrangementType: schemas.idSchema.required(),
     arrangementDescription: Joi.string().required(),
     clientCost: Joi.number().min(0).required(),
     arrangementQuantity: Joi.number().min(0).required()

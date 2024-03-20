@@ -6,12 +6,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 
+const colData = {
+    "id": "projectid",
+    "Client": "projectclient",
+    "Description": "projectdescription",
+    "Contact": "projectcontact",
+    "Date": "projectdate",
+    "Status": "projectstatus"
+}
+
 const GET_PROJECTS_URL = '/api/projects/list/';
 const defaultSortCOnfig = { key: null, direction: 'asc' }
 const ProjectsList = () => {
-    const [projectsInfo, setProjectsInfo] = useState([]);
-    const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
-    const [showOpenOnly, setShowOpenOnly] = useState(true)
     const page = useRef(0) 
     const dataLeft = useRef(true)    
     
@@ -21,44 +27,58 @@ const ProjectsList = () => {
     const axiosPrivate = useAxiosPrivate();
     const navigateTo = useNavigate();
 
+    const [projectsInfo, setProjectsInfo] = useState([]);
+    const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
+    const [showOpenOnly, setShowOpenOnly] = useState(true)
+
+    const [searchByID, setSearchByID] = useState('')
+    const [searchByContact, setSearchByContact] = useState('')
+    const [searchByDescription, setSearchByDescription] = useState('')
+
     const handleRowClick = (row) => {
         navigateTo(`/projects/${row?.projectid}`, {state: row});
     }
-
-    const fetchData = useCallback((sortConfig, showOpen) => {
+    
+    const fetchData =  async (sortConfig, showOpen, searchByID, searchByContact, searchByDescription) => {
         if (!dataLeft.current) {
             return;
         }
-        axiosPrivate.get(GET_PROJECTS_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&showOpenOnly=' + showOpen )
-            .then(response => {
-                page.current = page.current + 1;
+        try {
+            const response = await axiosPrivate.get(GET_PROJECTS_URL + page.current + 
+                '?orderBy='+ sortConfig.key + 
+                '&order=' + sortConfig.direction + 
+                '&showOpenOnly=' + showOpen +
+                '&searchByID=' + searchByID + 
+                '&searchByContact=' + searchByContact +
+                '&searchByDescription=' + searchByDescription)
+            
+            page.current = page.current + 1;
     
-                if (response.data?.length === 0) {
-                    dataLeft.current = false;
-                    return;
-                }
-                console.log(response.data)
-                setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
-            })
-            .catch(error => {
-                setMessage(error.response?.data?.message, true);
-                console.error('Error fetching data:', error);
-            })
-    });
+            if (response.data?.length === 0) {
+                dataLeft.current = false;
+                return;
+            }
+            console.log(response.data)
+            setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]); 
+        } catch (error) {
+            setMessage(error.response?.data?.message, true);
+            console.error('Error fetching data:', error);
+        }
+    };
 
-    const debounced = useCallback(debounce(fetchData, 200), []);
+    const debounced = useCallback(debounce(fetchData, 300), []);
 
     useEffect(() => {
         setProjectsInfo([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, showOpenOnly)
+        debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription)
         
-    }, [sortConfig, showOpenOnly])
+    }, [sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription])
 
     useEffect(() => {
         if (inView) {
-            debounced(sortConfig, showOpenOnly)
+            debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription)
         }
     }, [inView]);
 
@@ -76,25 +96,35 @@ const ProjectsList = () => {
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center flex flex-col'>
-            <div  className="title-container">
-                <button onClick={() => navigateTo('/')} className="go-back-button">go back</button>
-                <h1 >ProjectsList</h1>
-                <Link to="/project/create" className='buton-main'>Create new Project</Link>
+            <div  className="grid grid-cols-3 mb-4 ">
+                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">go back</button>
+                <h1 className='col-span-1'>ProjectsList</h1>
+                <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create new Project</Link>
             </div>
-            <div className="flex items-center mb-4">
-                <label className="mr-2">Show closed Projects:</label>
-                <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
+            <div className="flex items-center mb-4 space-x-4 justify-evenly">
+                
+                <div className='flex items-center'>
+                    <label className="mr-2">Show closed Projects:</label>
+                    <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
+                </div>
+                <div className='flex flex-col'>
+                    <label >searchByID:</label>
+                    <input type="text" value={searchByID} onChange={(e) => setSearchByID(e.target.value)}/>
+                </div>
+
+                <div className='flex flex-col'>
+                    <label >searchByContact:</label>
+                    <input type="text" value={searchByContact} onChange={(e) => setSearchByContact(e.target.value)}/>
+                </div>
+
+                <div className='flex flex-col'>
+                    <label >searchByDescription:</label>
+                    <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
+                </div>
             </div>
-            <div className='table-container h-[70vh]'>
+            <div className='table-container h-[60vh]'>
                 <TableHeaderSort
-                headers={{
-                    "id": "projectid",
-                    "Client": "projectclient",
-                    "Description": "projectdescription",
-                    "Contact": "projectcontact",
-                    "Date": "projectdate",
-                    "Status": "projectstatus"
-                }} 
+                headers={colData} 
                 setSortConfig={setSortConfig}
                 sortConfig={sortConfig} 
                 defaultSortConfig={defaultSortCOnfig}

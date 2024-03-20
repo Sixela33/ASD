@@ -2,7 +2,7 @@ import schemas from "../../validationObjects/schemas.js"
 
 const validateId = id => {
 
-    const { error } = schemas.idSchema.validate(id)
+    const { error } = schemas.idSchema.required().validate(id)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}
@@ -12,7 +12,7 @@ const validateId = id => {
 }
 
 const validateIdArray = ids => {
-    const { error } = schemas.idArrays.validate(ids)
+    const { error } = schemas.idArrays.required().validate(ids)
 
     if (error) {
         throw {message: error.details[0].message, status: 403}
@@ -21,4 +21,15 @@ const validateIdArray = ids => {
     return true
 }
 
-export {validateId, validateIdArray}
+const validateQueryStringLength = string => {
+
+    const { error } = schemas.maxLengthStringMany.validate(string)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 403}
+    } 
+
+    return true
+}
+
+export {validateId, validateIdArray, validateQueryStringLength}

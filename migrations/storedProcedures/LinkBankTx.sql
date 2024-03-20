@@ -1,8 +1,7 @@
-CREATE OR REPLACE FUNCTION linkBankTx(
+CREATE OR REPLACE PROCEDURE linkBankTx(
     p_tx_number VARCHAR(255),
     invoices_linked INT[]
-)
-RETURNS VOID AS $$
+) AS $$
 DECLARE
     invID INT;
 BEGIN

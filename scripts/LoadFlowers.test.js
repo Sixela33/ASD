@@ -35,7 +35,7 @@ describe('Loading Flowers', () => {
                     let imageFilePath = path.join(tempPath, flowerImage);
 
                     const response = await request.post('/api/flowers').set(headers).attach('flower', imageFilePath).field({'name': name}).field({'color':subfolderName});
-                    expect(response)
+                    expect(response.status).to.equal(200)
                 }
             }
         })

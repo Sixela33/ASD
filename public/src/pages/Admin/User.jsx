@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { redirect } from 'react-router-dom';
 import GoBackButton from '../../components/GoBackButton';
-//import PopupBase from '../../components/PopupBase';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 
 const USER_URL = 'api/users/search/';
-const ADD_ROLE_URL = "/api/users/roles/give"
 const CHANGE_ROLE_URL = "/api/users/roles/changePermissions"
 
 export default function User() {
@@ -22,7 +17,6 @@ export default function User() {
     const [userData, setUserData] = useState(null);
     const [allRoles, setAllRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState(undefined);
-    const [reloadPage, setReload] = useState(false)
     const [showRolePopup, setShwoRolePopup] = useState(false)
 
     const getData = async () => {
@@ -47,7 +41,7 @@ export default function User() {
             return
         }
        try {
-            const response = await axiosPrivate.patch(CHANGE_ROLE_URL, JSON.stringify({newRoleid: selectedRole, userid: userData.userid}))
+            await axiosPrivate.patch(CHANGE_ROLE_URL, JSON.stringify({newRoleid: selectedRole, userid: userData.userid}))
             setMessage('Role changed Successfully!', false)
             getData()
         } catch (error) {
@@ -60,11 +54,6 @@ export default function User() {
         setSelectedRole('')
         setShwoRolePopup(false)
     }
-
-    const handleRemoveRole = async (localSelectedRole) => {
-
-    
-    };
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
@@ -79,10 +68,9 @@ export default function User() {
                     ))}
                 </select>
             </ConfirmationPopup>
-            <div className='title-container'>
-                <GoBackButton/>
-                <h1>User Profile</h1>
-                <p></p>
+            <div className='grid grid-cols-3 mb-4'>
+                <GoBackButton className='col-span-1'/>
+                <h1 className='col-span-1'>User Profile</h1>
             </div>
         {userData && (
             <div>

@@ -1,6 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import { validateArrangement, validateSingleArrangement } from "./Validations/ArrangementValidations.js"
-import { validateId, validateIdArray } from "./Validations/IdValidation.js"
+import { validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
 
 class ProjectService {
@@ -26,9 +26,10 @@ class ProjectService {
         await this.model.openProject(id)
     }
 
-    getProjects = async (offset, orderBy, order, showOpenOnly) => {
+    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription) => {
         await validateId(offset)
-        const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly)
+        await validateQueryStringLength([searchByID, searchByContact, searchByDescription, orderBy])
+        const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription)
         return response.rows
     }
 
@@ -71,6 +72,11 @@ class ProjectService {
         flowers = flowers.rows
         
         return {projects, flowers}
+    }
+
+    changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
+        await validateIdArray([projectid, previousflowerid, newflowerid])
+        await this.model.changeFlowerInProject(projectid, previousflowerid, newflowerid)
     }
 }
 

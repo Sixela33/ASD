@@ -14,8 +14,13 @@ export default function Alert() {
 
         document.addEventListener('mousedown', handleClickOutside);
 
+        const timer = setTimeout(() => {
+            closeAlert();
+        }, 5000);
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            clearTimeout(timer)
         };
     }, [message]);
 

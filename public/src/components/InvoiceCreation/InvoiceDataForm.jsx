@@ -41,7 +41,7 @@ export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoi
           <input type="text" name="invoiceNumber" value={invoiceData.invoiceNumber} onChange={handleChange} className="w-full" required />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="mb-1">Due Date:</label>
+          <label className="mb-1">Invoice Date:</label>
           <input type="date" name="dueDate" value={invoiceData.dueDate} onChange={handleChange} className="w-full" required />
         </div>
         <div className="flex flex-col mb-4">

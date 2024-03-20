@@ -1,9 +1,9 @@
-CREATE OR REPLACE FUNCTION editInvoice(
+CREATE OR REPLACE PROCEDURE editInvoice(
     p_invoiceData JSONB,
     p_uploaderId INT,
     p_invoiceFileLocation VARCHAR(255),
     p_invoiceFlowerData JSONB[]
-) RETURNS VOID AS $$
+) AS $$
 DECLARE
     single_flower_price JSONB;
     filled_stems_value TEXT;

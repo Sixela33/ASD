@@ -109,31 +109,31 @@ export default function ArrangementCreation() {
         <>
             {arrangementData && (
                 <div className="mx-auto my-8 text-center">
-                    <div className="mb-4">
-                        <button onClick={() => navigateTo(-1)} className='go-back-button'>go back</button>
-                        <h2 >Create Arrangement</h2>
+                    <div className="grid grid-cols-3 mb-4">
+                        <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>go back</button>
+                        <h2 className='col-span-1'>Create Arrangement</h2>
                     </div>
                     <p>Arrangement Description: {arrangementData.arrangementdescription}</p>
                     <p>Arrangement type: {arrangementData.typename}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 ml-10 font-bold py-4">
-                        <div className="md:col-span-2 bg-gray-300 rounded shadow">
+                    <div className="grid grid-cols-1 md:grid-cols-10 gap-4 ml-10 font-bold py-4">
+                        <div className="md:col-span-5 bg-gray-300 rounded shadow px-auto">
                             <FlowerListComponent
                                 onFlowerClick={selectFlower}
-                                styles={{ maxHeight: '60vh' }}
+                                styles={{ maxHeight: '50vh' }}
                                 selectedFlowerID={actualSelectedFlower?.flowerid}
                             />
                         </div>
-                        <div className="md:col-span-1 rounded shadow p-4 flex flex-col justify-center items-center">
+                        <div className="md:col-span-2 rounded shadow flex flex-col justify-center items-center">
                             <div>
                                 <p>unitPrice: {actualSelectedFlower?.unitprice ? actualSelectedFlower?.unitprice : 'N/A'}</p>
-                                <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" />
-                                <button onClick={addFlower} disabled={quantityToAdd <= 0} className={`bg-gray-300 px-4 py-2 mr-2 my-1 rounded ${quantityToAdd <= 0 && 'cursor-not-allowed opacity-50'}`} >
+                                <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />
+                                <button onClick={addFlower} disabled={quantityToAdd <= 0} className={`buton-secondary ${quantityToAdd <= 0 && 'cursor-not-allowed opacity-50'}`} >
                                     ADD
                                 </button>
                             </div>
                         </div>
-                        <div>
-                            <div className='table-container h-[50vh]'>
+                        <div className='mr-10 md:col-span-3'>
+                            <div className='table-container h-[50vh] '>
                                 <table className="w-full">
                                     <thead>
                                         <tr>
@@ -144,7 +144,7 @@ export default function ArrangementCreation() {
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody>
                                         {selectedFlowers.map((flower, index) => (
                                             <tr key={index}  onClick={() => { }}>
                                                 <td >{flower.flowername}</td>

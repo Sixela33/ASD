@@ -82,7 +82,7 @@ export default function SingleFlowerPage() {
     
             const response = await axiosPrivateImage.patch(EDIT_FLOWER_URL, formDataToSend);
             console.log(response)
-            setMessage("Flower Added succesfully", false)
+            setMessage("Flower Edited succesfully", false)
 
         } catch (error) {
             setMessage(error.response?.data, true)

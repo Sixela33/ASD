@@ -27,6 +27,7 @@ class ProjectRouter {
 
         this.router.post('/addArrangement/:id', this.controller.addArrangementToProject)
         this.router.patch('/:id', this.controller.editProjectData)
+        this.router.post('/editflower/:id', this.controller.changeFlowerInProject)
         return this.router
     }
     

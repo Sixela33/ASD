@@ -1,6 +1,6 @@
-CREATE OR REPLACE FUNCTION deleteArrangement(
+CREATE OR REPLACE PROCEDURE deleteArrangement(
     p_deleteArrangementID INT
-) RETURNS VOID AS $$
+) AS $$
 BEGIN
     DELETE FROM flowerXarrangement WHERE arrangementID = p_deleteArrangementID;
     DELETE FROM arrangements WHERE arrangementID = p_deleteArrangementID;

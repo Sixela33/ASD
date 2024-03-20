@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
-import FloatingMenuButton from '../../components/FloatingMenuButton';
+import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
 
@@ -69,10 +69,9 @@ export default function ViewSingleInvoice() {
         <div className='container mx-auto mt-8 p-4 text-center'>
             <FloatingMenuButton options={buttonOptions}/>
 
-            <div className='title-container '>
-                <button className='go-back-button' onClick={() => navigateTo('/invoice')} >go back</button>
-                <h1 >Invoice Overview</h1>
-                <p></p>
+            <div className='grid grid-cols-3 mb-4'>
+                <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >go back</button>
+                <h1 className='col-span-1'>Invoice Overview</h1>
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 

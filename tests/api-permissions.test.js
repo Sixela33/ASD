@@ -43,7 +43,7 @@ describe('Role Routes /api/users/roles', () => {
         it("should create a new role", async () => {
             const newRoleData = {
                 roleName: faker.name.jobTitle(), 
-                roleCode: 2
+                roleCode: faker.datatype.number()
             }
 
             const response = await request.post('/api/users/roles/create').set('Authorization', `${adminToken}`).send(newRoleData)

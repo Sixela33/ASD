@@ -1,7 +1,7 @@
-CREATE OR REPLACE FUNCTION populateArrangements (
+CREATE OR REPLACE PROCEDURE populateArrangements (
     p_arrangementID INT,
     p_flowerdata_arr JSONB[]
-) RETURNS VOID AS $$
+) AS $$
 DECLARE
     flower JSONB;
 BEGIN

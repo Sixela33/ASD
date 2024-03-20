@@ -1,4 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import { validateId } from "./Validations/IdValidation.js"
+import { validateVendor } from "./Validations/VendorValidations.js"
 
 class VendorService {
 
@@ -7,6 +9,7 @@ class VendorService {
     }
 
     addVendor = async (vendorName) => {
+        await validateVendor(vendorName)
         await this.model.addVender(vendorName)
     }
 
@@ -16,6 +19,8 @@ class VendorService {
     }
 
     editVendor = async (vendorname, vendorid) => {
+        await validateVendor(vendorname)
+        await validateId(vendorid)
         await this.model.editVendor(vendorname, vendorid)
     }
 
