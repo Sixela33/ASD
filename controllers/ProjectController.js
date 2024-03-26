@@ -12,8 +12,8 @@ class ProjectController {
         try {
             const { staffBudget, contact, date, description, client, profitMargin, arrangements} = req.body
             const creatorid = req.user.userid
-            await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid)
-            res.sendStatus(200)
+            const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid)
+            res.json(response)
         } catch (error) {
             next(error)
         }
@@ -43,8 +43,8 @@ class ProjectController {
     getProjects = async (req, res, next) => {
         try {
             const { offset} = req.params
-            const { orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription } = req.query
-            const result = await this.service.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription)
+            const { orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient } = req.query
+            const result = await this.service.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient)
             res.json(result)
         } catch (error) {
             next(error)

@@ -3,13 +3,12 @@
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
-  
-.show {
-opacity: 1;
-pointer-events: auto;
-transition: opacity 0.3s ease;
-}
 
+.show {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
 
 .floating-menu {
     background-color: rgb(59 130 246);

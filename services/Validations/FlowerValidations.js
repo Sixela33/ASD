@@ -5,7 +5,7 @@ const validateFlower = id => {
     const { error } = flowerSchema.validate(id)
 
     if (error) {
-        throw {message: error.details[0].message, status: 403}
+        throw {message: error.details[0].message, status: 400}
     } 
 
     return true

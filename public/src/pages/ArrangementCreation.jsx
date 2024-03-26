@@ -110,7 +110,7 @@ export default function ArrangementCreation() {
             {arrangementData && (
                 <div className="mx-auto my-8 text-center">
                     <div className="grid grid-cols-3 mb-4">
-                        <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>go back</button>
+                        <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>Go Back</button>
                         <h2 className='col-span-1'>Create Arrangement</h2>
                     </div>
                     <p>Arrangement Description: {arrangementData.arrangementdescription}</p>

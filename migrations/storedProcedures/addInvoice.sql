@@ -1,12 +1,11 @@
 CREATE OR REPLACE PROCEDURE addInvoice(
     p_invoiceData JSONB, 
-    p_uploaderId INT,
+    INOUT p_uploaderId INT, -- PUAJ
     p_invoiceFileLocation VARCHAR(255),
     p_invoiceFlowerData JSONB[]
 )
 AS $$
 DECLARE
-    new_invoice_id INT;
     single_flower_price JSONB;
 BEGIN
     -- INSERTAR LAS FACTURAS EN SU TABLA Y ALMACENAR EL ID
@@ -19,7 +18,7 @@ BEGIN
         (p_invoiceData->>'dueDate')::DATE,
         (p_invoiceData->>'invoiceNumber')::INT
     )
-    RETURNING invoiceID INTO new_invoice_id;
+    RETURNING invoiceID INTO p_uploaderId;
 
     -- ALMACENAR TODAS LAS FLORES
     FOREACH single_flower_price IN ARRAY p_invoiceFlowerData
@@ -28,12 +27,13 @@ BEGIN
         -- INSERTAR LOS DETALLES DE LA FLOR EN LA TABLA CORRESPONDIENTE
         INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, numStems)
         VALUES (
-            new_invoice_id,
+            p_uploaderId,
             (single_flower_price->>'flowerid')::INT,
             (single_flower_price->>'projectid')::INT,
             (single_flower_price->>'unitPrice')::FLOAT,
             (single_flower_price->>'filledStems')::FLOAT
         );
     END LOOP;
+
 END;
 $$ LANGUAGE plpgsql;

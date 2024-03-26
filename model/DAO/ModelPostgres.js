@@ -196,9 +196,10 @@ class ModelPostgres {
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
-         [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
-    }
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
+        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
+        return response.rows[0]
+        }
 
     closeProject = async (id) => {
         this.validateDatabaseConnection()
@@ -247,9 +248,9 @@ class ModelPostgres {
         );
     }
 
-    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription) => {
+    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient) => {
         this.validateDatabaseConnection()
-        const LIMIT = 50
+        const LIMIT = rows || 50
         const projectSortColumns = {
             projectid : ' ORDER BY p.projectID',
             projectclient : ' ORDER BY c.clientName',
@@ -309,6 +310,12 @@ class ModelPostgres {
             queryConditions.push(`p.projectdescription ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${searchByDescription}%`)
         }
+
+        if(searchByClient && searchByClient != '') {
+            queryConditions.push(`p.clientid = $${queryParams.length + 1}`)
+            queryParams.push(searchByClient)
+        }
+    
 
         if (queryConditions.length > 0) {
             queryBase += ' WHERE ' + queryConditions.join(' AND ')
@@ -433,19 +440,25 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`SELECT 
         fxi.unitPrice, 
-        i.createdAt 
+        
+        TO_CHAR(i.createdAt , 'MM-DD-YYYY') AS createdAt
         FROM flowerXInvoice fxi 
         LEFT JOIN invoices i ON fxi.invoiceID = i.invoiceID
         WHERE fxi.flowerID = $1;`, [id])
     }
 
-    getFlowersQuery = async (offset, query) => {
+    getFlowersQuery = async (offset, query, filterByColor) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
-        const searchString = `%${query}%`
-        let sqlQuery = "SELECT f.flowerid, f.flowername, f.flowerimage, f.flowercolor, FxI.unitPrice FROM flowers f ";
-
-        sqlQuery += `LEFT JOIN (
+        let sqlQuery = `
+        SELECT 
+            f.flowerid, 
+            f.flowername, 
+            f.flowerimage, 
+            f.flowercolor, 
+            FxI.unitPrice 
+        FROM flowers f
+        LEFT JOIN (
             SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
             FROM flowerXInvoice fx
             JOIN (
@@ -459,18 +472,33 @@ class ModelPostgres {
             GROUP BY fx.flowerID
         ) FxI ON f.flowerID = FxI.flowerID `
 
-        let vals = []
+        const queryParams = []
+        let queryConditions = []
 
-        if (query) {
-            sqlQuery += "WHERE f.flowername ILIKE $1 ";
-            sqlQuery += "ORDER BY f.flowerName LIMIT $2 OFFSET $3;";
-            vals = [searchString, LIMIT, LIMIT * offset]
-        } else {
-            sqlQuery += "ORDER BY f.flowerName LIMIT $1 OFFSET $2;";
-            vals = [LIMIT, LIMIT * offset]
+        if(query) {
+            queryConditions.push(`f.flowername ILIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${query}%`)
+        }
+    
+
+        if (filterByColor) {
+            queryConditions.push(`f.flowercolor ILIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${filterByColor}%`)
         }
 
-        return await CnxPostgress.db.query(sqlQuery, vals);
+        if (queryConditions.length > 0) {
+            sqlQuery += ' WHERE ' + queryConditions.join(' AND ')
+        }
+
+        sqlQuery += `ORDER BY f.flowerName LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
+        queryParams.push(LIMIT, offset*LIMIT)
+
+        return await CnxPostgress.db.query(sqlQuery, queryParams);
+    }
+
+    getUniqueFlowerColors = async () => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query('SELECT DISTINCT flowercolor FROM flowers')
     }
 
     // -----------------------------------------------
@@ -571,8 +599,8 @@ class ModelPostgres {
 
     addInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, uploaderid) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('CALL addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
-
+        const response = await CnxPostgress.db.query('CALL addInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, uploaderid, invoiceFileLocation, InvoiceFlowerData])
+        return response.rows[0]
     }
 
     addIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid) => {
@@ -639,9 +667,9 @@ class ModelPostgres {
 
 
 
-    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing) => {
+    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows) => {
         this.validateDatabaseConnection()
-        const LIMIT = 50
+        const LIMIT = rows || 50
 
         const invoiceColumns = {
             invoiceid: " ORDER BY i.invoiceid",
@@ -658,22 +686,22 @@ class ModelPostgres {
         }
 
         let queryBase = `
-        SELECT 
-            i.invoiceid, 
-            fv.vendorname, 
-            i.invoiceamount, 
-            i.invoiceNumber,
-            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-            CASE 
-                WHEN it.invoiceID IS NOT NULL THEN TRUE 
-                ELSE FALSE 
-            END AS hasTransaction
-        FROM invoices i 
-        LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
-        LEFT JOIN users u ON u.userID = i.uploaderID
-        LEFT JOIN (
-            SELECT DISTINCT invoiceID FROM invoiceTransaction
-        ) it ON it.invoiceID = i.invoiceID`
+            SELECT 
+                i.invoiceid, 
+                fv.vendorname, 
+                i.invoiceamount, 
+                i.invoiceNumber,
+                TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
+                CASE 
+                    WHEN it.invoiceID IS NOT NULL THEN TRUE 
+                    ELSE FALSE 
+                END AS hasTransaction
+            FROM invoices i 
+            LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
+            LEFT JOIN users u ON u.userID = i.uploaderID
+            LEFT JOIN (
+                SELECT DISTINCT invoiceID FROM invoiceTransaction
+            ) it ON it.invoiceID = i.invoiceID`
     
         
         const queryParams = []
@@ -708,7 +736,7 @@ class ModelPostgres {
         }
         
         queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
-        queryParams.push(LIMIT, offset)
+        queryParams.push(LIMIT, offset*LIMIT)
 
         const response = await CnxPostgress.db.query(queryBase, queryParams)
 

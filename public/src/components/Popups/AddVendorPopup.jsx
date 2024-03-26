@@ -19,7 +19,6 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
     }
 
     const addNewVendor = async () => {
-        console.log("vendorData", vendorData)
         try {
             if (!vendorData.vendorid) {
                 await axiosPrivate.post(CREATE_VENDOR_URL, JSON.stringify(vendorData))
@@ -35,7 +34,6 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
     }
 
     useEffect(() => {
-        console.log("editVendorData", editVendorData)
         if (editVendorData) {
             setVendorData(editVendorData)
         }

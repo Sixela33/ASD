@@ -3,11 +3,12 @@ import ArrangementPopup from '../../components/Popups/ArrangementPopup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
-import { validateArrangement } from '../../utls/validations/ArrangementValidations';
 import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import GoBackButton from '../../components/GoBackButton';
 import AddClientPopup from '../../components/Popups/AddClientPopup';
-
+import * as Yup from 'yup';
+import FormItem from '../../components/FormItem';
+import FormError from '../../components/FormError';
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
 const GET_CLIENTS_LIST = '/api/clients'
@@ -20,9 +21,24 @@ const initialState = {
   date: '',
   contact: '',
   staffBudget: '',
-  profitMargin: 0.7,
-  arrangements: [],
+  profitMargin: 0.7
 }
+
+const baseProjectSchema = Yup.object().shape({
+    client: Yup.string().required('Client is required'),
+    description: Yup.string().required('Description is required'),
+    date: Yup.string().required('Date is required'),
+    contact: Yup.string().required('Contact is required'),
+    staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
+    profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
+});
+
+const arrangementSchema = Yup.object().shape({
+    arrangementType: Yup.object().required('The arrangement type is required').typeError('The arrangement type is required'), 
+    arrangementDescription: Yup.string().required('Arrangement Description is required'), 
+    clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
+    arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required')
+})
 
 export default function CreateProject() {
     const axiosPrivate = useAxiosPrivate()
@@ -30,6 +46,11 @@ export default function CreateProject() {
     const navigateTo = useNavigate()
 
     const [formState, setFormState] = useState(initialState)
+    const [arrangements, setArrangements] = useState([])
+
+    const [errors, setErrors] = useState({})
+    const [newArrangementErrors, setnewArrangementErrors] = useState({})
+
     const [newArrangement, setNewArrangement] = useState(emptyArrangement)
     const [showArrangementPopup, setShowArrangementPopup] = useState(false)
 
@@ -41,17 +62,15 @@ export default function CreateProject() {
     const [totalTotalProfit, setTotalProfit] = useState(0)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
     
-    const { client, description, date, contact, staffBudget, profitMargin, arrangements } = formState
+    const { client, description, date, contact, staffBudget, profitMargin } = formState
 
     // sums all the budgets 
     useEffect(() => {
         const sum = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
         setTotalFlowerBudget(sum)
-    }, [arrangements])
+        setTotalProfit(sum * profitMargin)
 
-    useEffect(() => {
-        setTotalProfit(totalFlowerBudget - (totalFlowerBudget *  profitMargin) - staffBudget)
-    }, [totalFlowerBudget, profitMargin, staffBudget])
+    }, [arrangements])
 
     const fetchData = async () => {
         try {
@@ -65,6 +84,7 @@ export default function CreateProject() {
             navigateTo(-1)
         }
     }
+
     const getClientList = async () => {
         try {
             const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
@@ -81,6 +101,22 @@ export default function CreateProject() {
 
     const addArrangement = (e) => {
         e.preventDefault()
+        let schemaErrors = null
+
+        try {
+            arrangementSchema.validateSync(newArrangement, { abortEarly: false })
+        } catch (err) {
+            schemaErrors = {}
+            err.inner.forEach(error => {
+                schemaErrors[error.path] = error.message;
+            });
+        }
+
+        if(schemaErrors) {
+            setnewArrangementErrors(schemaErrors)
+            return
+        }
+
 
         const updatedArrangementsList = [...arrangements]
         if (newArrangement.index != null) {
@@ -91,7 +127,7 @@ export default function CreateProject() {
             updatedArrangementsList.push(newArrangement)
         }
         
-        setFormState({ ...formState, arrangements: updatedArrangementsList })
+        setArrangements(updatedArrangementsList)
 
         setNewArrangement(emptyArrangement)
         setShowArrangementPopup(false)
@@ -103,7 +139,7 @@ export default function CreateProject() {
 
     const closePopup = () => {
         setNewArrangement(emptyArrangement)
-        console.log(formState.arrangements)
+        setnewArrangementErrors({})
         setShowArrangementPopup(false)
     }
 
@@ -119,27 +155,43 @@ export default function CreateProject() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!client || !description || !date || !contact || !staffBudget || !profitMargin) {
-            setMessage('Please fill in all the required fields.', true)
+        // Removing the name from the arrangementType object to make it just the id
+        // The same with the client
+        let newData = {
+            ...formState,
+            client: formState.client.clientid,
+        };
+
+        let schemaErrors = null
+        try {
+            await baseProjectSchema.validateSync(newData, { abortEarly: false })
+        } catch (err) {
+            let temp = {}
+            err.inner.forEach(error => {
+                temp[error.path] = error.message;
+            });
+            schemaErrors = temp
+        }
+        
+        if(schemaErrors) {
+            setErrors(schemaErrors)
             return
         }
 
-        // Removing the name from the arrangementType object to make it just the id
-        // The same with the client
-        const newData = {
-            ...formState,
-            client: formState.client.clientid,
-            arrangements: formState.arrangements.map(arrangement => ({
-              ...arrangement,
-              arrangementType: arrangement.arrangementType.arrangementtypeid
-            }))
-        };
+
+        const cleanedArrangements = arrangements.map(arrangement => ({
+            ...arrangement,
+            arrangementType: arrangement.arrangementType.arrangementtypeid
+          }))
+
+        newData.arrangements = cleanedArrangements
 
         try {
-            await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
+            const response = await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
+            const newProjectID = response.data.p_projectclient
             setMessage('Project created successfully', false)
             setFormState(initialState)
-            navigateTo('/projects')
+            navigateTo('/projects/' + newProjectID || '')
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true)
@@ -177,37 +229,70 @@ export default function CreateProject() {
                                 <label className="mb-1">Client:</label>
                                 <SearchableDropdown options={clientsList} label="clientname" selectedVal={client} handleChange={(client) => handleFormEdit('client', client)} placeholderText="Select Client"/>
                                 <button onClick={() => setShowNewClientPopup(true)} className='go-back-button'>Add new Client</button>
+                                <FormError error={errors.client}/>
                             </div>
 
                             <div className={formColClass}>
-                                <label className="mb-1">Project Description:</label>
-                                <input type="text" value={description} onChange={(e) => handleFormEdit('description', e.target.value)} className='w-full' required/>
+                            <FormItem
+                                labelName="Project Description:"
+                                type="text"
+                                inputName="description"
+                                value={description}
+                                handleChange={(e) => handleFormEdit('description', e.target.value)}
+                                error={errors.description}
+                            />                 
+                            </div>
+                        </div>
+
+                        <div>
+                        <div className={formRowClass}>
+                            <div className={formColClass}>
+                            <FormItem
+                                labelName="Project Date:"
+                                type="date"
+                                inputName="date"
+                                value={date}
+                                handleChange={(e) => handleFormEdit('date', e.target.value)}
+                                error={errors.date}
+
+                            />
+                            </div>
+
+                            <div className={formColClass}>
+                            <FormItem
+                                labelName="Project Contact:"
+                                type="text"
+                                inputName="contact"
+                                value={contact}
+                                handleChange={(e) => handleFormEdit('contact', e.target.value)}
+                                error={errors.contact}
+                            />
                             </div>
                         </div>
 
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                                <label className="mb-1">Project Date:</label>
-                                <input type="date" value={date} onChange={(e) => handleFormEdit('date', e.target.value)} className='w-full' required/>
+                            <FormItem
+                                labelName="Staff Budget:"
+                                type="number"
+                                inputName="staffBudget"
+                                value={staffBudget}
+                                handleChange={(e) => handleFormEdit('staffBudget', e.target.value)}
+                                error={errors.staffBudget}
+                            />
                             </div>
 
                             <div className={formColClass}>
-                                <label className="mb-1">Project Contact:</label>
-                                <input type="text" value={contact} onChange={(e) => handleFormEdit('contact', e.target.value)} className='w-full' required/>
+                            <FormItem
+                                labelName="Profit Margin:"
+                                type="number"
+                                inputName="profitMargin"
+                                value={profitMargin}
+                                handleChange={(e) => handleFormEdit('profitMargin', e.target.value)}
+                                error={errors.profitMargin}
+                            />
                             </div>
                         </div>
-
-                        <div className={formRowClass}>
-                            
-                            <div className={formColClass}>
-                                <label className="mb-1">Staff Budget:</label>
-                                <input type="number" value={staffBudget} onChange={(e) => handleFormEdit('staffBudget', e.target.value)} className='w-full' required/>
-                            </div>
-
-                            <div className={formColClass}>
-                                <label className="mb-1">Profit Margin:</label>
-                                <input type="number" value={profitMargin} onChange={(e) => handleFormEdit('profitMargin', e.target.value)} className='w-full' required/>
-                            </div>
                         </div>
                 
                     {/* Arrangements section */}
@@ -229,16 +314,16 @@ export default function CreateProject() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {formState.arrangements.map((arrangement, index) => (
+                                    {arrangements.map((arrangement, index) => (
                                         
                                         <tr key={index}  onClick={() => handleEdit(index)}>
-                                        <td >{arrangement?.arrangementType.typename}</td>
-                                        <td >{arrangement.arrangementDescription}</td>
-                                        <td >${arrangement.clientCost}</td>
-                                        <td >${parseFloat((arrangement.clientCost) *  (1-formState.profitMargin)).toFixed(1)}</td>
-                                        <td >{arrangement.arrangementQuantity}</td>
-                                        <td >${arrangement.clientCost * arrangement.arrangementQuantity}</td>
-                                        <td >${parseFloat((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin)).toFixed(1)}</td>
+                                        <td>{arrangement?.arrangementType.typename}</td>
+                                        <td>{arrangement.arrangementDescription}</td>
+                                        <td>${arrangement.clientCost}</td>
+                                        <td>${parseFloat((arrangement.clientCost) *  (1-formState.profitMargin)).toFixed(1)}</td>
+                                        <td>{arrangement.arrangementQuantity}</td>
+                                        <td>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
+                                        <td>${parseFloat((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin)).toFixed(1)}</td>
                                     </tr>
                     
                                     ))}
@@ -248,7 +333,7 @@ export default function CreateProject() {
 
                     </div>
                      <div className='flex '>
-                        <p className='mr-4'>TOTAL flower budget: ${parseFloat(totalFlowerBudget *  profitMargin).toFixed(2)}</p>
+                        <p className='mr-4'>TOTAL flower budget: ${parseFloat(totalFlowerBudget *  (1 - profitMargin)).toFixed(2)}</p>
                         <p className='mr-4'>TOTAL client cost: ${totalFlowerBudget}</p>
                         <p className={totalTotalProfit>0? 'text-green-500' : 'text-red-500'}>Project Profit: ${parseFloat(totalTotalProfit).toFixed(2)}</p>
                     </div>
@@ -257,7 +342,7 @@ export default function CreateProject() {
                         <button className='buton-secondary mr-3' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
                         <button className='buton-main' onClick={handleSubmit} >Save Project</button>
                     </div>
-                    <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes}/>
+                    <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
                 </div>
             </div>
 

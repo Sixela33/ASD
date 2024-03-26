@@ -1,26 +1,49 @@
 import React from 'react';
 import SearchableDropdown from '../Dropdowns/SearchableDropdown';
 import PopupBase from '../PopupBase';
+import FormItem from '../FormItem';
+import FormError from '../FormError';
 
-const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInputChange, arrangementTypes }) => {
+const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInputChange, arrangementTypes, newArrangementErrors }) => {
   return (
     <PopupBase showPopup={showPopup}>
         <h2>Add New Arrangement</h2>
-        <div className='py-2'>
+        <div>
           <label >Type:</label>
-          <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangement.arrangementType} handleChange={(obj) => {console.log(obj); onInputChange('arrangementType', obj)}} placeholderText='Select Arrangement Type'/>
+          <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangement.arrangementType} handleChange={(obj) => {onInputChange('arrangementType', obj)}} placeholderText='Select Arrangement Type'/>
+          <FormError error={newArrangementErrors.arrangementType}/>                       
+
         </div>
-        <div className='py-2'>
-          <label >Description:</label>
-          <input className='w-full' type="text" value={newArrangement.arrangementDescription} onChange={(e) => onInputChange('arrangementDescription', e.target.value)}  />
+        <div >
+            <FormItem
+            labelName="Description:"
+            type="text"
+            inputName="arrangementDescription"
+            value={newArrangement.arrangementDescription}
+            handleChange={(e) => onInputChange('arrangementDescription', e.target.value)}
+            error={newArrangementErrors.arrangementDescription}
+          />
         </div>
-        <div className='py-2'>
-          <label >Client cost:</label>
-          <input className='w-full' type="number" value={newArrangement.clientCost} onChange={(e) => onInputChange('clientCost', e.target.value)}  required />
+        <div>
+          <FormItem
+            labelName="Client cost:"
+            type="number"
+            inputName="clientCost"
+            value={newArrangement.clientCost}
+            handleChange={(e) => onInputChange('clientCost', e.target.value)}
+            error={newArrangementErrors.clientCost}
+          />                      
+
         </div>
-        <div className='py-2'>
-          <label >Quantity:</label>
-          <input className='w-full' type="number" value={newArrangement.arrangementQuantity} onChange={(e) => onInputChange('arrangementQuantity', e.target.value)}  required />
+        <div>
+          <FormItem
+            labelName="Quantity:"
+            type="number"
+            inputName="arrangementQuantity"
+            value={newArrangement.arrangementQuantity}
+            handleChange={(e) => onInputChange('arrangementQuantity', e.target.value)}
+            error={newArrangementErrors.arrangementQuantity}
+          />
         </div>
         <div className='buttons-holder'>
           <button className='buton-main' onClick={onSubmit} >Add Arrangement</button>

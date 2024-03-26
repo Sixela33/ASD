@@ -10,6 +10,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { BASE_URL } from '../../api/axios';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
@@ -17,6 +18,15 @@ const emptyInvoiceObject = {
   dueDate: new Date().toISOString().substring(0, 10),
   invoiceAmount: ''
 };
+
+const invoiceDataSchema = Yup.object().shape({
+  invoiceNumber: Yup.number().required('the invoice number is required').typeError('the invoice number is required'),
+  vendor: Yup.number().required('The vendor field is required').typeError('The vendor field is required'),
+  dueDate: Yup.date().required('The date is required'),
+  invoiceAmount: Yup.number().required('The ammount is required').typeError('The ammount is required'),
+  invoiceid: Yup.number().optional(),
+  fileLocation: Yup.string().optional()
+})
 
 const FETCH_INVOICE_DATA_URL = '/api/invoices/invoiceData/'
 const SAVE_INCOMPLETE_INVOICE = '/api/invoices/incomplete'
@@ -35,6 +45,8 @@ export default function AddInvoice() {
   const [currentStep, setCurrentStep] = useState(0);
   const [DisplayPdfFile, setDisplayPdfFile] = useState(null)
 
+  const [invoiceFormErrors, setInvoiceFormErrors] = useState({})
+
   const [flowerData, setFlowerData] = useState([])
   const [selectedVendor, setSelectedVendor] = useState('');
 
@@ -45,7 +57,6 @@ export default function AddInvoice() {
         let {flowers, invoiceData, projects} = response?.data
         
         invoiceData = invoiceData[0]
-        console.log(invoiceData)
         setFormData({
           invoiceNumber: invoiceData.invoicenumber,
           vendor: invoiceData.vendorid,
@@ -101,20 +112,31 @@ export default function AddInvoice() {
       ...invoiceData,
       'vendor': vendor["vendorid"]
     })
-    console.log("vendor", vendor)
     setSelectedVendor(vendor)
   }
 
   const handleContinueInvoiceDataForm = (e) => {
-    e.preventDefault()
+    e.preventDefault()  
 
-    const result = validateInvoice(invoiceData)
+    let schemaErrors = null
 
-    if (result?.success) {
-      handleNextStep()
-    } else {
-      setMessage(result.message, true)
+    try {
+      invoiceDataSchema.validateSync(invoiceData, { abortEarly: false })
+    } catch (err) {
+        schemaErrors = {}
+        err.inner.forEach(error => {
+            schemaErrors[error.path] = error.message;
+        });
     }
+
+    if(schemaErrors) {
+        setInvoiceFormErrors(schemaErrors)
+        return
+    } 
+
+    setInvoiceFormErrors({})
+    handleNextStep()
+
   }
 
   const handleContinueProjectSelection = (e) => {
@@ -128,6 +150,24 @@ export default function AddInvoice() {
 
   const saveIncompleteInvoice = async () => {
     
+    let schemaErrors = null
+
+    try {
+      invoiceDataSchema.validateSync(invoiceData, { abortEarly: false })
+    } catch (err) {
+        schemaErrors = {}
+        err.inner.forEach(error => {
+            schemaErrors[error.path] = error.message;
+        });
+    }
+
+    if(schemaErrors) {
+        setInvoiceFormErrors(schemaErrors)
+        return
+    }
+
+    setInvoiceFormErrors({})
+
     const formDataToSend = new FormData();
 
     formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
@@ -142,7 +182,7 @@ export default function AddInvoice() {
   
 
   const steps = [
-    <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} saveIncompleteInvoice={saveIncompleteInvoice} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} selectedVendor={selectedVendor}/>,
+    <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} saveIncompleteInvoice={saveIncompleteInvoice} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} selectedVendor={selectedVendor} invoiceFormErrors={invoiceFormErrors}/>,
     <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,
     <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData} invoiceFile={pdfFile} loadedFlowers={flowerData}/>
   ];

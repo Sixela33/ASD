@@ -16,7 +16,10 @@ const colData = {
 }
 
 const GET_PROJECTS_URL = '/api/projects/list/';
-const defaultSortCOnfig = { key: null, direction: 'asc' }
+const GET_CLIENTS_LIST = '/api/clients'
+
+const defaultSortCOnfig = { key: 'projectid', direction: 'asc' }
+
 const ProjectsList = () => {
     const page = useRef(0) 
     const dataLeft = useRef(true)    
@@ -28,18 +31,31 @@ const ProjectsList = () => {
     const navigateTo = useNavigate();
 
     const [projectsInfo, setProjectsInfo] = useState([]);
+    const [clientsList, setClientsList] = useState([])
+
     const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
     const [showOpenOnly, setShowOpenOnly] = useState(true)
 
     const [searchByID, setSearchByID] = useState('')
     const [searchByContact, setSearchByContact] = useState('')
     const [searchByDescription, setSearchByDescription] = useState('')
+    const [selectedClient, setSelectedClient] = useState('')
 
     const handleRowClick = (row) => {
         navigateTo(`/projects/${row?.projectid}`, {state: row});
     }
+
+    const getClientList = async () => {
+        try {
+            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
+            setClientsList(clientsResponse?.data)
+        } catch (error) {
+            setMessage(error.response?.data?.message, true);
+
+        }
+    }
     
-    const fetchData =  async (sortConfig, showOpen, searchByID, searchByContact, searchByDescription) => {
+    const fetchData =  async (sortConfig, showOpen, searchByID, searchByContact, searchByDescription, selectedClient) => {
         if (!dataLeft.current) {
             return;
         }
@@ -50,7 +66,8 @@ const ProjectsList = () => {
                 '&showOpenOnly=' + showOpen +
                 '&searchByID=' + searchByID + 
                 '&searchByContact=' + searchByContact +
-                '&searchByDescription=' + searchByDescription)
+                '&searchByDescription=' + searchByDescription + 
+                '&searchByClient=' + selectedClient)
             
             page.current = page.current + 1;
     
@@ -58,7 +75,6 @@ const ProjectsList = () => {
                 dataLeft.current = false;
                 return;
             }
-            console.log(response.data)
             setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]); 
         } catch (error) {
             setMessage(error.response?.data?.message, true);
@@ -72,15 +88,19 @@ const ProjectsList = () => {
         setProjectsInfo([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription)
+        debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
         
-    }, [sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription])
+    }, [sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient])
 
     useEffect(() => {
         if (inView) {
-            debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription)
+            debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
         }
     }, [inView]);
+
+    useEffect(() => {
+        getClientList()
+    }, [])
 
     const projectStatusStyles = {
         0: "bg-red-500",
@@ -97,8 +117,8 @@ const ProjectsList = () => {
     return (
         <div className='container mx-auto mt-8 p-4 text-center flex flex-col'>
             <div  className="grid grid-cols-3 mb-4 ">
-                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">go back</button>
-                <h1 className='col-span-1'>ProjectsList</h1>
+                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
+                <h1 className='col-span-1'>Projects</h1>
                 <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create new Project</Link>
             </div>
             <div className="flex items-center mb-4 space-x-4 justify-evenly">
@@ -108,19 +128,29 @@ const ProjectsList = () => {
                     <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
                 </div>
                 <div className='flex flex-col'>
-                    <label >searchByID:</label>
+                    <label >search By ID:</label>
                     <input type="text" value={searchByID} onChange={(e) => setSearchByID(e.target.value)}/>
                 </div>
 
                 <div className='flex flex-col'>
-                    <label >searchByContact:</label>
+                    <label >search By Contact:</label>
                     <input type="text" value={searchByContact} onChange={(e) => setSearchByContact(e.target.value)}/>
                 </div>
 
                 <div className='flex flex-col'>
-                    <label >searchByDescription:</label>
+                    <label>search By Description:</label>
                     <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
                 </div>
+                <div className='flex flex-col'>
+                    <label>Filter by client:</label>
+                        <select className='p-2' onChange={e => setSelectedClient(e.target.value)}>
+                                <option value={''}>Select client</option>
+                                {clientsList.map((item, index) => {
+                                    return <option value={item.clientid} key={index}>{item.clientname}</option>
+                                })}
+                        </select>
+                </div>                        
+                
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort

@@ -4,8 +4,8 @@ import multer from "multer"
 
 class InvoiceRouter {
 
-    constructor(){
-        this.controller = new InvoiceController()
+    constructor(fileStorage){
+        this.controller = new InvoiceController(fileStorage)
         this.router = express.Router()
         const storage = multer.memoryStorage()
         this.uploads = multer({storage: storage})

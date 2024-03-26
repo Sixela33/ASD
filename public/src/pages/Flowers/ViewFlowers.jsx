@@ -13,7 +13,7 @@ export default function ViewFlowers() {
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
             <div className='grid grid-cols-3 mb-4'>
-                <button onClick={() => navigateTo('/')} className='go-back-button col-span-1'>go back</button>
+                <button onClick={() => navigateTo('/')} className='go-back-button col-span-1'>Go Back</button>
                 <h1 className='col-span-1'>Flower Catalog</h1>
                 <Link to="/flowers/create" className='buton-main col-span-1 mx-auto'>Add new flower</Link>
             </div>

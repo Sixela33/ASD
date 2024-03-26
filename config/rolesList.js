@@ -6,6 +6,7 @@
     ]
 */
 const ROLES_LIST = {
+    'Inactive': 0,
     'User': 1, 
     'Staff': 1000, 
     'Admin': 2000

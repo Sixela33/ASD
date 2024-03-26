@@ -2,8 +2,8 @@ import FlowerService from "../services/FlowerService.js"
 
 class FlowerController {
 
-    constructor() {
-        this.service = new FlowerService()
+    constructor(fileStorage) {
+        this.service = new FlowerService(fileStorage)
     }
 
     addFlower = async (req, res, next) => {
@@ -33,7 +33,9 @@ class FlowerController {
     getFlowers = async (req, res, next) => {
         try {
             const {offset, query} = req.params
-            const response = await this.service.getFlowers(offset, query)
+            const { filterByColor } = req.query
+            console.log(req.query)
+            const response = await this.service.getFlowers(offset, query, filterByColor)
             res.json(response)
         } catch (error) {
             next(error)
@@ -44,6 +46,15 @@ class FlowerController {
         try {
             const { id } = req.params
             const response = await this.service.getFlowerData(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getUniqueFlowerColors= async (req, res, next) => {
+        try {
+            const response = await this.service.getUniqueFlowerColors()
             res.json(response)
         } catch (error) {
             next(error)

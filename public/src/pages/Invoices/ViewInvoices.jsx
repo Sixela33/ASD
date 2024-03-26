@@ -26,7 +26,7 @@ const searchByOptions = [
     {displayName: "Invoice Number", value: "invoicenumber"}
 ] 
 
-const defaultSortConfig = { key: null, direction: 'asc' }
+const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
 
 export default function ViewInvoices() {
     let [sortConfig, setSortConfig] = useState(defaultSortConfig)
@@ -48,13 +48,23 @@ export default function ViewInvoices() {
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
 
+
     const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor, showOnlyWithMissingLink) => {
         try {
             if (!dataLeft.current) {
                 return;
             }
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + '?orderBy='+ sortConfig.key + '&order=' + sortConfig.direction + '&searchQuery=' + searchValue + '&searchBy=' + searchCol + '&specificVendor=' + selectedVendor + '&onlyMissing=' +showOnlyWithMissingLink);
+            const tempSelectedVendor = selectedVendor == undefined ? '': selectedVendor
+
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + 
+                '?orderBy='+ sortConfig.key + 
+                '&order=' + sortConfig.direction + 
+                '&searchQuery=' + searchValue +
+                '&searchBy=' + searchCol + 
+                '&specificVendor=' + tempSelectedVendor+ 
+                '&onlyMissing=' + showOnlyWithMissingLink || false );
+
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;
@@ -69,7 +79,7 @@ export default function ViewInvoices() {
     const debounced = useCallback(debounce(fetchData, 200), []);
 
     useEffect(() => {
-        fetchData();
+        fetchData(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink);
     }, []);
 
     const fetchVendors = async () => {
@@ -90,6 +100,7 @@ export default function ViewInvoices() {
         setInvoiceData([])
         page.current = 0
         dataLeft.current=true
+
         debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
         
     }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink])
@@ -154,7 +165,7 @@ export default function ViewInvoices() {
                 <p>Do you want to procede?</p>
             </ConfirmationPopup>
             <div className="grid grid-cols-3 mb-4">
-                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">go back</button>
+                <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Invoices</h1>
                 <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Load Invoice</Link>
             </div>
@@ -170,14 +181,14 @@ export default function ViewInvoices() {
                     <div className='flex items-center space-x-1'>
                         <span className='ml-4'>Filter by vendor: </span>
                         <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
-                            <option value={''}>Select Vendor</option>
+                            <option value={''} selected>Select Vendor</option>
                             {allVendors.map((item, index) => {
                                 return <option value={item.vendorid} key={index}>{item.vendorname}</option>
                             })}
                         </select>
                     </div>
                     <div className='flex items-center space-x-1'>
-                        <label className="mr-2">Only show invoices with no projects</label>
+                        <label className="mr-2">Only show incomplete invoices</label>
                         <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
                     </div>
                 

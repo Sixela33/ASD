@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { redirect, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { aggregateFlowerData } from '../../utls/aggregateFlowerDataArrangements';
 import { BASE_TD_STYLE } from '../../styles';
@@ -12,6 +12,7 @@ import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
+import { FiEdit } from "react-icons/fi";
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -67,6 +68,7 @@ export default function ViewProject() {
                            
         } catch (error) {
             console.log(error);
+            setMessage(error.response?.data?.message, true)
         }
     };
 
@@ -225,8 +227,16 @@ export default function ViewProject() {
     }
 
     const buttonOptions = [
-        {text: 'Add New Arrangement', action: handleCreateArrangement}, 
-        {text: 'Edit project Data', action: () =>{setShowEditProjectPopup(true)}}
+        {   
+            text: 'Add New Arrangement', 
+            action: handleCreateArrangement,
+            icon: '+'
+        }, 
+        {
+            text: 'Edit project Data', 
+            action: () =>{setShowEditProjectPopup(true)},
+            icon: <FiEdit/>
+        }
     ]
 
     return (
@@ -240,7 +250,6 @@ export default function ViewProject() {
                 showPopup={showEditProjectPopup}
                 closePopup={closeEditProject}
                 projectData={projectData}>
-
             </EditProjectData>
             <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
                 actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
@@ -259,7 +268,7 @@ export default function ViewProject() {
             />
             <FloatingMenuButton options={buttonOptions}/>
             <div className='grid grid-cols-3 mb-4'>
-                <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >go back</button>
+                <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>
                 <h2 className='col-span-1'>Project Overview</h2>
             </div>
             <p className={projectData?.isclosed ? 'text-red-500' : 'text-green-700'}>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>

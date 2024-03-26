@@ -51,14 +51,14 @@ describe('Role Routes /api/users/roles', () => {
             expect(response.status).to.equal(200)
         })
 
-        it("should return 403 when data is invalid", async () => {
+        it("should return 400 when data is invalid", async () => {
             const newRoleData = { 
                 roleCode: 2
             }
 
             const response = await request.post('/api/users/roles/create').set('Authorization', `${adminToken}`).send(newRoleData)
            
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -75,7 +75,7 @@ describe('Role Routes /api/users/roles', () => {
             expect(response.status).to.equal(200)
         })
 
-        it("should return 403 if sent invalid data", async () => {
+        it("should return 400 if sent invalid data", async () => {
 
             let userwithNewRole = {
                 newRoleid: 2, 
@@ -83,7 +83,7 @@ describe('Role Routes /api/users/roles', () => {
 
             const response = await request.patch('/api/users/roles/changePermissions').set('Authorization', `${adminToken}`).send(userwithNewRole)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 })

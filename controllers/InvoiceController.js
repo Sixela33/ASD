@@ -2,8 +2,8 @@ import InvoiceService from "../services/InvoiceService.js"
 
 class InvoiceController {
 
-    constructor() {
-        this.service = new InvoiceService()
+    constructor(fileStorage) {
+        this.service = new InvoiceService(fileStorage)
     }
 
     addInvoice = async (req, res, next) => {
@@ -11,8 +11,8 @@ class InvoiceController {
             const file = req.file
             const {invoiceData, InvoiceFlowerData} = req.body
             const creatorid = req.user.userid
-            await this.service.addInvoice(invoiceData, InvoiceFlowerData, file, creatorid)
-            res.sendStatus(200)
+            const response = await this.service.addInvoice(invoiceData, InvoiceFlowerData, file, creatorid)
+            res.json(response)
         } catch (error) {
             console.log(error)
             next(error)
@@ -47,8 +47,8 @@ class InvoiceController {
     getInvoices = async (req, res, next) => {
         try {
             const { offset } = req.params
-            const { orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing } = req.query
-            const response = await this.service.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing)
+            const { orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows } = req.query
+            const response = await this.service.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows)
             res.json(response)
         } catch (error) {
             next(error)
@@ -78,6 +78,7 @@ class InvoiceController {
     linkBaknTransaction = async (req, res, next) => {
         try {
             const { bankTransactionData, selectedInvoices } = req.body
+            console.log(req.body)
             const response = await this.service.linkBaknTransaction(bankTransactionData, selectedInvoices)
             res.json(response)
         } catch (error) {

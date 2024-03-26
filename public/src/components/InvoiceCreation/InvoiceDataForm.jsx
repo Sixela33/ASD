@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import SearchableDropdown from '../Dropdowns/SearchableDropdown';
+import FormItem from '../FormItem';
+import FormError from '../FormError';
 
 const GET_VENDORS_URL = '/api/vendors';
 
-export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoiceData, handleChange, handleVendorChange, selectedVendor }) {
+export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoiceData, handleChange, handleVendorChange, selectedVendor, invoiceFormErrors }) {
   const [vendors, setVendors] = useState([]);
   const axiosPrivate = useAxiosPrivate();
   const { setMessage } = useAlert();
@@ -35,26 +37,20 @@ export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoi
       <form className="space-y-4">
         <div className="flex flex-col mb-4">
           <SearchableDropdown options={vendors} label={'vendorname'} selectedVal={selectedVendor} handleChange={(vendor)=> {handleSelectVendor(vendor)}} placeholderText="Select vendor"/>
+          <FormError error={invoiceFormErrors.vendor}/>
+          </div>
+        <div className="flex flex-col mb-4">
+          <FormItem labelName="Invoice Number:" inputName="invoiceNumber" type="text" value={invoiceData.invoiceNumber} handleChange={handleChange} error={invoiceFormErrors.invoiceNumber} />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="mb-1">Invoice Number:</label>
-          <input type="text" name="invoiceNumber" value={invoiceData.invoiceNumber} onChange={handleChange} className="w-full" required />
+          <FormItem labelName="Invoice Date:" inputName="dueDate" type="date" value={invoiceData.dueDate} handleChange={handleChange} error={invoiceFormErrors.dueDate} />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="mb-1">Invoice Date:</label>
-          <input type="date" name="dueDate" value={invoiceData.dueDate} onChange={handleChange} className="w-full" required />
-        </div>
-        <div className="flex flex-col mb-4">
-          <label className="mb-1">Invoice Amount:</label>
-          <input type="number" name="invoiceAmount" value={invoiceData.invoiceAmount} onChange={handleChange} className="w-full" required />
+          <FormItem labelName="Invoice Amount:" inputName="invoiceAmount" type="number" value={invoiceData.invoiceAmount} handleChange={handleChange} error={invoiceFormErrors.invoiceAmount} />
         </div>
         <div className='buttons-holder'>
-          <button className='buton-main' onClick={onSubmit} >
-            Continue
-          </button> 
-          <button className='buton-secondary' onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} >
-            Save Incomplete invoice
-          </button>
+          <button className='buton-main' onClick={onSubmit} >Continue</button> 
+          <button className='buton-secondary' onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} >Save Incomplete invoice</button>
         </div>
       </form>
     </div>

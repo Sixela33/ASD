@@ -41,7 +41,7 @@ describe('Projects Routes api/projects', () => {
         it('should not break with wrong offset value', async () => {
             const response = await request.get('/api/projects/list/undefined').set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
         })
 
@@ -81,12 +81,12 @@ describe('Projects Routes api/projects', () => {
 
         })
         
-        it("should should return 403 if no ids are provided", async () => {
+        it("should should return 400 if no ids are provided", async () => {
             const projectsToGet = []
 
             const response = await request.post('/api/projects/manyByID').set('Authorization', `${adminToken}`).send({ids: projectsToGet})
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
         })
         
@@ -136,7 +136,7 @@ describe('Projects Routes api/projects', () => {
         it('should not break if an invalid id is passed', async () => {
             const response = await request.get('/api/projects/arrangements/'+ undefined).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -172,7 +172,7 @@ describe('Projects Routes api/projects', () => {
 
         })
 
-        it('should return 403 with invalid data', async () => {
+        it('should return 400 with invalid data', async () => {
 
             //here i put the client as a string instead fof an int
             const queryObject = {
@@ -186,7 +186,7 @@ describe('Projects Routes api/projects', () => {
             }
             const response = await request.post('/api/projects/create').set('Authorization', `${adminToken}`).send(queryObject)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -206,7 +206,7 @@ describe('Projects Routes api/projects', () => {
 
         })
 
-        it('should return 403 if invalid data was sent', async () => {
+        it('should return 400 if invalid data was sent', async () => {
             let projectToAddTo = 1
             const arrangementData = {
                 arrangementType: 1,
@@ -216,10 +216,10 @@ describe('Projects Routes api/projects', () => {
 
             const response = await request.post('/api/projects/addArrangement/' + projectToAddTo).set('Authorization', `${adminToken}`).send(arrangementData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
-        it('should return 403 if invalid id was sent', async () => {
+        it('should return 400 if invalid id was sent', async () => {
             let projectToAddTo = undefined
             const arrangementData = {
                 arrangementType: 1,
@@ -229,7 +229,7 @@ describe('Projects Routes api/projects', () => {
 
             const response = await request.post('/api/projects/addArrangement/' + projectToAddTo).set('Authorization', `${adminToken}`).send(arrangementData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
 
@@ -255,7 +255,7 @@ describe('Projects Routes api/projects', () => {
 
         })  
 
-        it('should retirn 403 with invalid data', async () => {
+        it('should retirn 400 with invalid data', async () => {
             let arrangementIDToEdit = 1
             let projectData = {
                 projectContact: "Jhon",
@@ -267,10 +267,10 @@ describe('Projects Routes api/projects', () => {
 
             const response = await request.patch('/api/projects/' + arrangementIDToEdit).set('Authorization', `${adminToken}`).send(projectData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
-        it('should retirn 403 with invalid id', async () => {
+        it('should retirn 400 with invalid id', async () => {
             let arrangementIDToEdit = undefined
             let projectData = {
                 staffBudget: 1,
@@ -283,7 +283,7 @@ describe('Projects Routes api/projects', () => {
 
             const response = await request.patch('/api/projects/' + arrangementIDToEdit).set('Authorization', `${adminToken}`).send(projectData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
    
@@ -295,11 +295,11 @@ describe('Projects Routes api/projects', () => {
             expect(response.status).to.equal(200)
         })
 
-        it("should return 403 with invalid project id", async () => {
+        it("should return 400 with invalid project id", async () => {
             const arrangementIDToClose = undefined
             const response = await request.post('/api/projects/close/' + arrangementIDToClose).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -311,11 +311,11 @@ describe('Projects Routes api/projects', () => {
             expect(response.status).to.equal(200)
         })
 
-        it("should return 403 with invalid project id", async () => {
+        it("should return 400 with invalid project id", async () => {
             const arrangementIDToClose = undefined
             const response = await request.post('/api/projects/close/' + arrangementIDToClose).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 

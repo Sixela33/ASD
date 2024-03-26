@@ -56,7 +56,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         if(loadedFlowers) {
             loadedFlowers.map(flower => {
                 let ix = aggregatedUniqueFlowers.findIndex(f => f.flowerid == flower.flowerid)
-                console.log(ix, ' ', flower)
                 if (ix != -1) {
                     aggregatedUniqueFlowers[ix].unitprice = flower.unitprice
                 }
@@ -242,7 +241,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         <div className='container mx-auto flex flex-col h-[80vh]'>
             <InvoiceAddFlowerToProjectPopup showPopup={addFlowerPopup} submitFunction={flower => addFlowerToProject(flower)} closePopup={() =>toggleAddFlowerPopup(false)}/>
             <div className='grid grid-cols-3 mb-4'>
-                <button onClick={goBack} className='go-back-button col-span-1'>go back</button>
+                <button onClick={goBack} className='go-back-button col-span-1'>Go Back</button>
                 <h1 className='col-span-1'>Assign flowers</h1>
             </div>
             <div className='table-container h-[20vh]'>

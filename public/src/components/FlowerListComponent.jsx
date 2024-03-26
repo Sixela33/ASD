@@ -4,8 +4,10 @@ import useAlert from '../hooks/useAlert'
 import { useInView } from 'react-intersection-observer'
 import { BASE_URL } from '../api/axios'
 import { debounce } from "lodash";
+import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx';
 
 const GET_FLOWERS_URL = '/api/flowers/many/'
+const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
 
 export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID}) {
     if(!onFlowerClick) onFlowerClick = () => {}
@@ -17,19 +19,29 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     const flowersLeft = useRef(true)
     const firstLoad = useRef(false)
+
     const [flowerData, setFlowerData] = useState([]);
+    const [flowerColors, setFlowerColors] = useState([])
+    const [selectedFlowerColor, setSelectedFlowerColor] = useState({'flowerColor': ''})
     const [searchQuery, setSearchQuery] = useState('');
 
-    const fetchFlowers = async (searchQ) => {
+
+    const fetchFlowers = async (searchQ, colorFilter) => {
         try {
-            const response = await axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ);
+            const searchByColor = colorFilter?.flowercolor || ''
+            let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ+ '?filterByColor=' + searchByColor)
+            let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
+            response = await response
+            flowerColors = await flowerColors
+            
             offset.current += 1
             if(response?.data.length == 0) {
                 flowersLeft.current = false
                 return
             }
 
-            setFlowerData(prevData => [...prevData, ...response.data]);
+            setFlowerData(prevData => [...prevData, ...response.data])
+            setFlowerColors(flowerColors.data)
         } catch (error) {
             setMessage(error.response?.data?.message, true);
             console.error('Error fetching data:', error);
@@ -42,12 +54,12 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const debouncedInitial = useCallback(debounce(fetchFlowers, 100), []);
 
     useEffect(() => {
-        debouncedInitial(searchQuery)
+        debouncedInitial(searchQuery, selectedFlowerColor)
     }, []);
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
-            debounced(searchQuery)
+            debounced(searchQuery, selectedFlowerColor)
         }
     }, [inView]);
 
@@ -56,9 +68,9 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             setFlowerData([])
             offset.current = 0
             flowersLeft.current = true
-            debounced(searchQuery)
+            debounced(searchQuery, selectedFlowerColor)
         }
-    }, [searchQuery]);
+    }, [searchQuery, selectedFlowerColor]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value)
@@ -66,9 +78,21 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     return (
         <div className="mx-auto my-4 px-10">
-            <div className="mb-3 flex justify-start items-center">
-                <label >Search by name: </label>
-                <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
+            <div className='flex flex-cols justify-evenly'>
+
+                <div className="mb-3 flex justify-start items-center">
+                    <label >Search by name: </label>
+                    <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
+                </div>
+                <div className="mb-3 flex justify-start items-center">
+                    <label >Search by color: </label>
+                    <SearchableDropdown 
+                        options={flowerColors}
+                        label={'flowercolor'}
+                        selectedVal={selectedFlowerColor}
+                        handleChange={setSelectedFlowerColor}
+                        placeholderText={'Filter by color'}/>
+                </div>
             </div>
 
             <div className="flex flex-wrap gap-4 overflow-auto w-full justify-center" style={styles}>

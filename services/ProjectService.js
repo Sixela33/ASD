@@ -1,6 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import { validateArrangement, validateSingleArrangement } from "./Validations/ArrangementValidations.js"
-import { validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js"
+import { validateId, validateIdArray, validateIdnotRequired, validateQueryStringLength } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
 
 class ProjectService {
@@ -12,8 +12,9 @@ class ProjectService {
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid) => {
         await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid})
         await validateArrangement(arrangements)
-        await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements)
+        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements)
 
+        return response
     }
 
     closeProject = async (id) => {
@@ -26,10 +27,11 @@ class ProjectService {
         await this.model.openProject(id)
     }
 
-    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription) => {
+    getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient) => {
         await validateId(offset)
-        await validateQueryStringLength([searchByID, searchByContact, searchByDescription, orderBy])
-        const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription)
+        await validateQueryStringLength([searchByID, searchByContact, searchByDescription, orderBy, searchByClient ])
+
+        const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient)
         return response.rows
     }
 

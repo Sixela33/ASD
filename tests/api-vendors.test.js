@@ -51,12 +51,12 @@ describe('Vendor Routes /api/vendors', () => {
 
         })
 
-        it('should return 403 when sending invalid data', async () => {
+        it('should return 400 when sending invalid data', async () => {
             const vendorname = ''
 
             const response = await request.post('/api/vendors').set('Authorization', `${adminToken}`).send(vendorname)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
         })
     })

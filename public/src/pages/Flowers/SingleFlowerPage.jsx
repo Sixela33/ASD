@@ -55,7 +55,6 @@ export default function SingleFlowerPage() {
 
     const setNewImage = (file) => {
         setNewFlowerData(prev => ({ ...prev, flowerimage: file }));
-        console.log(file)
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -70,10 +69,8 @@ export default function SingleFlowerPage() {
     }
 
     const saveChanges = async () => {
-        console.log("newFlowerData", newFlowerData)
         try {
             const formDataToSend = new FormData();
-            console.log("baseFlowerData.flowerimage", baseFlowerData.flowerimage)
             formDataToSend.append('name', newFlowerData.flowername);
             formDataToSend.append('color', newFlowerData.flowercolor);
             formDataToSend.append('flower', newFlowerData.flowerimage); 
@@ -81,7 +78,6 @@ export default function SingleFlowerPage() {
             formDataToSend.append('id', newFlowerData.flowerid); 
     
             const response = await axiosPrivateImage.patch(EDIT_FLOWER_URL, formDataToSend);
-            console.log(response)
             setMessage("Flower Edited succesfully", false)
 
         } catch (error) {
@@ -95,14 +91,14 @@ export default function SingleFlowerPage() {
     }
 
     return (
-        <div className="h-[80vh] flex flex-col justify-center items-center">
+        <div className="container mx-auto p-8 ">
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={deleteFlower}>
                 Are you sure you want to remove {baseFlowerData.flowername} from the database?
             </ConfirmationPopup>
             <ChangeImagePopup showPopup={showNewFlowerPopup} closePopup={() => setShowNewFlowerPopup(false)} setNewImage={setNewImage}></ChangeImagePopup>
 
-            <div className="m-10">
-                <Link to="/flowers" className='go-back-button'>Go Back</Link>
+            <div className="grid grid-cols-3 w-full text-center my-[3vh]">
+                <Link to="/flowers" className='go-back-button col-span-1 '>Go Back</Link>
             </div>
 
             <div className="container mx-auto flex">
@@ -114,7 +110,7 @@ export default function SingleFlowerPage() {
                             <img src={`${BASE_URL}/api/${newFlowerData.flowerimage}`} alt="Preview" loading='lazy' className="w-64 h-64 object-cover rounded-lg shadow-lg" />
                         )}
                         {}                        
-                        <button  className='buton-secondary' onClick={() => setShowNewFlowerPopup(true)}>Change image</button>
+                        <button  className='go-back-button' onClick={() => setShowNewFlowerPopup(true)}>Change image</button>
                         <div className="p-4 text-center">
                             <div className="mb-4">
                                 <label>Name: </label>
@@ -139,7 +135,7 @@ export default function SingleFlowerPage() {
                             <CartesianGrid strokeDasharray="3 3" />
                             <Tooltip />
                             <Legend />
-                            <Line type="monotone" dataKey="unitprice" stroke="#1270ce" strokeWidth={3} />
+                            <Line type="monotone" dataKey="unitprice" stroke="#1270ce" strokeWidth={3} isAnimationActive={false} />
                         </LineChart>
                     </div>
                 </div>

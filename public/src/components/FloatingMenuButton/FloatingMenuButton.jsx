@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Tooltip from '../Tooltip';
+import { FiMoreHorizontal } from "react-icons/fi";
 import './FloatingMenuButton.css'
 
 const FloatingMenuButton = ({ options }) => {
@@ -47,16 +48,16 @@ const FloatingMenuButton = ({ options }) => {
       <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>
         {tooltipText}
       </Tooltip>
-      <div className="fixed bottom-4 right-4" ref={floatingMenuRef}>
+      <div className="fixed bottom-4 right-4 text-white" ref={floatingMenuRef}>
         <button className="floating-menu rounded-full w-16 h-16 flex items-center justify-center text-xl focus:outline-none" onClick={toggleOptions}>
-          <span>. . .</span>
+          <span><FiMoreHorizontal style={{color:"white"}}/></span>
         </button>
         <div className={`absolute bottom-16 right-0 ${showOptions ? 'show' : 'hide'}`}>
           <ul>
             {options.map((option, index) => (
               <li key={index} className="mb-2" onMouseEnter={() => handleMouseEnter(option.text)} onMouseLeave={handleMouseLeave} onMouseMove={handleMouseMove}
               >
-                <button className="floating-item rounded-full w-12 h-12 flex items-center justify-center text-lg focus:outline-none mr-2" onClick={option.action}>
+                <button style={{color:"white"}} className="floating-item rounded-full w-12 h-12 flex items-center justify-center text-lg focus:outline-none mr-2" onClick={option.action}>
                   {option.icon || option.text}
                 </button>
               </li>

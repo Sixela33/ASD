@@ -6,6 +6,7 @@ import useAlert from '../../hooks/useAlert';
 import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
+import { FiEdit, FiDownload } from 'react-icons/fi';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
 
@@ -22,10 +23,8 @@ export default function ViewSingleInvoice() {
     const fetchProjectsProvided = async () => {
         try {
             const response = await axiosPrivate.get(GET_PROVIDED_PROJECTS_URL + id);
-            console.log(response.data)
             const {flowers, invoiceData, projects, bankTransactions} = response?.data
             
-            console.log(bankTransactions)
             if (!flowers || !invoiceData || !projects){
                 setMessage("Server Error")
                 useNavigate('/invoice')
@@ -43,7 +42,6 @@ export default function ViewSingleInvoice() {
 
             setProjectsProvided(projects)
             setInvoiceData(invoiceData[0])
-            console.log(processedFlowerData)
             setInvoiceFlowers(processedFlowerData)
         } catch (error) {
             setMessage(error.response?.data, true);
@@ -61,8 +59,16 @@ export default function ViewSingleInvoice() {
     }
 
     const buttonOptions = [
-        {text: 'Download Invoice', action: downloadFile}, 
-        {text: 'Edit invoice', action: () => navigateTo('/invoice/add/' + id)}
+        {
+            text: 'Download Invoice', 
+            action: downloadFile,
+            icon: <FiDownload/>
+        }, 
+        {
+            text: 'Edit invoice', 
+            action: () => navigateTo('/invoice/add/' + id),
+            icon: <FiEdit/>
+        }
     ]
 
     return (
@@ -70,7 +76,7 @@ export default function ViewSingleInvoice() {
             <FloatingMenuButton options={buttonOptions}/>
 
             <div className='grid grid-cols-3 mb-4'>
-                <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >go back</button>
+                <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >Go Back</button>
                 <h1 className='col-span-1'>Invoice Overview</h1>
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
@@ -102,9 +108,9 @@ export default function ViewSingleInvoice() {
                     <div className='table-container h-[20vh] mt-3'>
                         <TableHeaderSort
                             headers = {{
-                                "flowername": "flowername", 
-                                "unitprice": "unitprice",
-                                "numstems": "numstems", 
+                                "Flower Name": "flowername", 
+                                "Unit Price": "unitprice",
+                                "Stem Quantity": "numstems", 
                             }}
                         >
                             {invoiceFlowers.map((item, index) => {

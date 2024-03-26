@@ -74,7 +74,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
     return (
         <div>
             <div className='grid grid-cols-3 mb-4'>
-                <button className='go-back-button col-span-1' onClick={goBack} >go back</button>
+                <button className='go-back-button col-span-1' onClick={goBack} >Go Back</button>
                 <h1 className='col-span-1'>Choose projects</h1>
             </div>
             <div className='table-container h-[50vh]'>

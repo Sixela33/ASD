@@ -33,10 +33,11 @@ import ROLES_LIST from "./config/rolesList.js";
 
 class Server {
 
-    constructor(port, host, persistance) {
+    constructor(port, host, persistance, fileStorage) {
         this.port = port
         this.host = host
         this.persistance = persistance
+        this.fileStorage = fileStorage
 
         this.app = express()
     }
@@ -71,13 +72,13 @@ class Server {
 
         this.app.use('/api/users', new UserRouter().start())
         this.app.use('/api/users/roles', superuserReq, new RoleRouter().start())
-        this.app.use('/api/flowers', loginreq, new FlowerRouter().start())
+        this.app.use('/api/flowers', loginreq, new FlowerRouter(this.fileStorage).start())
         this.app.use('/api/projects', loginreq, new ProjectRouter().start())
         this.app.use('/api/arrangements', loginreq, new ArrangementRouter().start())
 
         this.app.use('/api/clients', loginreq, new ClientRouter().start())
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
-        this.app.use('/api/invoices', staffuserReq, new InvoiceRouter().start())
+        this.app.use('/api/invoices', staffuserReq, new InvoiceRouter(this.fileStorage).start())
         
         // -----------------------------------------------
         //                 MIDDLEWARES

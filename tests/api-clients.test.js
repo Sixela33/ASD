@@ -37,12 +37,12 @@ describe('Client Routes /api/clients', () => {
             expect(response.status).to.equal(200)
         })
 
-        it('should return 403 when invalid client name', async () => {
+        it('should return 400 when invalid client name', async () => {
 
             const newClientName = ''
             const response = await request.post('/api/clients').set('Authorization', `${adminToken}`).send({clientName: newClientName})
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 })

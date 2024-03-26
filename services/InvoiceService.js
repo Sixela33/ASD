@@ -1,21 +1,20 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import path from 'path';
-import { handleNewFileLocal } from "../utils/fileHandling.js";
+import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 import fs from 'fs';
 import { validateInvoice, validateFlowers, validateBankTransaction } from "./Validations/InvoiceValidations.js";
-import { validateId, validateIdArray } from "./Validations/IdValidation.js";
+import { validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
-const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
-const INVOICE_FILES_PATH = path.join(FILES_BASE_PATH, '/InvoiceFiles/');
+
+
 
 class InvoiceService {
 
-    constructor() {
+    constructor(fileStorage) {
         this.model = new ModelPostgres()
-        if (!fs.existsSync(INVOICE_FILES_PATH)) {
-            fs.mkdirSync(INVOICE_FILES_PATH, { recursive: true });
-        }
+        
+        this.fileHandler = new FileHandlerSelector(fileStorage).start()
     }
 
     addInvoice = async (invoiceData, invoiceFlowerData, file, updaterID) => {
@@ -29,11 +28,11 @@ class InvoiceService {
         let fileLocation = invoiceData.fileLocation
 
         if (file){
-            fileLocation = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            fileLocation = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         }
 
         if(!fileLocation) {
-            throw {message: "A file is required to load an invoice", status: 403}
+            throw {message: "A file is required to load an invoice", status: 400}
         }
         console.log("invoiceFlowerData", invoiceFlowerData)
 
@@ -49,11 +48,11 @@ class InvoiceService {
         let newFileLoc = invoiceData.fileLocation
         
         if (file) {
-            newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            newFileLoc = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         } 
         
         if(!newFileLoc) {
-            throw {message: "A file is required to load an invoice", status: 403}
+            throw {message: "A file is required to load an invoice", status: 400}
         }
 
         if (invoiceData.invoiceid) {
@@ -79,7 +78,7 @@ class InvoiceService {
         let newFileLoc = invoiceData.fileLocation
         
         if (file) {
-            newFileLoc = handleNewFileLocal(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            newFileLoc = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
         } 
 
         if(!newFileLoc) throw {}
@@ -88,10 +87,10 @@ class InvoiceService {
         return response
     }
 
-    getInvoices = async (offset, orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing) => {
+    getInvoices = async (offset, orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows) => {
         await validateId(offset)
-
-        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing)
+        await validateQueryStringLength([orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing])
+        const result = await this.model.getInvoices(offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows)
         return result.rows 
     }
 

@@ -31,35 +31,24 @@ describe('Invoice Routes /api/invoices', () => {
 
             expect(response.status).to.equal(200)
         })
-    })
 
-    describe('POST /incomplete', () => {
-        it('should load incomplete invoice data', async () => {
-            let invoiceData = invoiceDataGenerator()
-            invoiceData = JSON.stringify(invoiceData)
-
-            const response = await request.post('/api/invoices/incomplete').set('Authorization', `${adminToken}`).attach('invoiceFile', invoiceFileLoc).field("invoiceData", invoiceData)
-
-            expect(response.status).to.equal(200)
-        })
-
-        it('should return 403 with invalid file', async () => {
+        it('should return 400 with invalid file', async () => {
             let invoiceData = invoiceDataGenerator()
             invoiceData = JSON.stringify(invoiceData)
 
             const response = await request.post('/api/invoices/incomplete').set('Authorization', `${adminToken}`).field("invoiceData", invoiceData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
-        it('should return 403 with invalid data', async () => {
+        it('should return 400 with invalid data', async () => {
             let invoiceData = invoiceDataGenerator()
             invoiceData.vendor = "aaaa"
             invoiceData = JSON.stringify(invoiceData)
 
             const response = await request.post('/api/invoices/incomplete').set('Authorization', `${adminToken}`).attach('invoiceFile', invoiceFileLoc).field("invoiceData", invoiceData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -82,7 +71,7 @@ describe('Invoice Routes /api/invoices', () => {
             expect(response.status).to.equal(200)
         })
 
-        it('should return 403 with invalid file', async () => {
+        it('should return 400 with invalid file', async () => {
             let invoiceData = invoiceDataGenerator()
 
             let invoiceFlowerData = []
@@ -97,10 +86,10 @@ describe('Invoice Routes /api/invoices', () => {
             .field("invoiceData", invoiceData).field('InvoiceFlowerData', invoiceFlowerData)
 
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
-        it('should return 403 with invalid invoice data', async () => {
+        it('should return 400 with invalid invoice data', async () => {
             let invoiceData = invoiceDataGenerator()
             invoiceData.vendor = "aaaa"
 
@@ -116,7 +105,7 @@ describe('Invoice Routes /api/invoices', () => {
             .attach('invoiceFile', invoiceFileLoc)
             .field("invoiceData", invoiceData).field('InvoiceFlowerData', invoiceFlowerData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
 
         it('should return 500 with invalid flower data (repeated flower id in invoice/project)', async () => {
@@ -137,7 +126,7 @@ describe('Invoice Routes /api/invoices', () => {
             expect(response.status).to.equal(400)
         })
 
-        it('should return 403 with invalid flower data (projectid)', async () => {
+        it('should return 400 with invalid flower data (projectid)', async () => {
             let invoiceData = invoiceDataGenerator()
 
             let invoiceFlowerData = []
@@ -152,7 +141,7 @@ describe('Invoice Routes /api/invoices', () => {
             .attach('invoiceFile', invoiceFileLoc)
             .field("invoiceData", invoiceData).field('InvoiceFlowerData', invoiceFlowerData)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -173,11 +162,11 @@ describe('Invoice Routes /api/invoices', () => {
             expect(data).to.have.property('hastransaction')
         })
 
-        it('should return 403 with invalid offset', async () => {
+        it('should return 400 with invalid offset', async () => {
 
             const response = await request.get('/api/invoices/invoices/' + 0.3).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
         
     })
@@ -195,10 +184,10 @@ describe('Invoice Routes /api/invoices', () => {
 
         })
 
-        it('should return 403 with invalid id', async () => {
+        it('should return 400 with invalid id', async () => {
             const response = await request.get('/api/invoices/providedProjects/' + 0.5).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
 
         })
@@ -215,10 +204,10 @@ describe('Invoice Routes /api/invoices', () => {
             expect(response.body).to.have.property('invoiceData')
         })
 
-        it('should return 403 with invalid id', async () => {
+        it('should return 400 with invalid id', async () => {
             const response = await request.get('/api/invoices/invoiceData/'+ undefined).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
         })
     })

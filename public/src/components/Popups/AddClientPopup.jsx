@@ -19,7 +19,6 @@ export default function AddClientPopup({showPopup, closePopup, editClientData}) 
     }
 
     const addNewClient = async () => {
-        console.log("clientData", clientData)
         try {
             if (!clientData.clientid) {
                 await axiosPrivate.post(CREATE_CLIENT_URL, JSON.stringify(clientData))
@@ -35,7 +34,6 @@ export default function AddClientPopup({showPopup, closePopup, editClientData}) 
     }
 
     useEffect(() => {
-        console.log("editClientData", editClientData)
         if (editClientData) {
             setClientData(editClientData)
         }

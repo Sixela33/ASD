@@ -11,6 +11,7 @@ export const AlertProvider = ({ children }) => {
     }
 
     const setMessage = (_message, _isError=true) => {
+        if (_message == 'jwt malformed') return
         _setMessage(_message)
         setIsError(_isError)
     }

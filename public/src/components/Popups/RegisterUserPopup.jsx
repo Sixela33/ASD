@@ -1,75 +1,77 @@
 import React, { useState } from 'react';
-import {validateEmail, validatePassword} from '../../utls/utils'
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import ConfirmationPopup from './ConfirmationPopup';
+import PopupBase from '../PopupBase';
+import FormError from '../FormError';
 
 const REGISTER_URL = '/api/users/register';
 
-const defaultUserData = { email: '', password: '', password2: '', username: '' };
+const schema = Yup.object().shape({
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+  username: Yup.string().required('Username is required'),
+  password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters')
+  .matches(/^(?=.*[A-Z])/, 'Must contain at least one uppercase character')
+  .matches(/^(?=.*[0-9])/, 'Must contain at least one number'),
+  password2: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+});
 
 export default function RegisterUserPopup({ showPopup, closePopup, continueSubmit }) {
-  const [userData, setUserData] = useState(defaultUserData);
   const axiosPrivate = useAxiosPrivate();
   const { setMessage } = useAlert();
+  const { register, control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const handleSubmit = async () => {
-
-    if (!validateEmail(userData.email) || !validatePassword(userData.password)) {
-      setMessage('Invalid email or password. Please check and try again.');
-      return;
-    }
-
-    if (userData.password !== userData.password2) {
-      setMessage('Passwords do not match');
-      return;
-    }
-
+  const handleSubmitToBackend = async (userData) => {
     try {
       const response = await axiosPrivate.post(REGISTER_URL, userData);
       setMessage(response.data, false);
-      setUserData(defaultUserData);
-      if(continueSubmit) continueSubmit()
+      if (continueSubmit) continueSubmit();
     } catch (error) {
-      // console.log("[ERROR]: \n", error);
       setMessage(error.response?.data, true);
     }
   };
 
-  const handleChange = (field, value) => {
-    setUserData((prevUserData) => ({ ...prevUserData, [field]: value }));
-  };
-
   const closePopupHere = () => {
-    setUserData(defaultUserData);
     closePopup();
   };
 
-  const { email, username, password, password2 } = userData;
-
   return (
-    <ConfirmationPopup showPopup={showPopup} closePopup={closePopupHere} confirm={handleSubmit}>
+    <PopupBase showPopup={showPopup} closePopup={closePopupHere}>
       <div className="p-8">
         <h2>Create new user</h2>
-      
+        <form onSubmit={handleSubmit(handleSubmitToBackend)}>
           <div className="mb-4">
             <label className="block">Email:</label>
-            <input type="text" value={email} onChange={(e) => handleChange('email', e.target.value)} required />
+            <input type="text" {...register('email')} />
+            <FormError error={errors.email?.message}/>
           </div>
           <div className="mb-4">
             <label className="block">Username:</label>
-            <input type="text" value={username} onChange={(e) => handleChange('username', e.target.value)} required />
+            <input type="text" {...register('username')} />
+            <FormError error={errors.username?.message}/>
           </div>
           <div className="mb-4">
             <label className="block">Password:</label>
-            <input type="password" value={password} onChange={(e) => handleChange('password', e.target.value)} required />
+            <input type="password" {...register('password')} />
+            <FormError error={errors.password?.message}/>
+
           </div>
           <div className="mb-4">
             <label className="block">Repeat Password:</label>
-            <input type="password" value={password2} onChange={(e) => handleChange('password2', e.target.value)} required />
+            <input type="password" {...register('password2')} />
+            <FormError error={errors.password2?.message}/>
+
           </div>
-       
+          <div className='buttons-holder'>
+            <button className='buton-main' onClick={closePopup}>Cancel</button>
+            <button className='buton-secondary' type='submit'>Save</button>
+          </div>
+        </form>
       </div>
-    </ConfirmationPopup>
+    </PopupBase>
   );
 }

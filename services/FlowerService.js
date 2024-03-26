@@ -3,27 +3,22 @@ import fs from 'fs';
 import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
 import { validateFlower } from "./Validations/FlowerValidations.js";
-import { handleNewFileLocal } from "../utils/fileHandling.js";
-import { handleReplaceFile } from "../utils/fileHandling.js";
+import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
-const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
-const FLOWER_IMAGE_PATH = path.join(FILES_BASE_PATH, '/flowerImages/');
 
 class FlowerService {
-    constructor() {
+    constructor(fileStorage) {
+
         this.model = new ModelPostgres();
-        if (!fs.existsSync(FLOWER_IMAGE_PATH)) {
-            fs.mkdirSync(FLOWER_IMAGE_PATH, { recursive: true });
-        }
+        this.fileHandler = new FileHandlerSelector(fileStorage).start()
     }
 
     addFlower = async (image, name, color) => {
         await validateFlower({name, color})
         let savePath = ''
-        
         if (image) {
-            savePath = await handleNewFileLocal(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
+            savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS)
         }
 
         await this.model.addFlower(savePath, name, color)
@@ -35,16 +30,16 @@ class FlowerService {
         let filepath = prevFlowerPath
 
         if (image) {
-            filepath = handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath, FLOWER_IMAGE_PATH)
+            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath)
         }
 
         await this.model.editFlower(name, color, id, filepath)
     }
 
-    getFlowers = async (offset, query) => {
+    getFlowers = async (offset, query, filterByColor) => {
         await validateId(offset)
 
-        const response = await this.model.getFlowersQuery(offset, query)
+        const response = await this.model.getFlowersQuery(offset, query, filterByColor)
 
         return response.rows
     };
@@ -59,6 +54,12 @@ class FlowerService {
         prices = await prices
 
         return {flowerData: data.rows, flowerPrices: prices.rows}
+    }
+
+    getUniqueFlowerColors = async () => {
+        const colors = await this.model.getUniqueFlowerColors()
+        
+        return colors.rows
     }
 }
 

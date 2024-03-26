@@ -3,46 +3,67 @@ import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode"
 import useAlert from '../hooks/useAlert';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import * as Yup from 'yup';
+import FormItem from '../components/FormItem'
 
-import axios from '../api/axios';
 const LOGIN_URL = '/api/users/login';
+
+const userLoginShema = Yup.object().shape({
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters')
+    .matches(/^(?=.*[A-Z])/, 'Must contain at least one uppercase character')
+    //.matches(/^(?=.*[0-9])/, 'Must contain at least one number'),
+  })
 
 const Login = () => {
     const { setAuth, persist, setPersist } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
+    const axiosPrivate = useAxiosPrivate()
     const from = location.state?.from?.pathname || "/";
 
     const errRef = useRef();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [validationErrors, setValidationErrors] = useState('')
     const {setMessage} = useAlert()
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email || !password) {
-            setMessage("Please fill in all the required fields.")
+        let schemaErrors = null
+
+        try {
+            userLoginShema.validateSync({ email, password }, { abortEarly: false })
+        } catch (err) {
+            schemaErrors = {}
+            console.log(err)
+            err.inner.forEach(error => {
+                schemaErrors[error.path] = error.message;
+            });
+        }
+
+        if(schemaErrors) {
+            setValidationErrors(schemaErrors)
             return
         }
         try {
-            const response = await axios.post(LOGIN_URL,
+            const response = await axiosPrivate.post(LOGIN_URL,
                 JSON.stringify({ email, password }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
                 }
             );
-            //console.log(JSON.stringify(response));
-            //console.log("RESPONSE: ", response)
+
             const accessToken = response?.data?.accessToken;
             const userRoles = response?.data?.userRoles
-            //const roles = response?.data?.roles;
+            
             if (accessToken) {
                 const decoded = jwtDecode(accessToken)
-                //console.log(decoded)
                 setAuth({decoded, accessToken, userRoles})
             }
             setEmail('');
@@ -74,12 +95,24 @@ const Login = () => {
 
             <form onSubmit={handleSubmit} className="w-full max-w-md">
             <div className="mb-4">
-                <label>Email:</label>
-                <input className="w-full  bg-gray-300 rounded-md text-lg" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                <FormItem
+                    labelName="Email:"
+                    type="text"
+                    inputName="email"
+                    value={email}
+                    handleChange={(e) => setEmail(e.target.value)}
+                    error={validationErrors.email}
+                />                
             </div>
             <div className="mb-4">
-                <label className="block text-lg mb-1">Password:</label>
-                <input className="w-full bg-gray-300 text-lg mb-1" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+            <FormItem
+                labelName="Password:"
+                type="password"
+                inputName="password"
+                value={password}
+                handleChange={(e) => setPassword(e.target.value)}
+                error={validationErrors.password}
+            />
             </div>
             <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Login</button>
             <div className="persistCheck mt-4">

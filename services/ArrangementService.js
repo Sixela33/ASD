@@ -19,7 +19,7 @@ class ArrangementService {
         return response.rows
     }
 
-    getArrangementData = async (id) => {id
+    getArrangementData = async (id) => {
         let arrangementData = this.model.getArrangementDataByID(id)
         let arrangementFLowerData = this.model.getFlowersByArrangementID(id)
 

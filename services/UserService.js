@@ -25,8 +25,12 @@ class UserService {
     }
 
     getUsers = async () => {
-        const response = await this.model.getUsers()
-        return response.rows
+        let response =  this.model.getUsers()
+        let allRoles = this.model.getAllRoles()
+
+        allRoles = await allRoles
+        response = await response
+        return {users: response.rows, allRoles: allRoles.rows}
     }
 
     registerUser = async (username, email, password) => {
@@ -59,8 +63,8 @@ class UserService {
         if (hasRightPass) {
             delete user.passhash
 
-            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' })
-            const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d'})
+            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+            const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d'})
             await this.model.setRefreshToken(user.userid, refreshToken)
 
             return {accessToken, refreshToken}
@@ -151,7 +155,7 @@ class UserService {
             delete user.passhash
             
             // creates new temporary token
-            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
     
             return {accessToken}
         } catch (error) {

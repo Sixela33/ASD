@@ -81,7 +81,7 @@ describe('Arrangement Routes /api/users/arrangements', () => {
             expect(response.status).to.equal(200)
         })
 
-        it('should return 403 with invalid data', async () => {
+        it('should return 400 with invalid data', async () => {
             const dataToSend = {
                 arrangementid: 2, 
                 flowers: [
@@ -96,11 +96,11 @@ describe('Arrangement Routes /api/users/arrangements', () => {
                 ]
             }
             const response = await request.post('/api/arrangements/creation').set('Authorization', `${adminToken}`).send(dataToSend)
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
 
         })
 
-        it('should return 403 with invalid id', async () => {
+        it('should return 400 with invalid id', async () => {
             const dataToSend = {
                 arrangementid: 2.4, 
                 flowers: [
@@ -115,7 +115,7 @@ describe('Arrangement Routes /api/users/arrangements', () => {
                 ]
             }
             const response = await request.post('/api/arrangements/creation').set('Authorization', `${adminToken}`).send(dataToSend)
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
             
         })
     })
@@ -135,7 +135,7 @@ describe('Arrangement Routes /api/users/arrangements', () => {
                 expect(response.status).to.equal(200)
             })
 
-            it('should return 403 with invalid data', async () => {
+            it('should return 400 with invalid data', async () => {
                 const arrToEdit = 3
                 const newArrangementData = {
                     arrangementType: 1.5,
@@ -145,10 +145,10 @@ describe('Arrangement Routes /api/users/arrangements', () => {
 
                 const response = await request.patch('/api/arrangements/edit/' + arrToEdit).set('Authorization', `${adminToken}`).send(newArrangementData)
                 
-                expect(response.status).to.equal(403)
+                expect(response.status).to.equal(400)
             })
 
-            it('should return 403 with invalid id', async () => {
+            it('should return 400 with invalid id', async () => {
                 const arrToEdit = undefined
                 const newArrangementData = {
                     arrangementType: 1.5,
@@ -158,7 +158,7 @@ describe('Arrangement Routes /api/users/arrangements', () => {
 
                 const response = await request.patch('/api/arrangements/edit/' + arrToEdit).set('Authorization', `${adminToken}`).send(newArrangementData)
                 
-                expect(response.status).to.equal(403)
+                expect(response.status).to.equal(400)
             })
         })
 
@@ -170,11 +170,11 @@ describe('Arrangement Routes /api/users/arrangements', () => {
                 expect(response.status).to.equal(200)
             })
 
-            it('should return 403 with invalid id', async () => {
+            it('should return 400 with invalid id', async () => {
                 const arrToRemove = undefined
                 const response = await request.delete('/api/arrangements/' + arrToRemove).set('Authorization', `${adminToken}`)
                 
-                expect(response.status).to.equal(403)
+                expect(response.status).to.equal(400)
             })
          })
 })

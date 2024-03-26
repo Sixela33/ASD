@@ -7,7 +7,7 @@ const validateArrangement = arrangement => {
     )
     const { error } = arrayArrangements.validate(arrangement)
     if (error) {
-        throw {message: error.details[0]?.message, status: 403}
+        throw {message: error.details[0]?.message, status: 400}
     }
 
     return true
@@ -18,7 +18,7 @@ const validateSingleArrangement = arrangement => {
     
     const { error } = arrangementSchema.validate(arrangement)
     if (error) {
-        throw {message: error.details[0]?.message, status: 403}
+        throw {message: error.details[0]?.message, status: 400}
     }
 
     return true
@@ -29,7 +29,7 @@ const validateFlowersToPopulateArrangement = flowers => {
 
     const { error } = arrayFlowers.validate(flowers)
     if (error) {
-        throw {message: error.details[0]?.message, status: 403}
+        throw {message: error.details[0]?.message, status: 400}
     }
 
     return true

@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import './app.css'
 import Layout from './components/Layout';
 import PersistLogin from './components/PersistLogin';
 import RequireAuth from './components/RequireAuth';
@@ -9,7 +10,6 @@ import Missing from './pages/Missing';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Users from './pages/Admin/Users';
-import User from './pages/Admin/User';
 import Admin from './pages/Admin/Admin';
 import CreateProject from './pages/Projects/CreateProject';
 import ProjectsList from './pages/Projects/ProjectsList';
@@ -22,9 +22,9 @@ import ViewInvoices from './pages/Invoices/ViewInvoices';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
 import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
-import './app.css'
 import ROLES_LIST from '../../config/rolesList';
 import Vendors from './pages/Admin/Vendors';
+import Clients from './pages/Admin/Clients';
 
 function App() {
 
@@ -59,8 +59,8 @@ function App() {
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
               <Route path="admin/" element={<Admin/>}/>
               <Route path="admin/users" element={<Users/>}/>
-              <Route path="admin/users/:userid" element={<User/>}/>
               <Route path="admin/vendors" element={<Vendors/>}/>
+              <Route path="admin/clients" element={<Clients/>}/>
               
               <Route path="project/create/:id?" element={<CreateProject/>}/>      
 

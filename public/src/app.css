@@ -10,6 +10,10 @@
     --link-hover-color: rgb(29 78 216); 
 }
 
+html {
+    background-color: #fcfcfc;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 
 nav {
     background: black;
@@ -19,6 +23,7 @@ nav {
 table {
     width: 100%;
     table-layout: fixed;
+    border-collapse: collapse;
 }
 
 thead {
@@ -160,4 +165,16 @@ input:focus  {
 
 .go-back-button:hover {
     color: var(--link-hover-color);
+}
+
+.error-message {
+    color: red;
+}
+
+.error-field {
+    border: 1px solid red;
+}
+
+.error-field:focus {
+    border: 1px solid red;
 }

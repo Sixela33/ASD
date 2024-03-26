@@ -49,7 +49,7 @@ describe('Flower Routes /api/flowers', () => {
                 .attach('flower', flowerImagesDir).field({'color': "Blue"});
             
             
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -73,10 +73,10 @@ describe('Flower Routes /api/flowers', () => {
             flowerData = flower
         })
 
-        it("should return 403 if no id was provided", async () => {
+        it("should return 400 if no id was provided", async () => {
             const response = await request.get('/api/flowers/single/' + undefined).set('Authorization', `${adminToken}`)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 
@@ -96,7 +96,7 @@ describe('Flower Routes /api/flowers', () => {
 
         })
 
-        it("should return 403 if the id is missing", async () => {
+        it("should return 400 if the id is missing", async () => {
             const editFloweObject = {
                 name: "pepeFlower",
                 color: flowerData.flowercolor,
@@ -105,7 +105,7 @@ describe('Flower Routes /api/flowers', () => {
             
             const response = await request.patch('/api/flowers/edit').set('Authorization', `${adminToken}`).send(editFloweObject)
 
-            expect(response.status).to.equal(403)
+            expect(response.status).to.equal(400)
         })
     })
 

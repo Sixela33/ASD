@@ -2,66 +2,66 @@ import React, { useEffect, useState } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
-import AddVendorPopup from '../../components/Popups/AddVendorPopup'
+import AddClientPopup from '../../components/Popups/AddClientPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
 import GoBackButton from '../../components/GoBackButton'
 
-const FETCH_VENDORS_URL = '/api/vendors'
+const FETCH_CLIENTS_URL = '/api/clients'
 const defaultSortConfig = { key: null, direction: 'asc' }
 
-const headers = {'Vendor ID': 'vendorid', 'Name': 'vendorname', 'Admin': ''}
+const headers = {'Client ID': 'clientid', 'Name': 'clientname', 'Admin': ''}
 
-export default function Vendors() {
+export default function Clients() {
     const axiosPrivate = useAxiosPrivate()
     const { setMessage } = useAlert()
 
-    const [showNewVendorPopup, setShowNewVendorPopup] = useState(false)
-    const [vendorsData, setVendorsData] = useState(null)
+    const [showNewClientPopup, setShowNewClientPopup] = useState(false)
+    const [clientsData, setClientsData] = useState(null)
     const [sortConfig, setSortConfig] = useState(defaultSortConfig);
 
-    const [editVendorData, setEditvendordata] = useState(null)
+    const [editClientData, setEditclientdata] = useState(null)
 
-    const fetchVendors = async () => {
+    const fetchClients = async () => {
         try {
-            const response = await axiosPrivate.get(FETCH_VENDORS_URL)
-            setVendorsData(response.data)
+            const response = await axiosPrivate.get(FETCH_CLIENTS_URL)
+            setClientsData(response.data)
         } catch (error) {
             setMessage(error.response?.data)            
         }
     }
 
     useEffect(() => {
-        fetchVendors()
+        fetchClients()
     }, [])
     
-    const handleEditVendor = (vendor) => {
-        setEditvendordata(vendor)
-        setShowNewVendorPopup(true)
+    const handleEditClient = (client) => {
+        setEditclientdata(client)
+        setShowNewClientPopup(true)
     } 
 
-    const handleCloseVendorPopup = (shouldRefresh) => {
-        setShowNewVendorPopup(false)
-        setEditvendordata(null)
+    const handleCloseClientPopup = (shouldRefresh) => {
+        setShowNewClientPopup(false)
+        setEditclientdata(null)
         if(shouldRefresh === true){
-            fetchVendors()
+            fetchClients()
         }
     }
 
     const buttonOptions = [
-        {text: 'Add new vendor', action: () => setShowNewVendorPopup(true)}, 
+        {text: 'Add new client', action: () => setShowNewClientPopup(true)}, 
     ]
 
     return (
-        vendorsData && <div className='container mx-auto mt-8 p-4 text-center'>
-            <AddVendorPopup
-                showPopup={showNewVendorPopup} 
-                closePopup={handleCloseVendorPopup} 
-                editVendorData={editVendorData}/>
+        clientsData && <div className='container mx-auto mt-8 p-4 text-center'>
+            <AddClientPopup
+                showPopup={showNewClientPopup} 
+                closePopup={handleCloseClientPopup} 
+                editClientData={editClientData}/>
                 
             <div className='grid grid-cols-3 mb-4'>
                 <GoBackButton className='col-span-1'/>
-                <h1 className='col-span-1'>Vendors</h1>
+                <h1 className='col-span-1'>Clients</h1>
             </div>
             <div className='table-container h-[70vh]'>
           
@@ -70,12 +70,12 @@ export default function Vendors() {
                     setSortConfig={setSortConfig}
                     defaultSortConfig={defaultSortConfig}
                     sortConfig={sortConfig}>
-                    {sortData(vendorsData, sortConfig).map((vendor, index) => {
+                    {sortData(clientsData, sortConfig).map((client, index) => {
                         return <tr key={index}>
-                            <td>{vendor.vendorid}</td>
-                            <td>{vendor.vendorname}</td>
+                            <td>{client.clientid}</td>
+                            <td>{client.clientname}</td>
                             <td>
-                                <button onClick={() => handleEditVendor(vendor)} className='go-back-button'>Edit</button>
+                                <button onClick={() => handleEditClient(client)} className='go-back-button'>Edit</button>
                             </td>
                         </tr>
                     })}

@@ -72,6 +72,9 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
                 </div>
                 
             </div>
+              <div className={`option cursor-pointer w-full text-left px-2 py-1 ${null === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption({label: ''})} >
+                  Clear selection
+                </div>
               {options.map((option, index) => (
                 <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1 ${option[label] === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption(option)} >
                   {option[label]}

@@ -16,7 +16,6 @@ const useRefreshToken = () => {
             });
  
        // console.log("RES: ",response)
-       console.log(response.data)
         setAuth(prev => {
            const decoded = jwtDecode(response.data)
 
