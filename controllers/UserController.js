@@ -6,17 +6,6 @@ class UserController {
         this.service = new UserService()
     }
 
-    getUsers = async (req, res, next) => {
-        try {
-            const { userid } = req.params
-            const users = await this.service.getUserById(userid) 
-                
-            res.status(200).json(users)
-        } catch (error) {
-            next(error)
-        }
-    }
-
     getUsersList = async (req, res, next) => {
         try {
             const users = await this.service.getUsers()
@@ -84,10 +73,10 @@ class UserController {
     forgotPassword = async (req, res, next) => {
         try {
             const { email } = req.body
-            const {link, userid} = await this.service.forgotPassword(email)
-            req.logger.warn(`userid:${userid} Has Requested to change his password`)
-
-            res.send(link)
+            req.logger.warn(`email:${email} Passowrd change requested`)
+            const {link} = await this.service.forgotPassword(email)
+            const message = 'An email containing the password recovery link has been sent to your email address. Please check your inbox (and possibly your spam folder) for further instructions on resetting your password.'
+            res.json({link, message})
         } catch (error) {
             next(error)
         }
@@ -95,9 +84,8 @@ class UserController {
 
     passwordRecovery = async (req, res, next) => {
         try {
-            const { id, code } = req.params
-            const { password1 } = req.body
-            await this.service.passwordRecovery(id, code, password1)
+            const { password, code, id } = req.body
+            await this.service.passwordRecovery(id, code, password)
             req.logger.warn(`userid:${id} Has Changed his password`)
             res.status(200).send('Password changed succesfully')
         } catch (error) {

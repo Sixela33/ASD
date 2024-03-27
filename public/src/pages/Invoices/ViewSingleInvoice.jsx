@@ -7,6 +7,7 @@ import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import { FiEdit, FiDownload } from 'react-icons/fi';
+import { permissionsRequired } from '../../utls/permissions';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
 
@@ -62,12 +63,14 @@ export default function ViewSingleInvoice() {
         {
             text: 'Download Invoice', 
             action: downloadFile,
-            icon: <FiDownload/>
+            icon: <FiDownload/>,
+            minPermissionLevel: permissionsRequired['download_invoice'],
         }, 
         {
             text: 'Edit invoice', 
             action: () => navigateTo('/invoice/add/' + id),
-            icon: <FiEdit/>
+            icon: <FiEdit/>,
+            minPermissionLevel: permissionsRequired['edit_invoice']
         }
     ]
 

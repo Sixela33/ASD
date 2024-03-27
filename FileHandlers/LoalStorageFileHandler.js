@@ -20,14 +20,14 @@ class LocalStorageFileHandler {
     }
 
 
-handleNewFile = async (file, allowedExtensions) => {
+handleNewFile = async (file, allowedExtensions, finalFolder) => {
     const fileExtension = path.extname(file?.originalname).toLowerCase().substring(1);
 
     if (!allowedExtensions.includes(fileExtension)) {
         throw { message: "Invalid image file extension", status: 400 };
     }
 
-    let folder = path.join(this.basePath + new Date().toISOString().split('T')[0]);
+    let folder = path.join(this.basePath, finalFolder,  new Date().toISOString().split('T')[0]);
 
     if (!fs.existsSync(folder)) {
         fs.mkdirSync(folder, { recursive: true });
@@ -48,8 +48,8 @@ handleNewFile = async (file, allowedExtensions) => {
     return folder
 }
 
-handleReplaceFile = async (file, allowedExtensions, filepath) => {
-    const newFile = this.handleNewFile(file, allowedExtensions)
+handleReplaceFile = async (file, allowedExtensions, filepath, finalFolder) => {
+    const newFile = this.handleNewFile(file, allowedExtensions, finalFolder)
 
     //removes old file
     if (newFile && filepath) {

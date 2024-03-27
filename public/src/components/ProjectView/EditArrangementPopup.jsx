@@ -4,8 +4,8 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import SearchableDropdown from '../Dropdowns/SearchableDropdown'
 import useAlert from '../../hooks/useAlert'
 import * as Yup from 'yup';
-import FormError from '../FormError'
-import FormItem from '../FormItem'
+import FormError from '../Form/FormError'
+import FormItem from '../Form/FormItem'
 
 const baseArrangementData = { 
   arrangementType: '', 

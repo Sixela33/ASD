@@ -16,7 +16,6 @@ class UserRouter {
         const staffPermission = new PermissionsMiddelware(ROLES_LIST['Staff']).call
         const adminPermission = new PermissionsMiddelware(ROLES_LIST['Admin']).call
 
-        this.router.get('/search/:userid?', staffPermission, this.controller.getUsers) //
         this.router.get('/all', staffPermission, this.controller.getUsersList) //
         this.router.post('/register', adminPermission, this.controller.registerUser) //
         this.router.post('/login', this.controller.loginUser) // 
@@ -27,7 +26,7 @@ class UserRouter {
         this.router.post('/forgotPassword', this.controller.forgotPassword)
         
         // user makes request with a code generated at "/forgotPassword" that allows him to change his password.
-        this.router.post('/passwordRecovery/:id/:code', this.controller.passwordRecovery)
+        this.router.post('/passwordRecovery', this.controller.passwordRecovery)
         
         return this.router
     }

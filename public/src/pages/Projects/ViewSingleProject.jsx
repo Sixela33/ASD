@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { aggregateFlowerData } from '../../utls/aggregateFlowerDataArrangements';
+import { aggregateFlowerData } from '../../utls/flowerAggregation/aggregateFlowerDataArrangements';
 import { BASE_TD_STYLE } from '../../styles';
 import { useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
@@ -13,6 +13,8 @@ import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenu
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
 import { FiEdit } from "react-icons/fi";
+import useAuth from '../../hooks/useAuth';
+import { permissionsRequired } from '../../utls/permissions';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -25,6 +27,8 @@ export default function ViewProject() {
     const navigateTo = useNavigate();
     const axiosPrivate = useAxiosPrivate();
     const {setMessage} = useAlert()
+    const {auth} = useAuth()
+    const userData = auth.decoded
 
     const [arrangementData, setArrangementData] = useState([]);
     const [flowerData, setFlowerData] = useState([]);
@@ -156,9 +160,16 @@ export default function ViewProject() {
     }
 
     const handleArrangementEdit = (e, arrData) => {
+        if(!(userData.permissionlevel >= permissionsRequired['edit_arrangement'])) return
         e.stopPropagation()
         setEditArrangementPopupData(arrData)
         setShowArrangementEditPopup(true)
+    }
+
+    const handleCLickReemoveArrangement = (e) =>  {
+        if(!(userData.permissionlevel >= permissionsRequired['remove_arrangement'])) return
+        e.stopPropagation() 
+        setDeletePopupData({show: true, deleteID:item.arrangementid})
     }
 
     const handleCreateArrangement = () => {
@@ -213,8 +224,6 @@ export default function ViewProject() {
     }
 
     const submitChangeStemInArrangements = async (newFlower) => {
-        console.log("newFlower", newFlower)
-        console.log("changeFlowerID", changeFlowerID)
         try {
             await axiosPrivate.post(CHANGE_FLOWER_IN_PROJECT_URL + id, JSON.stringify({previousflowerid:changeFlowerID, newflowerid:newFlower.flowerid}))
             setMessage('Flower Changed successfully.')
@@ -227,15 +236,17 @@ export default function ViewProject() {
     }
 
     const buttonOptions = [
-        {   
+        {
             text: 'Add New Arrangement', 
             action: handleCreateArrangement,
-            icon: '+'
-        }, 
+            icon: '+',
+            minPermissionLevel:permissionsRequired['add_arrangement']
+        },
         {
             text: 'Edit project Data', 
             action: () =>{setShowEditProjectPopup(true)},
-            icon: <FiEdit/>
+            icon: <FiEdit/>,
+            minPermissionLevel:permissionsRequired['edit_project_data']
         }
     ]
 
@@ -301,7 +312,7 @@ export default function ViewProject() {
                             </td>
                             <td className={BASE_TD_STYLE}>
                                 <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) =>  {e.stopPropagation(); setDeletePopupData({show: true, deleteID:item.arrangementid})}}>remove</button>
+                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={handleCLickReemoveArrangement}>remove</button>
                             </td>
                         </tr>
                     ))}

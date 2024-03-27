@@ -6,6 +6,7 @@ import { validateFlower } from "./Validations/FlowerValidations.js";
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
+const FLOWER_IMAGE_PATH = 'flowerImages'
 
 class FlowerService {
     constructor(fileStorage) {
@@ -18,7 +19,7 @@ class FlowerService {
         await validateFlower({name, color})
         let savePath = ''
         if (image) {
-            savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS)
+            savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
         }
 
         await this.model.addFlower(savePath, name, color)
@@ -30,7 +31,7 @@ class FlowerService {
         let filepath = prevFlowerPath
 
         if (image) {
-            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath)
+            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath, FLOWER_IMAGE_PATH)
         }
 
         await this.model.editFlower(name, color, id, filepath)
@@ -54,6 +55,11 @@ class FlowerService {
         prices = await prices
 
         return {flowerData: data.rows, flowerPrices: prices.rows}
+    }
+
+    getIncompleteFlowers = async () => {
+        const response = await this.model.getIncompleteFlowers()
+        return response.rows
     }
 
     getUniqueFlowerColors = async () => {

@@ -7,7 +7,7 @@ import { validateId, validateIdArray, validateQueryStringLength } from "./Valida
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
 
-
+const INVOICE_FILES_PATH = 'InvoiceFiles'
 
 class InvoiceService {
 

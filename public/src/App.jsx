@@ -5,26 +5,32 @@ import PersistLogin from './components/PersistLogin';
 import RequireAuth from './components/RequireAuth';
 import Navbar from './components/NavBar';
 import Alert from './components/Alert';
+import ROLES_LIST from '../../config/rolesList';
 
 import Missing from './pages/Missing';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import Users from './pages/Admin/Users';
+
 import Admin from './pages/Admin/Admin';
+import Users from './pages/Admin/Users';
+import Vendors from './pages/Admin/Vendors';
+import Clients from './pages/Admin/Clients';
+
 import CreateProject from './pages/Projects/CreateProject';
 import ProjectsList from './pages/Projects/ProjectsList';
-import ViewProject from './pages/Projects/ViewProject';
+import ViewProject from './pages/Projects/ViewSingleProject';
 
 import LoadFlower from './pages/Flowers/LoadFlower';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
+import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
+
 import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
-import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
-import ROLES_LIST from '../../config/rolesList';
-import Vendors from './pages/Admin/Vendors';
-import Clients from './pages/Admin/Clients';
+
+import InputEmail from './pages/PasswordRecovery/InputEmail';
+import SetNewPass from './pages/PasswordRecovery/SetNewPass';
 
 function App() {
 
@@ -35,6 +41,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
+          <Route path="forgotPass" element={<InputEmail/>} />
+          <Route path="setNewPass/:id/:code" element={<SetNewPass/>} />
           
           {/* protected routes */}
           <Route element={<PersistLogin />}>
@@ -68,7 +76,6 @@ function App() {
 
           </Route>
           
-
           {/* catch all */}
           <Route path="*" element={<Missing />} />
         </Route>

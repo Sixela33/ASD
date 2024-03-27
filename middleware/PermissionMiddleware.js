@@ -28,9 +28,6 @@ class PermissionsMiddelware {
             
             const hasPermission = userPermissionLevel >= this.permissionsRequired
 
-            // console.log("Caller permissions", userPermissionLevel)
-            // console.log("Permissions required", this.permissionsRequired)
-            // console.log('has all roles', hasPermission)
                         
             if (!hasPermission) {
                 return res.status(401).json({ message: 'Insufficient permissions' });

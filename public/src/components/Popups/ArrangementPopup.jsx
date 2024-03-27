@@ -1,8 +1,8 @@
 import React from 'react';
 import SearchableDropdown from '../Dropdowns/SearchableDropdown';
 import PopupBase from '../PopupBase';
-import FormItem from '../FormItem';
-import FormError from '../FormError';
+import FormItem from '../Form/FormItem';
+import FormError from '../Form/FormError';
 
 const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInputChange, arrangementTypes, newArrangementErrors }) => {
   return (

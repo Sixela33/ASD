@@ -3,8 +3,8 @@ import ConfirmationPopup from '../Popups/ConfirmationPopup'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import SearchableDropdown from '../Dropdowns/SearchableDropdown'
 import useAlert from '../../hooks/useAlert'
-import FormItem from '../FormItem'
-import FormError from '../FormError'
+import FormItem from '../Form/FormItem'
+import FormError from '../Form/FormError'
 import * as Yup from 'yup';
 import PopupBase from '../PopupBase'
 

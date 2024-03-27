@@ -7,8 +7,8 @@ import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import GoBackButton from '../../components/GoBackButton';
 import AddClientPopup from '../../components/Popups/AddClientPopup';
 import * as Yup from 'yup';
-import FormItem from '../../components/FormItem';
-import FormError from '../../components/FormError';
+import FormItem from '../../components/Form/FormItem';
+import FormError from '../../components/Form/FormError';
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
 const GET_CLIENTS_LIST = '/api/clients'

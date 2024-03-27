@@ -20,7 +20,11 @@ class UserService {
         response = await response
         allRoles = await allRoles
 
-        return {user: response.rows, allRoles: allRoles.rows}
+        response = response.rows.map(user => {
+            delete user.passhash
+            return user
+        })
+        return {user: response, allRoles: allRoles.rows}
         //return {user: response.rows}
     }
 
@@ -79,12 +83,13 @@ class UserService {
         let user = await this.model.getUserByEmail(email)
 
         if (user.rows?.length == 0) {
-            throw { message: "This email does not have an account linked", status: 401 };
+            throw { message: "No account found with the provided email address. Please ensure you have entered the correct email address", status: 401 };
         }
+
         user = user.rows[0]
 
         const secret = process.env.CLAVE_SECRETA + user.passhash
-
+        console.log("SECRETO" , secret)
         const payload = {
             id: user.userid,
             email: user.email
@@ -92,14 +97,15 @@ class UserService {
         
         const token = Jwt.sign(payload, secret, {expiresIn: '30m'})
         const link = `${process.env.HOST}:${process.env.FRONTENDPORT}/setNewPass/${user.userid}/${token}`
-        return {link, userid: user.userid}
+        return {link}
 
     }
 
     passwordRecovery = async (id, code, newPassword) => {
         await validateId(id)
-
-        let user = await this.model.getUserByID(id)
+        await validatePassword(newPassword)
+        
+        let user = await this.model.getUserById(id)
 
         if (user.rows?.length == 0) {
             throw { message: "This user does not exist", status: 401 };
@@ -107,9 +113,10 @@ class UserService {
         user = user.rows[0]
 
         const secret = process.env.CLAVE_SECRETA + user.passhash
+
         try {
             const payload = Jwt.verify(code, secret)
-
+            
             const salt = await bcrypt.genSalt(12)
             const newPassHash = await bcrypt.hash(newPassword, salt)
             await this.model.changePassword(id, newPassHash)

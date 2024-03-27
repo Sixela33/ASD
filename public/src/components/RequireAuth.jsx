@@ -8,12 +8,10 @@ const RequireAuth = ({ allowedRoles }) => {
     const {setMessage} = useAlert()
     
     const thing = () => {
-        setMessage('Unauthorised')
+        setMessage('You need more permissions to perform this action', true)
         return <Navigate to="/" state={{ from: location }} replace />
     } 
 
-    //console.log("auth", auth)
-    // console.log("allowedRoles", allowedRoles)
     return (
         auth?.decoded?.permissionlevel >= allowedRoles
             ? <Outlet />

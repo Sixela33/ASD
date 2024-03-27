@@ -49,7 +49,11 @@ export default function Vendors() {
     }
 
     const buttonOptions = [
-        {text: 'Add new vendor', action: () => setShowNewVendorPopup(true)}, 
+        {
+            text: 'Add new vendor', 
+            action: () => setShowNewVendorPopup(true),
+            minPermissionLevel: 999
+        }, 
     ]
 
     return (

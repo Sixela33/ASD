@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import PopupBase from '../PopupBase';
-import FormError from '../FormError';
+import FormError from '../Form/FormError';
 
 const REGISTER_URL = '/api/users/register';
 

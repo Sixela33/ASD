@@ -50,22 +50,6 @@ describe('User Routes /api/users', () => {
         })
     }) 
 
-    describe('GET /search/:userid', () => {
-        it('should return user by id', async () => {
-            let userIdToSearch = 1
-            const response = await request.get('/api/users/search/' + userIdToSearch).set('Authorization', `${adminToken}`)
-
-            expect(response.status).to.equal(200)
-        })
-
-        it('should fail if not authenticated', async () => {
-            let userIdToSearch = 1
-            const response = await request.get('/api/users/search/' + userIdToSearch)
-
-            expect(response.status).to.equal(403)
-        })
-    })
-
     describe('GET /all', () => {
         it('should return list of all users', async () => {
             const response = await request.get('/api/users/all').set('Authorization', `${adminToken}`)

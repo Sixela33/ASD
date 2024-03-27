@@ -181,7 +181,7 @@ export default function ViewInvoices() {
                     <div className='flex items-center space-x-1'>
                         <span className='ml-4'>Filter by vendor: </span>
                         <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
-                            <option value={''} selected>Select Vendor</option>
+                            <option value={''}>Select Vendor</option>
                             {allVendors.map((item, index) => {
                                 return <option value={item.vendorid} key={index}>{item.vendorname}</option>
                             })}

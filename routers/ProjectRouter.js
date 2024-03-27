@@ -1,5 +1,7 @@
 import express from 'express'
 import ProjectController from '../controllers/ProjectController.js'
+import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
+import ROLES_LIST from '../config/rolesList.js'
 
 class ProjectRouter {
 
@@ -9,8 +11,9 @@ class ProjectRouter {
     }
 
     start(){
-   
-        this.router.post('/create', this.controller.createProject)
+        const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
+
+        this.router.post('/create', staffuserReq, this.controller.createProject)
 
         // Wrongly posts, should be gets
         this.router.post('/manyByID', this.controller.getManyProjectsByID)
@@ -22,11 +25,11 @@ class ProjectRouter {
         this.router.get('/arrangements/:id', this.controller.getProjectArrangements)
 
         // open/close projects
-        this.router.post('/close/:id', this.controller.closeProject)
-        this.router.post('/open/:id', this.controller.openProject)
+        this.router.post('/close/:id', staffuserReq, this.controller.closeProject)
+        this.router.post('/open/:id', staffuserReq,this.controller.openProject)
 
-        this.router.post('/addArrangement/:id', this.controller.addArrangementToProject)
-        this.router.patch('/:id', this.controller.editProjectData)
+        this.router.post('/addArrangement/:id', staffuserReq, this.controller.addArrangementToProject)
+        this.router.patch('/:id', staffuserReq, this.controller.editProjectData)
         this.router.post('/editflower/:id', this.controller.changeFlowerInProject)
         return this.router
     }

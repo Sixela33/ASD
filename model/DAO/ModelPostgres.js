@@ -43,7 +43,8 @@ class ModelPostgres {
             ur.roleCode as permissionlevel, 
             ur.roleName,
             u.userid, 
-            u.username 
+            u.username,
+            u.passhash
         FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
         WHERE u.userid = $1;`, [userID])        
     }
@@ -434,6 +435,25 @@ class ModelPostgres {
     getFlowerData = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query("SELECT flowerid, flowername, flowerimage, flowercolor FROM flowers WHERE flowerID = $1;", [id])
+    }
+
+    getIncompleteFlowers = async () => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+        SELECT 
+            flowerid, 
+            flowername, 
+            flowerimage, 
+            flowercolor 
+        FROM flowers 
+        WHERE 
+            flowerID IS NULL 
+            OR 
+            flowername IS NULL 
+            OR 
+            flowerimage IS NULL
+            OR
+            flowercolor IS NULL;`)
     }
 
     getFlowerPrices = async (id) => {

@@ -49,7 +49,11 @@ export default function Clients() {
     }
 
     const buttonOptions = [
-        {text: 'Add new client', action: () => setShowNewClientPopup(true)}, 
+        {
+            text: 'Add new client', 
+            action: () => setShowNewClientPopup(true), 
+            minPermissionLevel: 999
+        }, 
     ]
 
     return (

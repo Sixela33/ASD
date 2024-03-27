@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode"
 import useAlert from '../hooks/useAlert';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import * as Yup from 'yup';
-import FormItem from '../components/FormItem'
+import FormItem from '../components/Form/FormItem'
 
 const LOGIN_URL = '/api/users/login';
 
@@ -94,33 +94,19 @@ const Login = () => {
             <h1 className='mb-8'>Log In</h1>
 
             <form onSubmit={handleSubmit} className="w-full max-w-md">
-            <div className="mb-4">
-                <FormItem
-                    labelName="Email:"
-                    type="text"
-                    inputName="email"
-                    value={email}
-                    handleChange={(e) => setEmail(e.target.value)}
-                    error={validationErrors.email}
-                />                
-            </div>
-            <div className="mb-4">
-            <FormItem
-                labelName="Password:"
-                type="password"
-                inputName="password"
-                value={password}
-                handleChange={(e) => setPassword(e.target.value)}
-                error={validationErrors.password}
-            />
-            </div>
-            <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Login</button>
-            <div className="persistCheck mt-4">
-                <input type="checkbox" id="persist" onChange={togglePersist} checked={persist}/>
-                <label htmlFor="persist">Trust This Device</label>
-            </div>
+                <div className="mb-4">
+                    <FormItem labelName="Email:" type="text" inputName="email" value={email} handleChange={(e) => setEmail(e.target.value)} error={validationErrors.email} />                
+                </div>
+                <div className="mb-4">
+                    <FormItem labelName="Password:" type="password" inputName="password" value={password} handleChange={(e) => setPassword(e.target.value)} error={validationErrors.password} />
+                </div>
+                <button className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:border-none" type="submit">Login</button>
+                <div className="persistCheck mt-4">
+                    <input type="checkbox" id="persist" onChange={togglePersist} checked={persist}/>
+                    <label htmlFor="persist">Trust This Device</label>
+                </div>
             </form>
-            <Link to="/changePass" className='go-back-button mt-4' >Forgot your Password?</Link>
+            <Link to="/forgotPass" className='go-back-button mt-4' >Forgot your Password?</Link>
       </section>
 
     )
