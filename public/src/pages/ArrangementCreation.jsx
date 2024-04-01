@@ -159,7 +159,7 @@ export default function ArrangementCreation() {
                                 </table>
                             </div>
                             <p className="mt-4">Flower Budget: ${parseFloat(arrangementData.clientcost * (1 - arrangementData.profitmargin)).toFixed(2)}</p>
-                            <p className="mt-4">Spent Budget: ${sum}</p>
+                            <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) && 'text-red-500'}>${sum}</span></p>
                             <button className='buton-main' onClick={submitArrangement}>Save</button>
                         </div>
 

@@ -16,7 +16,7 @@ describe('Flower Routes /api/flowers', () => {
 
         const adminCredentials = {
             email: 'aj@gmail.com',
-            password: 'QWERQWER',
+            password: 'QWERQWER1',
         }
 
         const loginResponse = await request.post('/api/users/login').send(adminCredentials)

@@ -163,6 +163,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         <p>Total client cost: ${parseFloat(newArrangementData.clientCost * newArrangementData.arrangementQuantity).toFixed(2)}</p>
         <p>Individual flower budget: ${parseFloat(newArrangementData.clientCost * (1 - projectData.profitmargin)).toFixed(2)}</p>
         <p>Total flower budget: ${parseFloat((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin)).toFixed(2)}</p>
+        <p>Total profit: ${parseFloat(newArrangementData.clientCost * newArrangementData.arrangementQuantity).toFixed(2) - parseFloat((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin)).toFixed(2)}</p>
       </div>
       
       <div className='buttons-holder'>

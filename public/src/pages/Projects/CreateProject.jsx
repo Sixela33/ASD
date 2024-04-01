@@ -213,8 +213,8 @@ export default function CreateProject() {
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
             <AddClientPopup
-            showPopup={showNewClientPopup}
-            closePopup={handleCloseNewClientPopup}
+                showPopup={showNewClientPopup}
+                closePopup={handleCloseNewClientPopup}
             />
             <div className="grid grid-cols-3 mb-2">
                 <GoBackButton className='col-span-1'/>

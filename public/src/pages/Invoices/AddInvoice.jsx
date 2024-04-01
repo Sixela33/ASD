@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import InvoiceDataForm from '../../components/InvoiceCreation/InvoiceDataForm';
 import InvoiceProjectSelector from '../../components/InvoiceCreation/InvoiceProjectSelector';
 import InvoiceFlowerAssignment from '../../components/InvoiceCreation/InvoiceFlowerAssignment';
-import { validateInvoice } from '../../utls/validations/InvoiceDataValidations';
 import GoBackButton from '../../components/GoBackButton';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { BASE_URL } from '../../api/axios';
@@ -16,7 +15,8 @@ const emptyInvoiceObject = {
   invoiceNumber: '',
   vendor: '',
   dueDate: new Date().toISOString().substring(0, 10),
-  invoiceAmount: ''
+  invoiceAmount: '',
+  invoiceTax: 0
 };
 
 const invoiceDataSchema = Yup.object().shape({
@@ -25,7 +25,8 @@ const invoiceDataSchema = Yup.object().shape({
   dueDate: Yup.date().required('The date is required'),
   invoiceAmount: Yup.number().required('The ammount is required').typeError('The ammount is required'),
   invoiceid: Yup.number().optional(),
-  fileLocation: Yup.string().optional()
+  fileLocation: Yup.string().optional(),
+  invoiceTax: Yup.number('The tax field is required (put 0 if 0)').typeError('The tax field is required (put 0 if 0)')
 })
 
 const FETCH_INVOICE_DATA_URL = '/api/invoices/invoiceData/'
@@ -204,8 +205,9 @@ export default function AddInvoice() {
               <div className="flex flex-row">
                 {DisplayPdfFile ? (
                   <embed src={DisplayPdfFile} type="application/pdf" width="100%" height="500vh" />
-                ): prevInvoiceFile && <embed src={`${BASE_URL}/api/${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/>}
+                ): prevInvoiceFile && <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/>}
               </div>
+              {console.log(prevInvoiceFile)}
             </div>
           </div>
 

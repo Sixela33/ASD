@@ -25,13 +25,16 @@ class FlowerService {
         await this.model.addFlower(savePath, name, color)
     };
 
-    editFlower = async (image, name, color, prevFlowerPath, id ) => {
+    editFlower = async (image, name, color, id ) => {
         await validateFlower({name, color})
         await validateId(id)
-        let filepath = prevFlowerPath
+        let flowerData = await this.model.getFlowerData(id)
+        flowerData = flowerData.rows[0]
+
+        let filepath = flowerData.flowerimage
 
         if (image) {
-            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, prevFlowerPath, FLOWER_IMAGE_PATH)
+            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, flowerData.flowerimage, FLOWER_IMAGE_PATH)
         }
 
         await this.model.editFlower(name, color, id, filepath)
@@ -41,9 +44,13 @@ class FlowerService {
         await validateId(offset)
 
         const response = await this.model.getFlowersQuery(offset, query, filterByColor)
+        let flowers = response.rows
 
-        return response.rows
-    };
+        for (let flower of flowers) {
+            flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage)
+          }
+        return flowers
+    }
 
     getFlowerData = async (id) => {
         await validateId(id)
@@ -54,12 +61,23 @@ class FlowerService {
         data = await data
         prices = await prices
 
-        return {flowerData: data.rows, flowerPrices: prices.rows}
+        data = data.rows
+
+        for (let flower of data) {
+            flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage)
+          }
+
+        return {flowerData: data, flowerPrices: prices.rows}
     }
 
     getIncompleteFlowers = async () => {
-        const response = await this.model.getIncompleteFlowers()
-        return response.rows
+        let response = await this.model.getIncompleteFlowers()
+        response = response.rows
+        for (let flower of response) {
+            flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage)
+          }
+
+        return response
     }
 
     getUniqueFlowerColors = async () => {

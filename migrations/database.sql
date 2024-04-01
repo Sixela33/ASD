@@ -49,6 +49,11 @@ CREATE TABLE IF NOT EXISTS arrangementTypes (
     typeName VARCHAR(100) UNIQUE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS flowerColors (
+    colorID SERIAL PRIMARY KEY,
+    colorName VARCHAR(50) UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(50) NOT NULL,
@@ -56,6 +61,11 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerColor VARCHAR(50),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS colorsXFlower (
+    flowerID INT REFERENCES flowers(flowerID),
+    colorID INT REFERENCES flowerColors(colorID)
 );
 
 CREATE INDEX IF NOT EXISTS idx_flowername ON flowers (flowername);
@@ -85,6 +95,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     invoiceID SERIAL PRIMARY KEY,
     invoiceNumber INT NOT NULL,
     invoiceAmount FLOAT NOT NULL,
+    invoiceTax FLOAT DEFAULT 0,
     fileLocation VARCHAR(255) NOT NULL,
     uploaderID INT REFERENCES users(userID),
     vendorID INT REFERENCES flowervendor(vendorID),

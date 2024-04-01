@@ -3,11 +3,21 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import {validateEmail, validatePassword, validateUsername, validateFullUser} from './Validations/userValidations.js'
 import { validateId } from "./Validations/IdValidation.js";
+import nodemailer from 'nodemailer'
+
 class UserService {
 
     constructor() {
         this.model = new ModelPostgres()
-    
+        this.transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT,
+            secure: process.env.EMAIL_PORT == 465 ? true : false, // Use `true` for port 465, `false` for all other ports
+            auth: {
+              user: process.env.EMAIL_EMAIL,
+              pass: process.env.EMAIL_PASSWORD
+            },
+          });
     }
 
     getUserById = async (userid) => {
@@ -67,7 +77,7 @@ class UserService {
         if (hasRightPass) {
             delete user.passhash
 
-            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' })
             const refreshToken = await Jwt.sign({"userid": user.userid}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d'})
             await this.model.setRefreshToken(user.userid, refreshToken)
 
@@ -76,6 +86,25 @@ class UserService {
             throw { message: "Invalid login data", status: 401 };
         }
         
+    }
+
+    sendRecoveryEmail = async (to, link, username) => {
+        
+          const info = await this.transporter.sendMail({
+            from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
+            to: to, // list of receivers
+            subject: "Password Recovery", // Subject line
+            html: `
+            <div style='max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;'>
+            <h2 style='text-align: center'>Password Recovery - ASD</h2>
+            <p>Dear ${username},</p>
+            <p>You recently requested to reset your password for accessing our internal accounting site at ASD. To complete the password reset process, please click the button below:</p>
+            <a href="${link}" style="font-weight: 700; padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 1rem; padding-right: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem; border-radius: 0.25rem; background-color: black; color: white; text-decoration: none;">Reset Password</a>
+            <p>If you did not request this password reset, please disregard this email. Your account security is important to us, and no action is required.</p>
+            <p>Thank you,<br>ASD Team</p>
+            </div>
+           `
+          });
     }
 
     forgotPassword = async (email) => {
@@ -87,9 +116,7 @@ class UserService {
         }
 
         user = user.rows[0]
-
         const secret = process.env.CLAVE_SECRETA + user.passhash
-        console.log("SECRETO" , secret)
         const payload = {
             id: user.userid,
             email: user.email
@@ -97,9 +124,12 @@ class UserService {
         
         const token = Jwt.sign(payload, secret, {expiresIn: '30m'})
         const link = `${process.env.HOST}:${process.env.FRONTENDPORT}/setNewPass/${user.userid}/${token}`
+        await this.sendRecoveryEmail('gunnar.muller19@ethereal.email', link, user.username)
         return {link}
 
     }
+
+   
 
     passwordRecovery = async (id, code, newPassword) => {
         await validateId(id)
@@ -144,7 +174,7 @@ class UserService {
         let user = await this.model.getUserByRefreshToken(refreshToken)
 
         if (user.rows?.length == 0) {
-            throw {message: "Invalid token" ,status: 403}
+            throw {message: "Invalid token refresh" ,status: 403}
         }
         user = user.rows[0]
 

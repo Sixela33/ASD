@@ -12,7 +12,7 @@ import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
-import { FiEdit } from "react-icons/fi";
+import { FiDownload, FiEdit } from "react-icons/fi";
 import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
 
@@ -235,6 +235,22 @@ export default function ViewProject() {
         }
     }
 
+    const downloadFlowerList = () => {
+        let text = ''
+        showFlowerData.forEach(item => {
+            text += `${item.flowername} ${item.flowercolor} x ${item.totalstems}`
+            text += '\n'
+        })
+
+        let blob = new Blob([text], {type: 'text/plain'})
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.download = "flower_order.txt"
+        link.href = url
+        link.click();
+
+    }
+
     const buttonOptions = [
         {
             text: 'Add New Arrangement', 
@@ -247,8 +263,16 @@ export default function ViewProject() {
             action: () =>{setShowEditProjectPopup(true)},
             icon: <FiEdit/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
+        },
+        {
+            text: 'Download ppt slides', 
+            action: () => {},
+            icon: <FiDownload/>,
+            minPermissionLevel:permissionsRequired['edit_project_data']
         }
     ]
+
+    
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
@@ -338,13 +362,13 @@ export default function ViewProject() {
 
                     <div className='flex mt-5'>
                         <div className='flex-row'>
-                            <button className='buton-secondary mx-3' >Generate pptslides</button>
+                            <button className='buton-secondary mx-3' onClick={downloadFlowerList} >Download Flower Order</button>
                             <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
                         </div>
                         <div className='flex-row text-left ml-5'>
                             <p>Estimated Flower cost: ${parseFloat(estimatedFlowerCost).toFixed(2)}</p>
                             <p>Flower budget: ${parseFloat(totalBudget).toFixed(2)}</p>
-                            <p className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>Diference: ${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</p>
+                            <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</span></p>
                         </div>
                     </div>
                 </div>

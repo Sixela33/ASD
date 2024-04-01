@@ -658,6 +658,11 @@ class ModelPostgres {
         await CnxPostgress.db.query('CALL editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
     }
 
+    getInvoiceFileLocation = async (invoiceid) =>{
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query('SELECT fileLocation FROM invoices WHERE invoiceID = $1;', [invoiceid])
+    }
+
     getInvoiceData = async (id) => {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`

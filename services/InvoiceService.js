@@ -40,15 +40,20 @@ class InvoiceService {
         return response
     }
 
-    addIncompleteInvoice= async (invoiceData, file, updaterID) => {
+    addIncompleteInvoice = async (invoiceData, file, updaterID) => {
         invoiceData = JSON.parse(invoiceData)
 
         await validateInvoice(invoiceData)
 
-        let newFileLoc = invoiceData.fileLocation
-        
+        let newFileLoc = await this.model.getInvoiceFileLocation(invoiceData.invoiceid)
+        newFileLoc = newFileLoc.rows
+
+        if(newFileLoc[0]){
+            newFileLoc = newFileLoc[0].filelocation
+        }
+
         if (file) {
-            newFileLoc = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            newFileLoc = await this.fileHandler.handleReplaceFile(file, ALLOWED_IMAGE_EXTENSIONS, newFileLoc, INVOICE_FILES_PATH)
         } 
         
         if(!newFileLoc) {
@@ -75,10 +80,15 @@ class InvoiceService {
         await validateFlowers(invoiceFlowerData)
         await validateId(invoiceData.invoiceid)
 
-        let newFileLoc = invoiceData.fileLocation
-        
+        let newFileLoc = await this.model.getInvoiceFileLocation(invoiceData.invoiceid)
+        newFileLoc = newFileLoc.rows
+
+        if(newFileLoc[0]){
+            newFileLoc = newFileLoc[0].filelocation
+        }
+
         if (file) {
-            newFileLoc = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            newFileLoc = await this.fileHandler.handleReplaceFile(file, ALLOWED_IMAGE_EXTENSIONS, newFileLoc, INVOICE_FILES_PATH)
         } 
 
         if(!newFileLoc) throw {}
@@ -105,6 +115,10 @@ class InvoiceService {
         invoiceData = await invoiceData
         invoiceData = invoiceData.rows
 
+        for (let invoice of invoiceData) {
+            invoice.filelocation = await this.fileHandler.processFileLocation(invoice.filelocation)
+          }
+
         projects = await projects
         projects = projects.rows
 
@@ -126,6 +140,10 @@ class InvoiceService {
         
         invoiceData = await invoiceData
         invoiceData = invoiceData.rows
+
+        for (let invoice of invoiceData) {
+            invoice.filelocation = await this.fileHandler.processFileLocation(invoice.filelocation)
+          }
 
         projects = await projects
         projects = projects.rows

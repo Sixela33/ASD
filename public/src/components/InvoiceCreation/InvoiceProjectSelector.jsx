@@ -11,6 +11,7 @@ const defaultSortCOnfig = { key: "projectid", direction: 'asc' }
 export default function InvoiceProjectSelector({ goBack, selectedProjects, setSelectedProjects, goNext}) {
     const [projectsInfo, setProjectsInfo] = useState([]);
     const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
+    const [showOpenOnly, setShowOpenOnly] = useState(true)
 
     const page = useRef(0)
     const dataLeft = useRef(true)    
@@ -20,12 +21,12 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
     const { setMessage } = useAlert();
     const axiosPrivate = useAxiosPrivate()
 
-    const fetchData = (sortConfigg) => {
+    const fetchData = (sortConfigg, showOpenOnly) => {
         if (!dataLeft.current) {
             return;
         }
     
-        axiosPrivate.get(GET_PROJECTS_URL + page.current + '?showOpenOnly=true' + '&orderBy='+ sortConfigg.key + '&order=' + sortConfigg.direction)
+        axiosPrivate.get(GET_PROJECTS_URL + page.current + '?showOpenOnly='+ showOpenOnly + '&orderBy='+ sortConfigg.key + '&order=' + sortConfigg.direction)
             .then(response => {
                 page.current = page.current + 1;
 
@@ -43,7 +44,6 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
     };
 
     const debounced = useCallback(debounce(fetchData, 100), []);
-    const initualDebounced = useCallback(debounce(fetchData, 100), []);
 
     const handleRowClick = (item) => {
         setSelectedProjects((prevSelectedProjects) => {
@@ -59,15 +59,15 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
         setProjectsInfo([])
         page.current = 0;
         dataLeft.current=true
-        debounced(sortConfig)
+        debounced(sortConfig, showOpenOnly)
     }, [sortConfig])
 
     useEffect(() => {
-        debounced(sortConfig)
+        debounced(sortConfig, showOpenOnly)
     }, [inView])
 
     useEffect(() => {
-        debounced(sortConfig)
+        debounced(sortConfig, showOpenOnly)
         
     }, [])
 

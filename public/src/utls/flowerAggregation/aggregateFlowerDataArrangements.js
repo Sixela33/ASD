@@ -3,8 +3,7 @@ const aggregateFlowerData = (flowerData) => {
     const flowersByArrangement = {}
 
     flowerData?.forEach(flower => {
-        const { flowerid, flowername, amount, unitprice, projectid, arrangementid } = flower;
-
+        const { flowerid, flowername, amount, unitprice, projectid, arrangementid, flowercolor } = flower;
         // if the project has not appeard before, add an array
         if (flowerid && projectid) {
      
@@ -17,7 +16,8 @@ const aggregateFlowerData = (flowerData) => {
                     totalstems: amount,
                     unitprice,
                     estimatedcost: unitprice * amount,
-                    projectid
+                    projectid,
+                    flowercolor
                 });
             } else {
                 aggregatedData[existingFlowerIndex].totalstems += amount;

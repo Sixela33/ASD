@@ -23,8 +23,7 @@ class FlowerRouter {
         //GetFlowers
         this.router.get('/many/:offset/:query?', this.controller.getFlowers)
         this.router.get('/single/:id',staffuserReq, this.controller.getFlowerData)
-        this.router.get('/incomplete', staffuserReq, this.controller.getIncompleteFlowers)
-
+        
         this.router.get('/flowerColors', this.controller.getUniqueFlowerColors)
         return this.router
     }

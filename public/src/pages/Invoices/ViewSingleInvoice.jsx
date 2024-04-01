@@ -56,7 +56,7 @@ export default function ViewSingleInvoice() {
     }, [])
 
     const downloadFile = () => {
-        window.open(`${BASE_URL}/api/${invoiceData.filelocation}`, '_blank', 'noreferrer')
+        window.open(`${invoiceData.filelocation}`, '_blank', 'noreferrer')
     }
 
     const buttonOptions = [
@@ -84,7 +84,7 @@ export default function ViewSingleInvoice() {
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
-                    <embed src={`${BASE_URL}/api/${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
+                    <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
                 </div>
                 <div className='mx-10 w-full md:w-2/4 grid grid-col md:grid-rows-2 '> 
                     <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-center font-bold ">

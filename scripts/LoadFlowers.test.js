@@ -15,7 +15,7 @@ let headers = {
 describe('Loading Flowers', () => {
     describe('POST', () => {
         it('Trying to log in', async () => {
-            const loginObject = {email: 'aj@gmail.com', password: 'QWERQWER'}
+            const loginObject = {email: 'aj@gmail.com', password: 'QWERQWER1'}
             const response = await request.post('/api/users/login').send(loginObject)
 
             const accessToken = response.body.accessToken

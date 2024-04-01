@@ -13,7 +13,7 @@ describe('User Routes /api/users', () => {
 
         const adminCredentials = {
             email: 'aj@gmail.com',
-            password: 'QWERQWER',
+            password: 'QWERQWER1',
         }
 
         const loginResponse = await request.post('/api/users/login').send(adminCredentials)
@@ -27,7 +27,7 @@ describe('User Routes /api/users', () => {
 
             const validUserCredentials = {
                 email: 'aj@gmail.com',
-                password: 'QWERQWER',
+                password: 'QWERQWER1',
             }
 
             const response = await request.post('/api/users/login').send(validUserCredentials)
@@ -42,7 +42,7 @@ describe('User Routes /api/users', () => {
 
             const nonExistentUserCredentias = {
                 email: 'asdfas@gmail.com',
-                password: 'QWERQWER',
+                password: 'QWERQWER1',
             }
 
             const response = await request.post('/api/users/login').send(nonExistentUserCredentias)
