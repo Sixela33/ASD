@@ -22,7 +22,6 @@ import ArrangementRouter from "./routers/ArrangementRouter.js";
 import VendorRouter from "./routers/VendorRouter.js";
 import ClientRouter from "./routers/ClientRouter.js";
 import InvoiceRouter from "./routers/InvoiceRouter.js";
-import path from 'path';
 
 import ROLES_LIST from "./config/rolesList.js";
 /*

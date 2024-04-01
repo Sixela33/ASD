@@ -5,7 +5,7 @@ import { invoiceDataGenerator, invoiceFlowerDataGenerator } from "./generators/I
 
 const request = supertest(process.env.HOST + ':' + process.env.PORT)
 
-const invoiceFileLoc = './SavedFiles/InvoiceFiles/2024-03-13/Peony(0).png'
+const invoiceFileLoc = './FilesToLoad/FlowerImages/Blue/Muscari.png'
 
 describe('Invoice Routes /api/invoices', () => {
     let adminToken 
