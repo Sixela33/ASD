@@ -22,6 +22,7 @@ import ArrangementRouter from "./routers/ArrangementRouter.js";
 import VendorRouter from "./routers/VendorRouter.js";
 import ClientRouter from "./routers/ClientRouter.js";
 import InvoiceRouter from "./routers/InvoiceRouter.js";
+import path from 'path';
 
 import ROLES_LIST from "./config/rolesList.js";
 /*
@@ -48,10 +49,10 @@ class Server {
         this.app.use(express.urlencoded({ limit: '10mb', extended: true }));
         this.app.use(cors(corsOptions));
         this.app.use(cookieParser());
-        this.app.use(express.static('/public/dist'))
+        this.app.use(express.static("public/dist"));
+        this.app.use(express.static("public"));
         this.app.use('/api/SavedFiles', express.static('SavedFiles'));
         this.app.use(requestLogger)
-
         
         this.app.use((req, res, next) => {
             req.logger = messageLogger
