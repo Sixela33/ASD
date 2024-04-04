@@ -6,6 +6,7 @@ import useAlert from '../../hooks/useAlert'
 import * as Yup from 'yup';
 import FormError from '../Form/FormError'
 import FormItem from '../Form/FormItem'
+import { toCurrency } from '../../utls/toCurrency'
 
 const baseArrangementData = { 
   arrangementType: '', 
@@ -160,10 +161,10 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         />
       </div>
       <div className='text-start mt-2'>
-        <p>Total client cost: ${parseFloat(newArrangementData.clientCost * newArrangementData.arrangementQuantity).toFixed(2)}</p>
-        <p>Individual flower budget: ${parseFloat(newArrangementData.clientCost * (1 - projectData.profitmargin)).toFixed(2)}</p>
-        <p>Total flower budget: ${parseFloat((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin)).toFixed(2)}</p>
-        <p>Total profit: ${parseFloat(newArrangementData.clientCost * newArrangementData.arrangementQuantity).toFixed(2) - parseFloat((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin)).toFixed(2)}</p>
+        <p>Total client cost: ${toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity)}</p>
+        <p>Individual flower budget: ${toCurrency(newArrangementData.clientCost * (1 - projectData.profitmargin))}</p>
+        <p>Total flower budget: ${toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
+        <p>Total profit: ${toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity) - toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
       </div>
       
       <div className='buttons-holder'>

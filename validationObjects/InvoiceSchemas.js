@@ -14,8 +14,7 @@ const invoiceSchema = Joi.object({
         'date.base': 'Due date must be a valid date.',
         'any.required': 'Due date is required.'
     }),
-    invoiceNumber: Joi.number().required().messages({
-        'number.base': 'Invoice number must be a number.',
+    invoiceNumber: Joi.string().required().messages({
         'any.required': 'Invoice number is required.'
     }),
     invoiceid: Joi.number().min(0).messages({

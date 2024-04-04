@@ -6,10 +6,12 @@ CREATE OR REPLACE PROCEDURE createProject(
     p_profitMargin FLOAT, 
     INOUT p_projectClient INT, --this is disgusting
     p_creatorid INT,
-    p_arrangements_arr JSONB[]
+    p_arrangements_arr JSONB[],
+    p_extras_arr JSONB[]
 ) AS $$
 DECLARE
     arrangement_record JSONB;
+    extra_service JSONB;
 BEGIN
     -- INSERT THE PROJECT INTO ITS TABLE AND STORE THE ID
     INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, clientID, profitMargin, creatorID)
@@ -27,6 +29,18 @@ BEGIN
             (arrangement_record->>'clientCost')::FLOAT, 
             (arrangement_record->>'arrangementQuantity')::INT);
     END LOOP;
+
+    --store extra services
+    FOREACH extra_service IN ARRAY p_extras_arr
+    LOOP
+        INSERT INTO additionalsXproejct (additionalDescription, projectID, clientCost)
+        VALUES (
+            (extra_service->>'description')::VARCHAR, 
+            p_projectClient, 
+            (extra_service->>'clientcost')::INT);
+    END LOOP;
+
+
 
 END;
 $$ LANGUAGE plpgsql;

@@ -34,7 +34,7 @@ class InvoiceService {
         if(!fileLocation) {
             throw {message: "A file is required to load an invoice", status: 400}
         }
-        console.log("invoiceFlowerData", invoiceFlowerData)
+        console.log("fileLocation", fileLocation)
 
         const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, updaterID)
         return response
@@ -44,17 +44,26 @@ class InvoiceService {
         invoiceData = JSON.parse(invoiceData)
 
         await validateInvoice(invoiceData)
+        
+        let newFileLoc
 
-        let newFileLoc = await this.model.getInvoiceFileLocation(invoiceData.invoiceid)
-        newFileLoc = newFileLoc.rows
+        if (invoiceData.invoiceid){
+            newFileLoc = await this.model.getInvoiceFileLocation(invoiceData.invoiceid)
+            newFileLoc = newFileLoc.rows
 
-        if(newFileLoc[0]){
-            newFileLoc = newFileLoc[0].filelocation
+            if(newFileLoc[0]){
+                newFileLoc = newFileLoc[0].filelocation
+            }
+
+            if (file) {
+                newFileLoc = await this.fileHandler.handleReplaceFile(file, ALLOWED_IMAGE_EXTENSIONS, newFileLoc, INVOICE_FILES_PATH)
+            }
+
+        } else {
+            if(file) {
+                newFileLoc = await this.fileHandler.handleNewFile(file, ALLOWED_IMAGE_EXTENSIONS, INVOICE_FILES_PATH)
+            }
         }
-
-        if (file) {
-            newFileLoc = await this.fileHandler.handleReplaceFile(file, ALLOWED_IMAGE_EXTENSIONS, newFileLoc, INVOICE_FILES_PATH)
-        } 
         
         if(!newFileLoc) {
             throw {message: "A file is required to load an invoice", status: 400}

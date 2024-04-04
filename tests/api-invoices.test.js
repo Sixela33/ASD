@@ -151,7 +151,6 @@ describe('Invoice Routes /api/invoices', () => {
             const response = await request.get('/api/invoices/invoices/' + 0).set('Authorization', `${adminToken}`)
 
             expect(response.status).to.equal(200)
-            
             expect(response.body[0]).to.not.be.undefined
             const data = response.body[0]
             expect(data).to.have.property('invoiceid')

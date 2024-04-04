@@ -32,8 +32,8 @@ class ProjectRouter {
         this.router.patch('/:id', staffuserReq, this.controller.editProjectData)
         this.router.post('/editflower/:id', this.controller.changeFlowerInProject)
         return this.router
+        
     }
-    
 }
 
 

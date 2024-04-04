@@ -2,6 +2,7 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import { validateArrangement, validateSingleArrangement } from "./Validations/ArrangementValidations.js"
 import { validateId, validateIdArray, validateIdnotRequired, validateQueryStringLength } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
+import { validateNewSericeArray } from "./Validations/ExtraServicesValidations.js"
 
 class ProjectService {
 
@@ -9,10 +10,14 @@ class ProjectService {
         this.model = new ModelPostgres()
     }
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras) => {
+        extras = extras || []
+        arrangements = arrangements || []
+        
         await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid})
         await validateArrangement(arrangements)
-        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements)
+        await validateNewSericeArray(extras)
+        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements, extras)
 
         return response
     }
@@ -40,11 +45,19 @@ class ProjectService {
         let arrangements = this.model.getProjectArrangements(id)
         let flowers = this.model.getProjectFlowers([id])
         let project = this.model.getProjectByID(id)
+        let extras = this.model.getProjectExtras(id)
 
         arrangements = await arrangements
         flowers = await flowers
         project = await project
-        return {project: project.rows, arrangements: arrangements.rows,flowers: flowers.rows }
+        extras = await extras
+        
+        return {
+            project: project.rows, 
+            arrangements: arrangements.rows,
+            flowers: flowers.rows, 
+            extras: extras.rows
+        }
     }
 
     addArrangementToProject = async (id, arrangementData) => {

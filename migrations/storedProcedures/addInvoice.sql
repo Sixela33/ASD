@@ -16,7 +16,7 @@ BEGIN
         p_uploaderId, 
         (p_invoiceData->>'vendor')::INT, 
         (p_invoiceData->>'dueDate')::DATE,
-        (p_invoiceData->>'invoiceNumber')::INT
+        (p_invoiceData->>'invoiceNumber')::VARCHAR
     )
     RETURNING invoiceID INTO p_uploaderId;
 

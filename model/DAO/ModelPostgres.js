@@ -195,10 +195,10 @@ class ModelPostgres {
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[]);",
-        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements]);
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[]);",
+        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras]);
         return response.rows[0]
         }
 
@@ -814,6 +814,35 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`SELECT * FROM invoiceTransaction WHERE invoiceID = $1`, [id])
     }
+
+    // -----------------------------------------------
+    //                  SERVICES
+    // -----------------------------------------------
+    
+    addNewServiceToProject = async (serviceData, projectID) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query("INSERT INTO additionalsXproejct (additionalDescription, clientCost, projectID) VALUES ($1, $2, $3);", 
+        [serviceData.description, serviceData.clientcost , projectID])
+    }
+
+    editService = async (serviceData) => {
+        console.log(serviceData)
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+        UPDATE additionalsXproejct 
+        SET 
+            additionalDescription = $1,
+            clientCost = $2
+        WHERE 
+            aditionalID = $3;`, 
+            [serviceData.description, serviceData.clientcost, serviceData.aditionalid])
+    }
+   
+    getProjectExtras = async (projectId) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query('SELECT additionalDescription AS description, clientCost, aditionalID FROM additionalsXproejct WHERE projectID = $1;', [projectId])
+    }
+
 }
 
 export default ModelPostgres

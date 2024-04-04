@@ -20,7 +20,7 @@ const emptyInvoiceObject = {
 };
 
 const invoiceDataSchema = Yup.object().shape({
-  invoiceNumber: Yup.number().required('the invoice number is required').typeError('the invoice number is required'),
+  invoiceNumber: Yup.string().required('the invoice number is required').typeError('the invoice number is required'),
   vendor: Yup.number().required('The vendor field is required').typeError('The vendor field is required'),
   dueDate: Yup.date().required('The date is required'),
   invoiceAmount: Yup.number().required('The ammount is required').typeError('The ammount is required'),
@@ -207,7 +207,6 @@ export default function AddInvoice() {
                   <embed src={DisplayPdfFile} type="application/pdf" width="100%" height="500vh" />
                 ): prevInvoiceFile && <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/>}
               </div>
-              {console.log(prevInvoiceFile)}
             </div>
           </div>
 

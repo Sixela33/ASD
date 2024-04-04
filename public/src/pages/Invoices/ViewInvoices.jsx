@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
+import { toCurrency } from '../../utls/toCurrency';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
@@ -205,7 +206,7 @@ export default function ViewInvoices() {
                     return <tr key={index}  onClick={() => handleInvoiceSelection(invoice)}>
                         <td>{invoice?.invoiceid}</td>
                         <td>{invoice?.vendorname}</td>
-                        <td>${parseFloat(invoice?.invoiceamount).toFixed(2)}</td>
+                        <td>${toCurrency(invoice?.invoiceamount)}</td>
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
                         {invoice?.hastransaction ? 

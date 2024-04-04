@@ -6,6 +6,7 @@ import { aggregateFlowerData } from '../../utls/flowerAggregation/aggregateFlowe
 import InvoiceAddFlowerToProjectPopup from './InvoiceAddFlowerToProjectPopup'
 import { useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
+import { toCurrency } from '../../utls/toCurrency'
 
 const GET_PROJECTS_URL = '/api/projects/manyByID';
 const ADD_INVOICE_URL = '/api/invoices'
@@ -301,10 +302,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             </table>
             </div>
             <div className="flex justify-between items-center my-1">
-                <p className="font-bold">Total invoice amount: ${invoiceData.invoiceAmount}</p>
-                <p className="font-bold">Registered Expenses: ${parseFloat(flowerPriceTracker?.reduce((value, flower) => {
+                <p className="font-bold">Total invoice amount: ${toCurrency(invoiceData.invoiceAmount)}</p>
+                <p className="font-bold">Registered Expenses: ${toCurrency(flowerPriceTracker?.reduce((value, flower) => {
                     return value + flower.addedStems * flower.unitprice
-                }, 0)).toFixed(2)}</p>
+                }, 0))}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
             <button className='buton-main my-1 w-1/2 mx-auto' onClick={submitInvoiceCreation}>Save Invoice</button>

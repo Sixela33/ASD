@@ -9,6 +9,9 @@ import AddClientPopup from '../../components/Popups/AddClientPopup';
 import * as Yup from 'yup';
 import FormItem from '../../components/Form/FormItem';
 import FormError from '../../components/Form/FormError';
+import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup';
+import { toCurrency } from '../../utls/toCurrency';
+
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
 const GET_CLIENTS_LIST = '/api/clients'
@@ -20,22 +23,31 @@ const initialState = {
   description: '',
   date: '',
   contact: '',
-  staffBudget: '',
+  staffBudget: 0.3,
   profitMargin: 0.7
+}
+
+const baseProjectStatsData = {
+    totalFlowerCost: 0,
+    totalExtrasCost: 0,
+    totalProjectCost: 0,
+    totalFlowerBudget: 0,
+    totalStaffBudget: 0,
+    totalProjectProfit: 0
 }
 
 const baseProjectSchema = Yup.object().shape({
     client: Yup.string().required('Client is required'),
-    description: Yup.string().required('Description is required'),
+    description: Yup.string().required('Description is required').max(255, 'The description cannot be longet than 255 characters'),
     date: Yup.string().required('Date is required'),
-    contact: Yup.string().required('Contact is required'),
+    contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
 });
 
 const arrangementSchema = Yup.object().shape({
     arrangementType: Yup.object().required('The arrangement type is required').typeError('The arrangement type is required'), 
-    arrangementDescription: Yup.string().required('Arrangement Description is required'), 
+    arrangementDescription: Yup.string().required('Arrangement Description is required').max(255, 'The description cannot be longet than 255 characters'), 
     clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
     arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required')
 })
@@ -47,6 +59,9 @@ export default function CreateProject() {
 
     const [formState, setFormState] = useState(initialState)
     const [arrangements, setArrangements] = useState([])
+    const [aditionalExpenses, setAditionallExpenses] = useState([])
+    const [showExpensesPopup, setShowExpensesPopup] = useState(false)
+    const [editExpense, setExpenseToEdit] = useState({})
 
     const [errors, setErrors] = useState({})
     const [newArrangementErrors, setnewArrangementErrors] = useState({})
@@ -56,21 +71,31 @@ export default function CreateProject() {
 
     const [arrangementTypes, setArrangementTypes] = useState([])
     const [clientsList, setClientsList] = useState([])
- 
     
-    const [totalFlowerBudget, setTotalFlowerBudget] = useState(0)
-    const [totalTotalProfit, setTotalProfit] = useState(0)
+    const [projectStats, setProjectStats] = useState(baseProjectStatsData)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
     
     const { client, description, date, contact, staffBudget, profitMargin } = formState
 
     // sums all the budgets 
     useEffect(() => {
-        const sum = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
-        setTotalFlowerBudget(sum)
-        setTotalProfit(sum * profitMargin)
+        let tempProjectStats = {}
 
-    }, [arrangements])
+        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
+        let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + parseFloat(expense.clientcost) , 0)
+        
+        totalFlowerCost = totalFlowerCost || 0
+        totalAditional = totalAditional || 0
+        
+        tempProjectStats.totalFlowerCost = totalFlowerCost
+        tempProjectStats.totalExtrasCost = totalAditional
+        tempProjectStats.totalProjectCost = totalFlowerCost + totalAditional
+        tempProjectStats.totalFlowerBudget = totalFlowerCost * (1-profitMargin)
+        tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * staffBudget
+        tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
+        
+        setProjectStats(tempProjectStats)
+    }, [arrangements, aditionalExpenses, formState])
 
     const fetchData = async () => {
         try {
@@ -185,6 +210,7 @@ export default function CreateProject() {
           }))
 
         newData.arrangements = cleanedArrangements
+        newData.extras = aditionalExpenses
 
         try {
             const response = await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
@@ -207,15 +233,38 @@ export default function CreateProject() {
         setShowNewClientPopup(false)
     }
 
-    const formRowClass = 'flex flex-row space-x-4 mb-1 flex-1 w-full';
-    const formColClass = "flex flex-col mb-1 w-full"
+    const addNewExpense = (expense) => {
+        if(expense.index == undefined) {
+            setAditionallExpenses([...aditionalExpenses,  expense])
+        } else {
+            const tempAditionalExpenses = aditionalExpenses
+            const tempIndex = expense.index
+            delete expense.index
+            tempAditionalExpenses[tempIndex] = expense
+            setAditionallExpenses(tempAditionalExpenses)
+        }
+    }
+
+    const editExistingExpense = (expense) => {
+        const index = aditionalExpenses.findIndex(element => element == expense)
+        setExpenseToEdit({...expense, 'index': index})
+        setShowExpensesPopup(true)
+    }
+
+
+    const formRowClass = 'flex flex-row space-x-4  flex-1 w-full';
+    const formColClass = "flex flex-col  w-full"
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
-            <AddClientPopup
-                showPopup={showNewClientPopup}
-                closePopup={handleCloseNewClientPopup}
-            />
+            <AddClientPopup showPopup={showNewClientPopup} closePopup={handleCloseNewClientPopup} />
+            <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
+            <AddAditionalExpensePopup 
+                showPopup={showExpensesPopup} 
+                closePopup={() => setShowExpensesPopup(false)} 
+                submitFunc={addNewExpense} 
+                projectData={''} 
+                editExpense={editExpense}/>
             <div className="grid grid-cols-3 mb-2">
                 <GoBackButton className='col-span-1'/>
                 <h2 className='col-span-1'>Create Project</h2>
@@ -233,116 +282,106 @@ export default function CreateProject() {
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem
-                                labelName="Project Description:"
-                                type="text"
-                                inputName="description"
-                                value={description}
-                                handleChange={(e) => handleFormEdit('description', e.target.value)}
-                                error={errors.description}
-                            />                 
+                            <FormItem labelName="Project Description:" type="text" inputName="description" value={description} handleChange={(e) => handleFormEdit('description', e.target.value)} error={errors.description} />                 
                             </div>
                         </div>
 
                         <div>
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                            <FormItem
-                                labelName="Project Date:"
-                                type="date"
-                                inputName="date"
-                                value={date}
-                                handleChange={(e) => handleFormEdit('date', e.target.value)}
-                                error={errors.date}
-
-                            />
+                            <FormItem labelName="Project Date:" type="date" inputName="date" value={date} handleChange={(e) => handleFormEdit('date', e.target.value)} error={errors.date}/>
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem
-                                labelName="Project Contact:"
-                                type="text"
-                                inputName="contact"
-                                value={contact}
-                                handleChange={(e) => handleFormEdit('contact', e.target.value)}
-                                error={errors.contact}
-                            />
+                            <FormItem labelName="Project Contact:" type="text" inputName="contact" value={contact} handleChange={(e) => handleFormEdit('contact', e.target.value)} error={errors.contact} />
                             </div>
                         </div>
 
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                            <FormItem
-                                labelName="Staff Budget:"
-                                type="number"
-                                inputName="staffBudget"
-                                value={staffBudget}
-                                handleChange={(e) => handleFormEdit('staffBudget', e.target.value)}
-                                error={errors.staffBudget}
-                            />
+                            <FormItem labelName="Staff Budget percentage:" type="number" inputName="staffBudget" value={staffBudget} handleChange={(e) => handleFormEdit('staffBudget', e.target.value)} error={errors.staffBudget} />
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem
-                                labelName="Profit Margin:"
-                                type="number"
-                                inputName="profitMargin"
-                                value={profitMargin}
-                                handleChange={(e) => handleFormEdit('profitMargin', e.target.value)}
-                                error={errors.profitMargin}
-                            />
+                            <FormItem labelName="Profit Margin:" type="number" inputName="profitMargin" value={profitMargin} handleChange={(e) => handleFormEdit('profitMargin', e.target.value)} error={errors.profitMargin} />
                             </div>
                         </div>
                         </div>
-                
-                    {/* Arrangements section */}
-                    <div className="p-4 rounded w-full text-center">
-                        <h3 >Arrangements</h3>
-
-                        <div className='table-container h-[20vh]'>
-
-                            <table >
-                                <thead>
-                                    <tr>
-                                        <th>Arrangement type</th>
-                                        <th>Description</th>
-                                        <th>Unit Client Cost</th>
-                                        <th>Unit ArrangementBudget</th>
-                                        <th>Quantity</th>
-                                        <th>Total Client Cost</th>
-                                        <th>TOTAL Arrangement Budget</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {arrangements.map((arrangement, index) => (
-                                        
-                                        <tr key={index}  onClick={() => handleEdit(index)}>
-                                        <td>{arrangement?.arrangementType.typename}</td>
-                                        <td>{arrangement.arrangementDescription}</td>
-                                        <td>${arrangement.clientCost}</td>
-                                        <td>${parseFloat((arrangement.clientCost) *  (1-formState.profitMargin)).toFixed(1)}</td>
-                                        <td>{arrangement.arrangementQuantity}</td>
-                                        <td>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
-                                        <td>${parseFloat((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin)).toFixed(1)}</td>
-                                    </tr>
                     
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                    <div className='grid grid-cols-3'>
+                        <div className="p-4 rounded w-full text-center col-span-2">
+                            <h3 >Arrangements</h3>
 
+                            <div className='table-container h-[20vh]'>
+
+                                <table >
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Unit Cost</th>
+                                            <th>Unit Budget</th>
+                                            <th>Quantity</th>
+                                            <th>Total Cost</th>
+                                            <th>Total Budget</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {arrangements.map((arrangement, index) => (
+                                            <tr key={index}  onClick={() => handleEdit(index)}>
+                                                <td>{arrangement?.arrangementType.typename}</td>
+                                                <td>{arrangement.arrangementDescription}</td>
+                                                <td>${arrangement.clientCost}</td>
+                                                <td>${toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
+                                                <td>{arrangement.arrangementQuantity}</td>
+                                                <td>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
+                                                <td>${toCurrency((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin))}</td>
+                                            </tr>
+                            
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div className='p-4 rounded w-full text-center col-span-1'>
+                            <h3>Aditional Expenses</h3>
+                            <div className='table-container h-[20vh]'>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Client cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {aditionalExpenses.map((expense, index) => {
+                                        return <tr key={index} onClick={() => editExistingExpense(expense)}>
+                                            <td>{expense.description}</td>
+                                            <td>${toCurrency(expense.clientcost)}</td>
+                                        </tr>
+                                    })}
+                                </tbody>
+                                </table>
+                            </div>
+                           
+                        </div>
                     </div>
+
                      <div className='flex '>
-                        <p className='mr-4'>TOTAL flower budget: ${parseFloat(totalFlowerBudget *  (1 - profitMargin)).toFixed(2)}</p>
-                        <p className='mr-4'>TOTAL client cost: ${totalFlowerBudget}</p>
-                        <p className={totalTotalProfit>0? 'text-green-500' : 'text-red-500'}>Project Profit: ${parseFloat(totalTotalProfit).toFixed(2)}</p>
+                        <p className='mr-4'>Total client cost: ${projectStats.totalProjectCost}</p>
+                        <p className='mr-4'>Total flower budget: ${toCurrency(projectStats.totalFlowerBudget)}</p>
+                        <p className='mr-4'>Total aditional costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
+                        <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
+                        <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
+
+                        <p className={projectStats.totalProjectProfit>0? 'text-green-500' : 'text-red-500'}>Project Profit: ${toCurrency(projectStats.totalProjectProfit)}</p>
                     </div>
                        
                     <div className=' flex flex-row'>
-                        <button className='buton-secondary mr-3' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
+                        <button className='buton-secondary' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
+                        <button className='buton-secondary mx-3' onClick={() => setShowExpensesPopup(true)}>Add extra service</button>
                         <button className='buton-main' onClick={handleSubmit} >Save Project</button>
                     </div>
-                    <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
                 </div>
             </div>
 

@@ -8,6 +8,7 @@ import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import { FiEdit, FiDownload } from 'react-icons/fi';
 import { permissionsRequired } from '../../utls/permissions';
+import { toCurrency } from '../../utls/toCurrency';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
 
@@ -90,7 +91,7 @@ export default function ViewSingleInvoice() {
                     <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-center font-bold ">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
-                            <p>Invoice amount: ${parseFloat(invoiceData.invoiceamount).toFixed(2)}</p>
+                            <p>Invoice amount: ${toCurrency(invoiceData.invoiceamount)}</p>
                         </div>
                         <div className='grid-row'>
                             <p>Invoice Date: {invoiceData.invoicedate}</p>
@@ -119,7 +120,7 @@ export default function ViewSingleInvoice() {
                             {invoiceFlowers.map((item, index) => {
                                 return <tr key={index}  onClick={() => onRowClick(item)}>
                                     <td>{item.flowername}</td>
-                                    <td>$ {parseFloat(item.unitprice).toFixed(2)}</td>
+                                    <td>$ {toCurrency(item.unitprice)}</td>
                                     <td>{item.numstems}</td>
                                 </tr>
                             })}

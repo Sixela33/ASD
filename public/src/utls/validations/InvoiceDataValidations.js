@@ -1,7 +1,7 @@
 import Joi from "joi"
 
 const invoiceSchema = Joi.object({
-    invoiceNumber: Joi.number().required().min(0),
+    invoiceNumber: Joi.string().required(),
     vendor: Joi.number().required().min(0),
     dueDate: Joi.date().required(),
     invoiceAmount: Joi.number().required().min(0),

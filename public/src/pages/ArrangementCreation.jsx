@@ -4,6 +4,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useAlert from '../hooks/useAlert';
 import FlowerListComponent from '../components/FlowerListComponent';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { toCurrency } from '../utls/toCurrency';
 
 const FETCH_ARRANGEMENT_DATA_URL = '/api/arrangements/creation/';
 const SUBMIT_ARRANGEMENT_URL = '/api/arrangements/creation/'
@@ -158,7 +159,7 @@ export default function ArrangementCreation() {
                                     </tbody>
                                 </table>
                             </div>
-                            <p className="mt-4">Flower Budget: ${parseFloat(arrangementData.clientcost * (1 - arrangementData.profitmargin)).toFixed(2)}</p>
+                            <p className="mt-4">Flower Budget: ${toCurrency(arrangementData.clientcost * (1 - arrangementData.profitmargin))}</p>
                             <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) && 'text-red-500'}>${sum}</span></p>
                             <button className='buton-main' onClick={submitArrangement}>Save</button>
                         </div>

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
     passhash VARCHAR(100) NOT NULL,
-    refreshToken VARCHAR(150) DEFAULT '',
+    refreshToken VARCHAR(255) DEFAULT '',
     permissionLevel INT REFERENCES userRole(roleID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -42,6 +42,13 @@ CREATE TABLE IF NOT EXISTS projects (
     isClosed BOOLEAN DEFAULT false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS additionalsXproejct (
+    aditionalID SERIAL PRIMARY KEY,
+    additionalDescription VARCHAR(255) NOT NULL,
+    projectID INT REFERENCES projects(projectID),
+    clientCost INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS arrangementTypes (
@@ -93,7 +100,7 @@ CREATE TABLE IF NOT EXISTS flowerXarrangement (
 
 CREATE TABLE IF NOT EXISTS invoices (
     invoiceID SERIAL PRIMARY KEY,
-    invoiceNumber INT NOT NULL,
+    invoiceNumber VARCHAR(255) NOT NULL,
     invoiceAmount FLOAT NOT NULL,
     invoiceTax FLOAT DEFAULT 0,
     fileLocation VARCHAR(255) NOT NULL,

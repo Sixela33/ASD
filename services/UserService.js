@@ -88,6 +88,41 @@ class UserService {
         
     }
 
+    handleRefresh = async (refreshToken) => {
+        console.log('rt', refreshToken)
+        let user = await this.model.getUserByRefreshToken(refreshToken)
+        console.log('gotUserData')
+        console.log("rows", user.rows)
+        if (user.rows?.length == 0) {
+            throw {message: "Invalid token refresh" ,status: 403}
+        }
+        user = user.rows[0]
+
+        try {
+            // reads the refresh token to get the userID
+            let payload = null
+            try {
+                payload = Jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+            } catch (error) {
+                throw { message: error.message, status: 401 }   
+            }
+            //checks if it is the same that the user that had it
+            if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
+            // let userRoles = await this.model.getUserRoles(user.userid)
+            delete user.passhash
+            
+            // creates new temporary token
+            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
+
+            return {accessToken}
+        } catch (error) {
+
+            throw { message: error.message, status: 403 }        
+
+        }
+
+    }
+
     sendRecoveryEmail = async (to, link, username) => {
         
           const info = await this.transporter.sendMail({
@@ -170,38 +205,7 @@ class UserService {
 
     }
 
-    handleRefresh = async (refreshToken) => {
-        let user = await this.model.getUserByRefreshToken(refreshToken)
-
-        if (user.rows?.length == 0) {
-            throw {message: "Invalid token refresh" ,status: 403}
-        }
-        user = user.rows[0]
-
-        try {
-            // reads the refresh token to get the userID
-            let payload = null
-            try {
-                payload = Jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-            } catch (error) {
-                throw { message: error.message, status: 401 }   
-            }
-            //checks if it is the same that the user that had it
-            if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
-            // let userRoles = await this.model.getUserRoles(user.userid)
-            delete user.passhash
-            
-            // creates new temporary token
-            const accessToken = await Jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
     
-            return {accessToken}
-        } catch (error) {
-
-            throw { message: error.message, status: 403 }        
-
-        }
-
-    }
 
 }
 

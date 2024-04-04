@@ -70,17 +70,21 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
                 <div className="absolute right-3 text-gray-400">
                     <FiSearch />
                 </div>
-                
+    
             </div>
+            <div className="z-20 ">
+
               <div className={`option cursor-pointer w-full text-left px-2 py-1 ${null === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption({label: ''})} >
-                  Clear selection
-                </div>
+                Clear selection
+              </div>
               {options.map((option, index) => (
-                <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1 ${option[label] === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption(option)} >
+                <div value={option} key={index} className={`z-20 option cursor-pointer w-full text-left px-2 py-1`} onClick={() => selectOption(option)} >
                   {option[label]}
                 </div>
               ))}
               <div ref={InViewRef}><></></div>
+            </div>
+
             </>
           )}
         </div>

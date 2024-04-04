@@ -15,12 +15,25 @@ import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/Inv
 import { FiDownload, FiEdit } from "react-icons/fi";
 import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
+import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup'
+import { toCurrency } from '../../utls/toCurrency';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
 const OPEN_PROJECT_URL = 'api/projects/open/'
 const DELETE_ARRANGEMENT_URL = 'api/arrangements/'
 const CHANGE_FLOWER_IN_PROJECT_URL = 'api/projects/editflower/'
+const ADD_NEW_EXPENSE_URL = '/api/extraServices'
+const EDIT_EXPENSE_URL = '/api/extraServices'
+
+const baseProjectStats = {
+    totalFlowerCost: 0,
+    totalExtrasCost: 0,
+    totalProjectCost: 0,
+    totalFlowerBudget: 0,
+    totalStaffBudget: 0,
+    totalProjectProfit: 0
+}
 
 export default function ViewProject() {
     const { id } = useParams();
@@ -34,7 +47,8 @@ export default function ViewProject() {
     const [flowerData, setFlowerData] = useState([]);
     const [showFlowerData, setShowFlowerData] = useState([]);
     const [projectData, setProjectData] = useState([])
-    
+    const [extraServicesData, setExtraServicesData] = useState([])
+
     const [flowersByArrangement, setFlowersByArrangement] = useState(null)
     const [actualHoveredArr, setActualHoveredArr] = useState(null)
 
@@ -52,16 +66,27 @@ export default function ViewProject() {
     const [showEditProjectPopup, setShowEditProjectPopup] = useState(false)
     const [showChangeFlowersPopup, setChangeFlowersPopup] = useState(false)
     const [changeFlowerID, setChangeFlowerID] = useState(null)
+    
+    const [projectStats, setProjectStats] = useState(baseProjectStats)
+
+    const [showServicePopup, setShowServicePopup] = useState(false)
+    const [editService, setEditService] = useState(null)
 
     const fetchFlowers = async () => {
         try {
             const response = await axiosPrivate.get(ARRANGEMENT_DATA_FETCH + id);
 
-            const {arrangements, flowers, project} = response?.data
+            const {arrangements, flowers, project, extras} = response?.data
             
-            setArrangementData(arrangements || []);
-            setFlowerData(flowers || []);
+            setArrangementData(arrangements || [])
+            setFlowerData(flowers || [])
             setProjectData(project[0] || [])
+            setExtraServicesData(extras || [])
+
+            if(!project[0]) {
+                navigateTo('/projects')
+                setMessage('Invalid project ID')
+            }
             
             const totalBudget = arrangements.reduce((value, arrangement) => {
                 return value + (arrangement.clientcost * (1 - project[0]?.profitmargin))
@@ -89,9 +114,24 @@ export default function ViewProject() {
 
         if (arrangementData.length > 0){
             const estimate = flowerData.reduce(countFlowerCostAndFlowerCostyProject, {totalFlowerCost: 0, totalFlowerCostByArrangement: {}})
-        
+            let totalAditional = extraServicesData.reduce((accumulator, service) => accumulator + parseFloat(service.clientcost) , 0)
+            let totalClientFlowerCost = arrangementData.reduce((accumulator, arrang) => accumulator + arrang.clientcost * arrang.arrangementquantity, 0)
+
             addAssignedBudget(estimate.totalFlowerCostByArrangement)
             setEstimatedFlowerCost(estimate.totalFlowerCost)
+            let tempProjectStats = {}
+            console.log(projectData)
+            console.log(estimate)
+            tempProjectStats.totalFlowerCost = totalClientFlowerCost
+            tempProjectStats.totalExtrasCost = totalAditional
+            tempProjectStats.totalProjectCost = tempProjectStats.totalFlowerCost + tempProjectStats.totalExtrasCost
+            tempProjectStats.totalFlowerBudget = tempProjectStats.totalFlowerCost * (1-projectData.profitmargin)
+            tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * projectData.staffbudget
+            tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
+
+            console.log(tempProjectStats)
+            setProjectStats(tempProjectStats)
+
             updateArrangementData();
         }
     }, [flowerData]);
@@ -251,6 +291,24 @@ export default function ViewProject() {
 
     }
 
+    const handleEditService = (serviceToEdit) => {
+        setEditService(serviceToEdit)
+        setShowServicePopup(true)
+    }
+
+    const handleSubmitExtraServices = async (expense) => {
+        try {
+            if (expense.aditionalid) {
+                await axiosPrivate.patch(EDIT_EXPENSE_URL, JSON.stringify({serviceData: expense}))
+            } else {
+                await axiosPrivate.post(ADD_NEW_EXPENSE_URL, JSON.stringify({serviceData: expense, projectID: projectData.projectid}))
+            }
+            fetchFlowers()
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+        }
+    }
+
     const buttonOptions = [
         {
             text: 'Add New Arrangement', 
@@ -269,13 +327,25 @@ export default function ViewProject() {
             action: () => {},
             icon: <FiDownload/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
+        },
+        {
+            text: 'Add new service', 
+            action: () => {setShowServicePopup(true)},
+            icon: '+',
+            minPermissionLevel:permissionsRequired['edit_project_data']
         }
     ]
 
-    
-
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
+            <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
+                actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
+                return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
+            </Tooltip>
+            <FloatingMenuButton options={buttonOptions}/>
+            <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
+                Are you sure you want to Delete this arrangement from the database?
+            </ConfirmationPopup>
             <EditArrangementPopup 
                 showPopup={showArrangementEditPopup} 
                 arrangementData={editArrangementPopupData} 
@@ -286,13 +356,6 @@ export default function ViewProject() {
                 closePopup={closeEditProject}
                 projectData={projectData}>
             </EditProjectData>
-            <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
-                actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
-                return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
-            </Tooltip>
-            <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
-                Are you sure you want to Delete this arrangement from the database?
-            </ConfirmationPopup>
             <InvoiceAddFlowerToProjectPopup
                 showPopup={showChangeFlowersPopup}
                 submitFunction={submitChangeStemInArrangements}
@@ -301,7 +364,14 @@ export default function ViewProject() {
                     setChangeFlowerID(null)
                 }}
             />
-            <FloatingMenuButton options={buttonOptions}/>
+            <AddAditionalExpensePopup
+                showPopup={showServicePopup}
+                closePopup={() => setShowServicePopup(false)}
+                submitFunc = {handleSubmitExtraServices}
+                projectData={projectData}
+                editExpense={editService}
+            />
+            
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>
                 <h2 className='col-span-1'>Project Overview</h2>
@@ -329,7 +399,7 @@ export default function ViewProject() {
                             <td>{item?.typename}</td>
                             <td>{item?.arrangementdescription}</td>
                             <td>{item?.arrangementquantity}</td>
-                            <td>${parseFloat((item?.clientcost) * (1 - projectData.profitmargin)).toFixed(2)}</td>
+                            <td>${toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
                             <td>${item?.assignedBudget}</td>
                             <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
@@ -342,7 +412,7 @@ export default function ViewProject() {
                     ))}
                 </TableHeaderSort>
             </div>
-            <div className="flex mb-8">
+            <div className="flex my-4">
                 <div className="pr-4 w-1/2 ">
                     <h2>Flower Data</h2>
                     <div className='table-container h-[20vh] mt-2'>
@@ -352,12 +422,13 @@ export default function ViewProject() {
                                 <tr key={index} >
                                     <td>{item?.flowername}</td>
                                     <td>{item?.totalstems}</td>
-                                    <td>${parseFloat(item?.unitprice).toFixed(2)}</td>
-                                    <td>${parseFloat(item?.estimatedcost).toFixed(2)}</td>
+                                    <td>${toCurrency(item?.unitprice)}</td>
+                                    <td>${toCurrency(item?.estimatedcost)}</td>
                                     <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
                                 </tr>
                                 ))}
                         </TableHeaderSort>
+                        
                     </div>
 
                     <div className='flex mt-5'>
@@ -366,10 +437,31 @@ export default function ViewProject() {
                             <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
                         </div>
                         <div className='flex-row text-left ml-5'>
-                            <p>Estimated Flower cost: ${parseFloat(estimatedFlowerCost).toFixed(2)}</p>
-                            <p>Flower budget: ${parseFloat(totalBudget).toFixed(2)}</p>
-                            <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${parseFloat(totalBudget-estimatedFlowerCost).toFixed(2)}</span></p>
+                            <p>Estimated Flower cost: ${toCurrency(estimatedFlowerCost)}</p>
+                            <p>Flower budget: ${toCurrency(totalBudget)}</p>
+                            <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${toCurrency(totalBudget-estimatedFlowerCost)}</span></p>
                         </div>
+                    </div>
+                </div>
+                <div className="pr-4 w-1/2 ">
+                    <h2>Extra Services</h2>
+                    <div className='table-container h-[20vh] mt-2'>
+                        <TableHeaderSort
+                            headers={{'description': ' ', 'clientcost': ' '}}>
+                            {extraServicesData?.map((item, index) => (
+                                <tr key={index} onClick={() => handleEditService(item)}>
+                                    <td>{item?.description}</td>
+                                    <td>${toCurrency(item?.clientcost)}</td>
+                                </tr>
+                                ))}
+                        </TableHeaderSort>
+                    </div>
+                    <div className='text-left ml-5'>
+                        <p className='mr-4'>Total extras costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
+                        <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
+                        <p className='mr-4'>Total cost: ${toCurrency(projectStats.totalProjectCost)}</p>
+                        <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
+                        <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>${toCurrency(projectStats.totalProjectProfit)}</span> </p>
                     </div>
                 </div>
             </div>

@@ -17,16 +17,16 @@ const arrangements = [
 ];
 
 const projects = [
-    { staffBudget: 2000, projectContact: 'John Doe', projectDate: '2024-01-16', projectDescription: 'Conference', projectClient: 1, profitMargin: 0.2, creatorid: 1 },
-    { staffBudget: 2500, projectContact: 'Alice Smith', projectDate: '2024-01-17', projectDescription: 'Product Launch', projectClient: 2, profitMargin: 0.15, creatorid: 1 },
-    { staffBudget: 1800, projectContact: 'Bob Johnson', projectDate: '2024-01-18', projectDescription: 'Workshop', projectClient: 3, profitMargin: 0.18, creatorid: 1 },
-    { staffBudget: 3000, projectContact: 'Emma Brown', projectDate: '2024-01-19', projectDescription: 'Trade Show', projectClient: 4, profitMargin: 0.25, creatorid: 1 },
-    { staffBudget: 2200, projectContact: 'Michael Davis', projectDate: '2024-01-20', projectDescription: 'Seminar', projectClient: 3, profitMargin: 0.2, creatorid: 1 },
-    { staffBudget: 2800, projectContact: 'Sarah Wilson', projectDate: '2024-01-21', projectDescription: 'Expo', projectClient: 4, profitMargin: 0.18, creatorid: 1 },
-    { staffBudget: 3200, projectContact: 'William Martinez', projectDate: '2024-01-22', projectDescription: 'Symposium', projectClient: 1, profitMargin: 0.22, creatorid: 1 },
-    { staffBudget: 2700, projectContact: 'Olivia Taylor', projectDate: '2024-01-23', projectDescription: 'Convention', projectClient: 3, profitMargin: 0.17, creatorid: 1 },
-    { staffBudget: 2300, projectContact: 'James Anderson', projectDate: '2024-01-24', projectDescription: 'Training Session', projectClient: 5, profitMargin: 0.15, creatorid: 1 },
-    { staffBudget: 3500, projectContact: 'Sophia White', projectDate: '2024-01-25', projectDescription: 'Hackathon', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
+    { staffBudget: 0.3, projectContact: 'John Doe', projectDate: '2024-01-16', projectDescription: 'Conference', projectClient: 1, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Alice Smith', projectDate: '2024-01-17', projectDescription: 'Product Launch', projectClient: 2, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Bob Johnson', projectDate: '2024-01-18', projectDescription: 'Workshop', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Emma Brown', projectDate: '2024-01-19', projectDescription: 'Trade Show', projectClient: 4, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Michael Davis', projectDate: '2024-01-20', projectDescription: 'Seminar', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Sarah Wilson', projectDate: '2024-01-21', projectDescription: 'Expo', projectClient: 4, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'William Martinez', projectDate: '2024-01-22', projectDescription: 'Symposium', projectClient: 1, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Olivia Taylor', projectDate: '2024-01-23', projectDescription: 'Convention', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'James Anderson', projectDate: '2024-01-24', projectDescription: 'Training Session', projectClient: 5, profitMargin: 0.7, creatorid: 1 },
+    { staffBudget: 0.3, projectContact: 'Sophia White', projectDate: '2024-01-25', projectDescription: 'Hackathon', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
 ];
 
 const flowers = [
@@ -114,23 +114,6 @@ const createProjects = async (model) => {
     }
 };
 
-const createFlowers = async (model) => {
-    const flowerImagesDir = './FilesToLoad/FlowerImages'
-    // This has been passed to the LoadFlowers test file.
-    /*
-    try {
-            for (let flower of flowers) {
-                let {flowerName, flowerImage, flowerColor} = flower;
-                await model.addFlower('', flowerName, flowerColor);
-            }
-        
-    } catch (error) {
-        console.error('Error during flower creation: \n', error);
-    }
-    */
-   return
-};
-
 const populateArangement = async (model) => {
     try {
         const initialValue = 6
@@ -185,7 +168,6 @@ const runScript = async() => {
         await createClients(model)
         await loadArrangementTypes(model)
         await createProjects(model)
-        await createFlowers(model)
         await populateArangement(model)
         await loadVendors(model)
     } catch (error) {

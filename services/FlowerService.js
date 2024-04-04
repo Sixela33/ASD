@@ -1,11 +1,9 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js";
-import fs from 'fs';
-import path from 'path';
 import { validateId } from "./Validations/IdValidation.js";
 import { validateFlower } from "./Validations/FlowerValidations.js";
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 
-const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg"];
+const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", 'jpeg'];
 const FLOWER_IMAGE_PATH = 'flowerImages'
 
 class FlowerService {
