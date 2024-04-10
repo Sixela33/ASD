@@ -19,11 +19,11 @@ const useRefreshToken = () => {
         setAuth(prev => {
            const decoded = jwtDecode(response.data)
 
-
             return {
                 ...prev,
-                decoded: decoded,
-                accessToken: response.data
+                decoded: decoded.user,
+                accessToken: response.data,
+                googleAccesToken: decoded.access_token
             }
         });
         return response.data.accessToken;

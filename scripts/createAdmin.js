@@ -12,19 +12,10 @@ const createSuperuser = async () => {
         const model = new ModelPostgres();
         try {
             console.log("Creating superUser");
-            const username = await rl.question("Username: ");
-            const email = await rl.question("Email: ");
-            const password = await rl.question("Password: ");
+            const userID = await rl.question("userID: ");
             
-            // Hashear la contraseña antes de almacenarla
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            //console.log({ username, email, hashedPassword });
-
-            await model.registerUser(username, email, hashedPassword);
-            let user = await model.getUserByEmail(email)
-            user = user.rows[0]
-            await model.setUserPermissionLevel(user.userid, ROLES_LIST['Admin'])
+       
+            await model.setUserPermissionLevel(userID, ROLES_LIST['Admin'])
             
             console.log("Admin created succesfully")
         } catch (error) {

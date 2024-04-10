@@ -6,17 +6,21 @@ import PopupBase from './PopupBase';
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
 
+const defaultFormData = {
+  flower: null,
+  name: '',
+  color: '',
+}
+
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit, title}) {
     if(!refreshData) refreshData = () => {}
 
     const axiosPrivate = useAxiosPrivateImage();
     const { setMessage } = useAlert()
 
-    const [formData, setFormData] = useState({
-      flower: null,
-      name: '',
-      color: '',
-    });
+    const [formData, setFormData] = useState(defaultFormData);
+    const [isSubmitting, setIsSubmitting] = useState(false); // State to track if form is being submitted
+
   
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -46,7 +50,12 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     
     const handleSubmit = async (e) => {
       e.preventDefault();
-  
+
+      if(isSubmitting) return
+
+      setIsSubmitting(true); 
+      setMessage('Adding flower...', false)
+      
       try {
           const formDataToSend = new FormData();
           formDataToSend.append('name', formData.name);
@@ -65,10 +74,14 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             setMessage("Flower Added succesfully", false)
           }
   
-          cancelButton()
+          cancelButton(true)
+          setFormData(defaultFormData)
+
       } catch (error) {
           setMessage(error.response?.data, true)
           console.log(error);
+      } finally {
+        setIsSubmitting(false);
       }
     }
 
@@ -90,9 +103,9 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             <label className="mb-1">Color:</label>
             <input className='w-full' type="text" name="color" value={formData.color} onChange={handleChange} required/>
         </div>
-        <div className='buttons-holder '>
+        <div className='buttons-holder w-full'>
           <button className='buton-secondary' onClick={cancelButton}>Cancel</button>
-          <button className='buton-main' onClick={handleSubmit}>Add Flower</button>
+          <button className='buton-main' onClick={handleSubmit}>{isSubmitting ? 'Adding Flower...' : 'Add Flower'}</button>
         </div>
       </div>
     </PopupBase>

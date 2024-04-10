@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
 
 const CREATE_CLIENT_URL = '/api/clients'
-const EDIT_CLIENT_URL = '/api/clients/edit'
+const EDIT_CLIENT_URL = '/api/clients'
 const DEFAULT_CLIENT_DATA = {clientname: ''}
 
 export default function AddClientPopup({showPopup, closePopup, editClientData}) {

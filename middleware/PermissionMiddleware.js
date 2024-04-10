@@ -24,10 +24,9 @@ class PermissionsMiddelware {
                 throw { message: error.message, status: 403 }   
             }
 
-            let userPermissionLevel = await this.roleService.getUserPermissionLevel(decoded.userid)
-            
-            const hasPermission = userPermissionLevel >= this.permissionsRequired
+            let userPermissionLevel = await this.roleService.getUserPermissionLevel(decoded.user.userid)
 
+            const hasPermission = userPermissionLevel >= this.permissionsRequired
                         
             if (!hasPermission) {
                 return res.status(401).json({ message: 'Insufficient permissions' });

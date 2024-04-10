@@ -31,6 +31,8 @@ import ArrangementCreation from './pages/ArrangementCreation';
 
 import InputEmail from './pages/PasswordRecovery/InputEmail';
 import SetNewPass from './pages/PasswordRecovery/SetNewPass';
+import InactiveUserPage from './pages/InactiveUserPage';
+import LoginSuccess from './pages/LoginSuccess';
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="forgotPass" element={<InputEmail/>} />
           <Route path="setNewPass/:id/:code" element={<SetNewPass/>} />
+          <Route path='inactive' element={<InactiveUserPage/>}/>
+          <Route path='loginSuccess' element={<LoginSuccess/>}/>
           
           {/* protected routes */}
           <Route element={<PersistLogin />}>

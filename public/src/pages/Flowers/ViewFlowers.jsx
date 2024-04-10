@@ -11,9 +11,9 @@ export default function ViewFlowers() {
     const { auth } = useAuth();
     const { setMessage } = useAlert()
     const user = auth.decoded
-    const [showNewFlowerPoupu, setShowNewFlowerPupup] = useState(false)
 
-    const hasCreationPermissions = user.permissionlevel >= permissionsRequired['veiw_flower_statistics']
+    const [showNewFlowerPoupu, setShowNewFlowerPupup] = useState(false)
+    const [refreshVariable, setRefreshVariable] = useState(false)
 
     const onFlowerClick = (flower) => {
         if(!(user.permissionlevel >= permissionsRequired['veiw_flower_statistics'])) return
@@ -21,11 +21,17 @@ export default function ViewFlowers() {
     }
 
     const onCreateNewFlower = () => {
-        if(!hasCreationPermissions) {
+        if(!user.permissionlevel >= permissionsRequired['veiw_flower_statistics']) {
             setMessage('insufficient permissions')
             return
         }
         setShowNewFlowerPupup(true)
+    }
+
+    const closeNewFlowerPopup = (shouldRefresh) => {
+        console.log("shouldRefresh", shouldRefresh)
+        if(shouldRefresh == true) setRefreshVariable(!refreshVariable)
+        setShowNewFlowerPupup(false)
     }
     
 
@@ -37,11 +43,11 @@ export default function ViewFlowers() {
                 <button className={`buton-main col-span-1 mx-auto`} onClick={onCreateNewFlower}>Add new flower</button>
             </div>
             <NewFlowerForm 
-            showPopup={showNewFlowerPoupu}
-            cancelButton={() => setShowNewFlowerPupup(false)}
-            title={'Add Flower'}/>
+                showPopup={showNewFlowerPoupu}
+                cancelButton={closeNewFlowerPopup}
+                title={'Add Flower'}/>
 
-            <FlowerListComponent  styles={{ maxHeight: '70vh' }} onFlowerClick={onFlowerClick} />
+            <FlowerListComponent  styles={{ maxHeight: '70vh' }} onFlowerClick={onFlowerClick} refresh={refreshVariable}/>
 
             
         </div>

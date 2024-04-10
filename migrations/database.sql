@@ -6,28 +6,22 @@ CREATE TABLE IF NOT EXISTS userRole (
 
 CREATE TABLE IF NOT EXISTS users (
     userID SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
-    passhash VARCHAR(100) NOT NULL,
-    refreshToken VARCHAR(255) DEFAULT '',
-    permissionLevel INT REFERENCES userRole(roleID),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    username VARCHAR(50),
+    picture VARCHAR,
+    refreshToken VARCHAR(500) DEFAULT '',
+    permissionLevel INT REFERENCES userRole(roleID)
 );
 
 CREATE TABLE IF NOT EXISTS flowerVendor (
     vendorID SERIAL PRIMARY KEY,
     vendorName VARCHAR(50) UNIQUE NOT NULL,
-    isActive BOOLEAN DEFAULT true,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS clients (
     clientID SERIAL PRIMARY KEY,
-    clientName VARCHAR(50) UNIQUE NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    clientName VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS projects (
@@ -65,9 +59,7 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(50) NOT NULL,
     flowerImage VARCHAR(255),
-    flowerColor VARCHAR(50),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    flowerColor VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS colorsXFlower (
@@ -93,8 +85,6 @@ CREATE TABLE IF NOT EXISTS flowerXarrangement (
     arrangementID INT REFERENCES arrangements(arrangementID),
     flowerID INT REFERENCES flowers(flowerID),
     amount FLOAT,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (arrangementID, flowerID)
 );
 
@@ -111,6 +101,11 @@ CREATE TABLE IF NOT EXISTS invoices (
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS invoiceCategory (
+    categoryID SERIAL PRIMARY KEY,
+    categoryName VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS invoiceTransaction (
     invoiceID INT REFERENCES invoices(invoiceID),
     transactionNumber VARCHAR(100) NOT NULL 
@@ -124,4 +119,9 @@ CREATE TABLE IF NOT EXISTS flowerXInvoice (
     numStems FLOAT,
     loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (invoiceID, flowerID, projectID)
+);
+
+CREATE TABLE IF NOT EXISTS aditionalXinvoice (
+    invoiceID INT REFERENCES invoices(invoiceID),
+    aditionalID INT REFERENCES additionalsXproejct(aditionalID)
 );

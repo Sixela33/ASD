@@ -12,6 +12,7 @@ class ClientRouter {
         
         this.router.post('/', this.controller.addClient)
         this.router.get('/', this.controller.getClients)
+        this.router.patch('/', this.controller.editClient)
         return this.router
     }
     

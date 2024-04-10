@@ -12,12 +12,6 @@ class RoleRouter {
     }
 
     start(){
-        /*
-        POST   ‘/create’            #Creates new role
-        POST   ‘/give’	#Gives role to user
-        DELETE ‘/removePermission’	#Removes role from user
-        DELETE ‘/’                  #Removes role form database
-        */
         
         this.router.post('/create', this.controller.createRole)
         this.router.get('/', this.controller.getAllPermissionLevels)

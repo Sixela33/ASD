@@ -26,6 +26,17 @@ class ClientController {
         }
     }
 
+    editClient = async (req, res, next) => {
+        try {
+            console.log(req.body)
+            const {clientid, clientname} = req.body
+            await this.service.editClient(clientid, clientname)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     
 }
 

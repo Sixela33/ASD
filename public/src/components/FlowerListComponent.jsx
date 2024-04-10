@@ -9,8 +9,10 @@ const GET_FLOWERS_URL = '/api/flowers/many/'
 const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
 
 
-export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID}) {
+export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh}) {
     if(!onFlowerClick) onFlowerClick = () => {}
+    if(refresh == undefined) refresh = false
+    console.log("refresh", refresh)
     const axiosPrivate = useAxiosPrivate();
     const { setMessage } = useAlert();
     const [ref, inView] = useInView({});
@@ -28,10 +30,8 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const fetchFlowers = async (searchQ, colorFilter) => {
         try {
             const searchByColor = colorFilter?.flowercolor || ''
-
-            let response
             
-            response = axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ + '?filterByColor=' + searchByColor )
+            let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ + '?filterByColor=' + searchByColor )
             let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
             response = await response
             flowerColors = await flowerColors
@@ -58,6 +58,10 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     useEffect(() => {
         debouncedInitial(searchQuery, selectedFlowerColor)
     }, []);
+
+    useEffect(() => {
+        debounced(searchQuery, selectedFlowerColor)
+    },[refresh])
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {

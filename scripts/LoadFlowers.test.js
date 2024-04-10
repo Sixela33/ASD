@@ -15,10 +15,12 @@ let headers = {
 describe('Loading Flowers', () => {
     describe('POST', () => {
         it('Trying to log in', async () => {
-            const loginObject = {email: 'aj@gmail.com', password: 'QWERQWER1'}
-            const response = await request.post('/api/users/login').send(loginObject)
+            const loginObject = {code: 'test'}
+            let response = await request.get('/api/users/oauthlogin').send(loginObject)
+            const refreshToken = response.headers['set-cookie']
 
-            const accessToken = response.body.accessToken
+            response = await request.get('/api/users/refresh').set('Cookie', refreshToken)
+            const accessToken = response.body
 
             expect(accessToken, 'accessToken').to.exist
             headers["Authorization"] = accessToken

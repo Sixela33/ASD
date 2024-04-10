@@ -32,9 +32,9 @@ const validateIdArray = ids => {
     return true
 }
 
-const validateQueryStringLength = string => {
+const validateQueryStringLength = strings => {
 
-    const { error } = schemas.maxLengthStringMany.validate(string)
+    const { error } = schemas.maxLengthStringMany.validate(strings)
 
     if (error) {
         throw {message: error.details[0].message, status: 400}
@@ -43,4 +43,13 @@ const validateQueryStringLength = string => {
     return true
 }
 
-export {validateId, validateIdArray, validateQueryStringLength, validateIdnotRequired}
+const validateQueryString = string => {
+    const { error } = schemas.maxLengthString.validate(string)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 400}
+    } 
+
+    return true}
+
+export {validateId, validateIdArray, validateQueryStringLength, validateIdnotRequired, validateQueryString}

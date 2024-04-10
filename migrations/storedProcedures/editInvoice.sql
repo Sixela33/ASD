@@ -15,7 +15,8 @@ BEGIN
         uploaderID = p_uploaderId,
         vendorID = (p_invoiceData->>'vendor')::INT,
         invoiceDate = (p_invoiceData->>'dueDate')::DATE,
-        invoiceNumber = (p_invoiceData->>'invoiceNumber')::VARCHAR
+        invoiceNumber = (p_invoiceData->>'invoiceNumber')::VARCHAR,
+        invoiceTax = (p_invoiceData->>'invoiceTax')::FLOAT
     WHERE
         invoiceID = (p_invoiceData->>'invoiceid')::INT;
 

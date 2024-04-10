@@ -30,23 +30,9 @@ class ModelPostgres {
             ur.roleCode as permissionlevel, 
             u.userid, 
             u.username,
-            u.passhash
+            u.picture
         FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
         WHERE email = $1;`, [email])        
-    }
-
-    getUserById = async (userID) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`
-        SELECT 
-            u.email, 
-            ur.roleCode as permissionlevel, 
-            ur.roleName,
-            u.userid, 
-            u.username,
-            u.passhash
-        FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
-        WHERE u.userid = $1;`, [userID])        
     }
 
     getUserByRefreshToken = async (refreshToken) => {
@@ -56,40 +42,59 @@ class ModelPostgres {
                 u.email, 
                 ur.roleCode as permissionlevel, 
                 u.userid, 
-                u.username 
+                u.username,
+                u.picture
             FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID 
             WHERE u.refreshtoken = $1;`, [refreshToken])     
     }
 
     setRefreshToken = async (userID, refreshToken) => {
         this.validateDatabaseConnection()
+        console.log(refreshToken)
         return await CnxPostgress.db.query('UPDATE users SET refreshtoken = $1 WHERE userid = $2;', [refreshToken, userID])     
     }
 
-    getUsers = async () => {
+    getUsers = async (searchEmail, offset) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`
-        SELECT 
-            u.email, 
-            ur.roleCode as permissionlevel, 
-            ur.roleName,
-            u.userid, 
-            u.username 
-        FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID;`)
 
+        const LIMIT = 50
+
+        let baseQuery = `
+            SELECT 
+                u.email, 
+                ur.roleCode as permissionlevel, 
+                ur.roleName,
+                u.userid, 
+                u.username
+            FROM users u LEFT JOIN userRole ur ON u.permissionLevel = ur.roleID`
+
+            const queryParams = []
+            let queryConditions = []
+    
+            if(searchEmail && searchEmail != '') {
+                queryConditions.push(`u.email ILIKE $${queryParams.length + 1}`)
+                queryParams.push(`%${searchEmail}%`)
+            }  
+    
+            if (queryConditions.length > 0) {
+                baseQuery += ' WHERE ' + queryConditions.join(' AND ')
+            }
+
+            baseQuery += ' ORDER BY u.userid'
+           
+            baseQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
+
+            queryParams.push(LIMIT, offset*LIMIT)
+    
+            return  await CnxPostgress.db.query( baseQuery, queryParams)
     }
 
-    registerUser = async (username, email, passHash) => {
+    registerUser = async (email, username, picture) => {
         this.validateDatabaseConnection()
 
         await CnxPostgress.db.query(`
-        INSERT INTO users (username, email, passhash, permissionLevel)
-        VALUES ($1, $2, $3, $4);`, [username, email, passHash, ROLES_LIST['User']])    
-    }
-
-    changePassword = async (userID, newPassHash) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query('UPDATE users SET passhash = $1 WHERE userid = $2;', [newPassHash, userID])
+        INSERT INTO users (username, email, picture, permissionLevel)
+        VALUES ($1, $2, $3, (SELECT roleID FROM userRole WHERE roleCode = $4));`, [username, email, picture, ROLES_LIST['Inactive']])    
     }
 
     // -----------------------------------------------
@@ -128,14 +133,6 @@ class ModelPostgres {
         return await CnxPostgress.db.query('SELECT roleName, roleid, roleCode AS permissionlevel FROM userRole')
     }
 
-
-    /*
-    getAllRoles = async () => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT roleid, rolename, roleCode FROM userrole')
-    }
-    */
-
     // -----------------------------------------------
     //                    CLIENTS
     // -----------------------------------------------
@@ -143,12 +140,16 @@ class ModelPostgres {
     createClient = async (clientName) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query('INSERT INTO clients (clientname) VALUES ($1);', [clientName])
-
     }
 
     getClients = async () => {
         this.validateDatabaseConnection()
         return CnxPostgress.db.query('SELECT clientID, clientName FROM clients ORDER BY clientname;')
+    }
+
+    editClient = async (clientid, clientname) => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query('UPDATE clients SET clientName = $1 WHERE clientID=$2', [clientname, clientid])
     }
 
     // -----------------------------------------------
@@ -180,16 +181,7 @@ class ModelPostgres {
     reactivateVendor = async (id) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=true WHERE vendorID=$1;", [id])
-    }
-
-    // -----------------------------------------------
-    //                    CLIENTS
-    // -----------------------------------------------
-
-    createClients = async (clientName) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query('INSERT INTO clients (clientName) VALUES ($1); ', [clientName])
-    }
+    }  
 
     // -----------------------------------------------
     //                   PROJECTS
@@ -200,7 +192,7 @@ class ModelPostgres {
         const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[]);",
         [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras]);
         return response.rows[0]
-        }
+    }
 
     closeProject = async (id) => {
         this.validateDatabaseConnection()
@@ -522,7 +514,7 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
-    //                   ARRANGEMENTS
+    //                 ARRANGEMENTS
     // -----------------------------------------------
 
     populateArrangement = async (arrangementID, flowerData) => {
@@ -599,7 +591,7 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
-    //                ARRANGEMENT TYPES
+    //              ARRANGEMENT TYPES
     // -----------------------------------------------
 
     loadArrangementType = async (typeName) => {
@@ -632,9 +624,10 @@ class ModelPostgres {
                 uploaderID, 
                 vendorID, 
                 invoiceDate, 
-                invoiceNumber)
-            VALUES ($1, $2, $3, $4, $5, $6);`, 
-            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber])
+                invoiceNumber,
+                invoiceTax)
+            VALUES ($1, $2, $3, $4, $5, $6, $7);`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceData.invoiceTax])
     }
 
     editIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid, invoiceid) => {
@@ -647,10 +640,11 @@ class ModelPostgres {
                 uploaderID = $3,
                 vendorID = $4,
                 invoiceDate = $5,
-                invoiceNumber = $6
+                invoiceNumber = $6,
+                invoiceTax = $7
             WHERE 
-                invoiceID = $7;`, 
-            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceid]);
+                invoiceID = $8;`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceData.invoiceTax, invoiceid]);
     }
 
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
@@ -674,6 +668,7 @@ class ModelPostgres {
             i.invoiceNumber,
             u.email,
             i.fileLocation,
+            i.invoiceTax,
             TO_CHAR(i.invoicedate, 'YYYY-MM-DD') AS invoicedate
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
@@ -688,9 +683,6 @@ class ModelPostgres {
         const respone = await CnxPostgress.db.query(`SELECT DISTINCT projectID FROM flowerXInvoice WHERE invoiceID = $1;`, [invoiceID])
         return respone
     }
-
-
-
 
     getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows) => {
         this.validateDatabaseConnection()

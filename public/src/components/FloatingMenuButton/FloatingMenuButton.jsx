@@ -57,14 +57,12 @@ const FloatingMenuButton = ({ options }) => {
         <div className={`absolute bottom-16 right-0 ${showOptions ? 'show' : 'hide'}`}>
           <ul>
             {options.map((option, index) => (
-              
-                (!option.minPermissionLevel || auth?.decoded?.permissionlevel >= option.minPermissionLevel) &&
+              (!option.minPermissionLevel || auth?.decoded?.permissionlevel >= option.minPermissionLevel) &&
                 <li key={index} className="mb-2" onMouseEnter={() => handleMouseEnter(option.text)} onMouseLeave={handleMouseLeave} onMouseMove={handleMouseMove}>
-                <button style={{color:"white"}} className="floating-item rounded-full w-12 h-12 flex items-center justify-center text-lg focus:outline-none mr-2" onClick={option.action}>
-                {option.icon || option.text}
-                </button>
+                  <button style={{color:"white"}} className="floating-item rounded-full w-12 h-12 flex items-center justify-center text-lg focus:outline-none mr-2" onClick={option.action}>
+                    {option.icon || option.text}
+                  </button>
                 </li>
-              
             ))}
           </ul>
         </div>

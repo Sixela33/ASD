@@ -61,12 +61,14 @@ class S3FileHandler {
     }
     
     console.log("filepath", filepath)
-    const params = {
-      Bucket: this.bucketName,
-      Key: filepath,
-    };
-    
-    await this.s3.send(new DeleteObjectCommand(params))
+    if(filepath) {
+      const params = {
+        Bucket: this.bucketName,
+        Key: filepath,
+      };
+      
+      await this.s3.send(new DeleteObjectCommand(params))
+    }
 
     return newFileKey;
   }

@@ -15,6 +15,10 @@ class ClientService {
         const result = await this.model.getClients()
         return result.rows 
     }
+
+    editClient = async (clientid, clientname) => {
+        await this.model.editClient(clientid, clientname)
+    }
 }
 
 export default ClientService

@@ -8,35 +8,25 @@ class UserController {
 
     getUsersList = async (req, res, next) => {
         try {
-            const users = await this.service.getUsers()
+            const {searchEmail, offset} = req.query
+            const users = await this.service.getUsers(searchEmail, offset)
             res.status(200).json(users)
         } catch (error) {
             next(error)
         }
     }
 
-    registerUser = async (req, res, next) => {
+    oauthLoginUser = async (req, res, next) => {
         try {
-            const {username, email, password} = req.body
-            await this.service.registerUser(username, email, password)
-            req.logger.info(`userid:${req.user.userid} Has created a user`)
-            res.status(201).send("User created successfully.")
 
-        } catch (error) {
-            next(error)
-        }
-    }
+            const {code} = req.query
 
-    loginUser = async (req, res, next) => {
-        try {
-            const {email, password} = req.body
-
-            const {accessToken, refreshToken} = await this.service.loginUser(email, password)
-            req.logger.warn(`${email} Has Logged in`)
-
+            const {refreshToken} = await this.service.oauthLogin(code)
+            
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
+            
+            res.redirect(`${process.env.FRONTEND_HOST}:${process.env.FRONTENDPORT}/loginSuccess`)
 
-            res.status(200).json({accessToken})
         } catch (error) {
             next(error)
         }
@@ -67,29 +57,6 @@ class UserController {
             res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
             next(error)
 
-        }
-    }
-
-    forgotPassword = async (req, res, next) => {
-        try {
-            const { email } = req.body
-            req.logger.warn(`email:${email} Passowrd change requested`)
-            const {link} = await this.service.forgotPassword(email)
-            const message = 'An email containing the password recovery link has been sent to your email address. Please check your inbox (and possibly your spam folder) for further instructions on resetting your password.'
-            res.json({link, message})
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    passwordRecovery = async (req, res, next) => {
-        try {
-            const { password, code, id } = req.body
-            await this.service.passwordRecovery(id, code, password)
-            req.logger.warn(`userid:${id} Has Changed his password`)
-            res.status(200).send('Password changed succesfully')
-        } catch (error) {
-            next(error)
         }
     }
 

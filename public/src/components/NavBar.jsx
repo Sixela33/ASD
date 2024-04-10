@@ -24,7 +24,7 @@ const Navbar = () => {
         <nav className="p-4">
             <div className="container flex justify-between items-center ">
                 <Link to="/" className="text-lg font-bold">
-                    <img src='./asd.png' className="h-20" alt="ASD"></img>
+                    <img src='./asd-2.png' className="h-20" alt="ASD"></img>
                 </Link>
                 <div className="lg:hidden">
                     <button onClick={toggleMenu} className="focus:outline-none focus:border-none">

@@ -17,6 +17,7 @@ import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup'
 import { toCurrency } from '../../utls/toCurrency';
+import RestrictedComponent from '../../components/RestrictedComponent';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -127,7 +128,7 @@ export default function ViewProject() {
             tempProjectStats.totalProjectCost = tempProjectStats.totalFlowerCost + tempProjectStats.totalExtrasCost
             tempProjectStats.totalFlowerBudget = tempProjectStats.totalFlowerCost * (1-projectData.profitmargin)
             tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * projectData.staffbudget
-            tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
+            tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget - estimate.totalFlowerCost
 
             console.log(tempProjectStats)
             setProjectStats(tempProjectStats)
@@ -412,59 +413,66 @@ export default function ViewProject() {
                     ))}
                 </TableHeaderSort>
             </div>
-            <div className="flex my-4">
-                <div className="pr-4 w-1/2 ">
-                    <h2>Flower Data</h2>
-                    <div className='table-container h-[20vh] mt-2'>
-                        <TableHeaderSort
-                            headers={{'Flower Name': ' ', 'Total Stems': ' ', 'Unit Price': ' ', 'Estimated Cost': ' ', 'Change Stem': ' '}}>
-                            {showFlowerData?.map((item, index) => (
-                                <tr key={index} >
-                                    <td>{item?.flowername}</td>
-                                    <td>{item?.totalstems}</td>
-                                    <td>${toCurrency(item?.unitprice)}</td>
-                                    <td>${toCurrency(item?.estimatedcost)}</td>
-                                    <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
-                                </tr>
-                                ))}
-                        </TableHeaderSort>
-                        
-                    </div>
+                <div className="flex my-4">
+                    <div className="pr-4 w-3/6 ">
+                        <h2>Flower Data</h2>
+                        <div className='table-container h-[20vh] mt-2'>
+                            <TableHeaderSort
+                                headers={{'Flower Name': ' ', 'Total Stems': ' ', 'Unit Price': ' ', 'Estimated Cost': ' ', 'Change Stem': ' '}}>
+                                {showFlowerData?.map((item, index) => (
+                                    <tr key={index} >
+                                        <td>{item?.flowername}</td>
+                                        <td>{item?.totalstems}</td>
+                                        <td>${toCurrency(item?.unitprice)}</td>
+                                        <td>${toCurrency(item?.estimatedcost)}</td>
+                                        <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
+                                    </tr>
+                                    ))}
+                            </TableHeaderSort>
+                            
+                        </div>
 
-                    <div className='flex mt-5'>
-                        <div className='flex-row'>
-                            <button className='buton-secondary mx-3' onClick={downloadFlowerList} >Download Flower Order</button>
-                            <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
+                        <div className='flex mt-5'>
+                            <div className='flex-row'>
+                                <button className='buton-secondary mx-3 my-2' onClick={downloadFlowerList} >Download Flower Order</button>
+                                <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
+                            </div>
+                            <div className='flex-row text-left ml-5'>
+                                <p>Flower budget: ${toCurrency(totalBudget)}</p>
+                                <p>Estimate spent in flowers: ${toCurrency(estimatedFlowerCost)}</p>
+                                <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${toCurrency(totalBudget-estimatedFlowerCost)}</span></p>
+                            </div>
                         </div>
-                        <div className='flex-row text-left ml-5'>
-                            <p>Estimated Flower cost: ${toCurrency(estimatedFlowerCost)}</p>
-                            <p>Flower budget: ${toCurrency(totalBudget)}</p>
-                            <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${toCurrency(totalBudget-estimatedFlowerCost)}</span></p>
+                    </div>
+                    <RestrictedComponent permissionRequired={permissionsRequired['veiw_project_statistics']}>
+                        <div className="pr-4 w-3/6 ">
+                            <h2>Extra Services</h2>
+                            <div className='table-container h-[20vh] mt-2'>
+                                <TableHeaderSort
+                                    headers={{'description': ' ', 'clientcost': ' '}}>
+                                    {extraServicesData?.map((item, index) => (
+                                        <tr key={index} onClick={() => handleEditService(item)}>
+                                            <td>{item?.description}</td>
+                                            <td>${toCurrency(item?.clientcost)}</td>
+                                        </tr>
+                                        ))}
+                                </TableHeaderSort>
+                            </div>
+                            <div className='text-left ml-5 grid grid-cols-2'>
+                                <div className='grid-col'>
+                                    <p className='mr-4'>Total extras costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
+                                    <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
+                                    <p className='mr-4'>Total project cost: ${toCurrency(projectStats.totalProjectCost)}</p>
+                                </div>
+                                <div className='grid-col'>
+                                    <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
+                                    <p>Estimate spent in flowers ${toCurrency(estimatedFlowerCost)}</p>
+                                    <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>${toCurrency(projectStats.totalProjectProfit)}</span> </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </RestrictedComponent>
                 </div>
-                <div className="pr-4 w-1/2 ">
-                    <h2>Extra Services</h2>
-                    <div className='table-container h-[20vh] mt-2'>
-                        <TableHeaderSort
-                            headers={{'description': ' ', 'clientcost': ' '}}>
-                            {extraServicesData?.map((item, index) => (
-                                <tr key={index} onClick={() => handleEditService(item)}>
-                                    <td>{item?.description}</td>
-                                    <td>${toCurrency(item?.clientcost)}</td>
-                                </tr>
-                                ))}
-                        </TableHeaderSort>
-                    </div>
-                    <div className='text-left ml-5'>
-                        <p className='mr-4'>Total extras costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
-                        <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
-                        <p className='mr-4'>Total cost: ${toCurrency(projectStats.totalProjectCost)}</p>
-                        <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
-                        <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>${toCurrency(projectStats.totalProjectProfit)}</span> </p>
-                    </div>
-                </div>
-            </div>
         </div>    
     );
 }

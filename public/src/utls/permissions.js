@@ -5,7 +5,8 @@ export const permissionsRequired = {
     'vew_invoices_page': ROLES_LIST['Admin'],
     'vew_admin_page': ROLES_LIST['Admin'],
     
-    'veiw_flower_statistics':ROLES_LIST['Admin'],
+    'veiw_flower_statistics': ROLES_LIST['Admin'],
+    'veiw_project_statistics': ROLES_LIST['Admin'],
 
     'create_new_flower': ROLES_LIST['Admin'],
     'create_new_project': ROLES_LIST['Admin'],

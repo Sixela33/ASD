@@ -1,6 +1,7 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useAlert from "../hooks/useAlert";
+import ROLES_LIST from "../../../config/rolesList";
 
 const RequireAuth = ({ allowedRoles }) => {
     const { auth } = useAuth();
@@ -11,6 +12,15 @@ const RequireAuth = ({ allowedRoles }) => {
         setMessage('You need more permissions to perform this action', true)
         return <Navigate to="/" state={{ from: location }} replace />
     } 
+
+    if (auth?.decoded?.permissionlevel == undefined) {
+        return <Navigate to='/login'/>
+    }
+
+    if(auth?.decoded?.permissionlevel == ROLES_LIST['Inactive'] ) {
+        return <Navigate to='/inactive'/>
+    }
+
 
     return (
         auth?.decoded?.permissionlevel >= allowedRoles

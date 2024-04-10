@@ -1,44 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import GoBackButton from '../../components/GoBackButton';
-import RegisterUserPopup from '../../components/Popups/RegisterUserPopup';
-import { useNavigate } from 'react-router-dom';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
+import { useInView } from 'react-intersection-observer';
+import { debounce } from 'lodash';
 
 const USERS_URL = '/api/users/all';
 const CHANGE_ROLE_URL = "/api/users/roles/changePermissions"
+const GET_ROLES_URL = '/api/users/roles'
 
 export default function Users() {
     
-    const axiosPrivate = useAxiosPrivate();
+    const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
-    const navigateTo = useNavigate()
+    const [ref, inView] = useInView({})
 
-    const [users, setUsers] = useState([]);
-    const [allRoles, setAllRoles] = useState([]);
+    const [users, setUsers] = useState([])
+    const [allRoles, setAllRoles] = useState([])
     
-    const [selectedRole, setSelectedRole] = useState(undefined);
+    const [selectedRole, setSelectedRole] = useState(undefined)
     const [selectedUser, setSelectedUser] = useState(undefined)
 
     const [showRolePopup, setShwoRolePopup] = useState(false)
-    const [showRegisterPopup, setShowRegisterPopup] = useState(false)
 
-    async function getData() {
+    const [searchByEmail, setSearchByEmail] = useState('')
+
+    const offset = useRef(0)
+    const dataLeft = useRef(true)
+    const firstLoad = useRef(false)
+
+    async function getRoles() {
         try {
-            const response = await axiosPrivate.get(USERS_URL);
-            setUsers(response?.data?.users);
-            setAllRoles(response?.data?.allRoles);
+            const response = await axiosPrivate.get(GET_ROLES_URL) 
+            console.log(response.data)
+            setAllRoles(response.data)
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+            console.error('Error fetching roles:', error);
+
+        }
+    }
+
+    async function getData(searchByEmail) {
+        try {
+            const response = await axiosPrivate.get(USERS_URL + '?searchEmail=' + searchByEmail + '&offset=' + offset.current);
+            offset.current += 1
+
+            setUsers(prevData => [...prevData, ...response?.data?.users])
         } catch (error) {
             setMessage(error.response?.data?.message, true)
             console.error('Error fetching data:', error);
         }
     }
 
+    const debounced = useCallback(debounce(getData, 300))
+
     useEffect(() => {
-        getData();
+        if (!firstLoad.current){
+            getData(searchByEmail);
+            getRoles()
+            firstLoad.current = true
+        }
     }, []);
+
+    useEffect(() => {
+        if(inView && dataLeft.current && firstLoad.current ){
+            debounced(searchByEmail)
+        }
+    }, [inView])
+
+    useEffect(() => {
+        if(firstLoad.current) {
+            setUsers([])
+            offset.current = 0
+            dataLeft.current = 0
+            debounced(searchByEmail)
+        }
+    }, [searchByEmail])
 
     const handleChangeRole = async () => {
         if (!selectedRole) {
@@ -67,10 +106,6 @@ export default function Users() {
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
-            <RegisterUserPopup
-                showPopup={showRegisterPopup}
-                closePopup={() => setShowRegisterPopup(false)}
-                continueSubmit = {() => getData()}/>
             <ConfirmationPopup showPopup ={showRolePopup} closePopup={handleCancelPopup} confirm={handleChangeRole}>
                 <h1>Select new role</h1>
                 <select className="mr-2 px-2 py-1 border border-gray-300 rounded" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
@@ -85,9 +120,12 @@ export default function Users() {
             <div className='grid grid-cols-3 mb-4'>
                 <GoBackButton className='col-span-1'/>
                 <h1 className='col-span-1'>Admin</h1>
-                <button onClick={() => {setShowRegisterPopup(true)}} className='buton-main col-span-1 mx-auto'>Create new User</button>
             </div>
             <div className='table-container h-[70vh]'>
+                <div>
+                    <label className='mr-2'> Search user by Email</label>
+                    <input value={searchByEmail} onChange={(e) => setSearchByEmail(e.target.value)}></input>
+                </div>
                 <table>
                     <thead >
                         <tr>
@@ -108,6 +146,7 @@ export default function Users() {
                                 <td><button className='go-back-button' onClick={() => handleRoleChange(user.userid)}>Change role</button></td>
                             </tr>
                         ))}
+                        {dataLeft.current ? <tr ref={ref}><></></tr>: null}
                     </tbody>
                 </table>
             </div>
