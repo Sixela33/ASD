@@ -1,30 +1,30 @@
-# server congfig
-PORT = 8080
-FRONTENDPORT = 5173
-HOST = http://localhost
-NODE_ENV = production # production
-DATABASE = postgres
-REFRESH_TOKEN_SECRET = secretisimo
-ACCESS_TOKEN_SECRET = secretisimo2
+# servercongfig
+PORT=8080
+FRONTENDPORT=5173
+HOST=http://localhost
+NODE_ENV=production #production
+DATABASE=postgres
+REFRESH_TOKEN_SECRET=secretisimo
+ACCESS_TOKEN_SECRET=secretisimo2
 
-# Postrgres Config
-POSTGRES_DB_PORT = 5432
-POSTGRES_DB_HOST = localhost
-POSTGRES_DB_NAME = ASD
-POSTGRES_DB_USER = papo
-POSTGRES_DB_PASSWORD = papooo
+#PostrgresConfig
+POSTGRES_DB_PORT=5432
+POSTGRES_DB_HOST=localhost
+POSTGRES_DB_NAME=ASD
+POSTGRES_DB_USER=papo
+POSTGRES_DB_PASSWORD=papooo
 
-# File Storage Config
-LOGS_FOLDER = logs/
-LOCAL_FILES_LOCATION = ./SavedFiles
-FILE_STORAGE = 'local' #Local, s3
+#FileStorageConfig
+LOGS_FOLDER=logs/
+LOCAL_FILES_LOCATION=./SavedFiles
+FILE_STORAGE='local' #Local,s3
 
-#S3 CONFIG
-BUCKET_NAME = ''
-BUCKET_REGION = ''
-ACCESS_KEY = ''
-SECRET_ACCESS_KEY = ''
+#S3CONFIG
+BUCKET_NAME=''
+BUCKET_REGION=''
+ACCESS_KEY=''
+SECRET_ACCESS_KEY=''
 
-# GOOGLE OAUTH
-OAUTH_CLIENT_ID= ''
-OAUTH_CLIENT_SECRET = ''
+#GOOGLEOAUTH
+OAUTH_CLIENT_ID=''
+OAUTH_CLIENT_SECRET=''

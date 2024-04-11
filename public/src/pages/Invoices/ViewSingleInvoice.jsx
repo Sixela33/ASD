@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { BASE_URL } from '../../api/axios';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';

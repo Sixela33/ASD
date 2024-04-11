@@ -6,7 +6,6 @@ import InvoiceProjectSelector from '../../components/InvoiceCreation/InvoiceProj
 import InvoiceFlowerAssignment from '../../components/InvoiceCreation/InvoiceFlowerAssignment';
 import GoBackButton from '../../components/GoBackButton';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { BASE_URL } from '../../api/axios';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
