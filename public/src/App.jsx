@@ -56,7 +56,6 @@ function App() {
               <Route path="/projects" element={<ProjectsList/>}></Route>
               <Route path="/projects/:id" element={<ViewProject/>}></Route>
               <Route path="/arrangement/:id" element={<ArrangementCreation/>}></Route>
-              
             </Route>
 
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Staff']} />}>

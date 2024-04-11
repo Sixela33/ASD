@@ -25,7 +25,7 @@ class UserController {
             
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
             
-            res.redirect(`${process.env.FRONTEND_HOST}:${process.env.FRONTENDPORT}/loginSuccess`)
+            res.redirect(`${process.env.HOST}/loginSuccess`)
 
         } catch (error) {
             next(error)

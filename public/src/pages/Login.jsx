@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import GoogleOauth from '../components/GoogleOauth';
 import useRefreshToken from '../hooks/useRefreshToken';
 import { FcGoogle } from "react-icons/fc";

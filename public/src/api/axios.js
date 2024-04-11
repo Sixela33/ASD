@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const BASE_URL = process.env.NODE_ENV === 'production' ? import.meta.env.VITE_BASE_PATH : 'http://localhost:8080';
+export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.VITE_BASE_PATH : 'http://localhost:8080';
 
 export default axios.create({
     baseURL: BASE_URL
