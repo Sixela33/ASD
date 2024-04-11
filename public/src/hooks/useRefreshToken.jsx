@@ -16,8 +16,8 @@ const useRefreshToken = () => {
             });
  
        // console.log("RES: ",response)
-       if(/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/.test(response.data)){
-        console.log("response.data", response.data)
+       console.log("response.data", response.data)
+       if(response.data && typeof response.data === 'string' && response.data.trim() !== '' && !response.data.includes('<')){
 
            setAuth(prev => {
               const decoded = jwtDecode(response.data)
