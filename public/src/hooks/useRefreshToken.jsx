@@ -16,7 +16,7 @@ const useRefreshToken = () => {
             });
  
        // console.log("RES: ",response)
-       if(response.data){
+       if(/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/.test(esponse.datar)){
         console.log("response.data", response.data)
 
            setAuth(prev => {
