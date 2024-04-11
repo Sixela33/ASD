@@ -16,16 +16,19 @@ const useRefreshToken = () => {
             });
  
        // console.log("RES: ",response)
-        setAuth(prev => {
-           const decoded = jwtDecode(response.data)
+       if(response.data){
 
-            return {
-                ...prev,
-                decoded: decoded.user,
-                accessToken: response.data,
-                googleAccesToken: decoded.access_token
-            }
-        });
+           setAuth(prev => {
+              const decoded = jwtDecode(response.data)
+   
+               return {
+                   ...prev,
+                   decoded: decoded.user,
+                   accessToken: response.data,
+                   googleAccesToken: decoded.access_token
+               }
+           });
+       }
         return response.data.accessToken;
     }
     return refresh;

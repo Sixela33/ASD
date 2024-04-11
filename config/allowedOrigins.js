@@ -5,7 +5,7 @@ const allowedOrigins = [
     'http://195.35.19.195:5173',
     'http://127.0.0.1:5500',
     'http://ramelax.com.ar',
-
+    'http://ramelax.com.ar:80',
 ];
 
 export default allowedOrigins;
