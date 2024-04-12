@@ -23,9 +23,7 @@ class UserController {
 
         const {refreshToken} = await this.service.oauthLogin(code)
         
-        console.log('RTLOGIN_0', refreshToken)
         res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
-        console.log('RTLOGIN_1', refreshToken)
         let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':5173'
 
         res.redirect(`${redirect_uri}/loginSuccess`)
@@ -40,7 +38,7 @@ class UserController {
             const cookies = req.cookies;
 
             const {accessToken} = await this.service.handleRefresh(cookies.jwt)
-            console.log('accessToken', accessToken)
+
             res.json(accessToken)
         } catch (error) {
             next(error)

@@ -29,7 +29,6 @@ export default function ViewFlowers() {
     }
 
     const closeNewFlowerPopup = (shouldRefresh) => {
-        console.log("shouldRefresh", shouldRefresh)
         if(shouldRefresh == true) setRefreshVariable(!refreshVariable)
         setShowNewFlowerPupup(false)
     }

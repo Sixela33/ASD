@@ -50,7 +50,6 @@ class ModelPostgres {
 
     setRefreshToken = async (userID, refreshToken) => {
         this.validateDatabaseConnection()
-        console.log(refreshToken)
         return await CnxPostgress.db.query('UPDATE users SET refreshtoken = $1 WHERE userid = $2;', [refreshToken, userID])     
     }
 
@@ -818,7 +817,6 @@ class ModelPostgres {
     }
 
     editService = async (serviceData) => {
-        console.log(serviceData)
         this.validateDatabaseConnection()
         await CnxPostgress.db.query(`
         UPDATE additionalsXproejct 

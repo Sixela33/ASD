@@ -33,7 +33,7 @@ export default function Users() {
     async function getRoles() {
         try {
             const response = await axiosPrivate.get(GET_ROLES_URL) 
-            console.log(response.data)
+
             setAllRoles(response.data)
         } catch (error) {
             setMessage(error.response?.data?.message, true)

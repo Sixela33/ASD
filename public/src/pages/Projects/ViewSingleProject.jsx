@@ -121,8 +121,7 @@ export default function ViewProject() {
             addAssignedBudget(estimate.totalFlowerCostByArrangement)
             setEstimatedFlowerCost(estimate.totalFlowerCost)
             let tempProjectStats = {}
-            console.log(projectData)
-            console.log(estimate)
+
             tempProjectStats.totalFlowerCost = totalClientFlowerCost
             tempProjectStats.totalExtrasCost = totalAditional
             tempProjectStats.totalProjectCost = tempProjectStats.totalFlowerCost + tempProjectStats.totalExtrasCost
@@ -130,7 +129,6 @@ export default function ViewProject() {
             tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * projectData.staffbudget
             tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget - estimate.totalFlowerCost
 
-            console.log(tempProjectStats)
             setProjectStats(tempProjectStats)
 
             updateArrangementData();

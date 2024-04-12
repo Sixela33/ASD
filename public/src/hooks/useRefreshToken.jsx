@@ -15,10 +15,6 @@ const useRefreshToken = () => {
                 withCredentials: true
         });
 
-        console.log('fullR', response)
- 
-        // console.log("RES: ",response)
-        console.log("response.data", response.data)
         if(response.data && typeof response.data === 'string' && response.data.trim() !== '' && !response.data.includes('<')){
 
            setAuth(prev => {

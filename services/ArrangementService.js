@@ -25,7 +25,6 @@ class ArrangementService {
 
         arrangementData = await arrangementData
         arrangementFLowerData = await arrangementFLowerData
-        console.log({arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows})
         return {arrangementData: arrangementData.rows, arrangementFlowers: arrangementFLowerData.rows}
     }
 

@@ -57,7 +57,7 @@ export default function AddInvoice() {
         let {flowers, invoiceData, projects} = response?.data
         
         invoiceData = invoiceData[0]
-        console.log("invoiceData", invoiceData)
+
         setFormData({
           invoiceNumber: invoiceData.invoicenumber,
           vendor: invoiceData.vendorid,

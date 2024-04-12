@@ -60,7 +60,6 @@ class S3FileHandler {
         throw {message: 'Error loading file', status: 500}
     }
     
-    console.log("filepath", filepath)
     if(filepath) {
       const params = {
         Bucket: this.bucketName,

@@ -34,7 +34,6 @@ class InvoiceService {
         if(!fileLocation) {
             throw {message: "A file is required to load an invoice", status: 400}
         }
-        console.log("fileLocation", fileLocation)
 
         const response = await this.model.addInvoice(invoiceData, fileLocation, invoiceFlowerData, updaterID)
         return response

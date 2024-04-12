@@ -131,7 +131,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         
         // if it doies, error
         if (flowerExists !== -1) {
-            //console.log("Flower already exists in the project");
+
             setMessage("Flower already exists in the project")
             return;
         }

@@ -78,7 +78,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 });
                 schemaErrors = temp
             }
-            console.log(schemaErrors)
+
             if(schemaErrors) {
                 setErrors(schemaErrors)
             } else {

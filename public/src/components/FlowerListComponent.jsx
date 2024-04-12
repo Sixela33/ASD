@@ -12,7 +12,7 @@ const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
 export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh}) {
     if(!onFlowerClick) onFlowerClick = () => {}
     if(refresh == undefined) refresh = false
-    console.log("refresh", refresh)
+
     const axiosPrivate = useAxiosPrivate();
     const { setMessage } = useAlert();
     const [ref, inView] = useInView({});

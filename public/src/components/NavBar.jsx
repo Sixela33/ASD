@@ -18,8 +18,8 @@ const Navbar = () => {
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
-    //console.log(auth)
 
+    
     return (
         <nav className="p-4">
             <div className="container flex justify-between items-center ">

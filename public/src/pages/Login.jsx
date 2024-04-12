@@ -32,9 +32,8 @@ const Login = () => {
         if (newWindow) {
           let timer = setInterval(() => {
             if (newWindow.closed) {
-              console.log("Yay we're authenticated");
               refresh()
-              navigate('/');
+              navigate('/')
               if (timer) clearInterval(timer);
             }
           }, 500);

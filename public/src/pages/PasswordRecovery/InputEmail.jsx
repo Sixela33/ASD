@@ -21,7 +21,7 @@ export default function InputEmail() {
         await emailSchema.validate(email, { abortEarly: false })
     } catch (err) {
         let temp = {}
-        console.log("err", err)
+
         err.inner.forEach(error => {
             temp['email'] = error.message;
         });
@@ -34,10 +34,8 @@ export default function InputEmail() {
     }
 
     try {
-
-      console.log(email)
+      
       const response = await axiosPrivate.post(REQUEST_PASSWORD_CHANGE_URL, JSON.stringify({email}))
-      console.log(response.data)
       //setMessage(response.data)
     } catch (error) {
       setMessage(error.response?.data);

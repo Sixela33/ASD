@@ -46,7 +46,7 @@ export default function AddAditionalExpensePopup({showPopup, closePopup, submitF
             });
             schemaErrors = temp
         }
-        console.log(schemaErrors)
+
         if(schemaErrors) {
             setFormErorrs(schemaErrors)
             return

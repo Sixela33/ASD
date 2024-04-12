@@ -53,32 +53,24 @@ class UserService {
             refresh_token = ''
         } else {
             const res = await this.oauthProcessCode(code)
-            console.log(res.data)
             const id_token = res.id_token 
             refresh_token = res.refresh_token 
             userData = Jwt.decode(id_token)
-            console.log("userData", userData)
         }
 
-        console.log('userData', userData)
         let existingUser = await this.model.getUserByEmail(userData.email)
-        console.log('existingUser', existingUser?.rows)
         
         if (existingUser.rows?.length != 0) {
             existingUser = existingUser.rows[0]
-            console.log('login')
             return await this.oauthLoginUser(existingUser, refresh_token)
         } else {
-            console.log('register')
             return await this.oauthRegisterUser(userData, refresh_token)
         }
     }
 
     oauthLoginUser = async (userData, refresh_token) => {
         const refreshToken = await Jwt.sign({"userid": userData.userid, 'google_refresh': refresh_token}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d'})
-        console.log('newRefreshToken: ', refreshToken)
         await this.model.setRefreshToken(userData.userid, refreshToken)
-        console.log('newRefreshToken set')
 
         return {refreshToken}
     }
@@ -98,7 +90,6 @@ class UserService {
     }
 
     handleRefresh = async (refreshToken) => {
-        console.log('User Refresh')
 
         let user = await this.model.getUserByRefreshToken(refreshToken)
 
@@ -106,7 +97,6 @@ class UserService {
             throw {message: "Invalid token refresh" ,status: 403}
         }
         user = user.rows[0]
-        console.log('User Refresh', user)
 
         try {
             // reads the refresh token to get the userID
@@ -117,7 +107,6 @@ class UserService {
                 throw { message: error.message, status: 401 }   
             }
 
-            console.log("payload", payload)
             //checks if it is the same that the user that had it
             if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
             // let userRoles = await this.model.getUserRoles(user.userid)
@@ -134,7 +123,6 @@ class UserService {
 
                 const response = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
                 access_token = response.data.access_token
-                console.log('googleAT', access_token)
             } catch (error) {
                 console.log("error while refreshing token", error)
             }
