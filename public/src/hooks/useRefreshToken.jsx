@@ -13,11 +13,13 @@ const useRefreshToken = () => {
         
         const response = await axios.get('/api/users/refresh', {
                 withCredentials: true
-            });
+        });
+
+        console.log('fullR', response)
  
-       // console.log("RES: ",response)
-       console.log("response.data", response.data)
-       if(response.data && typeof response.data === 'string' && response.data.trim() !== '' && !response.data.includes('<')){
+        // console.log("RES: ",response)
+        console.log("response.data", response.data)
+        if(response.data && typeof response.data === 'string' && response.data.trim() !== '' && !response.data.includes('<')){
 
            setAuth(prev => {
               const decoded = jwtDecode(response.data)

@@ -84,6 +84,7 @@ const runScript = async() => {
     } catch (error) {
         console.log(error)
     } finally {
+        console.log('Closing database connection')
         await CnxPostgress.disconnect();
 
     }
