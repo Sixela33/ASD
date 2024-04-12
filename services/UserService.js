@@ -71,7 +71,7 @@ class UserService {
 
         console.log('userData', userData)
         let existingUser = await this.model.getUserByEmail(userData.email)
-        console.log('existingUser', existingUser)
+        console.log('existingUser', existingUser?.rows)
         
         if (existingUser.rows?.length != 0) {
             existingUser = existingUser.rows[0]
@@ -147,7 +147,7 @@ class UserService {
             }
             // creates new temporary token
             const accessToken = await Jwt.sign({user, access_token}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
-            
+
             return {accessToken}
         } catch (error) {
 
