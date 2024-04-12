@@ -6,33 +6,35 @@ import RequireAuth from './components/RequireAuth';
 import Navbar from './components/NavBar';
 import Alert from './components/Alert';
 import ROLES_LIST from '../../config/rolesList';
+import { lazy } from 'react';
 
-import Missing from './pages/Missing';
-import Login from './pages/Login';
-import Home from './pages/Home';
+const Missing = lazy(() => import('./pages/Missing'));
+const Login = lazy(() => import('./pages/Login'));
+const Home = lazy(() => import('./pages/Home'));
 
-import Admin from './pages/Admin/Admin';
-import Users from './pages/Admin/Users';
-import Vendors from './pages/Admin/Vendors';
-import Clients from './pages/Admin/Clients';
+const Admin = lazy(() => import('./pages/Admin/Admin'));
+const Users = lazy(() => import('./pages/Admin/Users'));
+const Vendors = lazy(() => import('./pages/Admin/Vendors'));
+const Clients = lazy(() => import('./pages/Admin/Clients'));
 
-import CreateProject from './pages/Projects/CreateProject';
-import ProjectsList from './pages/Projects/ProjectsList';
-import ViewProject from './pages/Projects/ViewSingleProject';
+const CreateProject = lazy(() => import('./pages/Projects/CreateProject'));
+const ProjectsList = lazy(() => import('./pages/Projects/ProjectsList'));
+const ViewProject = lazy(() => import('./pages/Projects/ViewSingleProject'));
 
-import LoadFlower from './pages/Flowers/LoadFlower';
-import ViewFlowers from './pages/Flowers/ViewFlowers';
-import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
+const LoadFlower = lazy(() => import('./pages/Flowers/LoadFlower'));
+const ViewFlowers = lazy(() => import('./pages/Flowers/ViewFlowers'));
+const SingleFlowerPage = lazy(() => import('./pages/Flowers/SingleFlowerPage'));
 
-import AddInvoice from './pages/Invoices/AddInvoice';
-import ViewInvoices from './pages/Invoices/ViewInvoices';
-import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
-import ArrangementCreation from './pages/ArrangementCreation';
+const AddInvoice = lazy(() => import('./pages/Invoices/AddInvoice'));
+const ViewInvoices = lazy(() => import('./pages/Invoices/ViewInvoices'));
+const ViewSingleInvoice = lazy(() => import('./pages/Invoices/ViewSingleInvoice'));
+const ArrangementCreation = lazy(() => import('./pages/ArrangementCreation'));
 
-import InputEmail from './pages/PasswordRecovery/InputEmail';
-import SetNewPass from './pages/PasswordRecovery/SetNewPass';
-import InactiveUserPage from './pages/InactiveUserPage';
-import LoginSuccess from './pages/LoginSuccess';
+const InputEmail = lazy(() => import('./pages/PasswordRecovery/InputEmail'));
+const SetNewPass = lazy(() => import('./pages/PasswordRecovery/SetNewPass'));
+const InactiveUserPage = lazy(() => import('./pages/InactiveUserPage'));
+const LoginSuccess = lazy(() => import('./pages/LoginSuccess'));
+
 
 function App() {
 

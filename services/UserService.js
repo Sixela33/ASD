@@ -33,11 +33,13 @@ class UserService {
     oauthProcessCode = async (code) => {
         const url = "https://oauth2.googleapis.com/token"
 
+        let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST + '/api/users/oauthlogin' : process.env.HOST + ':' + process.env.PORT + '/api/users/oauthlogin'
+
         const values = {
             code,
             client_id: process.env.OAUTH_CLIENT_ID,
             client_secret: process.env.OAUTH_CLIENT_SECRET,
-            redirect_uri: process.env.HOST + ':' + process.env.PORT + '/api/users/oauthlogin',
+            redirect_uri: redirect_uri,
             grant_type: "authorization_code",
         };
         let res
