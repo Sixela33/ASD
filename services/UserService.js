@@ -85,7 +85,9 @@ class UserService {
 
     oauthLoginUser = async (userData, refresh_token) => {
         const refreshToken = await Jwt.sign({"userid": userData.userid, 'google_refresh': refresh_token}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d'})
+        console.log('newRefreshToken: ', refreshToken)
         await this.model.setRefreshToken(userData.userid, refreshToken)
+        console.log('newRefreshToken set')
 
         return {refreshToken}
     }
