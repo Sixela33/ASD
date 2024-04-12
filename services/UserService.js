@@ -1,23 +1,14 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import Jwt from "jsonwebtoken";
 import { validateId, validateQueryString } from "./Validations/IdValidation.js";
-import nodemailer from 'nodemailer'
-import axios from "../public/src/api/axios.js";
+import axios from "axios";
 import qs from "qs";
 
 class UserService {
 
     constructor() {
         this.model = new ModelPostgres()
-        this.transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
-            secure: process.env.EMAIL_PORT == 465 ? true : false, // Use `true` for port 465, `false` for all other ports
-            auth: {
-              user: process.env.EMAIL_EMAIL,
-              pass: process.env.EMAIL_PASSWORD
-            },
-          });
+        
     }
 
     getUsers = async (searchEmail, offset) => {
@@ -143,7 +134,7 @@ class UserService {
 
                 const response = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
                 access_token = response.data.access_token
-                console.log('googleAT', accessToken)
+                console.log('googleAT', access_token)
             } catch (error) {
                 console.log("error while refreshing token", error)
             }

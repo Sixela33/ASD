@@ -1,9 +1,9 @@
 
 export default function GoogleOauth() {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-    const GOOGLE_OAUTH_URL = import.meta.env.VITE_BASE_PATH + '/api/users/oauthlogin'
+    const GOOGLE_OAUTH_BASE_URL = import.meta.env.VITE_NODE_ENV === 'production' ? import.meta.env.VITE_BASE_PATH : 'http://localhost:8080';
     const options = {
-        redirect_uri: GOOGLE_OAUTH_URL,
+        redirect_uri: GOOGLE_OAUTH_BASE_URL + '/api/users/oauthlogin',
         client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
         access_type: "offline",
         response_type: "code",

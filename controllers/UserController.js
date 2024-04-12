@@ -19,16 +19,16 @@ class UserController {
     oauthLoginUser = async (req, res, next) => {
         try {
 
-            const {code} = req.query
+        const {code} = req.query
 
-            const {refreshToken} = await this.service.oauthLogin(code)
-            
-            console.log('RTLOGIN_0', refreshToken)
-            res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
-            console.log('RTLOGIN_1', refreshToken)
-            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':' + process.env.FORNTEND_PORT
+        const {refreshToken} = await this.service.oauthLogin(code)
+        
+        console.log('RTLOGIN_0', refreshToken)
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
+        console.log('RTLOGIN_1', refreshToken)
+        let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':5173'
 
-            res.redirect(`${redirect_uri}/loginSuccess`)
+        res.redirect(`${redirect_uri}/loginSuccess`)
 
         } catch (error) {
             next(error)
