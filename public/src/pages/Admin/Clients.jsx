@@ -63,9 +63,8 @@ export default function Clients() {
                 closePopup={handleCloseClientPopup} 
                 editClientData={editClientData}/>
                 
-            <div className='grid grid-cols-3 mb-4'>
-                <GoBackButton className='col-span-1'/>
-                <h1 className='col-span-1'>Clients</h1>
+            <div className=' mb-4'>
+                <h1 >Clients</h1>
             </div>
             <div className='table-container h-[70vh]'>
           

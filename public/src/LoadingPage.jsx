@@ -5,7 +5,7 @@ export default function LoadingPage() {
   return (
     <>
         <Navbar/>
-        <div>LoadingPage</div>
+        <div></div>
     </>
   )
 }

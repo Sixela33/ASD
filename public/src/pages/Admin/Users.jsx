@@ -117,12 +117,11 @@ export default function Users() {
                     ))}
                 </select>
             </ConfirmationPopup>
-            <div className='grid grid-cols-3 mb-4'>
-                <GoBackButton className='col-span-1'/>
-                <h1 className='col-span-1'>Admin</h1>
+            <div className=' mb-4'>
+                <h1>Admin</h1>
             </div>
             <div className='table-container h-[70vh]'>
-                <div>
+                <div className='flex items-center'>
                     <label className='mr-2'> Search user by Email</label>
                     <input value={searchByEmail} onChange={(e) => setSearchByEmail(e.target.value)}></input>
                 </div>
