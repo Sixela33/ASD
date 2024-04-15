@@ -13,9 +13,6 @@ const Login = lazy(() => import('./pages/Login'));
 const Home = lazy(() => import('./pages/Home'));
 
 const Admin = lazy(() => import('./pages/Admin/Admin'));
-const Users = lazy(() => import('./pages/Admin/Users'));
-const Vendors = lazy(() => import('./pages/Admin/Vendors'));
-const Clients = lazy(() => import('./pages/Admin/Clients'));
 
 const CreateProject = lazy(() => import('./pages/Projects/CreateProject'));
 const ProjectsList = lazy(() => import('./pages/Projects/ProjectsList'));
@@ -70,11 +67,7 @@ function App() {
             </Route>
 
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
-              <Route path="admin/" element={<Admin/>}/>
-              <Route path="admin/users" element={<Users/>}/>
-              <Route path="admin/vendors" element={<Vendors/>}/>
-              <Route path="admin/clients" element={<Clients/>}/>
-              
+              <Route path="admin/" element={<Admin/>}/>            
               <Route path="project/create/:id?" element={<CreateProject/>}/>      
 
             </Route>

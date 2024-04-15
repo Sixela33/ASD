@@ -118,7 +118,7 @@ export default function Users() {
                 </select>
             </ConfirmationPopup>
             <div className=' mb-4'>
-                <h1>Admin</h1>
+                <h1>Users</h1>
             </div>
             <div className='table-container h-[70vh]'>
                 <div className='flex items-center'>

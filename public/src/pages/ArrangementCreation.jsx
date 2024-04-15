@@ -114,8 +114,10 @@ export default function ArrangementCreation() {
                         <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>Go Back</button>
                         <h2 className='col-span-1'>Create Arrangement</h2>
                     </div>
-                    <p>Arrangement Description: {arrangementData.arrangementdescription}</p>
-                    <p>Arrangement type: {arrangementData.typename}</p>
+                    <div className='text-left mx-[20vw]'>
+                        <p><span className='font-bold'>Arrangement Description: </span> {arrangementData.arrangementdescription}</p>
+                        <p><span className='font-bold'>Arrangement type: </span>{arrangementData.typename}</p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-10 gap-4 ml-10 font-bold py-4">
                         <div className="md:col-span-5 bg-gray-300 rounded shadow px-auto">
                             <FlowerListComponent

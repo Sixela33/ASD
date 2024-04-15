@@ -205,7 +205,7 @@ export default function ViewProject() {
         setShowArrangementEditPopup(true)
     }
 
-    const handleCLickReemoveArrangement = (e) =>  {
+    const handleCLickReemoveArrangement = (e, item) =>  {
         if(!(userData.permissionlevel >= permissionsRequired['remove_arrangement'])) return
         e.stopPropagation() 
         setDeletePopupData({show: true, deleteID:item.arrangementid})
@@ -405,7 +405,7 @@ export default function ViewProject() {
                             </td>
                             <td className={BASE_TD_STYLE}>
                                 <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={handleCLickReemoveArrangement}>remove</button>
+                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) => handleCLickReemoveArrangement(e, item)}>remove</button>
                             </td>
                         </tr>
                     ))}

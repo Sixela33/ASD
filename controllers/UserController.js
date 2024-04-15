@@ -19,15 +19,15 @@ class UserController {
     oauthLoginUser = async (req, res, next) => {
         try {
 
-        const {code} = req.query
+            const {code} = req.query
+            
+            const {refreshToken} = await this.service.oauthLogin(code)
+            
+            res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
+            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':5173'
 
-        const {refreshToken} = await this.service.oauthLogin(code)
-        
-        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
-        let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':5173'
-
-        res.redirect(`${redirect_uri}/loginSuccess`)
-
+            res.redirect(`${redirect_uri}/loginSuccess`)
+            
         } catch (error) {
             next(error)
         }

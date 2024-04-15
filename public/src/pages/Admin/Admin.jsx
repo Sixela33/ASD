@@ -18,16 +18,11 @@ export default function Admin() {
           <div>
             {buttons.map(button => {
               return (
-                <div
-                  key={button.id}
-                  className="p-2.5 mt-2 flex items-center rounded-md px-4 duration-300 cursor-pointer  hover:bg-blue-600"
-                  onClick={() => setComponentToShow(button.component)}
-                >
+                <div key={button.id} className="p-2.5 mt-2 flex items-center rounded-md px-4 duration-300 cursor-pointer  hover:bg-gray-700" onClick={() => setComponentToShow(button.component)}>
                   <span className="text-[15px] ml-4 text-gray-200">{button.label}</span>
                 </div>
               );
             })}
-            <hr className="my-4 text-gray-600" />
           </div>
         </div>
       </div>
