@@ -186,10 +186,10 @@ class ModelPostgres {
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras, isRecurrent) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[]);",
-        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras]);
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN);",
+        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras, isRecurrent]);
         return response.rows[0]
     }
 
@@ -215,6 +215,8 @@ class ModelPostgres {
                 projects.staffbudget, 
                 projects.creatorid, 
                 projects.isclosed, 
+                projects.clientID,
+                projects.isRecurrent,
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
                 FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
@@ -380,11 +382,16 @@ class ModelPostgres {
     }
 
     addArrangementToProject = async (id, arrangementData) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`
-        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
-        VALUES ($1, $2, $3, $4, $5);`, 
-        [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity])
+        this.validateDatabaseConnection();
+        const result = await CnxPostgress.db.query(`
+            INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING arrangementID;`, 
+            [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity]);
+        
+        const arrangementID = result.rows[0].arrangementID;
+        
+        return arrangementID;
     }
 
     editProjectData = async (id, projectData) => {
@@ -406,6 +413,28 @@ class ModelPostgres {
     changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query(`CALL change_flower_in_project($1::INT, $2::INT, $3::INT);`, [projectid, previousflowerid, newflowerid])
+    }
+
+    makeProjectCheckpoint = async (projectData, totalExtrasCost, totalArrangementsCost) => {
+        this.validateDatabaseConnection()
+        
+        const date = new Date()
+        await CnxPostgress.db.query(`
+        INSERT INTO recurrentProjectCheckpoint (
+            projectID,
+            checkpointDate,
+            totalExtrasCost,
+            totalArrangementsCost,
+            profitMargin,
+            staffBudget)
+        VALUES ($1, $2, $3, $4, $5, $6);`, 
+        [projectData.projectid, date, totalExtrasCost, totalArrangementsCost, projectData.profitmargin, projectData.staffbudget])
+    }
+
+
+    getRecurrentProjects = async () => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`SELECT projectID FROM projects WHERE isRecurrent = true AND isClosed = false;`)
     }
 
     // -----------------------------------------------

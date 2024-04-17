@@ -10,14 +10,14 @@ class ProjectService {
         this.model = new ModelPostgres()
     }
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras, isRecurrent) => {
         extras = extras || []
         arrangements = arrangements || []
         
-        await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid})
+        await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, isRecurrent})
         await validateArrangement(arrangements)
         await validateNewSericeArray(extras)
-        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements, extras)
+        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements, extras, isRecurrent)
 
         return response
     }

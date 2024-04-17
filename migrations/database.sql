@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS projects (
     profitMargin FLOAT,
     creatorID INT REFERENCES users(userID),
     isClosed BOOLEAN DEFAULT false,
+    isRecurrent BOOLEAN DEFAULT false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -60,6 +61,16 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerName VARCHAR(50) NOT NULL,
     flowerImage VARCHAR(255),
     flowerColor VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS recurrentProjectCheckpoint (
+    checkpointID SERIAL PRIMARY KEY,
+    projectID INT REFERENCES projects(projectID),
+    checkpointDate DATE NOT NULL,
+    totalExtrasCost FLOAT,
+    totalArrangementsCost FLOAT,
+    profitMargin FLOAT,
+    staffBudget FLOAT
 );
 
 CREATE TABLE IF NOT EXISTS colorsXFlower (

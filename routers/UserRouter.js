@@ -11,7 +11,7 @@ class UserRouter {
         this.router = express.Router()
     }
 
-    start(){
+    start() {
         // gets user by email
         const staffPermission = new PermissionsMiddelware(ROLES_LIST['Staff']).call
 

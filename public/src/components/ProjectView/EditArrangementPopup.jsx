@@ -92,7 +92,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
 
   const saveChanges = async () => {
     let schemaErrors = null
-
+    console.log(newArrangementData)
     try {
         arrangementSchema.validateSync(newArrangementData, { abortEarly: false })
     } catch (err) {
@@ -135,36 +135,42 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
       </div>
       )}
       <div>
-        <FormItem
-          labelName="Arrangement Description:"
-          type="text"
-          inputName="arrangementDescription"
-          value={newArrangementData.arrangementDescription}
-          handleChange={(e) => handleChange('arrangementDescription', e.target.value)}
-          error={newArrangementErrors.arrangementDescription}
-        />
-        <FormItem
-          labelName="Client Cost:"
-          type="number"
-          inputName="clientCost"
-          value={newArrangementData.clientCost}
-          handleChange={(e) => handleChange('clientCost', e.target.value)}
-          error={newArrangementErrors.clientCost}
-        />
-        <FormItem
-          labelName="Arrangement Quantity:"
-          type="number"
-          inputName="arrangementQuantity"
-          value={newArrangementData.arrangementQuantity}
-          handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
-          error={newArrangementErrors.arrangementQuantity}
-        />
+        <div>
+          <FormItem
+            labelName="Arrangement Description:"
+            type="text"
+            inputName="arrangementDescription"
+            value={newArrangementData.arrangementDescription}
+            handleChange={(e) => handleChange('arrangementDescription', e.target.value)}
+            error={newArrangementErrors.arrangementDescription}
+            />
+        </div>
+        <div>
+          <FormItem
+            labelName="Client Cost:"
+            type="number"
+            inputName="clientCost"
+            value={newArrangementData.clientCost}
+            handleChange={(e) => handleChange('clientCost', e.target.value)}
+            error={newArrangementErrors.clientCost}
+            />
+        </div>
+        <div>
+          <FormItem
+            labelName="Arrangement Quantity:"
+            type="number"
+            inputName="arrangementQuantity"
+            value={newArrangementData.arrangementQuantity}
+            handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
+            error={newArrangementErrors.arrangementQuantity}
+            />
+        </div>
       </div>
       <div className='text-start mt-2'>
         <p>Total client cost: ${toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity)}</p>
         <p>Individual flower budget: ${toCurrency(newArrangementData.clientCost * (1 - projectData.profitmargin))}</p>
         <p>Total flower budget: ${toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
-        <p>Total profit: ${toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity) - toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
+        <p>Total profit: ${toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) - (newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
       </div>
       
       <div className='buttons-holder'>

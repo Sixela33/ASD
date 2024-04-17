@@ -29,7 +29,8 @@ const projectSchema = Joi.object({
     creatorid: Joi.number().min(0).messages({
         'number.base': 'Creator ID must be a number.',
         'number.min': 'Creator ID must be greater than or equal to zero.'
-    })
+    }),
+    isRecurrent: Joi.boolean()
 });
 
 export { projectSchema };

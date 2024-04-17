@@ -24,7 +24,8 @@ const initialState = {
   date: '',
   contact: '',
   staffBudget: 0.3,
-  profitMargin: 0.7
+  profitMargin: 0.7,
+  isRecurrent: false
 }
 
 const baseProjectStatsData = {
@@ -43,6 +44,7 @@ const baseProjectSchema = Yup.object().shape({
     contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
+    isRecurrent: Yup.boolean('isRecurrent is required').required('isRecurrent is required').typeError('isRecurrent is required'),
 });
 
 const arrangementSchema = Yup.object().shape({
@@ -75,7 +77,7 @@ export default function CreateProject() {
     const [projectStats, setProjectStats] = useState(baseProjectStatsData)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
     
-    const { client, description, date, contact, staffBudget, profitMargin } = formState
+    const { client, description, date, contact, staffBudget, profitMargin, isRecurrent } = formState
 
     // sums all the budgets 
     useEffect(() => {
@@ -381,6 +383,11 @@ export default function CreateProject() {
                         <button className='buton-secondary' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
                         <button className='buton-secondary mx-3' onClick={() => setShowExpensesPopup(true)}>Add extra service</button>
                         <button className='buton-main' onClick={handleSubmit} >Save Project</button>
+                        <div>
+                            <label>Is Recurrent</label>
+                            <input type='checkbox' value={isRecurrent} onChange={() => handleFormEdit('isRecurrent', !isRecurrent)}></input>
+
+                        </div>
                     </div>
                 </div>
             </div>

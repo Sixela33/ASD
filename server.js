@@ -3,7 +3,7 @@ import cors from "cors";
 import corsOptions from "./config/corsOptions.js"
 import cookieParser from "cookie-parser";
 import messageLogger from "./loggers/messageLogger.js";
-
+import schedule from 'node-schedule'
 
 import errorHandler from "./middleware/ErrorHandler.js";
 import credentials from "./middleware/credentials.js";
@@ -22,6 +22,8 @@ import ArrangementRouter from "./routers/ArrangementRouter.js";
 import VendorRouter from "./routers/VendorRouter.js";
 import ClientRouter from "./routers/ClientRouter.js";
 import InvoiceRouter from "./routers/InvoiceRouter.js";
+
+import RecurrentProjectCheckpointer from "./scripts/createRecurentProjectCheckpoints.js";
 
 import ROLES_LIST from "./config/rolesList.js";
 import ExtraServicesRouter from "./routers/ExtraServicesRouter.js";
@@ -54,15 +56,18 @@ class Server {
         this.app.use('/api/SavedFiles', express.static('SavedFiles'));
         this.app.use(requestLogger)
         
+        if (this.persistance == 'postgres') {
+            await CnxPostgress.connect();
+        }
+
         this.app.use((req, res, next) => {
             req.logger = messageLogger
             next()
         })
-        
+     
+        const checkpointer = new RecurrentProjectCheckpointer()
 
-        if (this.persistance == 'postgres') {
-            await CnxPostgress.connect();
-        }
+        schedule.scheduleJob('checkpointer', '@weekly', checkpointer.createRecurentProjectCheckpoints)
 
         // -----------------------------------------------
         //                  ROUTES

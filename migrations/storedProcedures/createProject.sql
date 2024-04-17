@@ -7,15 +7,16 @@ CREATE OR REPLACE PROCEDURE createProject(
     INOUT p_projectClient INT, --this is disgusting
     p_creatorid INT,
     p_arrangements_arr JSONB[],
-    p_extras_arr JSONB[]
+    p_extras_arr JSONB[],
+    p_isRecurrent BOOLEAN
 ) AS $$
 DECLARE
     arrangement_record JSONB;
     extra_service JSONB;
 BEGIN
     -- INSERT THE PROJECT INTO ITS TABLE AND STORE THE ID
-    INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, clientID, profitMargin, creatorID)
-    VALUES (p_projectDate, p_projectDescription, p_projectContact, p_staffBudget, p_projectClient, p_profitMargin, p_creatorid)
+    INSERT INTO projects (projectDate, projectDescription, projectContact, staffBudget, clientID, profitMargin, creatorID, isRecurrent)
+    VALUES (p_projectDate, p_projectDescription, p_projectContact, p_staffBudget, p_projectClient, p_profitMargin, p_creatorid, p_isRecurrent)
     RETURNING projectID INTO p_projectClient;
 
     -- STORE ALL THE ARRANGEMENTS

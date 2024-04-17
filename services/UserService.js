@@ -24,13 +24,13 @@ class UserService {
     oauthProcessCode = async (code) => {
         const url = "https://oauth2.googleapis.com/token"
 
-        let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST + '/api/users/oauthlogin' : process.env.HOST + ':' + process.env.PORT + '/api/users/oauthlogin'
+        let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST  : process.env.HOST + ':' + process.env.PORT
 
         const values = {
             code,
             client_id: process.env.OAUTH_CLIENT_ID,
             client_secret: process.env.OAUTH_CLIENT_SECRET,
-            redirect_uri: redirect_uri,
+            redirect_uri: redirect_uri + '/api/users/oauthlogin',
             grant_type: "authorization_code",
         };
         let res
@@ -124,7 +124,7 @@ class UserService {
                 const response = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
                 access_token = response.data.access_token
             } catch (error) {
-                console.log("error while refreshing token", error)
+                console.log("error while refreshing google access token", error.message)
             }
             // creates new temporary token
             const accessToken = await Jwt.sign({user, access_token}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})

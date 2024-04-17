@@ -6,19 +6,17 @@ class ProjectController {
         this.service = new ProjectService()
     }
 
-    
-
     createProject = async (req, res, next) => {
         try {
-            const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras} = req.body
+            console.log("req.body", req.body)         
+            const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras, isRecurrent} = req.body
             const creatorid = req.user.userid
-            
-            const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid, extras)
+            const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid, extras, isRecurrent)
             res.json(response)
         } catch (error) {
             next(error)
         }
-    }  
+    }
     
     closeProject = async (req, res, next) => {
         try {
