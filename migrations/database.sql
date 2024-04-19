@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS flowerColors (
 CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(50) NOT NULL,
+    flowerDescription VARCHAR(50),
     flowerImage VARCHAR(255),
     flowerColor VARCHAR(50)
 );

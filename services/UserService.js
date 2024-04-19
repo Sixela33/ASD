@@ -109,9 +109,10 @@ class UserService {
 
             //checks if it is the same that the user that had it
             if (payload.userid != user.userid) throw {message: 'Invalid token', status: 403}
-            // let userRoles = await this.model.getUserRoles(user.userid)
+
             delete user.passhash
-            let access_token = ''
+            let googleAccessToken = ''
+
             try {
                 const url = 'https://www.googleapis.com/oauth2/v4/token'
                 const values = {
@@ -122,12 +123,13 @@ class UserService {
                 } 
 
                 const response = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
-                access_token = response.data.access_token
+                googleAccessToken = response.data.access_token
             } catch (error) {
                 console.log("error while refreshing google access token", error.message)
             }
+
             // creates new temporary token
-            const accessToken = await Jwt.sign({user, access_token}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
+            const accessToken = await Jwt.sign({user, googleAccessToken}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
 
             return {accessToken}
         } catch (error) {

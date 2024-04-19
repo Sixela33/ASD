@@ -162,7 +162,7 @@ export default function ArrangementCreation() {
                                 </table>
                             </div>
                             <p className="mt-4">Flower Budget: ${toCurrency(arrangementData.clientcost * (1 - arrangementData.profitmargin))}</p>
-                            <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) && 'text-red-500'}>${sum}</span></p>
+                            <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) ? 'text-red-500' : ''}>${sum}</span></p>
                             <button className='buton-main' onClick={submitArrangement}>Save</button>
                         </div>
 

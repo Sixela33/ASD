@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-
+import sharp from "sharp";
 import path from 'path';
 import crypto from 'crypto'
 
@@ -27,10 +27,12 @@ class S3FileHandler {
     const folder = new Date().toISOString().split('T')[0];
     const filename = crypto.randomBytes(32).toString('hex');
 
+    const buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+    
     const params = {
       Bucket: this.bucketName,
       Key: `${finalFolder}/${folder}/${filename}`,
-      Body: file.buffer,
+      Body: buffer,
       ContentType: file.mimetype
     }
 
@@ -72,7 +74,7 @@ class S3FileHandler {
     return newFileKey;
   }
 
-  async processFileLocation(file) {
+  async processFileLocation(file, expiresIn = 120) {
     if(!file) return file
 
     const params = {
@@ -81,8 +83,7 @@ class S3FileHandler {
     }
   
     const command = new GetObjectCommand(params);
-    const seconds = 60
-    const url = await getSignedUrl(this.s3, command, { expiresIn: seconds });
+    const url = await getSignedUrl(this.s3, command, { expiresIn: expiresIn });
     return url
   }
 }

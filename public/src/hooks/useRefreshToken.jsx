@@ -24,7 +24,7 @@ const useRefreshToken = () => {
                    ...prev,
                    decoded: decoded.user,
                    accessToken: response.data,
-                   googleAccesToken: decoded.access_token
+                   googleAccesToken: decoded.googleAccessToken
                }
            });
        }

@@ -18,6 +18,7 @@ import { permissionsRequired } from '../../utls/permissions';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup'
 import { toCurrency } from '../../utls/toCurrency';
 import RestrictedComponent from '../../components/RestrictedComponent';
+import CreateFlowerOrder from '../../utls/GoogleIntegration/CreateFlowerOrder.js';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -26,6 +27,7 @@ const DELETE_ARRANGEMENT_URL = 'api/arrangements/'
 const CHANGE_FLOWER_IN_PROJECT_URL = 'api/projects/editflower/'
 const ADD_NEW_EXPENSE_URL = '/api/extraServices'
 const EDIT_EXPENSE_URL = '/api/extraServices'
+const GENERATE_PPT_SLIDE_URL = '/api/projects/createFlowerPPT'
 
 const baseProjectStats = {
     totalFlowerCost: 0,
@@ -276,18 +278,27 @@ export default function ViewProject() {
 
     const downloadFlowerList = () => {
         let text = ''
+
         showFlowerData.forEach(item => {
-            text += `${item.flowername} ${item.flowercolor} x ${item.totalstems}`
+            text += `${item.flowername} ${item.flowercolor} X ${item.totalstems} units`
             text += '\n'
         })
 
-        let blob = new Blob([text], {type: 'text/plain'})
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement("a")
-        link.download = "flower_order.txt"
-        link.href = url
-        link.click();
+        if(text == '') {
+            setMessage('No flowers are set for this project.')
+            return
+        }
+        
+        CreateFlowerOrder(auth.googleAccesToken, text)
 
+        /*
+            let blob = new Blob([text], {type: 'text/plain'})
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.download = "flower_order.txt"
+            link.href = url
+            link.click();
+        */
     }
 
     const handleEditService = (serviceToEdit) => {
@@ -308,6 +319,14 @@ export default function ViewProject() {
         }
     }
 
+    const handleGeneratePPTslides = async () => {
+        try {
+            await axiosPrivate.post(GENERATE_PPT_SLIDE_URL, JSON.stringify({projectID: projectData.projectid}))
+        } catch (error) {
+            setMessage(error.response?.data?.message, true)
+        }
+    }
+
     const buttonOptions = [
         {
             text: 'Add New Arrangement', 
@@ -323,7 +342,7 @@ export default function ViewProject() {
         },
         {
             text: 'Download ppt slides', 
-            action: () => {},
+            action: handleGeneratePPTslides,
             icon: <FiDownload/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
         },

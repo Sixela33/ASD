@@ -1,6 +1,4 @@
 import express from 'express'
-import UserController from '../controllers/UserController.js'
-import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
 import RoleController from '../controllers/RoleController.js'
 
 // all the roles routes

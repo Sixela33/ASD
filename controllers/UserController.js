@@ -18,7 +18,6 @@ class UserController {
 
     oauthLoginUser = async (req, res, next) => {
         try {
-
             const {code} = req.query
             
             const {refreshToken} = await this.service.oauthLogin(code)
@@ -38,7 +37,6 @@ class UserController {
             const cookies = req.cookies;
 
             const {accessToken} = await this.service.handleRefresh(cookies.jwt)
-
             res.json(accessToken)
         } catch (error) {
             next(error)

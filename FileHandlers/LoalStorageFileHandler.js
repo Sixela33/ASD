@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
 
@@ -41,10 +42,12 @@ class LocalStorageFileHandler {
             filename = `${path.parse(file?.originalname).name.replace(/ /g, '_').replace(/[#?&]/g, '')}${additive}.${fileExtension}`;
             additive = `(${number})`
             number++;
-        } while (fs.existsSync(path.join(folder, filename)));
+        } while (fs.existsSync(path.join(folder, filename)))
 
+        const buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
         folder = path.join(folder, filename)
-        fs.writeFileSync(folder, file.buffer, "binary");
+        
+        fs.writeFileSync(folder, buffer, "binary");
         return folder
     }
 
@@ -62,7 +65,7 @@ class LocalStorageFileHandler {
 
     }
 
-    async processFileLocation(file) {
+    async processFileLocation(file, expiresIn = null) {
         return `${process.env.HOST}:${process.env.PORT}/api/${file}`
     }
 }

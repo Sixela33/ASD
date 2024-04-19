@@ -3,11 +3,15 @@ import { validateArrangement, validateSingleArrangement } from "./Validations/Ar
 import { validateId, validateIdArray, validateIdnotRequired, validateQueryStringLength } from "./Validations/IdValidation.js"
 import validateProject from "./Validations/ProjectValidations.js"
 import { validateNewSericeArray } from "./Validations/ExtraServicesValidations.js"
+import createPresentation from "./GoogleSuite/CreatePPTpresentation.js"
+import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js"
 
 class ProjectService {
 
     constructor() {
         this.model = new ModelPostgres()
+        this.fileHandler = new FileHandlerSelector('s3').start()
+
     }
 
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras, isRecurrent) => {
@@ -92,6 +96,28 @@ class ProjectService {
     changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
         await validateIdArray([projectid, previousflowerid, newflowerid])
         await this.model.changeFlowerInProject(projectid, previousflowerid, newflowerid)
+    }
+
+    createFlowerPPT = async (projectid, googleAccessToken) => {
+        await validateId(projectid)
+        let flowers = await this.model.getProjectFlowersForPpt(projectid)
+        flowers = flowers.rows
+
+        const flowersByColor = {}
+        console.log(flowers)
+
+
+        for (let flower of flowers) {
+            flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage, 100)
+            if(!flowersByColor[flower.flowercolor]) {
+                flowersByColor[flower.flowercolor] = [flower]
+            } else {
+                flowersByColor[flower.flowercolor].push(flower)
+            }        
+        }
+        
+        await createPresentation(googleAccessToken, flowersByColor)
+
     }
 }
 

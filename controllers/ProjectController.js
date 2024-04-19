@@ -103,6 +103,18 @@ class ProjectController {
             next(error)
         }
     }
+
+    createFlowerPPT = async (req, res, next) => {
+        try {
+            const {projectID} = req.body
+            const googleAccessToken = req.user.googleAccessToken
+            console.log("googleAccessToken", googleAccessToken)
+            await this.service.createFlowerPPT(projectID, googleAccessToken)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default ProjectController

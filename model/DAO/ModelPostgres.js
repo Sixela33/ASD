@@ -329,7 +329,6 @@ class ModelPostgres {
         const response =  await CnxPostgress.db.query( queryBase, queryParams)
         return response
     }
-
     
     getProjectArrangements = async (id) => {
         this.validateDatabaseConnection()
@@ -379,6 +378,20 @@ class ModelPostgres {
             ) FxI ON f.flowerID = FxI.flowerID
             WHERE p.projectID = ANY($1);`, [ids])
         return response
+    }
+
+    getProjectFlowersForPpt = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+        SELECT
+            f.flowerName,
+            f.flowerColor,
+            f.flowerImage
+            FROM projects p
+            JOIN arrangements a ON p.projectID = a.projectID
+            LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
+            LEFT JOIN flowers f ON fxa.flowerID = f.flowerID 
+            WHERE p.projectID = $1;`, [id])
     }
 
     addArrangementToProject = async (id, arrangementData) => {

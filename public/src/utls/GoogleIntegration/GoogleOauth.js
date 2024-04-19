@@ -11,6 +11,9 @@ export default function GoogleOauth() {
         scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/presentations",
+        "https://www.googleapis.com/auth/documents",
+        "https://www.googleapis.com/auth/drive"
         ].join(" "),
     }
 
