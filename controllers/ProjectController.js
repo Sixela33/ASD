@@ -109,8 +109,8 @@ class ProjectController {
             const {projectID} = req.body
             const googleAccessToken = req.user.googleAccessToken
             console.log("googleAccessToken", googleAccessToken)
-            await this.service.createFlowerPPT(projectID, googleAccessToken)
-            res.sendStatus(200)
+            const response = await this.service.createFlowerPPT(projectID, googleAccessToken)
+            res.json(response)
         } catch (error) {
             next(error)
         }

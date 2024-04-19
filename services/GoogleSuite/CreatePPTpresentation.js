@@ -75,12 +75,9 @@ export default async function createPresentation(googleAccessToken, presentation
                 requests,
             },
             {
-                headers: {
-                    Authorization: `Bearer ${googleAccessToken}`,
-                    "Content-Type": "application/json",
-                },
+                headers: authHeaders
             }
-        );
+        )
 
         return presentationId; // Return the ID of the created presentation
     } catch (error) {

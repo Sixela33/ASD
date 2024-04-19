@@ -116,8 +116,8 @@ class ProjectService {
             }        
         }
         
-        await createPresentation(googleAccessToken, flowersByColor)
-
+        const presentationid = await createPresentation(googleAccessToken, flowersByColor)
+        return presentationid
     }
 }
 

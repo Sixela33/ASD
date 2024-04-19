@@ -57,13 +57,9 @@ export default async function CreateFlowerOrder(googleAccessToken, text) {
       }
     );    
 
-    const url = 'https://docs.google.com/document/d/' + documentId
-
-    window.open(url, '_blank').focus();
-
-    return
+    return documentId
   } catch (error) {
     console.error("Error al crear el documento:", error);
-    return { success: false, error: error };
+    throw error
   }
 }

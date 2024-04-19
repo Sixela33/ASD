@@ -289,7 +289,10 @@ export default function ViewProject() {
             return
         }
         
-        CreateFlowerOrder(auth.googleAccesToken, text)
+        const documentId= CreateFlowerOrder(auth.googleAccesToken, text)
+        const url = 'https://docs.google.com/document/d/' + documentId
+
+        window.open(url, '_blank').focus()
 
         /*
             let blob = new Blob([text], {type: 'text/plain'})
@@ -321,7 +324,11 @@ export default function ViewProject() {
 
     const handleGeneratePPTslides = async () => {
         try {
-            await axiosPrivate.post(GENERATE_PPT_SLIDE_URL, JSON.stringify({projectID: projectData.projectid}))
+            const response = await axiosPrivate.post(GENERATE_PPT_SLIDE_URL, JSON.stringify({projectID: projectData.projectid}))
+            const documentId = response.data 
+            const url = 'https://docs.google.com/presentation/d/' + documentId
+
+            window.open(url, '_blank').focus()
         } catch (error) {
             setMessage(error.response?.data?.message, true)
         }
