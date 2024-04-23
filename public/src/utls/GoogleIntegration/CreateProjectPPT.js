@@ -1,5 +1,5 @@
 import axios from 'axios'
-import getOrCreateFolder from "./GetOrCreateFolder.js";
+import getOrCreateFolder from './GetFolderID';
 import crypto from 'crypto'
 
 /*
@@ -52,6 +52,7 @@ export default async function createPresentation(googleAccessToken, presentation
         
         const maxItemsPerSlide = 8
 
+        // Dividing the items into slides and creating new slides for overflowing items
         for (const slideTitle in presentationData) {
             const slideContent = presentationData[slideTitle];
             if (slideContent.length > maxItemsPerSlide) {
@@ -89,6 +90,8 @@ function addSlide (title, items) {
     const slideID = crypto.randomBytes(16).toString('hex')
     const titleTextBoxID = crypto.randomBytes(16).toString('hex')
 
+
+    //Create new slide with title
     requests.push({
         createSlide: {
             objectId: slideID,
@@ -158,6 +161,8 @@ function addSlide (title, items) {
     let colcount = 0
     let rowcount = 0
     let maxItemsXRow = 4
+
+    // Creating cards for each presentation
     for (let flower of items) {
         requests.push(...addCard(
             colcount * x_separationBetweenCards, 
@@ -166,7 +171,9 @@ function addSlide (title, items) {
             flower.flowerimage, 
             flower.flowername
         ))
+
         colcount++
+
         if (colcount == maxItemsXRow) {
             colcount = 0
             rowcount += 1

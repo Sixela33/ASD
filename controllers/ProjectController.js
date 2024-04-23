@@ -108,7 +108,6 @@ class ProjectController {
         try {
             const {projectID} = req.body
             const googleAccessToken = req.user.googleAccessToken
-            console.log("googleAccessToken", googleAccessToken)
             const response = await this.service.createFlowerPPT(projectID, googleAccessToken)
             res.json(response)
         } catch (error) {

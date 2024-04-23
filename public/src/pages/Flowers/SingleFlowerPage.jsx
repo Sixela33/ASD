@@ -49,7 +49,11 @@ export default function SingleFlowerPage() {
     }, []);
 
     if (loading) {
-        return <div className="text-center mt-8">Loading...</div>;
+        return (
+        <div className="text-center mt-8">            
+            <img src='spinner.svg'/>
+        </div>
+        )
     }
 
     return (

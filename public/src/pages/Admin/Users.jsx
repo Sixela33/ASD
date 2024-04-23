@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import GoBackButton from '../../components/GoBackButton';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import { useInView } from 'react-intersection-observer';
 import { debounce } from 'lodash';

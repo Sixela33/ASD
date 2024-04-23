@@ -19,6 +19,7 @@ import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpens
 import { toCurrency } from '../../utls/toCurrency';
 import RestrictedComponent from '../../components/RestrictedComponent';
 import CreateFlowerOrder from '../../utls/GoogleIntegration/CreateFlowerOrder.js';
+import LoadingPopup from '../../components/LoadingPopup.jsx';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -74,6 +75,8 @@ export default function ViewProject() {
 
     const [showServicePopup, setShowServicePopup] = useState(false)
     const [editService, setEditService] = useState(null)
+
+    const [showLoadingPopup, setShowLoadingPopup] = useState(false)
 
     const fetchFlowers = async () => {
         try {
@@ -276,23 +279,32 @@ export default function ViewProject() {
         }
     }
 
-    const downloadFlowerList = () => {
-        let text = ''
+    const downloadFlowerList = async () => {
+        try {
+            setShowLoadingPopup(true)
 
-        showFlowerData.forEach(item => {
-            text += `${item.flowername} ${item.flowercolor} X ${item.totalstems} units`
-            text += '\n'
-        })
-
-        if(text == '') {
-            setMessage('No flowers are set for this project.')
-            return
+            let text = ''
+    
+            showFlowerData.forEach(item => {
+                text += `${item.flowername} ${item.flowercolor} X ${item.totalstems} units`
+                text += '\n'
+            })
+    
+            if(text == '') {
+                setMessage('No flowers are set for this project.')
+                return
+            }
+            
+            const documentId= await CreateFlowerOrder(auth.googleAccesToken, text)
+            const url = 'https://docs.google.com/document/d/' + documentId
+    
+            window.open(url, '_blank').focus()
+            
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setShowLoadingPopup(false)
         }
-        
-        const documentId= CreateFlowerOrder(auth.googleAccesToken, text)
-        const url = 'https://docs.google.com/document/d/' + documentId
-
-        window.open(url, '_blank').focus()
 
         /*
             let blob = new Blob([text], {type: 'text/plain'})
@@ -324,6 +336,7 @@ export default function ViewProject() {
 
     const handleGeneratePPTslides = async () => {
         try {
+            setShowLoadingPopup(true)
             const response = await axiosPrivate.post(GENERATE_PPT_SLIDE_URL, JSON.stringify({projectID: projectData.projectid}))
             const documentId = response.data 
             const url = 'https://docs.google.com/presentation/d/' + documentId
@@ -331,6 +344,8 @@ export default function ViewProject() {
             window.open(url, '_blank').focus()
         } catch (error) {
             setMessage(error.response?.data?.message, true)
+        } finally {
+            setShowLoadingPopup(false)
         }
     }
 
@@ -396,6 +411,11 @@ export default function ViewProject() {
                 projectData={projectData}
                 editExpense={editService}
             />
+            <LoadingPopup
+                showPopup={showLoadingPopup}>
+                    <h1>Creating your document</h1>
+                    <p>Please wait and you will be redirected</p>
+            </LoadingPopup>
             
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>

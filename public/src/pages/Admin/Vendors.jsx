@@ -5,7 +5,6 @@ import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenu
 import AddVendorPopup from '../../components/Popups/AddVendorPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
-import GoBackButton from '../../components/GoBackButton'
 
 const FETCH_VENDORS_URL = '/api/vendors'
 const defaultSortConfig = { key: null, direction: 'asc' }

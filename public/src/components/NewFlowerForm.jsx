@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import useAlert from '../hooks/useAlert';
 import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import PopupBase from './PopupBase';
+import LoadingPopup from './LoadingPopup';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
@@ -15,28 +16,29 @@ const defaultFormData = {
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit, title}) {
     if(!refreshData) refreshData = () => {}
 
-    const axiosPrivate = useAxiosPrivateImage();
+    const axiosPrivate = useAxiosPrivateImage()
     const { setMessage } = useAlert()
 
-    const [formData, setFormData] = useState(defaultFormData);
-    const [isSubmitting, setIsSubmitting] = useState(false); // State to track if form is being submitted
+    const [formData, setFormData] = useState(defaultFormData)
+    const [isSubmitting, setIsSubmitting] = useState(false) // State to track if form is being submitted
 
-  
+    
+
     const handleChange = (e) => {
-      const { name, value } = e.target;
+      const { name, value } = e.target
       setFormData({
         ...formData,
         [name]: value,
-      });
-    };
+      })
+    }
   
     const handleImageChange = (e) => {
-      const file = e.target.files[0];
+      const file = e.target.files[0]
       setFormData({
         ...formData,
         flower: file,
-      });
-    };
+      })
+    }
 
     useState(() => {
       if(flowerToEdit) {
@@ -49,28 +51,27 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }, [flowerToEdit])
     
     const handleSubmit = async (e) => {
-      e.preventDefault();
+      e.preventDefault()
 
       if(isSubmitting) return
 
-      setIsSubmitting(true); 
-      setMessage('Adding flower...', false)
+      setIsSubmitting(true) 
       
       try {
-          const formDataToSend = new FormData();
-          formDataToSend.append('name', formData.name);
-          formDataToSend.append('color', formData.color);
-          formDataToSend.append('flower', formData.flower); 
+          const formDataToSend = new FormData()
+          formDataToSend.append('name', formData.name)
+          formDataToSend.append('color', formData.color)
+          formDataToSend.append('flower', formData.flower) 
 
           if(flowerToEdit) {
-            formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage); 
-            formDataToSend.append('id', flowerToEdit.flowerid); 
+            formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage) 
+            formDataToSend.append('id', flowerToEdit.flowerid) 
     
-            const response = await axiosPrivate.patch(EDIT_FLOWER_URL, formDataToSend);
+            await axiosPrivate.patch(EDIT_FLOWER_URL, formDataToSend)
             setMessage("Flower Edited succesfully", false)
             refreshData()
           } else {
-            const response = await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend);
+            await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend)
             setMessage("Flower Added succesfully", false)
           }
   
@@ -79,14 +80,18 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
       } catch (error) {
           setMessage(error.response?.data, true)
-          console.log(error);
+          console.log(error)
       } finally {
-        setIsSubmitting(false);
+        setIsSubmitting(false)
       }
     }
 
   return (
     <PopupBase showPopup={showPopup}>
+      <LoadingPopup showPopup={isSubmitting}>
+        <h1>Loading Flower</h1>
+        <p>Please wait</p>
+      </LoadingPopup>
       <h2 className='mb-4'>{title}</h2>
       <div className="flex flex-col items-center w-3/4 mx-auto">
         <div className="flex flex-col mb-4 w-full">
@@ -105,7 +110,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         </div>
         <div className='buttons-holder w-full'>
           <button className='buton-secondary' onClick={cancelButton}>Cancel</button>
-          <button className='buton-main' onClick={handleSubmit}>{isSubmitting ? 'Adding Flower...' : 'Add Flower'}</button>
+          <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>
         </div>
       </div>
     </PopupBase>

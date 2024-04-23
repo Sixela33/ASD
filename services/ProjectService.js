@@ -104,7 +104,6 @@ class ProjectService {
         flowers = flowers.rows
 
         const flowersByColor = {}
-        console.log(flowers)
 
 
         for (let flower of flowers) {
