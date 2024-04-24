@@ -173,6 +173,7 @@ function addSlide (title, items) {
         }
 
     }
+    
 
     return requests
 }
@@ -182,6 +183,7 @@ function addCard(baseX, baseY, slideID, imageURL, imageText) {
     const textBoxID = crypto.randomBytes(16).toString('hex')
     const requests = []
 
+    
     if (imageURL) {
         requests.push({
             createImage: {
@@ -209,7 +211,8 @@ function addCard(baseX, baseY, slideID, imageURL, imageText) {
             }
         })
     }
-
+    
+    
     requests.push({
         createShape: {
             objectId: textBoxID,
@@ -234,7 +237,7 @@ function addCard(baseX, baseY, slideID, imageURL, imageText) {
         insertText: {
             objectId: textBoxID,
             insertionIndex: 0,
-            text: imageText,
+            text: imageText || 'Not found',
         }
     },
     {

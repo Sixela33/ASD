@@ -20,6 +20,7 @@ import { toCurrency } from '../../utls/toCurrency';
 import RestrictedComponent from '../../components/RestrictedComponent';
 import CreateFlowerOrder from '../../utls/GoogleIntegration/CreateFlowerOrder.js';
 import LoadingPopup from '../../components/LoadingPopup.jsx';
+import RedirectToFilePopup from '../../components/Popups/RedirectToFilePopup.jsx';
 
 const ARRANGEMENT_DATA_FETCH = '/api/projects/arrangements/';
 const CLOSE_PROJECT_URL = 'api/projects/close/'
@@ -77,6 +78,8 @@ export default function ViewProject() {
     const [editService, setEditService] = useState(null)
 
     const [showLoadingPopup, setShowLoadingPopup] = useState(false)
+    const [showRedirectPopup, setShowRedirectPopup] = useState(false)
+    const [fileRedirectUrl, setFileRedirectUrl] = useState('')
 
     const fetchFlowers = async () => {
         try {
@@ -297,7 +300,9 @@ export default function ViewProject() {
             
             const documentId= await CreateFlowerOrder(auth.googleAccesToken, text)
             const url = 'https://docs.google.com/document/d/' + documentId
-    
+            
+            setShowRedirectPopup(true)
+            setFileRedirectUrl(url)
             window.open(url, '_blank').focus()
             
         } catch (error) {
@@ -340,7 +345,9 @@ export default function ViewProject() {
             const response = await axiosPrivate.post(GENERATE_PPT_SLIDE_URL, JSON.stringify({projectID: projectData.projectid}))
             const documentId = response.data 
             const url = 'https://docs.google.com/presentation/d/' + documentId
-
+            setShowRedirectPopup(true)
+            setFileRedirectUrl(url)
+            
             window.open(url, '_blank').focus()
         } catch (error) {
             setMessage(error.response?.data?.message, true)
@@ -416,6 +423,11 @@ export default function ViewProject() {
                     <h1>Creating your document</h1>
                     <p>Please wait and you will be redirected</p>
             </LoadingPopup>
+            <RedirectToFilePopup
+                showPopup={showRedirectPopup && fileRedirectUrl}
+                closePopup={() => setShowRedirectPopup(false)}
+                url={fileRedirectUrl}>
+            </RedirectToFilePopup>
             
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>

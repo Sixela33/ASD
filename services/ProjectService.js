@@ -105,8 +105,9 @@ class ProjectService {
 
         const flowersByColor = {}
 
-
         for (let flower of flowers) {
+            if(!flower.flowerimage && !flower.flowercolor && !flower.flowername) continue
+
             flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage, 100)
             if(!flowersByColor[flower.flowercolor]) {
                 flowersByColor[flower.flowercolor] = [flower]
