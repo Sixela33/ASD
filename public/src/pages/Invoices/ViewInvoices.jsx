@@ -71,7 +71,7 @@ export default function ViewInvoices() {
                 return;
             }
             page.current = page.current + 1;
-            setInvoiceData(response?.data);
+            setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
         } catch (error) {
             setMessage(error.response?.data);
         }
