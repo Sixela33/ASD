@@ -398,7 +398,7 @@ export default function CreateProject() {
                         <button className='buton-secondary' type="button" onClick={() => setShowArrangementPopup(true)} >Add New Arrangement</button>
                         <button className='buton-secondary mx-3' onClick={() => setShowExpensesPopup(true)}>Add extra service</button>
                         <button className='buton-main' onClick={handleSubmit} >Save Project</button>
-                        <div>
+                        <div className='flex items-center mx-3'>
                             <label>Is Recurrent</label>
                             <input type='checkbox' value={isRecurrent} onChange={() => handleFormEdit('isRecurrent', !isRecurrent)}></input>
 
