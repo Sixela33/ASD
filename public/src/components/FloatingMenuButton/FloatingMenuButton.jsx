@@ -50,7 +50,7 @@ const FloatingMenuButton = ({ options }) => {
       <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>
         {tooltipText}
       </Tooltip>
-      <div className="fixed bottom-4 right-4 text-white z-40" ref={floatingMenuRef}>
+      <div className="fixed bottom-4 right-4 text-white z-20" ref={floatingMenuRef}>
         <button className="floating-menu rounded-full w-16 h-16 flex items-center justify-center text-xl focus:outline-none" onClick={toggleOptions}>
           <span><FiMoreHorizontal style={{color:"white"}}/></span>
         </button>

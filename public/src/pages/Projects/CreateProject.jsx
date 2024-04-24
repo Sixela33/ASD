@@ -11,6 +11,7 @@ import FormItem from '../../components/Form/FormItem';
 import FormError from '../../components/Form/FormError';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup';
 import { toCurrency } from '../../utls/toCurrency';
+import LoadingPopup from '../../components/LoadingPopup';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
@@ -77,6 +78,9 @@ export default function CreateProject() {
     const [projectStats, setProjectStats] = useState(baseProjectStatsData)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
     
+    const [isSubmitting, setIsSubmiting] = useState(false)
+
+
     const { client, description, date, contact, staffBudget, profitMargin, isRecurrent } = formState
 
     // sums all the budgets 
@@ -184,45 +188,53 @@ export default function CreateProject() {
 
         // Removing the name from the arrangementType object to make it just the id
         // The same with the client
-        let newData = {
-            ...formState,
-            client: formState.client.clientid,
-        };
-
-        let schemaErrors = null
         try {
-            await baseProjectSchema.validateSync(newData, { abortEarly: false })
-        } catch (err) {
-            let temp = {}
-            err.inner.forEach(error => {
-                temp[error.path] = error.message;
-            });
-            schemaErrors = temp
-        }
-        
-        if(schemaErrors) {
-            setErrors(schemaErrors)
-            return
-        }
-
-
-        const cleanedArrangements = arrangements.map(arrangement => ({
-            ...arrangement,
-            arrangementType: arrangement.arrangementType.arrangementtypeid
-          }))
-
-        newData.arrangements = cleanedArrangements
-        newData.extras = aditionalExpenses
-
-        try {
-            const response = await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
-            const newProjectID = response.data.p_projectclient
-            setMessage('Project created successfully', false)
-            setFormState(initialState)
-            navigateTo('/projects/' + newProjectID || '')
+            setIsSubmiting(true)
+            let newData = {
+                ...formState,
+                client: formState.client.clientid,
+            };
+    
+            let schemaErrors = null
+            try {
+                await baseProjectSchema.validateSync(newData, { abortEarly: false })
+            } catch (err) {
+                let temp = {}
+                err.inner.forEach(error => {
+                    temp[error.path] = error.message;
+                });
+                schemaErrors = temp
+            }
+            
+            if(schemaErrors) {
+                setErrors(schemaErrors)
+                return
+            }
+    
+    
+            const cleanedArrangements = arrangements.map(arrangement => ({
+                ...arrangement,
+                arrangementType: arrangement.arrangementType.arrangementtypeid
+              }))
+    
+            newData.arrangements = cleanedArrangements
+            newData.extras = aditionalExpenses
+    
+            try {
+                const response = await axiosPrivate.post(CREATE_PROJECT_URL, JSON.stringify(newData))
+                const newProjectID = response.data.p_projectclient
+                setMessage('Project created successfully', false)
+                setFormState(initialState)
+                navigateTo('/projects/' + newProjectID || '')
+            } catch (error) {
+                console.log(error)
+                setMessage(error.response?.data, true)
+            }
         } catch (error) {
             console.log(error)
-            setMessage(error.response?.data, true)
+
+        }finally {
+            setIsSubmiting(false)
         }
     }
 
@@ -256,9 +268,12 @@ export default function CreateProject() {
 
     const formRowClass = 'flex flex-row space-x-4  flex-1 w-full';
     const formColClass = "flex flex-col  w-full"
-
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
+            <LoadingPopup
+                showPopup={isSubmitting}>
+
+            </LoadingPopup>
             <AddClientPopup showPopup={showNewClientPopup} closePopup={handleCloseNewClientPopup} />
             <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
             <AddAditionalExpensePopup 

@@ -1,14 +1,7 @@
-import path from 'path';
 import CnxPostgress from '../model/CnxPostgress.js';
 import ModelPostgres from '../model/DAO/ModelPostgres.js';
 import bcrypt from 'bcrypt';
-import fs from 'fs'
 
-const users = [
-    { username: 'user1', email: 'user1@example.com', password: 'password1' },
-    { username: 'user2', email: 'user2@example.com', password: 'password2' },
-    { username: 'user3', email: 'user3@example.com', password: 'password3' }
-];
 
 const arrangements = [
     { arrangementType: 1, arrangementDescription: 'Bridal', clientCost: 100, arrangementQuantity: 5 },
@@ -27,19 +20,6 @@ const projects = [
     { staffBudget: 0.3, projectContact: 'Olivia Taylor', projectDate: '2024-01-23', projectDescription: 'Convention', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
     { staffBudget: 0.3, projectContact: 'James Anderson', projectDate: '2024-01-24', projectDescription: 'Training Session', projectClient: 5, profitMargin: 0.7, creatorid: 1 },
     { staffBudget: 0.3, projectContact: 'Sophia White', projectDate: '2024-01-25', projectDescription: 'Hackathon', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
-];
-
-const flowers = [
-    { flowerName: 'Rose', flowerImage: 'rose.jpg', flowerColor: 'Red' },
-    { flowerName: 'Tulip', flowerImage: 'tulip.jpg', flowerColor: 'Pink' },
-    { flowerName: 'Lily', flowerImage: 'lily.jpg', flowerColor: 'White' },
-    { flowerName: 'Sunflower', flowerImage: 'sunflower.jpg', flowerColor: 'Yellow' },
-    { flowerName: 'Daisy', flowerImage: 'daisy.jpg', flowerColor: 'Yellow and White' },
-    { flowerName: 'Orchid', flowerImage: 'orchid.jpg', flowerColor: 'Purple' },
-    { flowerName: 'Carnation', flowerImage: 'carnation.jpg', flowerColor: 'Pink' },
-    { flowerName: 'Daffodil', flowerImage: 'daffodil.jpg', flowerColor: 'Yellow' },
-    { flowerName: 'Hydrangea', flowerImage: 'hydrangea.jpg', flowerColor: 'Blue' },
-    { flowerName: 'Peony', flowerImage: 'peony.jpg', flowerColor: 'Pink' }
 ];
   
 const flowerXArrangement = [
@@ -164,9 +144,9 @@ const runScript = async() => {
     try {
         await CnxPostgress.connect();
         const model = new ModelPostgres();
-        await createUsers(model)
-        await createClients(model)
-        await loadArrangementTypes(model)
+        //await createUsers(model)
+        //await createClients(model)
+        //await loadArrangementTypes(model)
         await createProjects(model)
         await populateArangement(model)
         await loadVendors(model)

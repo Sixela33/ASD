@@ -4,7 +4,7 @@ import "dotenv/config";
 import fs from 'fs'
 import path from "path";
 
-const request = supertest(process.env.HOST + ':' + process.env.PORT)
+const request = supertest(process.env.SCRIPTS_HOST + ':' + process.env.PORT)
 
 let headers = {
     "Authorization": "",
@@ -18,6 +18,7 @@ describe('Loading Flowers', () => {
             const loginObject = {code: 'test'}
             let response = await request.get('/api/users/oauthlogin').send(loginObject)
             const refreshToken = response.headers['set-cookie']
+            
 
             response = await request.get('/api/users/refresh').set('Cookie', refreshToken)
             const accessToken = response.body

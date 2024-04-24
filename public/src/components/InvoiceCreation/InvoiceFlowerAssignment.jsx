@@ -12,7 +12,7 @@ const GET_PROJECTS_URL = '/api/projects/manyByID';
 const ADD_INVOICE_URL = '/api/invoices'
 const UPDATE_INVOICE_URL = '/api/invoices'
 
-export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData, invoiceFile, loadedFlowers}) {
+export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoiceData, invoiceFile, loadedFlowers, setLoading}) {
 
     const axiosPrivate = useAxiosPrivate();
     const axiosPrivateImage = useAxiosPrivateImage()
@@ -194,6 +194,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     const submitInvoiceCreation = async (e) => {
         e.preventDefault();
         try {
+            setLoading(true)
             let invoiceFlowerData = addPrices()
             const formDataToSend = new FormData();
 
@@ -235,6 +236,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             navigateTo('/invoice')
         } catch (error) {
             setMessage(error.response?.data, true);
+        } finally {
+            setLoading(false)
         }
     }
 

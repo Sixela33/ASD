@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useAlert from '../../hooks/useAlert';
 import { useParams } from 'react-router-dom';
 import InvoiceDataForm from '../../components/InvoiceCreation/InvoiceDataForm';
@@ -9,6 +9,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import LoadingPopup from '../../components/LoadingPopup';
 
 const emptyInvoiceObject = {
   invoiceNumber: '',
@@ -49,6 +50,9 @@ export default function AddInvoice() {
 
   const [flowerData, setFlowerData] = useState([])
   const [selectedVendor, setSelectedVendor] = useState('');
+
+  const [showLoadingInvoice, setShowLoadingInvoice] = useState(false)
+  const isSendingRequest = useRef(false)
 
   const fetchProjectsProvided = async () => {
     
@@ -153,32 +157,44 @@ export default function AddInvoice() {
   const saveIncompleteInvoice = async () => {
     
     let schemaErrors = null
+    setShowLoadingInvoice(true)
+    if (isSendingRequest.current) return
+
+    isSendingRequest.current = true
 
     try {
-      invoiceDataSchema.validateSync(invoiceData, { abortEarly: false })
-    } catch (err) {
-        schemaErrors = {}
-        err.inner.forEach(error => {
-            schemaErrors[error.path] = error.message;
-        });
+      try {
+        invoiceDataSchema.validateSync(invoiceData, { abortEarly: false })
+      } catch (err) {
+          schemaErrors = {}
+          err.inner.forEach(error => {
+              schemaErrors[error.path] = error.message;
+          });
+      }
+  
+      if(schemaErrors) {
+          setInvoiceFormErrors(schemaErrors)
+          return
+      }
+  
+      setInvoiceFormErrors({})
+  
+      const formDataToSend = new FormData();
+  
+      formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
+      formDataToSend.append('invoiceFile', pdfFile);
+  
+      await axiosPrivateImage.post(SAVE_INCOMPLETE_INVOICE, formDataToSend)
+      
+      setMessage('Success', false)
+      navigateTo('/invoice')
+      
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setShowLoadingInvoice(false)
+      isSendingRequest.current = false
     }
-
-    if(schemaErrors) {
-        setInvoiceFormErrors(schemaErrors)
-        return
-    }
-
-    setInvoiceFormErrors({})
-
-    const formDataToSend = new FormData();
-
-    formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
-    formDataToSend.append('invoiceFile', pdfFile);
-
-    await axiosPrivateImage.post(SAVE_INCOMPLETE_INVOICE, formDataToSend);
-    
-    setMessage('Success', false)
-    navigateTo('/invoice')
     
   }
   
@@ -186,10 +202,16 @@ export default function AddInvoice() {
   const steps = [
     <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} saveIncompleteInvoice={saveIncompleteInvoice} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} selectedVendor={selectedVendor} invoiceFormErrors={invoiceFormErrors}/>,
     <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,
-    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData} invoiceFile={pdfFile} loadedFlowers={flowerData}/>
+    <InvoiceFlowerAssignment goBack={handlePreviousStep} chosenProjects={selectedProjects} invoiceData={invoiceData} invoiceFile={pdfFile} loadedFlowers={flowerData} setLoading={setShowLoadingInvoice}/>
   ];
 
   return (
+  <div>
+    <LoadingPopup
+      showPopup={showLoadingInvoice}>
+        <h1>Loading your invoice!</h1>
+        <h2>Please wait</h2>
+    </LoadingPopup>
     <div className='container mx-auto mt-8 p-4 text-center'>
       <div className="grid grid-cols-3 mb-4">
         <GoBackButton className='col-span-1'/>
@@ -217,6 +239,7 @@ export default function AddInvoice() {
         </div>
       </div>
     </div>
+  </div>
 
   );
 }
