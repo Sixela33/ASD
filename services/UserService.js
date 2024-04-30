@@ -39,8 +39,11 @@ class UserService {
             res = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
             return res.data
         } catch (error) {
-            console.error(error.response.data.error);
-            throw { message: error.response.data.error, status: 500 }
+            if (error.response) {
+                throw { message: error.response.data.error, status: 500 }
+            } else if (error.message) {
+                throw { message: error.message, status: 500 }
+            }
         }
     }
     

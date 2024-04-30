@@ -12,7 +12,7 @@ import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
-import { FiDownload, FiEdit } from "react-icons/fi";
+import { FiDownload, FiEdit, FiTrash } from "react-icons/fi";
 import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup'
@@ -30,6 +30,7 @@ const CHANGE_FLOWER_IN_PROJECT_URL = 'api/projects/editflower/'
 const ADD_NEW_EXPENSE_URL = '/api/extraServices'
 const EDIT_EXPENSE_URL = '/api/extraServices'
 const GENERATE_PPT_SLIDE_URL = '/api/projects/createFlowerPPT'
+const DELETE_PROJECT_URL = '/api/projects/remove/'
 
 const baseProjectStats = {
     totalFlowerCost: 0,
@@ -202,7 +203,15 @@ export default function ViewProject() {
             setMessage(res.data, false)
             fetchFlowers()            
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
+        }
+    }
+
+    const removeProject = async () => {
+        try {
+            await axiosPrivate.delete(DELETE_PROJECT_URL + id)
+        } catch (error) {
+            setMessage(error.response?.data, true)
         }
     }
 
@@ -380,7 +389,14 @@ export default function ViewProject() {
             action: () => {setShowServicePopup(true)},
             icon: '+',
             minPermissionLevel:permissionsRequired['edit_project_data']
+        },
+        {
+            text: "delete project",
+            action: removeProject,
+            icon: <FiTrash/>,
+            minPermissionLevel: 1000
         }
+
     ]
 
     return (

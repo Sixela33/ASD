@@ -193,6 +193,18 @@ class ModelPostgres {
         return response.rows[0]
     }
 
+    deleteProject = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query("DELETE FROM projects WHERE projectID = $1;", [id])
+        } catch (error) {
+            if (error.code == 23503) {
+                throw {message: "This project is linked to invoices and cannot be removed.", status: 400}
+            }
+            else throw error
+        }
+    }
+
     closeProject = async (id) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query('UPDATE projects SET isClosed = $1 WHERE projectID = $2;', [true, id])

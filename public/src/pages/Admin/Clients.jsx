@@ -51,7 +51,8 @@ export default function Clients() {
         {
             text: 'Add new client', 
             action: () => setShowNewClientPopup(true), 
-            minPermissionLevel: 999
+            minPermissionLevel: 999,
+            icon: '+'
         }, 
     ]
 

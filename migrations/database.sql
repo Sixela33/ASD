@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE TABLE IF NOT EXISTS additionalsXproejct (
     aditionalID SERIAL PRIMARY KEY,
     additionalDescription VARCHAR(255) NOT NULL,
-    projectID INT REFERENCES projects(projectID),
+    projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
     clientCost INT NOT NULL
 );
 
@@ -83,7 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_flowername ON flowers (flowername);
 
 CREATE TABLE IF NOT EXISTS arrangements (
     arrangementID SERIAL PRIMARY KEY,
-    projectID INT REFERENCES projects(projectID),
+    projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
     arrangementType INT REFERENCES arrangementTypes(arrangementTypeID),
     arrangementDescription VARCHAR(255) NOT NULL,
     clientCost FLOAT,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS arrangements (
 );
 
 CREATE TABLE IF NOT EXISTS flowerXarrangement (
-    arrangementID INT REFERENCES arrangements(arrangementID),
+    arrangementID INT REFERENCES arrangements(arrangementID) ON DELETE CASCADE,
     flowerID INT REFERENCES flowers(flowerID),
     amount FLOAT,
     PRIMARY KEY (arrangementID, flowerID)
@@ -119,12 +119,12 @@ CREATE TABLE IF NOT EXISTS invoiceCategory (
 );
 
 CREATE TABLE IF NOT EXISTS invoiceTransaction (
-    invoiceID INT REFERENCES invoices(invoiceID),
+    invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
     transactionNumber VARCHAR(100) NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS flowerXInvoice (
-    invoiceID INT REFERENCES invoices(invoiceID),
+    invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
     flowerID INT REFERENCES flowers(flowerID),
     projectID INT REFERENCES projects(projectID),
     unitPrice FLOAT,
@@ -134,6 +134,6 @@ CREATE TABLE IF NOT EXISTS flowerXInvoice (
 );
 
 CREATE TABLE IF NOT EXISTS aditionalXinvoice (
-    invoiceID INT REFERENCES invoices(invoiceID),
+    invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
     aditionalID INT REFERENCES additionalsXproejct(aditionalID)
 );

@@ -51,7 +51,8 @@ export default function Vendors() {
         {
             text: 'Add new vendor', 
             action: () => setShowNewVendorPopup(true),
-            minPermissionLevel: 999
+            minPermissionLevel: 999,
+            icon: '+'
         }, 
     ]
 

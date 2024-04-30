@@ -14,6 +14,8 @@ class ProjectRouter {
         const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
 
         this.router.post('/create', staffuserReq, this.controller.createProject)
+        this.router.delete('/remove/:id', this.controller.deleteProject)
+        this.router.patch('/:id', staffuserReq, this.controller.editProjectData)
 
         // Wrongly posts, should be gets
         this.router.post('/manyByID', this.controller.getManyProjectsByID)
@@ -29,10 +31,10 @@ class ProjectRouter {
         this.router.post('/open/:id', staffuserReq,this.controller.openProject)
 
         this.router.post('/addArrangement/:id', staffuserReq, this.controller.addArrangementToProject)
-        this.router.patch('/:id', staffuserReq, this.controller.editProjectData)
         this.router.post('/editflower/:id', this.controller.changeFlowerInProject)
-
+        
         this.router.post('/createFlowerPPT', staffuserReq, this.controller.createFlowerPPT)
+
         return this.router
         
     }

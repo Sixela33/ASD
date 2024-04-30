@@ -6,7 +6,7 @@ import useRefreshToken from '../hooks/useRefreshToken';
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-    const { persist, setPersist } = useAuth();
+    const { persist, setPersist } = useAuth(true);
 
     const navigate = useNavigate();
     const refresh = useRefreshToken();

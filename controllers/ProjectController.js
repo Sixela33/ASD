@@ -104,6 +104,16 @@ class ProjectController {
         }
     }
 
+    deleteProject = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            await this.service.deleteProject(id)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     createFlowerPPT = async (req, res, next) => {
         try {
             const {projectID} = req.body

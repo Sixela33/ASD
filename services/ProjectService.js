@@ -98,6 +98,10 @@ class ProjectService {
         await this.model.changeFlowerInProject(projectid, previousflowerid, newflowerid)
     }
 
+    deleteProject = async (id) => {
+        await this.model.deleteProject(id)
+    }
+
     createFlowerPPT = async (projectid, googleAccessToken) => {
         await validateId(projectid)
         let flowers = await this.model.getProjectFlowersForPpt(projectid)
