@@ -117,9 +117,12 @@ class ProjectService {
                 flowersByColor[flower.flowercolor] = [flower]
             } else {
                 flowersByColor[flower.flowercolor].push(flower)
-            }        
+            }     
         }
-        
+
+        if (Object.keys(flowersByColor).length == 0) {
+            throw {message: 'This project has no flowers assigned', status: 400}
+        }
         const presentationid = await createPresentation(googleAccessToken, flowersByColor)
         return presentationid
     }

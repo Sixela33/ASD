@@ -8,9 +8,9 @@ import Alert from './components/Alert';
 import ROLES_LIST from '../../config/rolesList';
 import { lazy } from 'react';
 
-const Missing = lazy(() => import('./pages/Missing'));
-const Login = lazy(() => import('./pages/Login'));
-const Home = lazy(() => import('./pages/Home'));
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Missing from './pages/Missing';
 
 const Admin = lazy(() => import('./pages/Admin/Admin'));
 
@@ -27,11 +27,7 @@ const ViewInvoices = lazy(() => import('./pages/Invoices/ViewInvoices'));
 const ViewSingleInvoice = lazy(() => import('./pages/Invoices/ViewSingleInvoice'));
 const ArrangementCreation = lazy(() => import('./pages/ArrangementCreation'));
 
-const InputEmail = lazy(() => import('./pages/PasswordRecovery/InputEmail'));
-const SetNewPass = lazy(() => import('./pages/PasswordRecovery/SetNewPass'));
 const InactiveUserPage = lazy(() => import('./pages/InactiveUserPage'));
-const LoginSuccess = lazy(() => import('./pages/LoginSuccess'));
-
 
 function App() {
 
@@ -42,12 +38,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<Login />} />
-          <Route path="forgotPass" element={<InputEmail/>} />
-          <Route path="setNewPass/:id/:code" element={<SetNewPass/>} />
           <Route path='inactive' element={<InactiveUserPage/>}/>
-          <Route path='loginSuccess' element={<LoginSuccess/>}/>
           
-          {/* protected routes */}
           <Route element={<PersistLogin />}>
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['User']} />}>
               <Route path="/" element={<Home />} />
@@ -63,13 +55,11 @@ function App() {
               <Route path='/invoice/view/:id' element={<ViewSingleInvoice/>}></Route>
               <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers/:id" element={<SingleFlowerPage/>}/>
-
+              <Route path="project/create/:id?" element={<CreateProject/>}/>      
             </Route>
 
             <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>
               <Route path="admin/" element={<Admin/>}/>            
-              <Route path="project/create/:id?" element={<CreateProject/>}/>      
-
             </Route>
 
           </Route>

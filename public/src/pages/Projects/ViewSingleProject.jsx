@@ -359,7 +359,7 @@ export default function ViewProject() {
             
             window.open(url, '_blank').focus()
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
         } finally {
             setShowLoadingPopup(false)
         }
@@ -382,19 +382,19 @@ export default function ViewProject() {
             text: 'Download ppt slides', 
             action: handleGeneratePPTslides,
             icon: <FiDownload/>,
-            minPermissionLevel:permissionsRequired['edit_project_data']
+            minPermissionLevel:permissionsRequired['download_projectppt']
         },
         {
             text: 'Add new service', 
             action: () => {setShowServicePopup(true)},
             icon: '+',
-            minPermissionLevel:permissionsRequired['edit_project_data']
+            minPermissionLevel:permissionsRequired['add_arrangement']
         },
         {
             text: "delete project",
             action: removeProject,
             icon: <FiTrash/>,
-            minPermissionLevel: 1000
+            minPermissionLevel: permissionsRequired['delete_project']
         }
 
     ]
