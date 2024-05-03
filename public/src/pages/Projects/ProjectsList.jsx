@@ -7,7 +7,7 @@ import { debounce } from 'lodash';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 
 const colData = {
-    "id": "projectid",
+    "Project ID": "projectid",
     "Client": "projectclient",
     "Description": "projectdescription",
     "Contact": "projectcontact",
@@ -124,21 +124,21 @@ const ProjectsList = ({ searchParams }) => {
             <div className="flex items-center mb-4 space-x-4 justify-evenly">
                 
                 <div className='flex items-center'>
-                    <label className="mr-2">Show closed Projects:</label>
+                    <label className="mr-2">Show closed projects:</label>
                     <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
                 </div>
                 <div className='flex flex-col'>
-                    <label >search By ID:</label>
+                    <label >search by project id:</label>
                     <input type="text" value={searchByID} onChange={(e) => setSearchByID(e.target.value)}/>
                 </div>
 
                 <div className='flex flex-col'>
-                    <label >search By Contact:</label>
+                    <label >search by contact:</label>
                     <input type="text" value={searchByContact} onChange={(e) => setSearchByContact(e.target.value)}/>
                 </div>
 
                 <div className='flex flex-col'>
-                    <label>search By Description:</label>
+                    <label>Search by description:</label>
                     <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
                 </div>
                 <div className='flex flex-col'>

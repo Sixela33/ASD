@@ -67,7 +67,6 @@ export default function Clients() {
                 <h1 >Clients</h1>
             </div>
             <div className='table-container h-[70vh]'>
-          
                 <TableHeaderSort
                     headers={headers}
                     setSortConfig={setSortConfig}

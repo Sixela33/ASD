@@ -23,7 +23,6 @@ class UserController {
             const {refreshToken} = await this.service.oauthLogin(code)
             
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
-            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST : process.env.HOST + ':5173'
 
             res.send("<script>window.close();</script > ")
             

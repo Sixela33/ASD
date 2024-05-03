@@ -27,6 +27,7 @@ import RecurrentProjectCheckpointer from "./scripts/createRecurentProjectCheckpo
 
 import ROLES_LIST from "./config/rolesList.js";
 import ExtraServicesRouter from "./routers/ExtraServicesRouter.js";
+
 /*
     This code was written by S1X3L4
 
@@ -92,7 +93,7 @@ class Server {
         
         this.app.use(errorLogger)
         this.app.use(unhandledErrorLogger)
-
+        
         this.app.use(errorHandler)
 
         
