@@ -18,6 +18,9 @@ class PermissionsMiddelware {
             }
             let decoded = null
 
+            console.log("token", token)
+
+
             try {
                 decoded = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             } catch (error) {

@@ -48,7 +48,7 @@ To run the frontend for development you shoud cd into the frontend folder, insta
 
 ## loading some data
 
-Being on the root directory you can run:
+Being on the root directory you can run this commant to load some dummy vendors and providers:
 
-    npm run loadValues to load some dummy vendors and providers
+    npm run loadValues 
     

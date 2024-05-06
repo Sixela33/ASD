@@ -14,16 +14,16 @@ import Missing from './pages/Missing';
 
 const Admin = lazy(() => import('./pages/Admin/Admin'));
 
-const CreateProject = lazy(() => import('./pages/Projects/CreateProject'));
-const ProjectsList = lazy(() => import('./pages/Projects/ProjectsList'));
+import CreateProject from './pages/Projects/CreateProject';
+import ProjectsList from './pages/Projects/ProjectsList';
 const ViewProject = lazy(() => import('./pages/Projects/ViewSingleProject'));
 
-const LoadFlower = lazy(() => import('./pages/Flowers/LoadFlower'));
-const ViewFlowers = lazy(() => import('./pages/Flowers/ViewFlowers'));
+import LoadFlower from './pages/Flowers/LoadFlower';
+import ViewFlowers from './pages/Flowers/ViewFlowers';
 const SingleFlowerPage = lazy(() => import('./pages/Flowers/SingleFlowerPage'));
 
-const AddInvoice = lazy(() => import('./pages/Invoices/AddInvoice'));
-const ViewInvoices = lazy(() => import('./pages/Invoices/ViewInvoices'));
+import AddInvoice from './pages/Invoices/AddInvoice';
+import ViewInvoices from './pages/Invoices/ViewInvoices';
 const ViewSingleInvoice = lazy(() => import('./pages/Invoices/ViewSingleInvoice'));
 const ArrangementCreation = lazy(() => import('./pages/ArrangementCreation'));
 

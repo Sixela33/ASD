@@ -16,10 +16,14 @@ describe('User Routes /api/users', () => {
             password: 'QWERQWER1',
         }
 
-        const loginResponse = await request.post('/api/users/login').send(adminCredentials)
+        const loginResponse = await request.get('/api/users/oauthlogin').send(adminCredentials)
 
-        adminToken = loginResponse.body.accessToken
         refreshToken = loginResponse.headers['set-cookie']
+
+        const refreshResponse = await request.get('/api/users/refresh').set('Cookie', refreshToken)
+
+        adminToken = refreshResponse.body
+        
     })
 
     describe('POST /login', () => {
@@ -30,31 +34,38 @@ describe('User Routes /api/users', () => {
                 password: 'QWERQWER1',
             }
 
-            const response = await request.post('/api/users/login').send(validUserCredentials)
-            const cookies = response.headers['set-cookie']
+            const loginResponse = await request.get('/api/users/oauthlogin').send(validUserCredentials)
 
-            expect(response.body.accessToken).to.not.be.undefined
-            expect(cookies).to.not.be.undefined
+            const RefreshTOKEN = loginResponse.headers['set-cookie']
+    
+            const refreshResponse = await request.get('/api/users/refresh').set('Cookie', RefreshTOKEN)
 
-        })
+            expect(refreshResponse.body).to.not.be.undefined
+            expect(RefreshTOKEN).to.not.be.undefined
 
-        it('should not log in user with incorrect credentials', async () => {
-
-            const nonExistentUserCredentias = {
-                email: 'asdfas@gmail.com',
-                password: 'QWERQWER1',
-            }
-
-            const response = await request.post('/api/users/login').send(nonExistentUserCredentias)
-            expect(response.status).to.equal(401)
         })
     }) 
 
     describe('GET /all', () => {
         it('should return list of all users', async () => {
-            const response = await request.get('/api/users/all').set('Authorization', `${adminToken}`)
+
+            const response = await request.get('/api/users/all'+ '?searchEmail=' + '' + '&offset=' + 0).set('Authorization', `${adminToken}`)
 
             expect(response.status).to.equal(200)
+        })
+
+        it('should return a filtered list of all users', async () => {
+
+            const response = await request.get('/api/users/all'+ '?searchEmail=' + 'a' + '&offset=' + 0).set('Authorization', `${adminToken}`)
+
+            expect(response.status).to.equal(200)
+        })
+
+        it('should return break with invalid parameters', async () => {
+
+            const response = await request.get('/api/users/all'+ '?searchEmail=' + '' + '&offset=' + undefined).set('Authorization', `${adminToken}`)
+
+            expect(response.status).to.equal(400)
         })
 
         it('should fail if not authenticated', async () => {
@@ -63,25 +74,6 @@ describe('User Routes /api/users', () => {
             expect(response.status).to.equal(403)
         })
 
-    })
-
-    describe('POST /register', () => {
-        it('should register a new user', async () => {
-        
-        let newUser = userGenerator.userRegister()
-
-        const response = await request.post('/api/users/register').send(newUser).set('Authorization', `${adminToken}`)
-
-        expect(response.status).to.equal(201)
-
-        })
-
-        it('should fail if not authenticated', async () => {
-            let newUser = userGenerator.userRegister()
-
-            const response = await request.post('/api/users/register').send(newUser)    
-            expect(response.status).to.equal(403)
-        })
     })
 
     describe('POST /refresh', () => {

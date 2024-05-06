@@ -14,9 +14,13 @@ describe('Arrangement Routes /api/users/arrangements', () => {
             password: 'QWERQWER1',
         }
 
-        const loginResponse = await request.post('/api/users/login').send(adminCredentials)
-        
-        adminToken = loginResponse.body.accessToken
+        const loginResponse = await request.get('/api/users/oauthlogin').send(adminCredentials)
+
+        const refreshToken = loginResponse.headers['set-cookie']
+
+        const refreshResponse = await request.get('/api/users/refresh').set('Cookie', refreshToken)
+
+        adminToken = refreshResponse.body
     })
 
     describe('GET /types', async () => {

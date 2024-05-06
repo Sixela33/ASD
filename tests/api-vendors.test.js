@@ -15,13 +15,18 @@ describe('Vendor Routes /api/vendors', () => {
             password: 'QWERQWER1',
         }
 
-        const loginResponse = await request.post('/api/users/login').send(adminCredentials)
+        const loginResponse = await request.get('/api/users/oauthlogin').send(adminCredentials)
 
-        adminToken = loginResponse.body.accessToken
+        const refreshToken = loginResponse.headers['set-cookie']
+
+        const refreshResponse = await request.get('/api/users/refresh').set('Cookie', refreshToken)
+
+        adminToken = refreshResponse.body
+        
     })
 
     /*
-            this.router.get('/', this.controller.getVendors)
+        this.router.get('/', this.controller.getVendors)
         this.router.post('/', this.controller.addVendor)
         this.router.patch('/edit', this.controller.editVendor)
 

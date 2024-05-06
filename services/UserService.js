@@ -52,6 +52,7 @@ class UserService {
         let userData
         let refresh_token
         if(process.env.NODE_ENV === 'test'){
+            console.log("Log in is in test mode. Do not allow this in production")
             userData = {email: 'alexis@angelsalazardesign.com'}
             refresh_token = ''
         } else {
