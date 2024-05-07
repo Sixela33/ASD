@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState, useCallback } from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import useAlert from '../hooks/useAlert'
 import { useInView } from 'react-intersection-observer'
-import { debounce } from "lodash";
-import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx';
+import { debounce } from "lodash"
+import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx'
 
 const GET_FLOWERS_URL = '/api/flowers/many/'
 const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
-
 
 export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh}) {
     if(!onFlowerClick) onFlowerClick = () => {}
@@ -27,11 +26,17 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const [selectedFlowerColor, setSelectedFlowerColor] = useState({'flowerColor': ''})
     const [searchQuery, setSearchQuery] = useState('');
 
-    const fetchFlowers = async (searchQ, colorFilter) => {
+    const [showIncomplete, setShowincomplete] = useState(false)
+
+    const fetchFlowers = async (searchQ, colorFilter, showIncomplete) => {
         try {
             const searchByColor = colorFilter?.flowercolor || ''
-            
-            let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ + '?filterByColor=' + searchByColor )
+            showIncomplete = showIncomplete || false
+
+            let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current 
+                + '/' + searchQ 
+                + '?filterByColor=' + searchByColor +
+                 '&showIncomplete=' + showIncomplete )
             let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
             response = await response
             flowerColors = await flowerColors
@@ -56,16 +61,16 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const debouncedInitial = useCallback(debounce(fetchFlowers, 100), []);
 
     useEffect(() => {
-        debouncedInitial(searchQuery, selectedFlowerColor)
+        debouncedInitial(searchQuery, selectedFlowerColor, showIncomplete)
     }, []);
 
     useEffect(() => {
-        debounced(searchQuery, selectedFlowerColor)
+        debounced(searchQuery, selectedFlowerColor, showIncomplete)
     },[refresh])
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
-            debounced(searchQuery, selectedFlowerColor)
+            debounced(searchQuery, selectedFlowerColor, showIncomplete)
         }
     }, [inView]);
 
@@ -74,9 +79,9 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             setFlowerData([])
             offset.current = 0
             flowersLeft.current = true
-            debounced(searchQuery, selectedFlowerColor)
+            debounced(searchQuery, selectedFlowerColor, showIncomplete)
         }
-    }, [searchQuery, selectedFlowerColor]);
+    }, [searchQuery, selectedFlowerColor, showIncomplete]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value)
@@ -98,6 +103,10 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                         selectedVal={selectedFlowerColor}
                         handleChange={setSelectedFlowerColor}
                         placeholderText={'Filter by color'}/>
+                </div>
+                <div className='mb-3 flex justify-start items-center'>
+                    <label>Show incomplete flowers</label>
+                    <input type='checkbox' onClick={() => setShowincomplete(!showIncomplete)}></input>
                 </div>
             </div>
 

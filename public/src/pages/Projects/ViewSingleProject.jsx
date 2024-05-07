@@ -83,6 +83,7 @@ export default function ViewProject() {
     const [showLoadingPopup, setShowLoadingPopup] = useState(false)
     const [showRedirectPopup, setShowRedirectPopup] = useState(false)
     const [fileRedirectUrl, setFileRedirectUrl] = useState('')
+    const [showDeleteProjectPopup, setShowDeleteProjectPopup] = useState(false)
 
     const fetchFlowers = async () => {
         try {
@@ -218,8 +219,12 @@ export default function ViewProject() {
     const removeProject = async () => {
         try {
             await axiosPrivate.delete(DELETE_PROJECT_URL + id)
+            setMessage('Project removed successfully', false)
+            navigateTo('/projects')
         } catch (error) {
             setMessage(error.response?.data, true)
+        } finally {
+            setShowDeleteProjectPopup(false)
         }
     }
 
@@ -437,7 +442,7 @@ export default function ViewProject() {
         },
         {
             text: "delete project",
-            action: removeProject,
+            action: () => setShowDeleteProjectPopup(true),
             icon: <FiTrash/>,
             minPermissionLevel: permissionsRequired['delete_project']
         }
@@ -453,6 +458,10 @@ export default function ViewProject() {
             <FloatingMenuButton options={buttonOptions}/>
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?
+            </ConfirmationPopup>
+            <ConfirmationPopup showPopup={showDeleteProjectPopup} closePopup={() => setShowDeleteProjectPopup(false)} confirm={removeProject}>
+                <h1>Are you sure you want to delete this project?</h1>
+                <p>this changes cannot be reverted</p>
             </ConfirmationPopup>
             <EditArrangementPopup 
                 showPopup={showArrangementEditPopup} 

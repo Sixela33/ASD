@@ -13,7 +13,7 @@ const Tooltip = ({ children, showTooltip, tooltipPosition }) => {
 
   return (
     (showTooltip && children) && (
-      <div className="absolute z-50 px-2 py-1 bg-gray-800 text-white text-sm rounded-md shadow-lg" style={{ left: tooltipLeft, top: tooltipTop }}>
+      <div className="absolute z-40 px-2 py-1 bg-gray-800 text-white text-sm rounded-md shadow-lg" style={{ left: tooltipLeft, top: tooltipTop }}>
         {children}
       </div>
     )

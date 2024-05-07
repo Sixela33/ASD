@@ -518,7 +518,7 @@ class ModelPostgres {
         WHERE fxi.flowerID = $1;`, [id])
     }
 
-    getFlowersQuery = async (offset, query, filterByColor) => {
+    getFlowersQuery = async (offset, query, filterByColor, showIncomplete) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
         let sqlQuery = `
@@ -557,6 +557,10 @@ class ModelPostgres {
             queryParams.push(`%${filterByColor}%`)
         }
 
+        if (showIncomplete == 'true') {
+            queryConditions.push(`f.flowerimage IS NULL OR LENGTH(f.flowerimage) = 0`)
+        }
+
         if (queryConditions.length > 0) {
             sqlQuery += ' WHERE ' + queryConditions.join(' AND ')
         }
@@ -570,6 +574,30 @@ class ModelPostgres {
     getUniqueFlowerColors = async () => {
         this.validateDatabaseConnection()
         return CnxPostgress.db.query('SELECT DISTINCT flowercolor FROM flowers')
+    }
+
+    // -----------------------------------------------
+    //                 FLOWER COLORS
+    // -----------------------------------------------
+
+    getFlowerColors = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query('SELECT * FROM flowerColors')
+        return response.rows
+    }
+
+    createFlowerColor = async (colorName) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query("INSERT INTO flowerColors (colorName) VALUES($1);", [colorName])
+    }
+
+    editFlowerColor = async (colorID, colorName) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+        UPDATE flowerColors 
+        SET 
+        colorName = $1,
+        WHERE colorID = $2;`, [colorName, colorID])
     }
 
     // -----------------------------------------------

@@ -16,7 +16,7 @@ class FlowerController {
             console.log(error)
             next(error)
         }
-    }    
+    }
 
     editFlower = async (req, res, next) => {
         try {
@@ -33,8 +33,10 @@ class FlowerController {
     getFlowers = async (req, res, next) => {
         try {
             const {offset, query} = req.params
-            const { filterByColor} = req.query
-            const response = await this.service.getFlowers(offset, query, filterByColor)
+            const { filterByColor, showIncomplete} = req.query
+            console.log("showIncomplete1", showIncomplete)
+            const response = await this.service.getFlowers(offset, query, filterByColor, showIncomplete)
+            console.log(response)
             res.json(response)
         } catch (error) {
             next(error)

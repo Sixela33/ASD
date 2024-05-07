@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useAlert from '../hooks/useAlert';
 import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import PopupBase from './PopupBase';
 import LoadingPopup from './LoadingPopup';
+import SearchableDropdown from './Dropdowns/SearchableDropdown';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
+const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
 
 const defaultFormData = {
   flower: null,
@@ -21,8 +23,31 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
     const [formData, setFormData] = useState(defaultFormData)
     const [isSubmitting, setIsSubmitting] = useState(false) // State to track if form is being submitted
+    const [flowerColorList, setFlowerColorList] = useState([])
 
-    
+    useEffect(() => {
+      if(flowerToEdit) {
+        setFormData({
+          flower: null,
+          name: flowerToEdit.flowername,
+          color: flowerToEdit.flowercolor,
+        })
+      }
+    }, [flowerToEdit])
+
+    const fetchFlowerColors = async () => {
+      try {
+        const response = await axiosPrivate.get(GET_FLOWER_COLORS_URL)
+        console.log(response)
+        setFlowerColorList(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    useEffect(() => {
+      fetchFlowerColors()
+    }, [])
 
     const handleChange = (e) => {
       const { name, value } = e.target
@@ -39,28 +64,29 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         flower: file,
       })
     }
-
-    useState(() => {
-      if(flowerToEdit) {
-        setFormData({
-          flower: null,
-          name: flowerToEdit.flowername,
-          color: flowerToEdit.flowercolor,
-        })
-      }
-    }, [flowerToEdit])
     
     const handleSubmit = async (e) => {
       e.preventDefault()
 
       if(isSubmitting) return
 
+      if (formData.name == '') {
+        setMessage("Flower name cannot me empty")
+        return
+      }
+
+      console.log(formData.color)
+      if(!formData.color.flowercolor || formData.color.flowercolor == '') {
+        setMessage("A color must be assigned")
+        return
+      }
+
       setIsSubmitting(true) 
       
       try {
           const formDataToSend = new FormData()
           formDataToSend.append('name', formData.name)
-          formDataToSend.append('color', formData.color)
+          formDataToSend.append('color', formData.color.flowercolor)
           formDataToSend.append('flower', formData.flower) 
 
           if(flowerToEdit) {
@@ -75,8 +101,8 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             setMessage("Flower Added succesfully", false)
           }
   
-          cancelButton(true)
           setFormData(defaultFormData)
+          cancelButton(true)
 
       } catch (error) {
           setMessage(error.response?.data, true)
@@ -84,6 +110,12 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       } finally {
         setIsSubmitting(false)
       }
+    }
+  
+    const handleCancel = () => {
+      setFormData(defaultFormData)
+      cancelButton()
+
     }
 
   return (
@@ -106,10 +138,16 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
         <div className="flex flex-col mb-4 w-full">
             <label className="mb-1">Color:</label>
-            <input className='w-full' type="text" name="color" value={formData.color} onChange={handleChange} required/>
+            <SearchableDropdown 
+              options={flowerColorList}
+              label={'flowercolor'}
+              selectedVal={formData.color}
+              handleChange={(e) => handleChange({target: {name:'color', value: e}})}
+              placeholderText={'color'}
+              />
         </div>
         <div className='buttons-holder w-full'>
-          <button className='buton-secondary' onClick={cancelButton}>Cancel</button>
+          <button className='buton-secondary' onClick={handleCancel}>Cancel</button>
           <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>
         </div>
       </div>

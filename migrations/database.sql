@@ -51,17 +51,21 @@ CREATE TABLE IF NOT EXISTS arrangementTypes (
     typeName VARCHAR(100) UNIQUE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS flowers (
+    flowerID SERIAL PRIMARY KEY,
+    flowerName VARCHAR(50) NOT NULL,
+    flowerDescription VARCHAR(50),
+    flowerImage VARCHAR(255)
+);
+
 CREATE TABLE IF NOT EXISTS flowerColors (
     colorID SERIAL PRIMARY KEY,
     colorName VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS flowers (
-    flowerID SERIAL PRIMARY KEY,
-    flowerName VARCHAR(50) NOT NULL,
-    flowerDescription VARCHAR(50),
-    flowerImage VARCHAR(255),
-    flowerColor VARCHAR(50)
+CREATE TABLE IF NOT EXISTS colorsXFlower (
+    flowerID INT REFERENCES flowers(flowerID),
+    colorID INT REFERENCES flowerColors(colorID)
 );
 
 CREATE TABLE IF NOT EXISTS recurrentProjectCheckpoint (
@@ -72,11 +76,6 @@ CREATE TABLE IF NOT EXISTS recurrentProjectCheckpoint (
     totalArrangementsCost FLOAT,
     profitMargin FLOAT,
     staffBudget FLOAT
-);
-
-CREATE TABLE IF NOT EXISTS colorsXFlower (
-    flowerID INT REFERENCES flowers(flowerID),
-    colorID INT REFERENCES flowerColors(colorID)
 );
 
 CREATE INDEX IF NOT EXISTS idx_flowername ON flowers (flowername);

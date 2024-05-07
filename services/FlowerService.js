@@ -38,10 +38,10 @@ class FlowerService {
         await this.model.editFlower(name, color, id, filepath)
     }
 
-    getFlowers = async (offset, query, filterByColor) => {
+    getFlowers = async (offset, query, filterByColor, showIncomplete) => {
         await validateId(offset)
-
-        const response = await this.model.getFlowersQuery(offset, query, filterByColor)
+        console.log("showIncomplete2", showIncomplete)
+        const response = await this.model.getFlowersQuery(offset, query, filterByColor, showIncomplete)
         let flowers = response.rows
 
         for (let flower of flowers) {
