@@ -100,6 +100,7 @@ export default function ViewSingleInvoice() {
                     <div className='table-container h-[20vh] '>
                         <LocalDataSortTable
                             headers = {{
+                                "Project ID": "projectid",
                                 "Project Client": "projectclient", 
                                 "Project Contact": "projectcontact", 
                                 "Project Description": "projectdescription", 

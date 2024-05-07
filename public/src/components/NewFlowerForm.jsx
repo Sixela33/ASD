@@ -25,16 +25,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const [isSubmitting, setIsSubmitting] = useState(false) // State to track if form is being submitted
     const [flowerColorList, setFlowerColorList] = useState([])
 
-    useEffect(() => {
-      if(flowerToEdit) {
-        setFormData({
-          flower: null,
-          name: flowerToEdit.flowername,
-          color: flowerToEdit.flowercolor,
-        })
-      }
-    }, [flowerToEdit])
-
     const fetchFlowerColors = async () => {
       try {
         const response = await axiosPrivate.get(GET_FLOWER_COLORS_URL)
@@ -56,6 +46,20 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         [name]: value,
       })
     }
+
+    useEffect(() => {
+      if(flowerToEdit && flowerColorList) {
+        const flowerPos = flowerColorList.findIndex(item => item.flowercolor == flowerToEdit.flowercolor)
+        console.log("flowerPos", flowerPos)
+        console.log("flowerColorList", flowerColorList)
+      
+        setFormData({
+          flower: defaultFormData.flower,
+          name: flowerToEdit.flowername,
+          color: flowerColorList[flowerPos] || defaultFormData.color,
+        })
+      }
+    }, [flowerToEdit, flowerColorList])
   
     const handleImageChange = (e) => {
       const file = e.target.files[0]

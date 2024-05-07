@@ -862,6 +862,7 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`
         SELECT 
+            p.projectid,
             p.projectcontact, 
             p.projectdate, 
             p.projectdescription,
