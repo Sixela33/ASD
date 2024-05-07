@@ -18,7 +18,6 @@ import CreateProject from './pages/Projects/CreateProject';
 import ProjectsList from './pages/Projects/ProjectsList';
 const ViewProject = lazy(() => import('./pages/Projects/ViewSingleProject'));
 
-import LoadFlower from './pages/Flowers/LoadFlower';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
 const SingleFlowerPage = lazy(() => import('./pages/Flowers/SingleFlowerPage'));
 
@@ -53,7 +52,6 @@ function App() {
               <Route path="/invoice" element={<ViewInvoices/>}></Route>
               <Route path="/invoice/add/:id?" element={< AddInvoice/>}></Route>
               <Route path='/invoice/view/:id' element={<ViewSingleInvoice/>}></Route>
-              <Route path="/flowers/create" element={<LoadFlower/>}/>
               <Route path="/flowers/:id" element={<SingleFlowerPage/>}/>
               <Route path="project/create/:id?" element={<CreateProject/>}/>      
             </Route>

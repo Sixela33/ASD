@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
 import { useInView } from 'react-intersection-observer';
 import PopupBase from '../PopupBase';
-import CreateNewFlowerPopup from '../Popups/CreateNewFlowerPopup';
+import NewFlowerForm from '../NewFlowerForm';
 
 const GET_FLOWERS_URL = '/api/flowers/many/';
 
@@ -79,8 +79,8 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
 
     return (
         <PopupBase showPopup={showPopup}>
-            <CreateNewFlowerPopup showPopup={showPopup2} closePopup={() => setShowPopup2(false)}/>
-            <h3 >Select flower</h3>
+            <NewFlowerForm showPopup={showPopup2} cancelButton={() => setShowPopup2(false)}/>
+            <h3>Select flower</h3>
             <QuerySearchableDropdown 
                 options={flowerData} 
                 label='flowername' 

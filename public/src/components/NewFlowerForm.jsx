@@ -13,7 +13,7 @@ const defaultFormData = {
   color: '',
 }
 
-export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit, title}) {
+export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit}) {
     if(!refreshData) refreshData = () => {}
 
     const axiosPrivate = useAxiosPrivateImage()
@@ -92,7 +92,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         <h1>Loading Flower</h1>
         <p>Please wait</p>
       </LoadingPopup>
-      <h2 className='mb-4'>{title}</h2>
+      <h2 className='mb-4'>Add Flower</h2>
       <div className="flex flex-col items-center w-3/4 mx-auto">
         <div className="flex flex-col mb-4 w-full">
             <label className="mb-1">Image:</label>

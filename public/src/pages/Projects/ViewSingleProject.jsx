@@ -339,6 +339,7 @@ export default function ViewProject() {
             window.open(url, '_blank').focus()
             
         } catch (error) {
+            setMessage(error.response.data.error.errors[0].message)
             console.log(error)
         } finally {
             setShowLoadingPopup(false)
