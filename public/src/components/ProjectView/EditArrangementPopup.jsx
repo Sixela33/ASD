@@ -63,7 +63,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         const arrangementsResponse = await axiosPrivate.get(GET_ARRANGEMENT_TYPES_URL)
         setArrangementTypes(arrangementsResponse?.data)
       } catch (error) {
-        setMessage(error.response?.data?.message, true);
+        setMessage(error.response?.data, true);
         closePopup(false)
       }
     }
@@ -121,7 +121,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
 
       handleClosePopup(true)
     } catch (error) {
-      setMessage(error.response?.data?.message, true);
+      setMessage(error.response?.data, true);
     }
   }
 

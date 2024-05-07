@@ -38,7 +38,7 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                 setProjectsInfo((prevProjects) => [...prevProjects, ...response.data]);
             })
             .catch(error => {
-                setMessage(error.response?.data?.message, true);
+                setMessage(error.response?.data, true);
                 console.error('Error fetching data:', error);
             })
     };

@@ -45,7 +45,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             setFlowerData(prevData => [...prevData, ...response.data])
             setFlowerColors(flowerColors.data)
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
         } finally {
             firstLoad.current=true

@@ -88,7 +88,7 @@ export default function ViewInvoices() {
             const response = await axiosPrivate.get(GET_VENDORS_URL);
             setAllVendors(response?.data);
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
         }
     }

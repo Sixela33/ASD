@@ -462,6 +462,12 @@ class ModelPostgres {
         return await CnxPostgress.db.query(`SELECT projectID FROM projects WHERE isRecurrent = true AND isClosed = false;`)
     }
 
+    getIsProjectClosed = async (id) => {
+        this.validateDatabaseConnection()
+        const res = await CnxPostgress.db.query('SELECT isClosed FROM projects WHERE projectID = $1;', [id])
+        return res.rows
+    }
+
     // -----------------------------------------------
     //                   FLOWERS
     // -----------------------------------------------
@@ -640,7 +646,17 @@ class ModelPostgres {
     deleteArrangement = async (id) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query(`CALL deleteArrangement($1::INT);`,[id])
-        return
+    }
+
+    isArrangementsProjectClosed = async (arrangementID) => {
+        this.validateDatabaseConnection()
+        const res = await CnxPostgress.db.query(`
+        SELECT p.isClosed 
+        FROM arrangements a 
+        RIGHT JOIN projects p ON a.projectID = p.projectID
+        WHERE a.arrangementID = $1;
+        `, [arrangementID])
+        return res.rows
     }
 
     // -----------------------------------------------
@@ -885,6 +901,17 @@ class ModelPostgres {
     getProjectExtras = async (projectId) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query('SELECT additionalDescription AS description, clientCost, aditionalID FROM additionalsXproejct WHERE projectID = $1;', [projectId])
+    }
+
+    isExtraProjectClosed = async (extraID) => {
+        this.validateDatabaseConnection()
+        const res = await CnxPostgress.db.query(`
+        SELECT p.isClosed 
+        FROM additionalsXproejct a 
+        RIGHT JOIN projects p ON a.projectID = p.projectID
+        WHERE a.aditionalID = $1;
+        `, [extraID])
+        return res.rows
     }
 
 }

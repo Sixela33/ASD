@@ -42,7 +42,7 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
             setFlowerData(prevFlowers => [...prevFlowers, ...response.data]);
 
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
         } finally {
             isLoading.current = false

@@ -111,7 +111,7 @@ export default function CreateProject() {
             await getClientList()
             
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             navigateTo(-1)
         }
     }
@@ -121,7 +121,7 @@ export default function CreateProject() {
             const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
             setClientsList(clientsResponse?.data)
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
 
         }
     }

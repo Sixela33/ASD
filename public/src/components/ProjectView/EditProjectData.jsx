@@ -88,7 +88,8 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
             }
 
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            console.log(error)
+            setMessage(error.response?.data, true);
         }
     }
     

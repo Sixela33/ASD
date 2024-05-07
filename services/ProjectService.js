@@ -14,6 +14,14 @@ class ProjectService {
 
     }
 
+    validateProjectStatus = async(id) => {
+        const isClosed = await this.model.getIsProjectClosed(id)
+        console.log("isClosed tuki", isClosed[0].isclosed)
+        if (isClosed[0].isclosed) {
+            throw {message: "You can't edit a closed project" , status: 400}
+        }
+    }
+
     createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras, isRecurrent) => {
         extras = extras || []
         arrangements = arrangements || []
@@ -64,9 +72,12 @@ class ProjectService {
         }
     }
 
+
     addArrangementToProject = async (id, arrangementData) => {
         await validateSingleArrangement(arrangementData)
         await validateId(id)
+
+        await this.validateProjectStatus(id)
 
         await this.model.addArrangementToProject(id, arrangementData)
     }
@@ -74,6 +85,8 @@ class ProjectService {
     editProjectData = async (id, projectData) => {
         await validateId(id)
         await validateProject(projectData)
+
+        await this.validateProjectStatus(id)
 
         await this.model.editProjectData(id, projectData)
     }
@@ -95,6 +108,10 @@ class ProjectService {
 
     changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
         await validateIdArray([projectid, previousflowerid, newflowerid])
+
+        await this.validateProjectStatus(projectid)
+
+
         await this.model.changeFlowerInProject(projectid, previousflowerid, newflowerid)
     }
 

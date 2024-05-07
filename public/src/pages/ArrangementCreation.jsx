@@ -29,7 +29,7 @@ export default function ArrangementCreation() {
             setArrangementData(arrangementData[0]);
             setSelectedFlowers(arrangementFlowers);
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
         }
     };
@@ -52,7 +52,7 @@ export default function ArrangementCreation() {
             setMessage('Arrangemente created succesfully', false)
             navigateTo('/projects/' + location.state.projectID)
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
         }
     }

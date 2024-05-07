@@ -41,7 +41,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             setFlowerData([...flowers, ...loadedFlowers])
                 
         } catch (error) {
-            setMessage(error.response?.data?.message, true);
+            setMessage(error.response?.data, true);
             //console.error('Error fetching data:', error);
         }
     })

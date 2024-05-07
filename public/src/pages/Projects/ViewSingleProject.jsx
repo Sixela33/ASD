@@ -32,6 +32,8 @@ const EDIT_EXPENSE_URL = '/api/extraServices'
 const GENERATE_PPT_SLIDE_URL = '/api/projects/createFlowerPPT'
 const DELETE_PROJECT_URL = '/api/projects/remove/'
 
+const PROJECT_CLOSED_ERROR = "You can't edit a closed project"
+
 const baseProjectStats = {
     totalFlowerCost: 0,
     totalExtrasCost: 0,
@@ -107,7 +109,7 @@ export default function ViewProject() {
                            
         } catch (error) {
             console.log(error);
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
         }
     };
 
@@ -188,7 +190,13 @@ export default function ViewProject() {
         setArrangementData(tempArrangementData)
     }
 
+
     const handleArrangement = data => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
+
         navigateTo("/arrangement/" + data?.arrangementid, {state:{projectID: id}})
     }
 
@@ -217,6 +225,10 @@ export default function ViewProject() {
 
     const handleArrangementEdit = (e, arrData) => {
         if(!(userData.permissionlevel >= permissionsRequired['edit_arrangement'])) return
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
         e.stopPropagation()
         setEditArrangementPopupData(arrData)
         setShowArrangementEditPopup(true)
@@ -224,11 +236,19 @@ export default function ViewProject() {
 
     const handleCLickReemoveArrangement = (e, item) =>  {
         if(!(userData.permissionlevel >= permissionsRequired['remove_arrangement'])) return
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
         e.stopPropagation() 
         setDeletePopupData({show: true, deleteID:item.arrangementid})
     }
 
     const handleCreateArrangement = () => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
         setEditArrangementPopupData(undefined)
         setShowArrangementEditPopup(true)
     }
@@ -255,7 +275,7 @@ export default function ViewProject() {
             setMessage("Arrangement deleted successfully", false)
             fetchFlowers();
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
 
         }
     }
@@ -275,6 +295,10 @@ export default function ViewProject() {
     };
 
     const toggleFlowerChange = async (flowerid) => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
         setChangeFlowerID(flowerid)
         setChangeFlowersPopup(true)
     }
@@ -285,7 +309,7 @@ export default function ViewProject() {
             setMessage('Flower Changed successfully.')
             fetchFlowers()
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
         } finally {
             setChangeFlowerID(null)
         }
@@ -331,6 +355,10 @@ export default function ViewProject() {
     }
 
     const handleEditService = (serviceToEdit) => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
         setEditService(serviceToEdit)
         setShowServicePopup(true)
     }
@@ -344,7 +372,7 @@ export default function ViewProject() {
             }
             fetchFlowers()
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
         }
     }
 
@@ -365,6 +393,22 @@ export default function ViewProject() {
         }
     }
 
+    const handleEditProjectData = () => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
+        setShowEditProjectPopup(true)
+    }
+
+    const handleAddNewService = () => {
+        if(projectData.isclosed) {
+            setMessage(PROJECT_CLOSED_ERROR)
+            return
+        }
+        setShowServicePopup(true)
+    }
+
     const buttonOptions = [
         {
             text: 'Add New Arrangement', 
@@ -374,7 +418,7 @@ export default function ViewProject() {
         },
         {
             text: 'Edit project Data', 
-            action: () =>{setShowEditProjectPopup(true)},
+            action: handleEditProjectData,
             icon: <FiEdit/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
         },
@@ -386,7 +430,7 @@ export default function ViewProject() {
         },
         {
             text: 'Add new service', 
-            action: () => {setShowServicePopup(true)},
+            action: handleAddNewService,
             icon: '+',
             minPermissionLevel:permissionsRequired['add_arrangement']
         },
@@ -429,7 +473,10 @@ export default function ViewProject() {
             />
             <AddAditionalExpensePopup
                 showPopup={showServicePopup}
-                closePopup={() => setShowServicePopup(false)}
+                closePopup={() => {
+                    setEditService(null)
+                    setShowServicePopup(false)
+                }}
                 submitFunc = {handleSubmitExtraServices}
                 projectData={projectData}
                 editExpense={editService}
@@ -521,7 +568,7 @@ export default function ViewProject() {
                             <h2>Extra Services</h2>
                             <div className='table-container h-[20vh] mt-2'>
                                 <TableHeaderSort
-                                    headers={{'description': ' ', 'clientcost': ' '}}>
+                                    headers={{'Description': ' ', 'Client cost': ' '}}>
                                     {extraServicesData?.map((item, index) => (
                                         <tr key={index} onClick={() => handleEditService(item)}>
                                             <td>{item?.description}</td>

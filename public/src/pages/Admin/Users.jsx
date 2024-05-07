@@ -35,7 +35,7 @@ export default function Users() {
 
             setAllRoles(response.data)
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
             console.error('Error fetching roles:', error);
 
         }
@@ -48,7 +48,7 @@ export default function Users() {
 
             setUsers(prevData => [...prevData, ...response?.data?.users])
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
             console.error('Error fetching data:', error);
         }
     }
@@ -87,7 +87,7 @@ export default function Users() {
             setMessage('Role changed Successfully!', false)
             getData()
         } catch (error) {
-            setMessage(error.response?.data?.message, true)
+            setMessage(error.response?.data, true)
 
        }
     };
