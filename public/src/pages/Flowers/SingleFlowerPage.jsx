@@ -86,7 +86,7 @@ export default function SingleFlowerPage() {
                     </div>
                     </div>
                     <div className='buttons-holder'>
-                        <button className='buton-secondary' onClick={() => setShowConfirmationPopup(true)}>Remove</button>
+                        {/*<button className='buton-secondary' onClick={() => setShowConfirmationPopup(true)}>Remove</button>*/}
                         <button className='buton-main' onClick={() => setShowEditFlowerPopup(true)}>Edit</button>
 
                     </div>
