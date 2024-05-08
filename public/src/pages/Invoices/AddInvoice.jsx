@@ -190,7 +190,7 @@ export default function AddInvoice() {
       navigateTo('/invoice')
       
     } catch (error) {
-      setMessage(error.message)
+      setMessage(error.response.data)
     } finally {
       setShowLoadingInvoice(false)
       isSendingRequest.current = false

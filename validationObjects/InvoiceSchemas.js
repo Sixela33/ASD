@@ -10,7 +10,7 @@ const invoiceSchema = Joi.object({
     vendor: schemas.idSchema.required().messages({
         'any.required': 'Vendor ID is required.'
     }),
-    dueDate: Joi.date().required().messages({
+    dueDate: Joi.date().required().min("1900-12-31").max("9999-12-31").messages({
         'date.base': 'Due date must be a valid date.',
         'any.required': 'Due date is required.'
     }),

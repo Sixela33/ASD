@@ -41,10 +41,10 @@ const baseProjectStatsData = {
 const baseProjectSchema = Yup.object().shape({
     client: Yup.string().required('Client is required'),
     description: Yup.string().required('Description is required').max(255, 'The description cannot be longet than 255 characters'),
-    date: Yup.string().required('Date is required'),
+    date: Yup.date().min("1900-12-31").max("9999-12-31").required('Date is required'),
     contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
-    staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
-    profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
+    staffBudget: Yup.number('Staff Budget is required').min(0).required('Staff Budget is required').typeError('Staff Budget is required'),
+    profitMargin: Yup.number('Profit Margin is required').min(0).required('Profit Margin is required').typeError('Profit Margin is required'),
     isRecurrent: Yup.boolean('isRecurrent is required').required('isRecurrent is required').typeError('isRecurrent is required'),
 });
 
@@ -306,7 +306,7 @@ export default function CreateProject() {
                         <div>
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                            <FormItem labelName="Project Date:" type="date" inputName="date" value={date} handleChange={(e) => handleFormEdit('date', e.target.value)} error={errors.date}/>
+                            <FormItem labelName="Project Date:" type="date" inputName="date" max="9999-12-31" value={date} handleChange={(e) => handleFormEdit('date', e.target.value)} error={errors.date}/>
                             </div>
 
                             <div className={formColClass}>

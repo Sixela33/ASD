@@ -34,7 +34,6 @@ class FlowerController {
         try {
             const {offset, query} = req.params
             const { filterByColor, showIncomplete} = req.query
-            console.log("showIncomplete1", showIncomplete)
             const response = await this.service.getFlowers(offset, query, filterByColor, showIncomplete)
             console.log(response)
             res.json(response)

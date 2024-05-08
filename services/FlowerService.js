@@ -40,7 +40,6 @@ class FlowerService {
 
     getFlowers = async (offset, query, filterByColor, showIncomplete) => {
         await validateId(offset)
-        console.log("showIncomplete2", showIncomplete)
         const response = await this.model.getFlowersQuery(offset, query, filterByColor, showIncomplete)
         let flowers = response.rows
 
