@@ -6,7 +6,7 @@ import useLogout from '../hooks/useLogout'
 
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
+
     const { auth } = useAuth()
     const navigate = useNavigate()
     const logout = useLogout()
@@ -15,27 +15,21 @@ const Navbar = () => {
         await logout()
         navigate('/')
     }
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
 
-    
     return (
         <nav className="p-4">
-            <div className="container flex justify-between items-center ">
+            <div className="container flex justify-between items-center mx-auto">
                 <Link to="/" className="text-lg font-bold">
-                    <img src='./asd-2.png' className="h-20" alt="ASD"></img>
+                    <img src='./asd-white.png' className="h-[10vh]" alt="ASD"></img>
                 </Link>
-                <div className="lg:hidden">
-                    <button onClick={toggleMenu} className="focus:outline-none focus:border-none">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                        </svg>
-                    </button>
+                {console.log(auth.decoded)}
+                {auth.decoded && 
+                <div class="flex items-center">
+                   <p class="mr-4 hover:cursor-default">{auth.decoded.username}</p>
+                   <img src={auth.decoded.picture} class="rounded-full w-12 h-12 mr-5" alt="Profile Picture"/>
+                   <Link onClick={signOut}>LogOut</Link>
                 </div>
-                <div className={`lg:flex ${isOpen ? 'flex' : 'hidden'} items-right`}>
-                    {auth.decoded && <Link onClick={signOut}>LogOut</Link>}
-                </div>
+                }
             </div>
         </nav>
     );
