@@ -474,7 +474,11 @@ class ModelPostgres {
 
     addFlower = async (image, name, color) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("INSERT INTO flowers (flowerName, flowerImage, flowerColor) VALUES($1, $2, $3);", [name, image, color]);
+        const response = await CnxPostgress.db.query(`
+        INSERT INTO flowers (flowerName, flowerImage, flowerColor) 
+        VALUES($1, $2, $3)
+        RETURNING flowerid, flowerName;`, [name, image, color]);
+        return response.rows
         
     }
     

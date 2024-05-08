@@ -26,13 +26,7 @@ export default function ViewFlowers() {
             return
         }
         setShowNewFlowerPupup(true)
-    }
-
-    const closeNewFlowerPopup = (shouldRefresh) => {
-        if(shouldRefresh == true) setRefreshVariable(!refreshVariable)
-        setShowNewFlowerPupup(false)
-    }
-    
+    } 
 
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
@@ -43,12 +37,10 @@ export default function ViewFlowers() {
             </div>
             <NewFlowerForm 
                 showPopup={showNewFlowerPoupu}
-                cancelButton={closeNewFlowerPopup}
-                title={'Add Flower'}/>
-
+                cancelButton={() => setShowNewFlowerPupup(false)}
+                title={'Add Flower'}
+                refreshData={() => setRefreshVariable(!refreshVariable)}/>
             <FlowerListComponent  styles={{ maxHeight: '70vh' }} onFlowerClick={onFlowerClick} refresh={refreshVariable}/>
-
-            
         </div>
     );
 };

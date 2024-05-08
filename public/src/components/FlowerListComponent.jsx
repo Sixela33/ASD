@@ -65,10 +65,6 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     }, []);
 
     useEffect(() => {
-        debounced(searchQuery, selectedFlowerColor, showIncomplete)
-    },[refresh])
-
-    useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
             debounced(searchQuery, selectedFlowerColor, showIncomplete)
         }
@@ -81,7 +77,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             flowersLeft.current = true
             debounced(searchQuery, selectedFlowerColor, showIncomplete)
         }
-    }, [searchQuery, selectedFlowerColor, showIncomplete]);
+    }, [searchQuery, selectedFlowerColor, showIncomplete, refresh]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value)

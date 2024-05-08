@@ -198,7 +198,6 @@ export default function AddInvoice() {
     
   }
   
-
   const steps = [
     <InvoiceDataForm onSubmit={handleContinueInvoiceDataForm} saveIncompleteInvoice={saveIncompleteInvoice} invoiceData={invoiceData} handleChange={handleChangeBaseInvoiceData} handleVendorChange={handleVendorChange} selectedVendor={selectedVendor} invoiceFormErrors={invoiceFormErrors}/>,
     <InvoiceProjectSelector goBack={handlePreviousStep} goNext={handleContinueProjectSelection} selectedProjects={selectedProjects} setSelectedProjects={setSelectedProjects} />,

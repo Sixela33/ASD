@@ -88,29 +88,32 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       setIsSubmitting(true) 
       
       try {
-          const formDataToSend = new FormData()
-          formDataToSend.append('name', formData.name)
-          formDataToSend.append('color', formData.color.flowercolor)
-          formDataToSend.append('flower', formData.flower) 
+        const formDataToSend = new FormData()
+        formDataToSend.append('name', formData.name)
+        formDataToSend.append('color', formData.color.flowercolor)
+        formDataToSend.append('flower', formData.flower) 
 
-          if(flowerToEdit) {
-            formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage) 
-            formDataToSend.append('id', flowerToEdit.flowerid) 
-    
-            await axiosPrivate.patch(EDIT_FLOWER_URL, formDataToSend)
-            setMessage("Flower Edited succesfully", false)
-            refreshData()
-          } else {
-            await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend)
-            setMessage("Flower Added succesfully", false)
-          }
+        let newFlowerData
+        
+        if(flowerToEdit) {
+          formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage) 
+          formDataToSend.append('id', flowerToEdit.flowerid) 
   
-          setFormData(defaultFormData)
-          cancelButton(true)
+          await axiosPrivate.patch(EDIT_FLOWER_URL, formDataToSend)
+          setMessage("Flower Edited succesfully", false)
+        } else {
+          const response = await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend)
+          newFlowerData = response.data
+          setMessage("Flower Added succesfully", false)
+        }
+
+        await refreshData()
+        setFormData(defaultFormData)
+        cancelButton(newFlowerData)
 
       } catch (error) {
           setMessage(error.response?.data, true)
-          console.log(error)
+          console.error(error)
       } finally {
         setIsSubmitting(false)
       }

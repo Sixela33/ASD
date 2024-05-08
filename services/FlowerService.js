@@ -20,7 +20,8 @@ class FlowerService {
             savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
         }
 
-        await this.model.addFlower(savePath, name, color)
+        const response = await this.model.addFlower(savePath, name, color)
+        return response[0]
     };
 
     editFlower = async (image, name, color, id ) => {

@@ -10,8 +10,8 @@ class FlowerController {
         try {
             const image = req.file
             const { name, color } = req.body
-            await this.service.addFlower(image, name, color)
-            res.sendStatus(200)
+            const response = await this.service.addFlower(image, name, color)
+            res.json(response)
         } catch (error) {
             console.log(error)
             next(error)
@@ -35,7 +35,6 @@ class FlowerController {
             const {offset, query} = req.params
             const { filterByColor, showIncomplete} = req.query
             const response = await this.service.getFlowers(offset, query, filterByColor, showIncomplete)
-            console.log(response)
             res.json(response)
         } catch (error) {
             next(error)
