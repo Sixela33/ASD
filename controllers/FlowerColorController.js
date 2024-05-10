@@ -2,8 +2,8 @@ import FlowerColorService from "../services/FlowerColorService.js"
 
 class FlowerColorController {
 
-    constructor(fileStorage) {
-        this.service = new FlowerColorService(fileStorage)
+    constructor() {
+        this.service = new FlowerColorService()
     }
 
     getFlowerColors = async (req, res ,next) => {

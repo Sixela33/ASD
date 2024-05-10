@@ -5,16 +5,16 @@ import ROLES_LIST from '../config/rolesList.js'
 
 class FlowerColorRouter {
 
-    constructor(fileStorage){
-        this.controller = new FlowerColorController(fileStorage)
+    constructor(){
+        this.controller = new FlowerColorController()
         this.router = express.Router()
     }
 
     start(){
 
-        this.router.get('/colors', this.controller.getFlowerColors)
-        this.router.post('/colors', this.controller.createFlowerColor)
-        this.router.patch('/colors', this.controller.editFlowerColor)
+        this.router.get('/', this.controller.getFlowerColors)
+        this.router.post('/', this.controller.createFlowerColor)
+        this.router.patch('/', this.controller.editFlowerColor)
         return this.router
     }
     

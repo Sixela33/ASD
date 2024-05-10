@@ -6,7 +6,7 @@ import useRefreshToken from '../hooks/useRefreshToken';
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-    const { persist, setPersist } = useAuth(true);
+    const { persist, setPersist } = useAuth();
 
     const navigate = useNavigate();
     const refresh = useRefreshToken();
@@ -30,9 +30,9 @@ const Login = () => {
       );
   
       if (newWindow) {
-        let timer = setInterval(() => {
+        let timer = setInterval(async () => {
           if (newWindow.closed) {
-            refresh()
+            await refresh()
             navigate('/')
             if (timer) clearInterval(timer);
           }

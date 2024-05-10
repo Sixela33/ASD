@@ -21,7 +21,6 @@ class FlowerColorService {
         await validateQueryString(colorName)
         await validateId(colorID)
         await this.model.editFlowerColor(colorID, colorName)
-
     }
 
 

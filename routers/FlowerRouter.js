@@ -3,11 +3,13 @@ import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
 import FlowerController from '../controllers/FlowerController.js'
 import multer from "multer"
 import ROLES_LIST from '../config/rolesList.js'
+import FlowerColorRouter from './FlowerColorRouter.js'
 
 class FlowerRouter {
 
     constructor(fileStorage){
         this.controller = new FlowerController(fileStorage)
+        this.flowerColorRouter = new FlowerColorRouter
         this.router = express.Router()
         const storage = multer.memoryStorage()
         this.uploads = multer({storage: storage})
@@ -25,6 +27,7 @@ class FlowerRouter {
         this.router.get('/single/:id',staffuserReq, this.controller.getFlowerData)
         
         this.router.get('/flowerColors', this.controller.getUniqueFlowerColors)
+        this.router.use('/colors', new FlowerColorRouter().start())
         return this.router
     }
     

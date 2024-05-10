@@ -14,7 +14,7 @@ const GET_CLIENTS_LIST = '/api/clients'
 const baseProjectSchema = Yup.object().shape({
     clientid: Yup.string().required('Client is required'),
     projectDescription: Yup.string().required('Description is required'),
-    projectDate: Yup.string().required('Date is required'),
+    projectDate: Yup.string().min("1900-12-31").max("9999-12-31").required('Date is required'),
     projectContact: Yup.string().required('Contact is required'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),

@@ -3,13 +3,14 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useLogout from '../hooks/useLogout'
-
+import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
 
     const { auth } = useAuth()
     const navigate = useNavigate()
     const logout = useLogout()
+    const location = useLocation()
 
     const signOut = async () => {
         await logout()
@@ -22,8 +23,7 @@ const Navbar = () => {
         <nav className="p-4">
             <div className="container flex justify-between items-center mx-auto">
                 {/*Don't show logo on login screen*/}
-                {
-                    window.location.pathname != "/login" ? 
+                {location.pathname != "/login" ? 
                     <Link to="/" className="text-lg font-bold">
                         <img src='./asd-white.png' className={imageHeight} alt="ASD"></img>
                     </Link> 
