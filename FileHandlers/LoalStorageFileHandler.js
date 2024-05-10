@@ -44,7 +44,12 @@ class LocalStorageFileHandler {
             number++;
         } while (fs.existsSync(path.join(folder, filename)))
 
-        const buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+        let buffer = file.buffer
+
+        if(fileExtension != 'pdf'){
+            buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+        }        
+        
         folder = path.join(folder, filename)
         
         fs.writeFileSync(folder, buffer, "binary");

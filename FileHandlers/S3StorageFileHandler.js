@@ -26,8 +26,11 @@ class S3FileHandler {
 
     const folder = new Date().toISOString().split('T')[0];
     const filename = crypto.randomBytes(32).toString('hex');
+    let buffer = file.buffer
 
-    const buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+    if(fileExtension != 'pdf'){
+      buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+    }
     
     const params = {
       Bucket: this.bucketName,
