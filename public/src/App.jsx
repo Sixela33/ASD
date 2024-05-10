@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import './app.css'
 import Layout from './components/Layout';
 import PersistLogin from './components/PersistLogin';
@@ -32,7 +32,7 @@ const InactiveUserPage = lazy(() => import('./pages/InactiveUserPage'));
 function App() {
 
   return (
-    <div className='h-screen'>
+    <div className='h-full'>
       <Navbar/>
       <Alert/>
       <Suspense fallback={<LoadingPage/>}>

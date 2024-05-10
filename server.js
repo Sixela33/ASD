@@ -42,7 +42,6 @@ class Server {
         this.host = host
         this.persistance = persistance
         this.fileStorage = fileStorage
-
         this.app = express()
     }
 

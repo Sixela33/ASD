@@ -10,7 +10,7 @@ class InvoiceController {
         try {
             const file = req.file
             const {invoiceData, InvoiceFlowerData} = req.body
-            const creatorid = req.user.userid
+            const creatorid = req.user.user.userid
             const response = await this.service.addInvoice(invoiceData, InvoiceFlowerData, file, creatorid)
             res.json(response)
         } catch (error) {
@@ -23,7 +23,7 @@ class InvoiceController {
         try {
             const file = req.file
             const {invoiceData} = req.body
-            const creatorid = req.user.userid
+            const creatorid = req.user.user.userid
             await this.service.addIncompleteInvoice(invoiceData, file, creatorid)
             res.sendStatus(200)
         } catch (error) {
@@ -36,7 +36,7 @@ class InvoiceController {
         try {
             const file = req.file
             const {invoiceData, InvoiceFlowerData} = req.body
-            const editorID = req.user.userid
+            const editorID = req.user.user.userid
             await this.service.editInvoice(invoiceData, InvoiceFlowerData, file, editorID)
             res.sendStatus(200)
         } catch (error) {

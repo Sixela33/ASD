@@ -84,7 +84,6 @@ export default function Clients() {
                 </TableHeaderSort>
             </div>
             <FloatingMenuButton options={buttonOptions}/>
-            
         </div>
     )
 }

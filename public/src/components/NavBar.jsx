@@ -1,5 +1,5 @@
 // Navbar.js
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useLogout from '../hooks/useLogout'
@@ -16,19 +16,26 @@ const Navbar = () => {
         navigate('/')
     }
 
+    const imageHeight = "h-[10vh]"
+    
     return (
         <nav className="p-4">
             <div className="container flex justify-between items-center mx-auto">
-                <Link to="/" className="text-lg font-bold">
-                    <img src='./asd-white.png' className="h-[10vh]" alt="ASD"></img>
-                </Link>
-                {console.log(auth.decoded)}
+                {/*Don't show logo on login screen*/}
+                {
+                    window.location.pathname != "/login" ? 
+                    <Link to="/" className="text-lg font-bold">
+                        <img src='./asd-white.png' className={imageHeight} alt="ASD"></img>
+                    </Link> 
+                    : <div className={imageHeight}/>
+                }
+
                 {auth.decoded && 
-                <div class="flex items-center">
-                   <p class="mr-4 hover:cursor-default">{auth.decoded.username}</p>
-                   <img src={auth.decoded.picture} class="rounded-full w-12 h-12 mr-5" alt="Profile Picture"/>
-                   <Link onClick={signOut}>LogOut</Link>
-                </div>
+                    <div className="flex items-center">
+                    <p className="mr-4 hover:cursor-default">{auth.decoded.username}</p>
+                    <img src={auth.decoded.picture} className="rounded-full w-12 h-12 mr-5" alt="Profile Picture"/>
+                    <Link onClick={signOut} className='border-l-2 border-white pl-5'>LogOut</Link>
+                    </div>
                 }
             </div>
         </nav>

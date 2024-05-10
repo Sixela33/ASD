@@ -159,7 +159,7 @@ export default function ViewInvoices() {
 
 
     return (
-        <div className='container mx-auto mt-8 p-4 text-center'>
+        <div className='container mx-auto pt-12 p-4 text-center page'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
                 <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
                 <br/>

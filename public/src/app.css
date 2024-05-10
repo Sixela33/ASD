@@ -104,9 +104,6 @@ input:active {
 
 }
 
-
-  
-
 select {
     background-color:rgb(220, 220, 220);
 }
@@ -199,8 +196,12 @@ background-color: #3c6dd5;
 }
 
 .google-logo {
-width: 20px; /* Ajusta el tamaño del logo según sea necesario */
-margin-right: 10px; /* Ajusta el espacio entre el logo y el texto */
+    width: 20px;
+    margin-right: 10px;
+}
+
+.page {
+    height:86.7vh;
 }
   
   

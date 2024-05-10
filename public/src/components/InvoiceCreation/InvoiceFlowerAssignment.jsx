@@ -244,7 +244,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     }
 
     return (
-        <div className='container mx-auto flex flex-col h-[80vh]'>
+        <div className='container mx-auto flex flex-col'>
             <InvoiceAddFlowerToProjectPopup showPopup={addFlowerPopup} submitFunction={flower => addFlowerToProject(flower)} closePopup={() =>toggleAddFlowerPopup(false)}/>
             <div className='grid grid-cols-3 mb-4'>
                 <button onClick={goBack} className='go-back-button col-span-1'>Go Back</button>

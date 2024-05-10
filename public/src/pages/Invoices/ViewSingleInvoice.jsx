@@ -75,7 +75,7 @@ export default function ViewSingleInvoice() {
     ]
 
     return (
-        <div className='container mx-auto mt-8 p-4 text-center'>
+        <div className='container mx-auto pt-8 p-4 text-center page'>
             <FloatingMenuButton options={buttonOptions}/>
 
             <div className='grid grid-cols-3 mb-4'>
@@ -87,7 +87,7 @@ export default function ViewSingleInvoice() {
                     <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
                 </div>
                 <div className='mx-10 w-full md:w-2/4 grid grid-col md:grid-rows-2 '> 
-                    <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-center font-bold ">
+                    <div className="items-center grid grid-row md:grid-cols-2 gap-8 mx-auto text-left font-bold ">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
                             <p>Invoice amount: ${toCurrency(invoiceData.invoiceamount)}</p>

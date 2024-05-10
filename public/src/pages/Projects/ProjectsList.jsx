@@ -115,7 +115,7 @@ const ProjectsList = ({ searchParams }) => {
     }
 
     return (
-        <div className='container mx-auto mt-8 p-4 text-center flex flex-col'>
+        <div className='container mx-auto pt-12 p-4 text-center flex flex-col page'>
             <div  className="grid grid-cols-3 mb-4 ">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Projects</h1>

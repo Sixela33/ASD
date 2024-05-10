@@ -211,7 +211,7 @@ export default function AddInvoice() {
         <h1>Loading your invoice!</h1>
         <h2>Please wait</h2>
     </LoadingPopup>
-    <div className='container mx-auto mt-8 p-4 text-center'>
+    <div className='container mx-auto page pt-12 p-4 text-center'>
       <div className="grid grid-cols-3 mb-4">
         <GoBackButton className='col-span-1'/>
         <h1 className='col-span-1'>Load invoice</h1>
