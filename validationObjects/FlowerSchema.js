@@ -7,9 +7,11 @@ const flowerSchema = Joi.object({
         'string.max': 'Name cannot exceed 255 characters.',
         'any.required': 'Name is required.'
     }), 
-    color: Joi.string().max(255).messages({
-        'string.max': 'Color cannot exceed 255 characters.'
-    }),
+    colors: Joi.array().items(schemas.idSchema).unique().required().messages({
+        'array.base': 'Colors must be an array.',
+        'array.unique': 'The same color was assinged twice.',
+        'any.required': 'At least one color is required.'
+    }),    
     id: schemas.idSchema
 });
 

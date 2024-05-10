@@ -472,19 +472,23 @@ class ModelPostgres {
     //                   FLOWERS
     // -----------------------------------------------
 
-    addFlower = async (image, name, color) => {
+    addFlower = async (image, name, colors) => {
         this.validateDatabaseConnection()
+        console.log({
+            image, name, colors
+        })
         const response = await CnxPostgress.db.query(`
-        INSERT INTO flowers (flowerName, flowerImage, flowerColor) 
-        VALUES($1, $2, $3)
-        RETURNING flowerid, flowerName;`, [name, image, color]);
+        CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
+        [name, image, colors]);
         return response.rows
         
     }
     
     editFlower = async (name, color, id, filepath) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("UPDATE flowers SET flowerName=$1, flowerImage=$2, flowerColor=$3 WHERE flowerID=$4;", [name, filepath, color, id])
+        await CnxPostgress.db.query(`
+        CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
+        [name, filepath, color, id])
     }
 
     getFlowerData = async (id) => {
@@ -530,7 +534,7 @@ class ModelPostgres {
             f.flowerid, 
             f.flowername, 
             f.flowerimage, 
-            f.flowercolor, 
+            ARRAY_AGG(fc.colorName) AS flowerColors,
             FxI.unitPrice 
         FROM flowers f
         LEFT JOIN (
@@ -545,7 +549,10 @@ class ModelPostgres {
                     flowerID
             ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
             GROUP BY fx.flowerID
-        ) FxI ON f.flowerID = FxI.flowerID `
+        ) FxI ON f.flowerID = FxI.flowerID 
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+        GROUP BY f.flowerID, FxI.unitPrice `
 
         const queryParams = []
         let queryConditions = []
@@ -556,7 +563,7 @@ class ModelPostgres {
         }
     
 
-        if (filterByColor) {
+        if (false) {
             queryConditions.push(`f.flowercolor ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${filterByColor}%`)
         }
@@ -592,7 +599,7 @@ class ModelPostgres {
 
     createFlowerColor = async (colorName) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("INSERT INTO flowerColors (colorName) VALUES($1);", [colorName])
+        await CnxPostgress.db.query("INSERT INTO flowerColors (colorname) VALUES($1);", [colorName])
     }
 
     editFlowerColor = async (colorID, colorName) => {
@@ -602,6 +609,12 @@ class ModelPostgres {
         SET 
         colorName = $1,
         WHERE colorID = $2;`, [colorName, colorID])
+    }
+
+    getColorID = async (colorName) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query("SELECT colorid FROM flowerColors WHERE colorname = $1;",[colorName])
+        return response.rows
     }
 
     // -----------------------------------------------
@@ -641,7 +654,7 @@ class ModelPostgres {
             FxA.amount AS quantity,
             f.flowerName,
             f.flowerImage,
-            f.flowerColor,
+            ARRAY_AGG(fc.colorName) AS flowerColors,
             FxI.unitPrice
         FROM flowerXarrangement FxA 
         LEFT JOIN flowers f ON FxA.flowerID = f.flowerID
@@ -658,6 +671,8 @@ class ModelPostgres {
             ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
             GROUP BY fx.flowerID
         ) FxI ON f.flowerID = FxI.flowerID
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID
         WHERE FxA.arrangementID = $1;`, [id])
         return flowers
     }

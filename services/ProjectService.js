@@ -46,7 +46,8 @@ class ProjectService {
 
     getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient) => {
         await validateId(offset)
-        await validateQueryStringLength([searchByID, searchByContact, searchByDescription, orderBy, searchByClient ])
+        await validateId(Number(searchByID))
+        await validateQueryStringLength([searchByContact, searchByDescription, orderBy, searchByClient ])
 
         const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient)
         return response.rows

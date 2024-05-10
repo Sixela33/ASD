@@ -6,7 +6,7 @@ import { debounce } from "lodash"
 import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx'
 
 const GET_FLOWERS_URL = '/api/flowers/many/'
-const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
+const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
 
 export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh}) {
     if(!onFlowerClick) onFlowerClick = () => {}
@@ -37,10 +37,9 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                 + '/' + searchQ 
                 + '?filterByColor=' + searchByColor +
                  '&showIncomplete=' + showIncomplete )
-            let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
-            response = await response
-            flowerColors = await flowerColors
-            
+                 let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
+                 response = await response
+                 flowerColors = await flowerColors                 
             offset.current += 1
             if(response?.data.length == 0) {
                 flowersLeft.current = false
@@ -95,7 +94,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                     <label >Search by color: </label>
                     <SearchableDropdown 
                         options={flowerColors}
-                        label={'flowercolor'}
+                        label={'colorname'}
                         selectedVal={selectedFlowerColor}
                         handleChange={setSelectedFlowerColor}
                         placeholderText={'Filter by color'}/>
@@ -112,7 +111,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                         <img src={`${flower.flowerimage}`} alt={flower.flowername} loading="lazy" className="w-full object-cover h-32"/>
                         <div className="p-4">
                             <h2 className="text-xl font-bold mb-2">{flower.flowername}</h2>
-                            <p className="text-gray-600">{flower.flowercolor}</p>
+                            <p className="text-gray-600">{flower.flowercolors[0] || ""}</p>
                         </div>
                     </div>
                 ))}

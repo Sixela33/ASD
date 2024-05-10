@@ -13,19 +13,21 @@ class FlowerService {
         this.fileHandler = new FileHandlerSelector(fileStorage).start()
     }
 
-    addFlower = async (image, name, color) => {
-        await validateFlower({name, color})
+    addFlower = async (image, name, colors) => {
+        console.log(colors)
+
+        await validateFlower({name, colors})
         let savePath = ''
         if (image) {
             savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
         }
 
-        const response = await this.model.addFlower(savePath, name, color)
+        const response = await this.model.addFlower(savePath, name, colors)
         return response[0]
     };
 
-    editFlower = async (image, name, color, id ) => {
-        await validateFlower({name, color})
+    editFlower = async (image, name, colors, id ) => {
+        await validateFlower({name, colors})
         await validateId(id)
         let flowerData = await this.model.getFlowerData(id)
         flowerData = flowerData.rows[0]

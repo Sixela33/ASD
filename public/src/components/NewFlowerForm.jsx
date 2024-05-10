@@ -7,12 +7,12 @@ import SearchableDropdown from './Dropdowns/SearchableDropdown';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
-const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
+const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
 
 const defaultFormData = {
   flower: null,
   name: '',
-  color: '',
+  color: {colorname: ''},
 }
 
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit}) {
@@ -80,17 +80,18 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       }
 
       console.log(formData.color)
-      if(!formData.color.flowercolor || formData.color.flowercolor == '') {
+      if(!formData.color.colorid || formData.color.colorname == '') {
         setMessage("A color must be assigned")
         return
       }
 
       setIsSubmitting(true) 
-      
+      console.log("formData.color", formData.color)
       try {
         const formDataToSend = new FormData()
         formDataToSend.append('name', formData.name)
-        formDataToSend.append('color', formData.color.flowercolor)
+        formDataToSend.append('colors[]', formData.color.colorid)
+        formDataToSend.append('colors[]', 7)
         formDataToSend.append('flower', formData.flower) 
 
         let newFlowerData
@@ -147,7 +148,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             <label className="mb-1">Color:</label>
             <SearchableDropdown 
               options={flowerColorList}
-              label={'flowercolor'}
+              label={'colorname'}
               selectedVal={formData.color}
               handleChange={(e) => handleChange({target: {name:'color', value: e}})}
               placeholderText={'color'}
