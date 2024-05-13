@@ -85,7 +85,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         const formDataToSend = new FormData()
         formDataToSend.append('name', formData.name)
         formDataToSend.append('colors[]', formData.color.colorid)
-        formDataToSend.append('colors[]', 7)
+        //formDataToSend.append('colors[]', 7)
         formDataToSend.append('flower', formData.flower) 
 
         let newFlowerData

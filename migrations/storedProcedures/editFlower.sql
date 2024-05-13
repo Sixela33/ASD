@@ -18,7 +18,7 @@ BEGIN
     WHERE flowerID = p_flowerid;
 
     INSERT INTO colorsXFlower (flowerID, colorID)
-    SELECT flowerid, unnest(p_flowerColors);
+    SELECT p_flowerid, unnest(p_flowerColors);
 
 END;
 $$ LANGUAGE plpgsql;
