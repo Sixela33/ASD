@@ -21,7 +21,9 @@ CREATE TABLE IF NOT EXISTS flowerVendor (
 
 CREATE TABLE IF NOT EXISTS clients (
     clientID SERIAL PRIMARY KEY,
-    clientName VARCHAR(50) UNIQUE NOT NULL
+    clientName VARCHAR(50) UNIQUE NOT NULL,
+    isActive BOOLEAN DEFAULT true
+
 );
 
 CREATE TABLE IF NOT EXISTS projects (
@@ -55,7 +57,8 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(50) NOT NULL,
     flowerDescription VARCHAR(50),
-    flowerImage VARCHAR(255)
+    flowerImage VARCHAR(255),
+    isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS flowerColors (

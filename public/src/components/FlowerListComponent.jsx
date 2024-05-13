@@ -30,7 +30,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     const fetchFlowers = async (searchQ, colorFilter, showIncomplete) => {
         try {
-            const searchByColor = colorFilter?.flowercolor || ''
+            const searchByColor = colorFilter?.colorname || ''
             showIncomplete = showIncomplete || false
 
             let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current 

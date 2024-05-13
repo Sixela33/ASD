@@ -59,11 +59,14 @@ export default function SingleFlowerPage() {
     return (
         <div className="container mx-auto p-8 ">
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={deleteFlower}>
-                Are you sure you want to remove {baseFlowerData.flowername} from the database?
+                Are you sure you want to remove {newFlowerData.flowername} from the database?
             </ConfirmationPopup>
             <NewFlowerForm
                 showPopup={showEditFlowerPopup}
-                cancelButton={() => setShowEditFlowerPopup(false)}
+                cancelButton={() => {
+                    setShowEditFlowerPopup(false)
+                    setBaseFlowerData({})
+                }}
                 flowerToEdit={baseFlowerData}
                 refreshData={fetchData}
                 />
@@ -81,13 +84,16 @@ export default function SingleFlowerPage() {
                             <p>Name: {newFlowerData.flowername}</p>
                         </div>
                         <div>
-                            <p>Color: {newFlowerData.flowercolor}</p>
+                            <p>Color: {newFlowerData.flowercolors[0] || ''}</p>
                         </div>
                     </div>
                     </div>
                     <div className='buttons-holder'>
                         {/*<button className='buton-secondary' onClick={() => setShowConfirmationPopup(true)}>Remove</button>*/}
-                        <button className='buton-main' onClick={() => setShowEditFlowerPopup(true)}>Edit</button>
+                        <button className='buton-main' onClick={() => {
+                            setShowEditFlowerPopup(true)
+                            setBaseFlowerData(newFlowerData)
+                            }}>Edit</button>
 
                     </div>
                 </div>

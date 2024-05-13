@@ -29,8 +29,8 @@ class FlowerColorController {
 
     editFlowerColor = async (req, res ,next) => {
         try {
-            const {flowerName, colorID} = req.body
-            await this.service.editFlowerColor(colorID, flowerName)
+            const {colorName, colorID} = req.body
+            await this.service.editFlowerColor(colorID, colorName)
             res.sendStatus(200)
         } catch (error) {
             next(error)

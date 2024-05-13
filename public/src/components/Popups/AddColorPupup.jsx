@@ -1,0 +1,60 @@
+import React, { useEffect, useState } from 'react'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import useAlert from '../../hooks/useAlert'
+import ConfirmationPopup from './ConfirmationPopup'
+
+const ADD_COLOR_URL = '/api/flowers/colors'
+const EDIT_COLOR_URL = '/api/flowers/colors'
+const DEFAULT_COLOR_DATA = {}
+
+export default function AddColorPupup({showPopup, closePopup, editClorData}) {
+    const [colorData, setColorData] = useState(editClorData || DEFAULT_COLOR_DATA)
+
+    const axiosPrivate = useAxiosPrivate()
+    const {setMessage} = useAlert()
+
+    const handleClosePopup = (shouldRefresh) => {
+        setColorData(DEFAULT_COLOR_DATA)
+        closePopup(shouldRefresh)
+    }
+
+    const addNewColor = async () => {
+        try {
+            if (!colorData.colorID) {
+                await axiosPrivate.post(ADD_COLOR_URL, JSON.stringify(colorData))
+                setMessage('Color added Successfully', false)
+            } else {
+                await axiosPrivate.patch(EDIT_COLOR_URL, JSON.stringify(colorData))
+                setMessage('Color edited Successfully', false)
+            }
+            handleClosePopup(true)
+        } catch (error) {
+            setMessage(error.response?.data, true)
+        }
+    }
+
+    useEffect(() => {
+        console.log("editClorData", editClorData)
+        if(editClorData) {
+            setColorData({
+                colorName: editClorData.colorname,
+                colorID: editClorData.colorid
+            })
+        }
+    }, [editClorData])
+
+    const handleChange = (e) => {
+        setColorData({...colorData, colorName: e.target.value})
+    }
+
+  return (
+    <ConfirmationPopup
+    showPopup={showPopup}
+    closePopup={handleClosePopup}
+    confirm={addNewColor}>
+        <label>Color Name</label> 
+        <input type='text' value={colorData.colorName} onChange={handleChange}></input>
+
+    </ConfirmationPopup>
+  )
+}

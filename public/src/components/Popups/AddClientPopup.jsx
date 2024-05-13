@@ -48,7 +48,7 @@ export default function AddClientPopup({showPopup, closePopup, editClientData}) 
     showPopup={showPopup}
     closePopup={handleClosePopup}
     confirm={addNewClient}>
-        <label>New Client Name: </label>
+        <label>Client Name: </label>
         <input type='text' value={clientData.clientname} onChange={handleInputChange}></input>
     </ConfirmationPopup>
   )

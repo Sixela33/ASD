@@ -38,7 +38,7 @@ class FlowerService {
             filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, flowerData.flowerimage, FLOWER_IMAGE_PATH)
         }
 
-        await this.model.editFlower(name, color, id, filepath)
+        await this.model.editFlower(name, colors, id, filepath)
     }
 
     getFlowers = async (offset, query, filterByColor, showIncomplete) => {

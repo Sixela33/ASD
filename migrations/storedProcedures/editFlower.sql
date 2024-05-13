@@ -15,7 +15,7 @@ BEGIN
         flowerID = p_flowerid;
 
     DELETE FROM colorsXFlower
-    WHERE invoiceID = p_flowerid;
+    WHERE flowerID = p_flowerid;
 
     INSERT INTO colorsXFlower (flowerID, colorID)
     SELECT flowerid, unnest(p_flowerColors);

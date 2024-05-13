@@ -20,6 +20,7 @@ export default function ViewSingleInvoice() {
     const [projectsProvided, setProjectsProvided] = useState([])
     const [invoiceData, setInvoiceData] = useState([])
     const [invoiceFlowers, setInvoiceFlowers] = useState([])
+    const [bankTxs, setBankTxs] = useState([])
 
     const fetchProjectsProvided = async () => {
         try {
@@ -44,6 +45,7 @@ export default function ViewSingleInvoice() {
             setProjectsProvided(projects)
             setInvoiceData(invoiceData[0])
             setInvoiceFlowers(processedFlowerData)
+            setBankTxs(bankTransactions)
         } catch (error) {
             setMessage(error.response?.data, true);
         }
@@ -127,7 +129,12 @@ export default function ViewSingleInvoice() {
                         </TableHeaderSort>
                       
                     </div>
-
+                    {bankTxs && <div className='h-[10vh] overflow-y-auto'>
+                            <h3>Bank Transactions</h3>
+                            {bankTxs.map(tx => {
+                                return <p>{tx.transactionnumber}</p>
+                            })}
+                    </div>}
                                    
                 </div>
             </div>

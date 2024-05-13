@@ -28,7 +28,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const fetchFlowerColors = async () => {
       try {
         const response = await axiosPrivate.get(GET_FLOWER_COLORS_URL)
-        console.log(response)
         setFlowerColorList(response.data)
       } catch (error) {
         console.log(error)
@@ -48,11 +47,8 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }
 
     useEffect(() => {
-      if(flowerToEdit && flowerColorList) {
-        const flowerPos = flowerColorList.findIndex(item => item.flowercolor == flowerToEdit.flowercolor)
-        console.log("flowerPos", flowerPos)
-        console.log("flowerColorList", flowerColorList)
-      
+      if(flowerToEdit?.flowercolors && flowerColorList) {
+        const flowerPos = flowerColorList.findIndex(item => item.colorname == flowerToEdit.flowercolors[0])
         setFormData({
           flower: defaultFormData.flower,
           name: flowerToEdit.flowername,
@@ -79,14 +75,12 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         return
       }
 
-      console.log(formData.color)
       if(!formData.color.colorid || formData.color.colorname == '') {
         setMessage("A color must be assigned")
         return
       }
 
       setIsSubmitting(true) 
-      console.log("formData.color", formData.color)
       try {
         const formDataToSend = new FormData()
         formDataToSend.append('name', formData.name)
