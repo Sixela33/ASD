@@ -44,7 +44,7 @@ describe('Loading Flowers', () => {
 
                     const response = await request.post('/api/flowers').set(headers).attach('flower', imageFilePath)
                     .field({'name': name})
-                    .field({'colors[]': [responseGetColor.body.colorid, 4]});
+                    .field({'colors[]': [responseGetColor.body.colorid]});
                     expect(response.status).to.equal(200)
                 }
             }
