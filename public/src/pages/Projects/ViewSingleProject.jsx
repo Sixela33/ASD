@@ -327,7 +327,7 @@ export default function ViewProject() {
             let text = ''
     
             showFlowerData.forEach(item => {
-                text += `${item.flowername} ${item.flowercolor} X ${item.totalstems} units`
+                text += `${item.flowername} - ${item.flowercolor}  X ${item.totalstems} units`
                 text += '\n'
             })
     
@@ -344,8 +344,8 @@ export default function ViewProject() {
             window.open(url, '_blank').focus()
             
         } catch (error) {
-            setMessage(error.response.data.error.errors[0].message)
-            console.log(error)
+            console.log("error", error)
+            setMessage(error.response.data.error.message)
         } finally {
             setShowLoadingPopup(false)
         }
