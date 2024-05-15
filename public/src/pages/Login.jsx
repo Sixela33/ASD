@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import GoogleOauth from '../utls/GoogleIntegration/GoogleOauth';
 import useRefreshToken from '../hooks/useRefreshToken';
 import { FcGoogle } from "react-icons/fc";
@@ -22,22 +22,8 @@ const Login = () => {
     const redirectToGoogleSSO = async () => {
 
       const googleLoginURL = GoogleOauth()
-
-      const newWindow = window.open(
-        googleLoginURL,
-        "_blank",
-        "width=500,height=600"
-      );
-  
-      if (newWindow) {
-        let timer = setInterval(async () => {
-          if (newWindow.closed) {
-            await refresh()
-            navigate('/')
-            if (timer) clearInterval(timer);
-          }
-        }, 500);
-      }
+      console.log(googleLoginURL)
+      window.location.href = googleLoginURL
     };
 
     return (
