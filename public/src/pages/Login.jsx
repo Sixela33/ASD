@@ -41,11 +41,11 @@ const Login = () => {
     };
 
     return (
-        <section className=" mt-[20vh] flex flex-col items-center justify-center">
+        <section className="page flex flex-col items-center justify-center">
             <img src='./asd-black.png' className="h-[20vh] " alt="ASD"></img>
-            <h1 className='my-10'>Log In</h1>
+            <h1 className='py-10'>Log In</h1>
             <button onClick={redirectToGoogleSSO} className='google-login-button'><FcGoogle className='w-10 h-10 mr-10 bg-white'/>Sign in with Google</button>
-            <div className="persistCheck mt-4">
+            <div className="persistCheck pt-4">
                 <input type="checkbox" id="persist" onChange={togglePersist} checked={persist}/>
                 <label htmlFor="persist">Trust This Device</label>
             </div>
