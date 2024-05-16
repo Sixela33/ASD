@@ -60,15 +60,6 @@ class FlowerController {
             next(error)
         }
     }
-
-    getUniqueFlowerColors= async (req, res, next) => {
-        try {
-            const response = await this.service.getUniqueFlowerColors()
-            res.json(response)
-        } catch (error) {
-            next(error)
-        }
-    }
 }
 
 export default FlowerController

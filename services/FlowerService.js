@@ -79,12 +79,6 @@ class FlowerService {
 
         return response
     }
-
-    getUniqueFlowerColors = async () => {
-        const colors = await this.model.getUniqueFlowerColors()
-        
-        return colors.rows
-    }
 }
 
 export default FlowerService;
