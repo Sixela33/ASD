@@ -112,15 +112,11 @@ input:focus  {
 }
 
 input:active {
-    border-width: 1px;
-    border-radius: 0.25rem;
     background-color:rgb(220, 220, 220);
 
 }
 
 select {
-    border-width: 1px;
-    border-radius: 0.25rem;
     background-color:rgb(220, 220, 220);
 }
 
