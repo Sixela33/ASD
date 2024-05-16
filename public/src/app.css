@@ -10,6 +10,18 @@
     --link-hover-color: rgb(29 78 216); 
 }
 
+.app {
+    position:fixed;
+    padding:0;
+    margin:0;
+
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+}
+
 html {
     background-color: #fcfcfc;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -201,7 +213,7 @@ background-color: #3c6dd5;
 }
 
 .page {
-    height:86.7vh;
-}
-  
-  
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+} 

@@ -28,7 +28,7 @@ const Admin = lazy(() => import('./pages/Admin/Admin'));
 function App() {
 
   return (
-    <div className='h-max '>
+    <div className='app'>
       <Navbar/>
       <Alert/>
       <Suspense fallback={<LoadingPage/>}>
