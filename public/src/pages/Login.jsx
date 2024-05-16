@@ -27,7 +27,7 @@ const Login = () => {
     };
 
     return (
-        <section className="page flex flex-col items-center justify-center overflow-hidden">
+        <section className="page items-center my-[20vh] ">
             <img src='./asd-black.png' className="h-[20vh] " alt="ASD"></img>
             <h1 className='py-10'>Log In</h1>
             <button onClick={redirectToGoogleSSO} className='google-login-button'><FcGoogle className='w-10 h-10 mr-10 bg-white'/>Sign in with Google</button>
