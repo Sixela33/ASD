@@ -8,7 +8,7 @@ import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx'
 const GET_FLOWERS_URL = '/api/flowers/many/'
 const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
 
-export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh}) {
+export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh, showToggleIncomplete}) {
     if(!onFlowerClick) onFlowerClick = () => {}
     if(refresh == undefined) refresh = false
 
@@ -99,10 +99,10 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                         handleChange={setSelectedFlowerColor}
                         placeholderText={'Filter by color'}/>
                 </div>
-                <div className='mb-3 flex justify-start items-center'>
+                {showToggleIncomplete && <div className='mb-3 flex justify-start items-center'>
                     <label>Show incomplete flowers</label>
                     <input type='checkbox' onClick={() => setShowincomplete(!showIncomplete)}></input>
-                </div>
+                </div>}
             </div>
 
             <div className="flex flex-wrap gap-4 overflow-auto w-full justify-center" style={styles}>
