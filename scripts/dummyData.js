@@ -87,7 +87,7 @@ const createProjects = async (model) => {
         console.log('Creating projects');
         for (let project of projects) {
             let {staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid} = project;
-            await model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements);
+            await model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements, [], false);
         }
     } catch (error) {
         console.error('Error during project creation: \n', error);
