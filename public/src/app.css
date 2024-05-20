@@ -20,6 +20,14 @@
 
     width: 100%;
     height: 100%;
+    overflow-y: auto;
+}
+
+.page {
+    min-height: fit-content;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 html {
@@ -44,7 +52,6 @@ thead {
     background-color: white;
     margin-top: auto;
 }
-
 
 th {
     padding: 0.5rem;
@@ -212,8 +219,3 @@ background-color: #3c6dd5;
     margin-right: 10px;
 }
 
-.page {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-} 
