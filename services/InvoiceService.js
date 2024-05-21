@@ -4,8 +4,11 @@ import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 import fs from 'fs';
 import { validateInvoice, validateFlowers, validateBankTransaction } from "./Validations/InvoiceValidations.js";
 import { validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js";
+import tesseract from 'tesseract.js'
+import PdfParse from "pdf-parse";
+import OCR_Model from "../ml_model/OCR_Model.js";
 
-const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
+const ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'pdf']
 
 const INVOICE_FILES_PATH = 'InvoiceFiles'
 
@@ -172,6 +175,47 @@ class InvoiceService {
 
         return
     }
+
+    processFile = async (file) => {
+        if (!file) {
+            throw { message: "No file was found in request", status: 400 }
+        }
+    
+        const fileExtension = path.extname(file.originalname).toLowerCase().substring(1)
+    
+        if (!ALLOWED_IMAGE_EXTENSIONS.includes(fileExtension)) {
+            throw { message: "Invalid file extension", status: 400 }
+        }
+    
+        let text = ''
+        const dataBuffer = file.buffer
+        try {
+            // Processing files differently depending on extension
+            if (fileExtension == 'pdf') {
+                // Extract text from PDF
+                const data = await PdfParse(dataBuffer)
+                text = data.text;
+            } else if (['png', 'jpg', 'jpeg'].includes(fileExtension)) {
+                // Extract text from image using Tesseract
+                const result = await tesseract.recognize(dataBuffer, 'eng')
+                text = result.data.text
+            }
+        } catch (error) {
+            throw { message: "Error processing file" + error.message, status: 500}
+        }
+    
+        console.log(text)
+        return text
+    }
+
+
+    extractInvoiceData = async (file) => {
+
+        const text = await this.processFile(file)
+        console.log(text)
+        return text
+    };
+
 }
 
 export default InvoiceService

@@ -31,6 +31,7 @@ const invoiceDataSchema = Yup.object().shape({
 
 const FETCH_INVOICE_DATA_URL = '/api/invoices/invoiceData/'
 const SAVE_INCOMPLETE_INVOICE = '/api/invoices/incomplete'
+const EXTRACT_DATA_URL = '/api/invoices/extractData'
 
 export default function AddInvoice() {
   const {setMessage} = useAlert()
@@ -97,12 +98,21 @@ export default function AddInvoice() {
     setCurrentStep(currentStep - 1);
   };
  
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     e.preventDefault()
-    const file = e.target.files[0];
-    setPdfFile(file);
-    setDisplayPdfFile(e.target.files[0] && URL.createObjectURL(e.target.files[0]) + '#toolbar=0')
-  };
+    const file = e.target.files[0]
+    setPdfFile(file)
+    setDisplayPdfFile(file && URL.createObjectURL(file) + '#toolbar=0')
+  
+    if (!file) return
+
+    const formDataToSend = new FormData();
+  
+    formDataToSend.append('invoiceFile', pdfFile);
+
+    const response = await axiosPrivateImage.post(EXTRACT_DATA_URL, formDataToSend)
+    console.log(response)
+  }
 
   const handleChangeBaseInvoiceData = (e) => {
     e.preventDefault()

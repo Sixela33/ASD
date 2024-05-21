@@ -24,6 +24,8 @@ class InvoiceRouter {
         this.router.get('/invoiceData/:id', this.controller.getInvoiceData)
         
         this.router.post('/linkBankTransaction', this.controller.linkBaknTransaction)
+
+        this.router.post('/extractData', this.uploads.single('invoiceFile'), this.controller.processFile)
         return this.router
     }
     

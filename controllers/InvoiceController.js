@@ -84,6 +84,16 @@ class InvoiceController {
             next(error)
         }
     }
+
+    processFile = async (req, res, next) => {
+        try {
+            const file = req.file
+            const response = await this.service.extractInvoiceData(file)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default InvoiceController
