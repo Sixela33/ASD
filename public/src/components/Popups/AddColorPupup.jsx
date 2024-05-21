@@ -34,7 +34,6 @@ export default function AddColorPupup({showPopup, closePopup, editClorData}) {
     }
 
     useEffect(() => {
-        console.log("editClorData", editClorData)
         if(editClorData) {
             setColorData({
                 colorName: editClorData.colorname,

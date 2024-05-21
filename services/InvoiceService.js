@@ -1,11 +1,9 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import path from 'path';
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
-import fs from 'fs';
 import { validateInvoice, validateFlowers, validateBankTransaction } from "./Validations/InvoiceValidations.js";
 import { validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js";
 
-const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "pdf"];
+const ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'pdf'];
 
 const INVOICE_FILES_PATH = 'InvoiceFiles'
 

@@ -16,7 +16,6 @@ export default function FlowerColors() {
   const fetchColors = async () => {
     try {
       const response = await axiosPrivate.get(GET_COLORS_URL)
-      console.log("response",response)
       setcolorData(response.data)
     } catch (error) {
       console.log(error)

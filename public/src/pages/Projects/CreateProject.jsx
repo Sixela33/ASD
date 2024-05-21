@@ -272,7 +272,6 @@ export default function CreateProject() {
         <div className='container mx-auto mt-8 p-4 text-center'>
             <LoadingPopup
                 showPopup={isSubmitting}>
-
             </LoadingPopup>
             <AddClientPopup showPopup={showNewClientPopup} closePopup={handleCloseNewClientPopup} />
             <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>

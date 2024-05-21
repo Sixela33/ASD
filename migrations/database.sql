@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS additionalsXproejct (
     aditionalID SERIAL PRIMARY KEY,
     additionalDescription VARCHAR(255) NOT NULL,
     projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
-    clientCost INT NOT NULL
+    clientCost FLOAT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS arrangementTypes (
@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS arrangements (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE IF NOT EXISTS flowerXarrangement (
     arrangementID INT REFERENCES arrangements(arrangementID) ON DELETE CASCADE,

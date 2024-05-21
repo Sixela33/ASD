@@ -1,16 +1,39 @@
 import CnxPostgress from '../model/CnxPostgress.js';
 import ModelPostgres from '../model/DAO/ModelPostgres.js';
-import bcrypt from 'bcrypt';
+import faker from 'faker';
 
+const extrasGenerator = () => ({
+    description: faker.commerce.department(), 
+    clientcost: faker.datatype.float({min: 0, max:1000})
+})
 
-const arrangements = [
-    { arrangementType: 1, arrangementDescription: 'Bridal', clientCost: 100, arrangementQuantity: 5 },
-    { arrangementType: 1, arrangementDescription: 'Blue arrangement', clientCost: 150, arrangementQuantity: 3 },
-    { arrangementType: 2, arrangementDescription: 'Red for the entrance', clientCost: 120, arrangementQuantity: 4 }
-];
+const arrangementGenerator = () => ({
+    arrangementType: faker.datatype.number({min: 1, max:3}),
+    arrangementDescription: faker.commerce.department(),
+    clientCost: faker.datatype.number({min:0, max:5000}),
+    arrangementQuantity: faker.datatype.number({min:1, max: 100})
+})
+
+const projectGenerator = () => [{
+    staffBudget: 0.3,
+    projectContact: faker.commerce.department(),
+    projectDate: faker.date.between('2024-01-01T00:00:00.000Z', '2024-12-31T00:00:00.000Z'),
+    projectDescription: faker.commerce.department(),
+    projectClient: faker.datatype.number({ min: 1, max: 5 }),
+    profitMargin: 0.7,
+    creatorid: 1
+}]
 
 const projects = [
-    { staffBudget: 0.3, projectContact: 'John Doe', projectDate: '2024-01-16', projectDescription: 'Conference', projectClient: 1, profitMargin: 0.7, creatorid: 1 },
+    { 
+    staffBudget: 0.3, 
+    projectContact: 'John Doe', 
+    projectDate: '2024-01-16', 
+    projectDescription: 'Conference', 
+    projectClient: 1, 
+    profitMargin: 0.7, 
+    creatorid: 1 
+    },
     { staffBudget: 0.3, projectContact: 'Alice Smith', projectDate: '2024-01-17', projectDescription: 'Product Launch', projectClient: 2, profitMargin: 0.7, creatorid: 1 },
     { staffBudget: 0.3, projectContact: 'Bob Johnson', projectDate: '2024-01-18', projectDescription: 'Workshop', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
     { staffBudget: 0.3, projectContact: 'Emma Brown', projectDate: '2024-01-19', projectDescription: 'Trade Show', projectClient: 4, profitMargin: 0.7, creatorid: 1 },
@@ -32,62 +55,26 @@ const flowerXArrangement = [
     [{ flowerID: 10, quantity: 8 }]
 ];
 
-const vendors = [
-    "Associated",
-    "GPage",
-    "FleuraMetz",
-    "Evergreen",
-    "Dutch",
-    "28th St wholesale",
-    "Abraflora",
-    "JRose",
-    "Tropical Plants & Orchids",
-    "Fragrance Plants & Flowers",
-    "Foliage Paradise",
-    "Foliage Garden and Tony's",
-    "Holiday Flowers & Plants",
-    "Flowers on Essex",
-    "International Garden",
-    "Holiday Foliage",
-    "Caribbean Cuts",
-    "Major",
-    "Jamali Floral & Garden",
-    "NYFG",
-    "Whole Foods"
-]
-
-const CLIENTS = [
-    "Ford",
-    "Gucci",
-    "Tesla",
-    "Smart Water",
-    "Cocacola",
-]
-
-const ARRANGEMENT_TYPES = [
-    "Petit arrangement",
-    "Normal arrangement",
-    "Big arrangement"
-]
-
-const createUsers = async (model) => {
-    try {
-        console.log("Creating users");
-        for (let user of users) {
-            const hashedPassword = await bcrypt.hash(user.password, 10);
-            await model.registerUser(user.username, user.email, hashedPassword);
-        }
-    } catch (error) {
-        console.error("Error during user creation: \n", error);
-    }
-};
 
 const createProjects = async (model) => {
     try {
         console.log('Creating projects');
-        for (let project of projects) {
-            let {staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid} = project;
-            await model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangements, [], false);
+        for (let i = 0; i <= 20 ; i++) {
+            
+            let {staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid} = projectGenerator()[0];
+    
+            let extrasArray = []
+            let arrangementsArray = []
+
+            for (let i = 0; i <= Math.round(Math.random()) * 10 ; i++) {
+                extrasArray.push(extrasGenerator())
+            }
+
+            for (let i = 0; i <= Math.round(Math.random()) * 10 ; i++) {
+                arrangementsArray.push(arrangementGenerator())
+            }
+        
+            await model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangementsArray, extrasArray, false);
         }
     } catch (error) {
         console.error('Error during project creation: \n', error);
@@ -96,9 +83,8 @@ const createProjects = async (model) => {
 
 const populateArangement = async (model) => {
     try {
-        const initialValue = 6
+        const initialValue = 3
         for (let i = initialValue; i <= initialValue + 15 ; i++) {
-            // arrangementID, flowerData
             await model.populateArrangement(i, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
         }
 
@@ -108,48 +94,13 @@ const populateArangement = async (model) => {
     }
 }
 
-const loadVendors = async (model) => {
-    try {
-        for (let v of vendors) {
-            await model.addVender(v)
-        }
-    } catch (error) {
-        console.error('error while loading providers: \n', error)
-    }
-}
-
-const createClients = async (model) => {
-    try {
-        for (let c of CLIENTS) {
-            await model.createClient(c)
-        }
-    } catch (error) {
-        console.error('error while loading clients: \n', error)
-
-    }
-}
-
-const loadArrangementTypes = async (model) => {
-    try {
-        for (let at of ARRANGEMENT_TYPES) {
-            await model.loadArrangementType(at)
-        }
-    } catch (error) {
-        console.error('error while loading arrangementTypes: \n', error)
-
-    }
-}
 
 const runScript = async() => {
     try {
         await CnxPostgress.connect();
         const model = new ModelPostgres();
-        //await createUsers(model)
-        //await createClients(model)
-        //await loadArrangementTypes(model)
         await createProjects(model)
         await populateArangement(model)
-        await loadVendors(model)
     } catch (error) {
         console.log(error)
     } finally {

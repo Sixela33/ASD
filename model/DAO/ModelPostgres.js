@@ -976,6 +976,70 @@ class ModelPostgres {
         return res.rows
     }
 
+    // -----------------------------------------------
+    //                  Dashboards
+    // -----------------------------------------------
+
+    getGeneralMetrics = async (startDate, endDate) => {
+        console.log("asd", startDate, endDate)
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        SELECT 
+            p.projectID,
+            TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
+            COALESCE(SUM(axp.clientCost), 0) AS extrasCost,
+            COALESCE(SUM(a.clientCost * a.arrangementQuantity), 0) AS arrangementCost,
+            COALESCE(SUM(fxi.unitPrice * fxi.numStems), 0) AS spentInFlowers
+        FROM projects p
+        LEFT JOIN additionalsXproejct axp ON p.projectID = axp.projectID
+        LEFT JOIN arrangements a ON a.projectID = p.projectID
+        LEFT JOIN flowerXInvoice fxi ON fxi.projectID = p.projectID
+        WHERE p.projectDate BETWEEN $1 AND $2
+        GROUP BY p.projectID
+        ORDER BY p.projectID;
+        `, [startDate, endDate])
+
+        return response.rows
+    }
+
+    getTotalProjectsByClient = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        
+        `)
+    }
+    
+    getTotalRevenueByClient = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        
+        `)
+    }
+    
+    getTotalDesignerPerformance = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        
+        `)
+    }
+    
+    getTotalTotalSpentByProvider = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        
+        `)
+    }
+    
+    getRecurrentProjectsTotalCost = async () => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+        
+        `)
+    }
+    
+
+
+
 }
 
 export default ModelPostgres

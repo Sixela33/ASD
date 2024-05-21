@@ -38,7 +38,7 @@ BEGIN
         VALUES (
             (extra_service->>'description')::VARCHAR, 
             p_projectClient, 
-            (extra_service->>'clientcost')::INT);
+            (extra_service->>'clientcost')::FLOAT);
     END LOOP;
 
 

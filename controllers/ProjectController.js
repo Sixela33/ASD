@@ -8,7 +8,6 @@ class ProjectController {
 
     createProject = async (req, res, next) => {
         try {
-            console.log("req.body", req.body)         
             const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras, isRecurrent} = req.body
             const creatorid = req.user.user.userid
             const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid, extras, isRecurrent)
