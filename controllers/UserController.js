@@ -24,7 +24,7 @@ class UserController {
             
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
 
-            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST  : process.env.HOST + ':' + process.env.PORT
+            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST  : process.env.HOST + ':' + '5173'
 
             res.redirect(redirect_uri)
             

@@ -77,18 +77,16 @@ export default function CreateProject() {
     
     const [projectStats, setProjectStats] = useState(baseProjectStatsData)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
-    
+    const [refreshUe, setrefreshUe] = useState(false)
     const [isSubmitting, setIsSubmiting] = useState(false)
-
 
     const { client, description, date, contact, staffBudget, profitMargin, isRecurrent } = formState
 
     // sums all the budgets 
     useEffect(() => {
         let tempProjectStats = {}
-
         let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
-        let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + parseFloat(expense.clientcost) , 0)
+        let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + (expense.clientcost * expense.ammount) , 0)
         
         totalFlowerCost = totalFlowerCost || 0
         totalAditional = totalAditional || 0
@@ -101,7 +99,7 @@ export default function CreateProject() {
         tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
         
         setProjectStats(tempProjectStats)
-    }, [arrangements, aditionalExpenses, formState])
+    }, [arrangements, aditionalExpenses, formState, refreshUe])
 
     const fetchData = async () => {
         try {
@@ -190,6 +188,7 @@ export default function CreateProject() {
         // The same with the client
         try {
             setIsSubmiting(true)
+           
             let newData = {
                 ...formState,
                 client: formState.client.clientid,
@@ -215,7 +214,7 @@ export default function CreateProject() {
             const cleanedArrangements = arrangements.map(arrangement => ({
                 ...arrangement,
                 arrangementType: arrangement.arrangementType.arrangementtypeid
-              }))
+            }))
     
             newData.arrangements = cleanedArrangements
             newData.extras = aditionalExpenses
@@ -257,6 +256,7 @@ export default function CreateProject() {
             tempAditionalExpenses[tempIndex] = expense
             setAditionallExpenses(tempAditionalExpenses)
         }
+        setrefreshUe(!refreshUe)
     }
 
     const editExistingExpense = (expense) => {
@@ -267,7 +267,8 @@ export default function CreateProject() {
 
 
     const formRowClass = 'flex flex-row space-x-4  flex-1 w-full';
-    const formColClass = "flex flex-col  w-full"
+    const formColClass = "flex flex-col w-full"
+
     return (
         <div className='container mx-auto mt-8 p-4 text-center'>
             <LoadingPopup
@@ -367,6 +368,7 @@ export default function CreateProject() {
                                         <tr>
                                             <th>Description</th>
                                             <th>Client cost</th>
+                                            <th>Quantity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -374,6 +376,7 @@ export default function CreateProject() {
                                         return <tr key={index} onClick={() => editExistingExpense(expense)}>
                                             <td>{expense.description}</td>
                                             <td>${toCurrency(expense.clientcost)}</td>
+                                            <td>{expense.ammount}</td>
                                         </tr>
                                     })}
                                 </tbody>
@@ -400,7 +403,6 @@ export default function CreateProject() {
                         <div className='flex items-center mx-3'>
                             <label>Is Recurrent</label>
                             <input type='checkbox' value={isRecurrent} onChange={() => handleFormEdit('isRecurrent', !isRecurrent)}></input>
-
                         </div>
                     </div>
                 </div>

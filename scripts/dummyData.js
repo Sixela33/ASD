@@ -4,7 +4,8 @@ import faker from 'faker';
 
 const extrasGenerator = () => ({
     description: faker.commerce.department(), 
-    clientcost: faker.datatype.float({min: 0, max:1000})
+    clientcost: faker.datatype.float({min: 0, max:1000}),
+    ammount: faker.datatype.number({ min: 1, max: 5 })
 })
 
 const arrangementGenerator = () => ({

@@ -1,40 +1,22 @@
 import { useEffect } from 'react';
-import useAuth from '../hooks/useAuth';
-import { redirect, useNavigate } from 'react-router-dom';
 import GoogleOauth from '../utls/GoogleIntegration/GoogleOauth';
-import useRefreshToken from '../hooks/useRefreshToken';
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-    const { persist, setPersist } = useAuth();
-
-    const navigate = useNavigate();
-    const refresh = useRefreshToken();
-
-    const togglePersist = () => {
-        setPersist(prev => !prev);
-    }
 
     useEffect(() => {
-        localStorage.setItem("persist", persist);
-    }, [persist])
+        localStorage.setItem("persist", true);
+    }, [])
 
     const redirectToGoogleSSO = async () => {
-
       const googleLoginURL = GoogleOauth()
-      console.log(googleLoginURL)
       window.location.href = googleLoginURL
     };
 
     return (
         <section className="page items-center my-[20vh] ">
             <img src='./asd-black.png' className="h-[20vh] " alt="ASD"></img>
-            <h1 className='py-10'>Log In</h1>
-            <button onClick={redirectToGoogleSSO} className='google-login-button'><FcGoogle className='w-10 h-10 mr-10 bg-white'/>Sign in with Google</button>
-            <div className="persistCheck pt-4">
-                <input type="checkbox" id="persist" onChange={togglePersist} checked={persist}/>
-                <label htmlFor="persist">Trust This Device</label>
-            </div>
+            <button onClick={redirectToGoogleSSO} className='google-login-button mt-10'><FcGoogle className='w-10 h-10 mr-10 bg-white'/>Continue with Google</button>
         </section>
 
     )

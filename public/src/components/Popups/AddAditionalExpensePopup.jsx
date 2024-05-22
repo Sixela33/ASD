@@ -6,12 +6,14 @@ import PopupBase from '../PopupBase';
 
 const baseAditionalExpense = {
     description: '',
-    clientcost: ''
+    clientcost: '',
+    ammount: ''
 }
 
 const baseExpenseSchema = Yup.object().shape({
     description: Yup.string('The description is required').required('The description is required').max(255, 'The description exceeds the maximum length').typeError('The description is required') ,
-    clientcost: Yup.number('The cost of the service is required').required('The cost of the service is required').min(0, 'The cost cannot be lower than 0').typeError('The cost of the service is required')
+    clientcost: Yup.number('The cost of the service is required').required('The cost of the service is required').min(0, 'The cost cannot be lower than 0').typeError('The cost of the service is required'),
+    ammount: Yup.number('The quantity of the service is required').required('The quantity of the service is required').min(0, 'The quantity cannot be lower than 0').typeError('The quantity of the service is required')
 });
 
 
@@ -77,6 +79,7 @@ export default function AddAditionalExpensePopup({showPopup, closePopup, submitF
             <h2>{!editing ? 'Add new expense' : 'Edit expense'}</h2>
             <FormItem labelName='Description:' type='text' inputName='description' value={aditionalExpenseData.description} handleChange={handleDataChange} error={formErrors.description}/>
             <FormItem labelName='Client cost:' type='number' inputName='clientcost' value={aditionalExpenseData.clientcost} handleChange={handleDataChange} error={formErrors.clientcost}/>
+            <FormItem labelName='Quantity:' type='number' inputName='ammount' value={aditionalExpenseData.ammount} handleChange={handleDataChange} error={formErrors.ammount}/>
             <div className='buttons-holder'>
                 <button onClick={handleClose} className='buton-secondary'>Cancel</button>
                 <button onClick={handleSubmit} className='buton-main'>Confirm</button>

@@ -17,7 +17,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {buttons.map((button) => (
           (button.url && auth?.decoded?.permissionlevel >= button.minPermissionLevel) && <Link key={button.id} to={button.url} 
-          className="block bg-gray-300 text-black h-[20vw] w-[20vw] flex items-center justify-center square-btn hover:bg-gray-400 focus:outline-none focus:border-none">
+          className="block bg-gray-300 text-black h-[35vh] w-[35vh] flex items-center justify-center square-btn hover:bg-gray-400 focus:outline-none focus:border-none">
             {button.label}
           </Link>
         ))}

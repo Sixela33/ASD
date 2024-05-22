@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS additionalsXproejct (
     aditionalID SERIAL PRIMARY KEY,
     additionalDescription VARCHAR(255) NOT NULL,
     projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
+    ammount FLOAT DEFAULT 0 NOT NULL,
     clientCost FLOAT NOT NULL
 );
 
