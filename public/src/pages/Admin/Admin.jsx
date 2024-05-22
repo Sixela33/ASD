@@ -14,19 +14,19 @@ export default function Admin() {
   ];
 
   return (
-    <div className="flex h-screen">
-      <div className="w-[20vw] bg-black">
+    <div className="flex overflow-y-hidden">
+      <div className="w-[20vw] bg-black h-screen" >
         <ul>
           {buttons.map((button) => (
             <li key={button.id} className="mb-2 items-center ">
-              <button className="w-[20vw] p-2.5 my-2 flex items-center rounded-md px-4 cursor-pointer hover:bg-gray-700" onClick={() => setComponentToShow(button.component)}>
+              <button className="w-[20vw] p-2.5 my-2 flex items-center rounded-md cursor-pointer hover:bg-gray-700" onClick={() => setComponentToShow(button.component)}>
                 <span className="text-[15px] mx-4 text-gray-200">{button.label}</span>
               </button>
             </li>
           ))}
         </ul>
       </div>
-      <div className="w-[80vw] mx-[5vw]">
+      <div className="container my-8 w-[80vw] mx-[5vw] flex justify-center">
         {componentToShow}
       </div>
     </div>

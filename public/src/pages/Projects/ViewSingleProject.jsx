@@ -145,7 +145,7 @@ export default function ViewProject() {
 
             updateArrangementData();
         }
-    }, [flowerData, extraServicesData, arrangementData]);
+    }, [flowerData, extraServicesData]);
 
     // this function checks if the arrangement has flowers assigned to it
     const updateArrangementData = () => {

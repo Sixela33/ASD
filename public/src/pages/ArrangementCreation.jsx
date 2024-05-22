@@ -36,10 +36,6 @@ export default function ArrangementCreation() {
 
     const submitArrangement = async () => {
         try {
-            if (selectedFlowers.length == 0){
-                setMessage("No flowers where selected", true)
-                return 
-            }
             const submitData = {
                 arrangementid: arrangementData.arrangementid,
                 flowers: selectedFlowers.map(flower => ({
@@ -48,7 +44,7 @@ export default function ArrangementCreation() {
                 }))
             };
             
-            const response = await axiosPrivate.post(SUBMIT_ARRANGEMENT_URL, JSON.stringify(submitData))
+            await axiosPrivate.post(SUBMIT_ARRANGEMENT_URL, JSON.stringify(submitData))
             setMessage('Arrangemente created succesfully', false)
             navigateTo('/projects/' + location.state.projectID)
         } catch (error) {
@@ -63,7 +59,6 @@ export default function ArrangementCreation() {
 
     const selectFlower = (flower) => {
         setActualSelectedFlower(flower);
-        // Enfocar automáticamente el input de cantidad al seleccionar una flor
         setQuantityToAdd('')
         quantityInputRef.current.focus();
     };

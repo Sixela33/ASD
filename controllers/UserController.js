@@ -8,8 +8,8 @@ class UserController {
 
     getUsersList = async (req, res, next) => {
         try {
-            const {searchEmail, offset} = req.query
-            const users = await this.service.getUsers(searchEmail, offset)
+            const {searchEmail} = req.query
+            const users = await this.service.getUsers(searchEmail)
             res.status(200).json(users)
         } catch (error) {
             next(error)

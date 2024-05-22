@@ -4,6 +4,7 @@ import useAlert from '../hooks/useAlert'
 import { useInView } from 'react-intersection-observer'
 import { debounce } from "lodash"
 import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx'
+import MultipleFlowerColorSelector from './MultipleFlowerColorSelector.jsx'
 
 const GET_FLOWERS_URL = '/api/flowers/many/'
 const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
@@ -23,23 +24,36 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     const [flowerData, setFlowerData] = useState([]);
     const [flowerColors, setFlowerColors] = useState([])
-    const [selectedFlowerColor, setSelectedFlowerColor] = useState({'flowerColor': ''})
     const [searchQuery, setSearchQuery] = useState('');
 
     const [showIncomplete, setShowincomplete] = useState(false)
+    const [selectedColors, setSelectedColors] = useState([])
+
+    const fetchFlowerColors = async () => {
+        try {
+            let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
+            flowerColors = await flowerColors 
+            setFlowerColors(flowerColors.data)
+                
+
+        } catch (error) {
+            setMessage(error.response?.data, true);
+            console.error('Error fetching colors:', error);
+        }
+    }
 
     const fetchFlowers = async (searchQ, colorFilter, showIncomplete) => {
-        try {
-            const searchByColor = colorFilter?.colorname || ''
+        try {            
+            colorFilter = colorFilter.map(item => item.colorid)
             showIncomplete = showIncomplete || false
 
-            let response = axiosPrivate.get(GET_FLOWERS_URL + offset.current 
-                + '/' + searchQ 
-                + '?filterByColor=' + searchByColor +
-                 '&showIncomplete=' + showIncomplete )
-                 let flowerColors = axiosPrivate.get(GET_FLOWER_COLORS_URL)
-                 response = await response
-                 flowerColors = await flowerColors                 
+            let response = await axiosPrivate.get(GET_FLOWERS_URL + offset.current + '/' + searchQ, {
+                params: {
+                    filterByColor: colorFilter,
+                    showIncomplete: showIncomplete
+                }
+            })
+            
             offset.current += 1
             if(response?.data.length == 0) {
                 flowersLeft.current = false
@@ -47,7 +61,6 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             }
 
             setFlowerData(prevData => [...prevData, ...response.data])
-            setFlowerColors(flowerColors.data)
         } catch (error) {
             setMessage(error.response?.data, true);
             console.error('Error fetching data:', error);
@@ -60,12 +73,13 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
     const debouncedInitial = useCallback(debounce(fetchFlowers, 100), []);
 
     useEffect(() => {
-        debouncedInitial(searchQuery, selectedFlowerColor, showIncomplete)
+        debouncedInitial(searchQuery, selectedColors, showIncomplete)
+        fetchFlowerColors()
     }, []);
 
     useEffect(() => {
         if (inView && firstLoad.current && flowersLeft.current) {
-            debounced(searchQuery, selectedFlowerColor, showIncomplete)
+            debounced(searchQuery, selectedColors, showIncomplete)
         }
     }, [inView]);
 
@@ -74,16 +88,17 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
             setFlowerData([])
             offset.current = 0
             flowersLeft.current = true
-            debounced(searchQuery, selectedFlowerColor, showIncomplete)
+            debounced(searchQuery, selectedColors, showIncomplete)
         }
-    }, [searchQuery, selectedFlowerColor, showIncomplete, refresh]);
+    }, [searchQuery, selectedColors, showIncomplete, refresh]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value)
     }
 
+
     return (
-        <div className="mx-auto my-4 px-10">
+        <div className="mx-auto my-4 px-10 w-full">
             <div className='flex flex-cols justify-evenly'>
 
                 <div className="mb-3 flex justify-start items-center">
@@ -92,12 +107,11 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                 </div>
                 <div className="mb-3 flex justify-start items-center">
                     <label >Search by color: </label>
-                    <SearchableDropdown 
+                    <MultipleFlowerColorSelector
                         options={flowerColors}
-                        label={'colorname'}
-                        selectedVal={selectedFlowerColor}
-                        handleChange={setSelectedFlowerColor}
-                        placeholderText={'Filter by color'}/>
+                        selectedColors={selectedColors} 
+                        setSelectedColors={setSelectedColors}
+                    />
                 </div>
                 {showToggleIncomplete && <div className='mb-3 flex justify-start items-center'>
                     <label>Show incomplete flowers</label>

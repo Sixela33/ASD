@@ -56,8 +56,6 @@ class ModelPostgres {
     getUsers = async (searchEmail, offset) => {
         this.validateDatabaseConnection()
 
-        const LIMIT = 50
-
         let baseQuery = `
             SELECT 
                 u.email, 
@@ -80,11 +78,7 @@ class ModelPostgres {
             }
 
             baseQuery += ' ORDER BY u.userid'
-           
-            baseQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
-
-            queryParams.push(LIMIT, offset*LIMIT)
-    
+               
             return  await CnxPostgress.db.query( baseQuery, queryParams)
     }
 
@@ -507,7 +501,8 @@ class ModelPostgres {
         f.flowerid, 
         f.flowername, 
         f.flowerimage, 
-        ARRAY_AGG(fc.colorName) AS flowerColors 
+        ARRAY_AGG(fc.colorName) AS flowerColors,
+        ARRAY_AGG(fc.colorID) AS colorids
         FROM flowers f
         LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
         LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
@@ -549,47 +544,48 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const LIMIT = 50
         let sqlQuery = `
-        SELECT 
-            f.flowerid, 
-            f.flowername, 
-            f.flowerimage, 
-            ARRAY_AGG(fc.colorName) AS flowerColors,
-            FxI.unitPrice 
-        FROM flowers f
-        LEFT JOIN (
-            SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
-            FROM flowerXInvoice fx
-            JOIN (
-                SELECT 
-                    MAX(loadedDate) AS max_loaded_date,
-                    flowerID
-                FROM flowerXInvoice
-                GROUP BY 
-                    flowerID
-            ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
-            GROUP BY fx.flowerID
-        ) FxI ON f.flowerID = FxI.flowerID 
-        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
-        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID `
-
+            SELECT 
+                f.flowerid, 
+                f.flowername, 
+                f.flowerimage, 
+                ARRAY_AGG(fc.colorName) AS flowerColors,
+                FxI.unitPrice 
+            FROM flowers f
+            LEFT JOIN (
+                SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
+                FROM flowerXInvoice fx
+                JOIN (
+                    SELECT 
+                        MAX(loadedDate) AS max_loaded_date,
+                        flowerID
+                    FROM flowerXInvoice
+                    GROUP BY 
+                        flowerID
+                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+                GROUP BY fx.flowerID
+            ) FxI ON f.flowerID = FxI.flowerID 
+            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID `
+    
         const queryParams = []
         let queryConditions = []
-
+    
         if(query) {
             queryConditions.push(`f.flowername ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${query}%`)
         }
-    
+        
         console.log("filterByColor", filterByColor)
-        if (filterByColor) {
-            queryConditions.push(`fc.colorName ILIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${filterByColor}%`)
+        if (filterByColor && filterByColor.length > 0) {
+            const colorPlaceholders = filterByColor.map((_, index) => `$${queryParams.length + index + 1}`);
+            queryConditions.push(`fc.colorid IN (${colorPlaceholders.join(',')})`);
+            queryParams.push(...filterByColor);
         }
-
+    
         if (showIncomplete == 'true') {
             queryConditions.push(`f.flowerimage IS NULL OR LENGTH(f.flowerimage) = 0`)
         }
-
+    
         if (queryConditions.length > 0) {
             sqlQuery += ' WHERE ' + queryConditions.join(' AND ')
         }
@@ -598,6 +594,7 @@ class ModelPostgres {
         queryParams.push(LIMIT, offset*LIMIT)
         return await CnxPostgress.db.query(sqlQuery, queryParams);
     }
+    
 
     // -----------------------------------------------
     //                 FLOWER COLORS

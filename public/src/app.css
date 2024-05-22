@@ -98,6 +98,9 @@ input {
     margin: 0.25rem;
     padding: 0.4rem; 
     outline-offset: 2px;
+    border-width: 1px;
+    border-radius: 0.25rem;
+    border-color:transparent;
     width: max-content;
     background-color:rgb(220, 220, 220);
 }
@@ -112,8 +115,7 @@ input:-webkit-autofill:active {
 
 input:focus  {
     outline: 2px solid transparent;
-    border-width: 1px;
-    border-radius: 0.25rem;
+
     border-color: black;
     background-color:rgb(220, 220, 220);
 }

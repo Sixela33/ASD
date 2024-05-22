@@ -13,7 +13,6 @@ export default function Users() {
     
     const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
-    const [ref, inView] = useInView({})
 
     const [users, setUsers] = useState([])
     const [allRoles, setAllRoles] = useState([])
@@ -25,8 +24,6 @@ export default function Users() {
 
     const [searchByEmail, setSearchByEmail] = useState('')
 
-    const offset = useRef(0)
-    const dataLeft = useRef(true)
     const firstLoad = useRef(false)
 
     async function getRoles() {
@@ -43,17 +40,20 @@ export default function Users() {
 
     async function getData(searchByEmail) {
         try {
-            const response = await axiosPrivate.get(USERS_URL + '?searchEmail=' + searchByEmail + '&offset=' + offset.current);
-            offset.current += 1
+            const response = await axiosPrivate.get(USERS_URL, {
+                params: {
+                    searchEmail: searchByEmail
+                }
+            });
 
-            setUsers(prevData => [...prevData, ...response?.data?.users])
+            setUsers(prevData => response?.data?.users)
         } catch (error) {
             setMessage(error.response?.data, true)
             console.error('Error fetching data:', error);
         }
     }
 
-    const debounced = useCallback(debounce(getData, 300))
+    const debounced = useCallback(debounce(getData, 600))
 
     useEffect(() => {
         if (!firstLoad.current){
@@ -64,16 +64,7 @@ export default function Users() {
     }, []);
 
     useEffect(() => {
-        if(inView && dataLeft.current && firstLoad.current ){
-            debounced(searchByEmail)
-        }
-    }, [inView])
-
-    useEffect(() => {
         if(firstLoad.current) {
-            setUsers([])
-            offset.current = 0
-            dataLeft.current = 0
             debounced(searchByEmail)
         }
     }, [searchByEmail])
@@ -85,7 +76,7 @@ export default function Users() {
        try {
             await axiosPrivate.patch(CHANGE_ROLE_URL, JSON.stringify({newRoleid: selectedRole, userid: selectedUser}))
             setMessage('Role changed Successfully!', false)
-            getData()
+            getData(searchByEmail)
         } catch (error) {
             setMessage(error.response?.data, true)
 
@@ -144,7 +135,6 @@ export default function Users() {
                                 <td><button className='go-back-button' onClick={() => handleRoleChange(user.userid)}>Change role</button></td>
                             </tr>
                         ))}
-                        {dataLeft.current ? <tr ref={ref}><></></tr>: null}
                     </tbody>
                 </table>
             </div>
