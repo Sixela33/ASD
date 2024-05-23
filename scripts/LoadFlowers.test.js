@@ -32,11 +32,11 @@ describe('Loading Flowers', () => {
                 let tempPath = path.join(flowerImagesDir, subfolderName)
                 var images = fs.readdirSync(tempPath);
 
+                let responseGetColor = await request.get('/api/flowers/colors/colorid/' + subfolderName).set(headers)
+
                 for (let flowerImage of images){
                     
                     await request.post('/api/flowers/colors').set(headers).send({'colorName': subfolderName})
-
-                    let responseGetColor = await request.get('/api/flowers/colors/colorid/' + subfolderName).set(headers)
 
                     console.log()
                     let name = flowerImage.split('.')[0]

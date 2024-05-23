@@ -24,16 +24,14 @@ export default function Users() {
 
     const [searchByEmail, setSearchByEmail] = useState('')
 
-    const firstLoad = useRef(false)
-
     async function getRoles() {
         try {
             const response = await axiosPrivate.get(GET_ROLES_URL) 
 
             setAllRoles(response.data)
         } catch (error) {
-            setMessage(error.response?.data, true)
             console.error('Error fetching roles:', error);
+            setMessage(error.response?.data?.message, true)
 
         }
     }
@@ -46,27 +44,23 @@ export default function Users() {
                 }
             });
 
-            setUsers(prevData => response?.data?.users)
+            setUsers(response?.data?.users)
         } catch (error) {
-            setMessage(error.response?.data, true)
             console.error('Error fetching data:', error);
+            setMessage(error.response?.data?.message, true)
         }
     }
 
     const debounced = useCallback(debounce(getData, 600))
 
     useEffect(() => {
-        if (!firstLoad.current){
-            getData(searchByEmail);
-            getRoles()
-            firstLoad.current = true
-        }
+        getData(searchByEmail);
+        getRoles()
+        
     }, []);
 
     useEffect(() => {
-        if(firstLoad.current) {
-            debounced(searchByEmail)
-        }
+        debounced(searchByEmail)
     }, [searchByEmail])
 
     const handleChangeRole = async () => {

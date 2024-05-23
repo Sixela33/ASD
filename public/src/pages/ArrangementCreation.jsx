@@ -36,12 +36,22 @@ export default function ArrangementCreation() {
 
     const submitArrangement = async () => {
         try {
+            let tempFlowers = []
+            console.log(selectedFlowers)
+            for(let flower of selectedFlowers) {
+                console.log("flower", flower)
+                if (flower.quantity > 0) {
+                    tempFlowers.push({
+                        flowerID: flower.flowerid,
+                        quantity: flower.quantity
+                    })
+                }
+            }
+            console.log(tempFlowers)
+
             const submitData = {
                 arrangementid: arrangementData.arrangementid,
-                flowers: selectedFlowers.map(flower => ({
-                    flowerID: flower.flowerid,
-                    quantity: flower.quantity
-                }))
+                flowers: tempFlowers
             };
             
             await axiosPrivate.post(SUBMIT_ARRANGEMENT_URL, JSON.stringify(submitData))
@@ -78,10 +88,26 @@ export default function ArrangementCreation() {
             newSelected.push(newObject);
             setSelectedFlowers(newSelected);
             setQuantityToAdd('');
-
-
         }
     };
+
+    const addFlowerDrop = (flowerToAdd, quantity) => {
+        console.log(flowerToAdd, quantity)
+        if (flowerToAdd && quantity>=0) {
+
+            const index = selectedFlowers.findIndex((flower) => flower.flowerid == flowerToAdd.flowerid)
+            if (index != -1) {
+                setMessage("Flower Already in arrangement")
+                return
+            }
+
+            const newSelected = [...selectedFlowers];
+            const newObject = { ...flowerToAdd, quantity: 0 };
+            newSelected.push(newObject);
+            setSelectedFlowers(newSelected);
+            setQuantityToAdd('');
+        }
+    }
 
     const removeFlower = (index) => {
         const newSelectedFlowers = [...selectedFlowers]
@@ -101,6 +127,18 @@ export default function ArrangementCreation() {
 
     const sum = selectedFlowers.reduce((accumulator, flower) => accumulator + ((flower.unitprice || 0) * flower.quantity), 0)
 
+    const handleOnDrag = (e, flower) => {
+        e.dataTransfer.setData('flower', JSON.stringify(flower))
+    }
+
+    const handleOnDrop = (e) => {
+        let flower = e.dataTransfer.getData("flower")
+        flower = JSON.parse(flower)
+        console.log(flower)
+        console.log(selectedFlowers)
+        addFlowerDrop(flower, 1)
+    }
+
     return (
         <>
             {arrangementData && (
@@ -119,6 +157,7 @@ export default function ArrangementCreation() {
                                 onFlowerClick={selectFlower}
                                 styles={{ maxHeight: '50vh' }}
                                 selectedFlowerID={actualSelectedFlower?.flowerid}
+                                onDrag={handleOnDrag}
                             />
                         </div>
                         <div className="md:col-span-2 rounded shadow flex flex-col justify-center items-center">
@@ -131,8 +170,8 @@ export default function ArrangementCreation() {
                             </div>
                         </div>
                         <div className='mr-10 md:col-span-3'>
-                            <div className='table-container h-[50vh] '>
-                                <table className="w-full">
+                            <div className='table-container h-[50vh] ' onDrop={handleOnDrop} onDragOver={(e) => e.preventDefault()}>
+                                <table className="w-full" >
                                     <thead>
                                         <tr>
                                             {["Flower Name", "Flower Quantity", "Last recorded price", "remove"].map((name, index) => (

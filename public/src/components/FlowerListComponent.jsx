@@ -9,8 +9,9 @@ import MultipleFlowerColorSelector from './MultipleFlowerColorSelector.jsx'
 const GET_FLOWERS_URL = '/api/flowers/many/'
 const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
 
-export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh, showToggleIncomplete}) {
+export default function FlowerListComponent({onFlowerClick, styles, selectedFlowerID, refresh, showToggleIncomplete, onDrag}) {
     if(!onFlowerClick) onFlowerClick = () => {}
+    if(!onDrag) onDrag = () => {}
     if(refresh == undefined) refresh = false
 
     const axiosPrivate = useAxiosPrivate();
@@ -121,7 +122,12 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
             <div className="flex flex-wrap gap-4 overflow-auto w-full justify-center" style={styles}>
                 {flowerData.map((flower, index) => (
-                    <div key={index} className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} onClick={() => onFlowerClick(flower)}>
+                    <div 
+                    key={index} 
+                    className={`rounded-md overflow-hidden shadow-md w-60 hover:cursor-pointer ${selectedFlowerID == flower.flowerid ?" bg-gray-400":"bg-white"}`} 
+                    onClick={() => onFlowerClick(flower)}
+                    draggable
+                    onDragStart={(e) => onDrag(e, flower)}>
                         <img src={`${flower.flowerimage}`} alt={flower.flowername} loading="lazy" className="w-full object-cover h-32"/>
                         <div className="p-4">
                             <h2 className="text-xl font-bold mb-2">{flower.flowername}</h2>
