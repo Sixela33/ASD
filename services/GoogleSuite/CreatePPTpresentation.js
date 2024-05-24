@@ -98,6 +98,24 @@ function addSlide (title, items) {
         },
     },
     {
+        createImage: {
+            url: 'https://ramelax.com.ar/asd-black.png',
+            elementProperties: {
+                pageObjectId: slideID,
+                size: {
+                    height: {magnitude: 75, unit: 'PT'},
+                    width: {magnitude: 150, unit: 'PT'}, 
+                },
+                transform: {
+                    scaleX: 1,
+                    scaleY: 1,
+                    translateY: 20,
+                    unit: 'PT',
+                },
+            },
+        }
+    },
+    {
         createShape: {
             objectId: titleTextBoxID,
             shapeType: 'TEXT_BOX',
@@ -161,7 +179,7 @@ function addSlide (title, items) {
     for (let flower of items) {
         requests.push(...addCard(
             colcount * x_separationBetweenCards, 
-            rowcount * y_separationBetweenCards, 
+            (rowcount * y_separationBetweenCards) +30, 
             slideID , 
             flower.flowerimage, 
             flower.flowername
