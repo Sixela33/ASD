@@ -128,12 +128,12 @@ const ProjectsList = ({ searchParams }) => {
                     <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
                 </div>
                 <div className='flex flex-col'>
-                    <label >search by project id:</label>
+                    <label >Search by project id:</label>
                     <input type="text" value={searchByID} onChange={(e) => setSearchByID(e.target.value)}/>
                 </div>
 
                 <div className='flex flex-col'>
-                    <label >search by contact:</label>
+                    <label >Search by contact:</label>
                     <input type="text" value={searchByContact} onChange={(e) => setSearchByContact(e.target.value)}/>
                 </div>
 

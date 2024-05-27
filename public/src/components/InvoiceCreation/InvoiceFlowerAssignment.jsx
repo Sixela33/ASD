@@ -36,14 +36,12 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             const {projects, flowers} = response.data
             const resSorted = projects.sort((a, b) => a.projectid - b.projectid )
             setProjectsInfo(resSorted)
-
-            // const response = await axiosPrivate.post(ARRANGEMENT_DATA_FETCH, JSON.stringify({ids: chosenProjects}))
-            setFlowerData([...flowers, ...loadedFlowers])
+            setFlowerData(flowers)
                 
         } catch (error) {
-            console.log(error)
+            //console.log(error)
+            console.error('Error fetching data:', error);
             setMessage(error.response?.data, true);
-            //console.error('Error fetching data:', error);
         }
     })
 
@@ -53,7 +51,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
     useEffect(() => {
         
-        let {aggregatedFlowerArray, aggregatedUniqueFlowers} = aggregateFlowerData(flowerData)
+        let {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers} = aggregateFlowerData(flowerData)
         // setting the prices to the ones that where laoded before
         if(loadedFlowers) {
             loadedFlowers.map(flower => {
@@ -66,7 +64,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
         // adding whitespaces so that the arrangements coincide with their projects
         const sortedArray = Array(CHOSEN_PROJECTS_SORTED.length).fill([])
-        aggregatedFlowerArray.map(item => {
+        aggregatedFlowerArrayByProject.map(item => {
             let index = CHOSEN_PROJECTS_SORTED.findIndex(element => element == item[0].projectid)
             sortedArray[index] = item
         })

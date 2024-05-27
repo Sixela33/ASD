@@ -142,17 +142,17 @@ export default function ArrangementCreation() {
     return (
         <>
             {arrangementData && (
-                <div className="mx-auto my-8 text-center">
+                <div className="mx-auto my-8 text-center page p-6">
                     <div className="grid grid-cols-3 mb-4">
                         <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>Go Back</button>
                         <h2 className='col-span-1'>Create Arrangement</h2>
                     </div>
-                    <div className='text-left mx-[20vw]'>
+                    <div className='text-left'>
                         <p><span className='font-bold'>Arrangement Description: </span> {arrangementData.arrangementdescription}</p>
                         <p><span className='font-bold'>Arrangement type: </span>{arrangementData.typename}</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-10 gap-4 ml-10 font-bold py-4">
-                        <div className="md:col-span-5 bg-gray-300 rounded shadow px-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-10 gap-4  font-bold py-4">
+                        <div className="md:col-span-5 bg-gray-300">
                             <FlowerListComponent
                                 onFlowerClick={selectFlower}
                                 styles={{ maxHeight: '50vh' }}
@@ -160,7 +160,7 @@ export default function ArrangementCreation() {
                                 onDrag={handleOnDrag}
                             />
                         </div>
-                        <div className="md:col-span-2 rounded shadow flex flex-col justify-center items-center">
+                        <div className="md:col-span-2 flex flex-col justify-center items-center">
                             <div>
                                 <p>unitPrice: {actualSelectedFlower?.unitprice ? actualSelectedFlower?.unitprice : 'N/A'}</p>
                                 <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />

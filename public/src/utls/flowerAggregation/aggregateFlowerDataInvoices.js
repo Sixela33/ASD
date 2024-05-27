@@ -39,9 +39,9 @@ const aggregateFlowerData = (flowerData) => {
     });
 
     // Making the object into an array of arrays
-    const aggregatedFlowerArray = Object.values(aggregatedData);
+    const aggregatedFlowerArrayByProject = Object.values(aggregatedData);
     const aggregatedUniqueFlowers = Object.values(uniqueFlowers);
-    return {aggregatedFlowerArray, aggregatedUniqueFlowers};
+    return {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers};
 };
 
 export { aggregateFlowerData };
