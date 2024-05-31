@@ -34,11 +34,12 @@ BEGIN
     --store extra services
     FOREACH extra_service IN ARRAY p_extras_arr
     LOOP
-        INSERT INTO additionalsXproejct (additionalDescription, projectID, clientCost)
+        INSERT INTO additionalsXproejct (additionalDescription, projectID, clientCost, ammount)
         VALUES (
             (extra_service->>'description')::VARCHAR, 
             p_projectClient, 
-            (extra_service->>'clientcost')::INT);
+            (extra_service->>'clientcost')::FLOAT,
+            (extra_service->>'ammount')::FLOAT);
     END LOOP;
 
 

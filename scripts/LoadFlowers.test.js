@@ -32,12 +32,19 @@ describe('Loading Flowers', () => {
                 let tempPath = path.join(flowerImagesDir, subfolderName)
                 var images = fs.readdirSync(tempPath);
 
-                for (let flowerImage of images){
+                let responseGetColor = await request.get('/api/flowers/colors/colorid/' + subfolderName).set(headers)
 
+                for (let flowerImage of images){
+                    
+                    await request.post('/api/flowers/colors').set(headers).send({'colorName': subfolderName})
+
+                    console.log()
                     let name = flowerImage.split('.')[0]
                     let imageFilePath = path.join(tempPath, flowerImage);
 
-                    const response = await request.post('/api/flowers').set(headers).attach('flower', imageFilePath).field({'name': name}).field({'color':subfolderName});
+                    const response = await request.post('/api/flowers').set(headers).attach('flower', imageFilePath)
+                    .field({'name': name})
+                    .field({'colors[]': [responseGetColor.body.colorid]});
                     expect(response.status).to.equal(200)
                 }
             }

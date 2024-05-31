@@ -66,7 +66,7 @@ export default function Clients() {
             <div className=' mb-4'>
                 <h1 >Clients</h1>
             </div>
-            <div className='table-container h-[70vh]'>
+            <div className='table-container max-h-[60vh]'>
                 <TableHeaderSort
                     headers={headers}
                     setSortConfig={setSortConfig}

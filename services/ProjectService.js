@@ -16,7 +16,6 @@ class ProjectService {
 
     validateProjectStatus = async(id) => {
         const isClosed = await this.model.getIsProjectClosed(id)
-        console.log("isClosed tuki", isClosed[0].isclosed)
         if (isClosed[0].isclosed) {
             throw {message: "You can't edit a closed project" , status: 400}
         }
@@ -46,6 +45,11 @@ class ProjectService {
 
     getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient) => {
         await validateId(offset)
+        console.log(searchByID)
+        if(Number(searchByID)){
+            await validateId(Number(searchByID))
+        }
+
         await validateQueryStringLength([searchByID, searchByContact, searchByDescription, orderBy, searchByClient ])
 
         const response = await this.model.getProjects(offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient)
@@ -127,8 +131,8 @@ class ProjectService {
         const flowersByColor = {}
 
         for (let flower of flowers) {
-            if(!flower.flowerimage && !flower.flowercolor && !flower.flowername) continue
-
+            if(!flower.flowerimage && !flower.flowercolors && !flower.flowername) continue
+            flower.flowercolor = flower.flowercolors[0]
             flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage, 100)
             if(!flowersByColor[flower.flowercolor]) {
                 flowersByColor[flower.flowercolor] = [flower]

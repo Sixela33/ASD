@@ -10,6 +10,25 @@
     --link-hover-color: rgb(29 78 216); 
 }
 
+.app {
+    position:fixed;
+    padding:0;
+    margin:0;
+
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
 html {
     background-color: #fcfcfc;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -33,7 +52,6 @@ thead {
     margin-top: auto;
 }
 
-
 th {
     padding: 0.5rem;
     position: relative;
@@ -44,6 +62,9 @@ td {
     border-width: 1px;
     padding: 0.5rem;
     text-align: center;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     background-color: rgb(204, 204, 204);
 }
 
@@ -78,9 +99,10 @@ h3 {
 input {
     margin: 0.25rem;
     padding: 0.4rem; 
+    outline-offset: 2px;
+    border-width: 0.5px;
+    border-color:transparent;
     width: max-content;
-    border-width: 1px;
-    border-radius: 0.25rem;
     background-color:rgb(220, 220, 220);
 }
 
@@ -94,7 +116,7 @@ input:-webkit-autofill:active {
 
 input:focus  {
     outline: 2px solid transparent;
-    outline-offset: 2px;
+
     border-color: black;
     background-color:rgb(220, 220, 220);
 }
@@ -200,8 +222,3 @@ background-color: #3c6dd5;
     margin-right: 10px;
 }
 
-.page {
-    height:86.7vh;
-}
-  
-  

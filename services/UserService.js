@@ -11,11 +11,10 @@ class UserService {
         
     }
 
-    getUsers = async (searchEmail, offset) => {
-        await validateId(offset)
+    getUsers = async (searchEmail) => {
         await validateQueryString(searchEmail)
         
-        let response =  this.model.getUsers(searchEmail, offset)
+        let response =  this.model.getUsers(searchEmail)
 
         response = await response
         return {users: response.rows}

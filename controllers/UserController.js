@@ -8,8 +8,8 @@ class UserController {
 
     getUsersList = async (req, res, next) => {
         try {
-            const {searchEmail, offset} = req.query
-            const users = await this.service.getUsers(searchEmail, offset)
+            const {searchEmail} = req.query
+            const users = await this.service.getUsers(searchEmail)
             res.status(200).json(users)
         } catch (error) {
             next(error)
@@ -24,7 +24,9 @@ class UserController {
             
             res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None'});
 
-            res.send("<script>window.close();</script > ")
+            let redirect_uri = process.env.NODE_ENV == 'production' ? process.env.HOST  : process.env.HOST + ':' + '5173'
+
+            res.redirect(redirect_uri)
             
         } catch (error) {
             next(error)

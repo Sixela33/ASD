@@ -10,7 +10,6 @@ class ExtraServicesService {
 
     validateProjectStatus = async (extraid) => {
         const isClosed = await this.model.isExtraProjectClosed(extraid)
-
         if (isClosed[0].isclosed) {
             throw {message: "You can't edit a closed project" , status: 400}
         }
@@ -20,7 +19,11 @@ class ExtraServicesService {
         await validateNewService(serviceData)
         await validateId(projectID)
 
-        await this.validateProjectStatus(projectID)
+        const isClosed = await this.model.getIsProjectClosed(projectID)
+        if (isClosed[0].isclosed) {
+            throw {message: "You can't edit a closed project" , status: 400}
+        }
+        
         await this.model.addNewServiceToProject(serviceData, projectID)
     }
 

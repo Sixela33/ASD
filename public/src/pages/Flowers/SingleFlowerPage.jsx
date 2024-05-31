@@ -25,7 +25,6 @@ export default function SingleFlowerPage() {
     const fetchData = async () => {
         try {
             const response = await axiosPrivate.get(FETCH_FLOWER_DATA_URL + id);
-            setBaseFlowerData(response?.data.flowerData[0]);
             setNewFlowerData(response?.data.flowerData[0]);
             setFlowerPrices(response?.data.flowerPrices);
         } catch (error) {
@@ -59,11 +58,14 @@ export default function SingleFlowerPage() {
     return (
         <div className="container mx-auto p-8 ">
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={deleteFlower}>
-                Are you sure you want to remove {baseFlowerData.flowername} from the database?
+                Are you sure you want to remove {newFlowerData.flowername} from the database?
             </ConfirmationPopup>
             <NewFlowerForm
                 showPopup={showEditFlowerPopup}
-                cancelButton={() => setShowEditFlowerPopup(false)}
+                cancelButton={() => {
+                    setShowEditFlowerPopup(false)
+                    setBaseFlowerData({})
+                }}
                 flowerToEdit={baseFlowerData}
                 refreshData={fetchData}
                 />
@@ -81,13 +83,19 @@ export default function SingleFlowerPage() {
                             <p>Name: {newFlowerData.flowername}</p>
                         </div>
                         <div>
-                            <p>Color: {newFlowerData.flowercolor}</p>
+                            <p>Colors: 
+                                </p>
+                            <ul className='text-left list-disc'>
+                            {newFlowerData.flowercolors.map(item => <li>{item}</li>)}
+                            </ul>
                         </div>
                     </div>
                     </div>
                     <div className='buttons-holder'>
-                        {/*<button className='buton-secondary' onClick={() => setShowConfirmationPopup(true)}>Remove</button>*/}
-                        <button className='buton-main' onClick={() => setShowEditFlowerPopup(true)}>Edit</button>
+                        <button className='buton-main' onClick={() => {
+                            setShowEditFlowerPopup(true)
+                            setBaseFlowerData(newFlowerData)
+                            }}>Edit</button>
 
                     </div>
                 </div>

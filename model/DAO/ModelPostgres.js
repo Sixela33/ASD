@@ -56,8 +56,6 @@ class ModelPostgres {
     getUsers = async (searchEmail, offset) => {
         this.validateDatabaseConnection()
 
-        const LIMIT = 50
-
         let baseQuery = `
             SELECT 
                 u.email, 
@@ -80,11 +78,7 @@ class ModelPostgres {
             }
 
             baseQuery += ' ORDER BY u.userid'
-           
-            baseQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
-
-            queryParams.push(LIMIT, offset*LIMIT)
-    
+               
             return  await CnxPostgress.db.query( baseQuery, queryParams)
     }
 
@@ -368,7 +362,7 @@ class ModelPostgres {
             a.arrangementID,
             f.flowerID,
             f.flowerName,
-            f.flowerColor,
+            ARRAY_AGG(fc.colorName) AS flowerColors,
             fxa.amount,
             FxI.unitPrice
             FROM projects p
@@ -388,22 +382,30 @@ class ModelPostgres {
                 ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
                 GROUP BY fx.flowerID
             ) FxI ON f.flowerID = FxI.flowerID
-            WHERE p.projectID = ANY($1);`, [ids])
+            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+            WHERE p.projectID = ANY($1)
+            GROUP BY f.flowerID, p.projectid, a.arrangementid, fxa.amount, fxi.unitprice;`, [ids])
         return response
     }
+
+
 
     getProjectFlowersForPpt = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
         SELECT
             f.flowerName,
-            f.flowerColor,
+            ARRAY_AGG(fc.colorName) AS flowerColors,
             f.flowerImage
             FROM projects p
             JOIN arrangements a ON p.projectID = a.projectID
             LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
             LEFT JOIN flowers f ON fxa.flowerID = f.flowerID 
-            WHERE p.projectID = $1;`, [id])
+            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+            WHERE p.projectID = $1
+            GROUP BY f.flowerID;`, [id])
     }
 
     addArrangementToProject = async (id, arrangementData) => {
@@ -472,43 +474,59 @@ class ModelPostgres {
     //                   FLOWERS
     // -----------------------------------------------
 
-    addFlower = async (image, name, color) => {
+    addFlower = async (image, name, colors) => {
         this.validateDatabaseConnection()
+        console.log({
+            image, name, colors
+        })
         const response = await CnxPostgress.db.query(`
-        INSERT INTO flowers (flowerName, flowerImage, flowerColor) 
-        VALUES($1, $2, $3)
-        RETURNING flowerid, flowerName;`, [name, image, color]);
+        CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
+        [name, image, colors]);
         return response.rows
         
     }
     
-    editFlower = async (name, color, id, filepath) => {
+    editFlower = async (name, colors, id, filepath) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("UPDATE flowers SET flowerName=$1, flowerImage=$2, flowerColor=$3 WHERE flowerID=$4;", [name, filepath, color, id])
+        console.log(colors)
+        await CnxPostgress.db.query(`
+        CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
+        [name, filepath, colors, id])
     }
 
     getFlowerData = async (id) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query("SELECT flowerid, flowername, flowerimage, flowercolor FROM flowers WHERE flowerID = $1;", [id])
+        return await CnxPostgress.db.query(`
+        SELECT 
+        f.flowerid, 
+        f.flowername, 
+        f.flowerimage, 
+        ARRAY_AGG(fc.colorName) AS flowerColors,
+        ARRAY_AGG(fc.colorID) AS colorids
+        FROM flowers f
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+        WHERE f.flowerID = $1
+        GROUP BY f.flowerID;`, [id])
     }
 
     getIncompleteFlowers = async () => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
         SELECT 
-            flowerid, 
-            flowername, 
-            flowerimage, 
-            flowercolor 
-        FROM flowers 
+            f.flowerid, 
+            f.flowername, 
+            f.flowerimage, 
+            ARRAY_AGG(fc.colorName) AS flowerColors,  
+        FROM flowers f
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID  
         WHERE 
-            flowerID IS NULL 
+            f.flowerID IS NULL 
             OR 
-            flowername IS NULL 
+            f.flowername IS NULL 
             OR 
-            flowerimage IS NULL
-            OR
-            flowercolor IS NULL;`)
+            f.flowerimage IS NULL;`)
     }
 
     getFlowerPrices = async (id) => {
@@ -526,59 +544,57 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const LIMIT = 50
         let sqlQuery = `
-        SELECT 
-            f.flowerid, 
-            f.flowername, 
-            f.flowerimage, 
-            f.flowercolor, 
-            FxI.unitPrice 
-        FROM flowers f
-        LEFT JOIN (
-            SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
-            FROM flowerXInvoice fx
-            JOIN (
-                SELECT 
-                    MAX(loadedDate) AS max_loaded_date,
-                    flowerID
-                FROM flowerXInvoice
-                GROUP BY 
-                    flowerID
-            ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
-            GROUP BY fx.flowerID
-        ) FxI ON f.flowerID = FxI.flowerID `
-
+            SELECT 
+                f.flowerid, 
+                f.flowername, 
+                f.flowerimage, 
+                ARRAY_AGG(fc.colorName) AS flowerColors,
+                FxI.unitPrice 
+            FROM flowers f
+            LEFT JOIN (
+                SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
+                FROM flowerXInvoice fx
+                JOIN (
+                    SELECT 
+                        MAX(loadedDate) AS max_loaded_date,
+                        flowerID
+                    FROM flowerXInvoice
+                    GROUP BY 
+                        flowerID
+                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+                GROUP BY fx.flowerID
+            ) FxI ON f.flowerID = FxI.flowerID 
+            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID `
+    
         const queryParams = []
         let queryConditions = []
-
+    
         if(query) {
             queryConditions.push(`f.flowername ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${query}%`)
         }
-    
-
-        if (filterByColor) {
-            queryConditions.push(`f.flowercolor ILIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${filterByColor}%`)
+        
+        console.log("filterByColor", filterByColor)
+        if (filterByColor && filterByColor.length > 0) {
+            const colorPlaceholders = filterByColor.map((_, index) => `$${queryParams.length + index + 1}`);
+            queryConditions.push(`fc.colorid IN (${colorPlaceholders.join(',')})`);
+            queryParams.push(...filterByColor);
         }
-
+    
         if (showIncomplete == 'true') {
             queryConditions.push(`f.flowerimage IS NULL OR LENGTH(f.flowerimage) = 0`)
         }
-
+    
         if (queryConditions.length > 0) {
             sqlQuery += ' WHERE ' + queryConditions.join(' AND ')
         }
-
-        sqlQuery += `ORDER BY f.flowerName LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
+        sqlQuery += ' GROUP BY f.flowerID, FxI.unitPrice, f.flowername'
+        sqlQuery += ` ORDER BY f.flowerName LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
         queryParams.push(LIMIT, offset*LIMIT)
-
         return await CnxPostgress.db.query(sqlQuery, queryParams);
     }
-
-    getUniqueFlowerColors = async () => {
-        this.validateDatabaseConnection()
-        return CnxPostgress.db.query('SELECT DISTINCT flowercolor FROM flowers')
-    }
+    
 
     // -----------------------------------------------
     //                 FLOWER COLORS
@@ -592,7 +608,7 @@ class ModelPostgres {
 
     createFlowerColor = async (colorName) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("INSERT INTO flowerColors (colorName) VALUES($1);", [colorName])
+        await CnxPostgress.db.query("INSERT INTO flowerColors (colorname) VALUES($1);", [colorName])
     }
 
     editFlowerColor = async (colorID, colorName) => {
@@ -600,8 +616,14 @@ class ModelPostgres {
         await CnxPostgress.db.query(`
         UPDATE flowerColors 
         SET 
-        colorName = $1,
+        colorName = $1
         WHERE colorID = $2;`, [colorName, colorID])
+    }
+
+    getColorID = async (colorName) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query("SELECT colorid FROM flowerColors WHERE colorname = $1;",[colorName])
+        return response.rows
     }
 
     // -----------------------------------------------
@@ -641,7 +663,7 @@ class ModelPostgres {
             FxA.amount AS quantity,
             f.flowerName,
             f.flowerImage,
-            f.flowerColor,
+            ARRAY_AGG(fc.colorName) AS flowerColors,
             FxI.unitPrice
         FROM flowerXarrangement FxA 
         LEFT JOIN flowers f ON FxA.flowerID = f.flowerID
@@ -658,7 +680,11 @@ class ModelPostgres {
             ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
             GROUP BY fx.flowerID
         ) FxI ON f.flowerID = FxI.flowerID
-        WHERE FxA.arrangementID = $1;`, [id])
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID
+        WHERE FxA.arrangementID = $1
+        GROUP BY FxA.flowerID, fxa.amount, f.flowername, f.flowerimage, fxi.unitprice;
+        `, [id])
         return flowers
     }
 
@@ -915,8 +941,8 @@ class ModelPostgres {
     
     addNewServiceToProject = async (serviceData, projectID) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("INSERT INTO additionalsXproejct (additionalDescription, clientCost, projectID) VALUES ($1, $2, $3);", 
-        [serviceData.description, serviceData.clientcost , projectID])
+        await CnxPostgress.db.query("INSERT INTO additionalsXproejct (additionalDescription, clientCost, projectID, ammount) VALUES ($1, $2, $3, $4);", 
+        [serviceData.description, serviceData.clientcost , projectID, serviceData.ammount])
     }
 
     editService = async (serviceData) => {
@@ -925,23 +951,24 @@ class ModelPostgres {
         UPDATE additionalsXproejct 
         SET 
             additionalDescription = $1,
-            clientCost = $2
+            clientCost = $2,
+            ammount = $3
         WHERE 
-            aditionalID = $3;`, 
-            [serviceData.description, serviceData.clientcost, serviceData.aditionalid])
+            aditionalID = $4;`, 
+            [serviceData.description, serviceData.clientcost, serviceData.ammount, serviceData.aditionalid])
     }
    
     getProjectExtras = async (projectId) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT additionalDescription AS description, clientCost, aditionalID FROM additionalsXproejct WHERE projectID = $1;', [projectId])
+        return await CnxPostgress.db.query('SELECT additionalDescription AS description, clientCost, aditionalID, ammount FROM additionalsXproejct WHERE projectID = $1;', [projectId])
     }
 
     isExtraProjectClosed = async (extraID) => {
         this.validateDatabaseConnection()
         const res = await CnxPostgress.db.query(`
         SELECT p.isClosed 
-        FROM additionalsXproejct a 
-        RIGHT JOIN projects p ON a.projectID = p.projectID
+        FROM projects p
+        LEFT JOIN additionalsXproejct a ON a.projectID = p.projectID
         WHERE a.aditionalID = $1;
         `, [extraID])
         return res.rows

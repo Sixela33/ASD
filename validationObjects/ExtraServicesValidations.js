@@ -11,6 +11,11 @@ const addNewServiceSchema = Joi.object({
         'number.base': 'Client cost must be a number.',
         'number.min': 'Client cost must be a positive number or zero.',
         'any.required': 'Client cost is required.'
+    }),
+    ammount: Joi.number().required().min(0).messages({
+        'number.base': 'extra service ammount must be a number.',
+        'number.min': 'extra service ammount must be a positive number or zero.',
+        'any.required': 'extra service ammount is required.'
     })
 });
 
@@ -27,6 +32,11 @@ const editServiceSchema = Joi.object({
     }),
     aditionalid: schemas.idSchema.required().messages({
         'any.required': 'Additional ID is required.'
+    }),
+    ammount: Joi.number().required().min(0).messages({
+        'number.base': 'extra service ammount must be a number.',
+        'number.min': 'extra service ammount must be a positive number or zero.',
+        'any.required': 'extra service ammount is required.'
     })
 });
 

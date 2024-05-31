@@ -15,6 +15,7 @@ class FlowerColorRouter {
         this.router.get('/', this.controller.getFlowerColors)
         this.router.post('/', this.controller.createFlowerColor)
         this.router.patch('/', this.controller.editFlowerColor)
+        this.router.get('/colorid/:name', this.controller.getColorID)
         return this.router
     }
     

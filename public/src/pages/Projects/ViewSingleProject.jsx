@@ -127,7 +127,7 @@ export default function ViewProject() {
 
         if (arrangementData.length > 0){
             const estimate = flowerData.reduce(countFlowerCostAndFlowerCostyProject, {totalFlowerCost: 0, totalFlowerCostByArrangement: {}})
-            let totalAditional = extraServicesData.reduce((accumulator, service) => accumulator + parseFloat(service.clientcost) , 0)
+            let totalAditional = extraServicesData.reduce((accumulator, service) => accumulator + parseFloat(service.clientcost * service.ammount) , 0)
             let totalClientFlowerCost = arrangementData.reduce((accumulator, arrang) => accumulator + arrang.clientcost * arrang.arrangementquantity, 0)
 
             addAssignedBudget(estimate.totalFlowerCostByArrangement)
@@ -145,7 +145,7 @@ export default function ViewProject() {
 
             updateArrangementData();
         }
-    }, [flowerData]);
+    }, [flowerData, extraServicesData]);
 
     // this function checks if the arrangement has flowers assigned to it
     const updateArrangementData = () => {
@@ -327,7 +327,7 @@ export default function ViewProject() {
             let text = ''
     
             showFlowerData.forEach(item => {
-                text += `${item.flowername} ${item.flowercolor} X ${item.totalstems} units`
+                text += `${item.flowername} - ${item.flowercolor}  X ${item.totalstems} units`
                 text += '\n'
             })
     
@@ -344,8 +344,8 @@ export default function ViewProject() {
             window.open(url, '_blank').focus()
             
         } catch (error) {
-            setMessage(error.response.data.error.errors[0].message)
-            console.log(error)
+            console.log("error", error)
+            setMessage(error.response.data.error.message)
         } finally {
             setShowLoadingPopup(false)
         }
@@ -578,11 +578,12 @@ export default function ViewProject() {
                             <h2>Extra Services</h2>
                             <div className='table-container h-[20vh] mt-2'>
                                 <TableHeaderSort
-                                    headers={{'Description': ' ', 'Client cost': ' '}}>
+                                    headers={{'Description': ' ', 'Client cost': ' ', 'Quantity': ' '}}>
                                     {extraServicesData?.map((item, index) => (
                                         <tr key={index} onClick={() => handleEditService(item)}>
                                             <td>{item?.description}</td>
                                             <td>${toCurrency(item?.clientcost)}</td>
+                                            <td>{item?.ammount}</td>
                                         </tr>
                                         ))}
                                 </TableHeaderSort>

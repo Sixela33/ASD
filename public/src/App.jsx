@@ -11,28 +11,24 @@ import { Suspense, lazy } from 'react';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Missing from './pages/Missing';
-
-const Admin = lazy(() => import('./pages/Admin/Admin'));
-
 import CreateProject from './pages/Projects/CreateProject';
 import ProjectsList from './pages/Projects/ProjectsList';
-const ViewProject = lazy(() => import('./pages/Projects/ViewSingleProject'));
-
+import ViewProject from './pages/Projects/ViewSingleProject';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
-const SingleFlowerPage = lazy(() => import('./pages/Flowers/SingleFlowerPage'));
-
+import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
 import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import LoadingPage from './LoadingPage';
-const ViewSingleInvoice = lazy(() => import('./pages/Invoices/ViewSingleInvoice'));
-const ArrangementCreation = lazy(() => import('./pages/ArrangementCreation'));
+import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
+import ArrangementCreation from './pages/ArrangementCreation';
 
 const InactiveUserPage = lazy(() => import('./pages/InactiveUserPage'));
+const Admin = lazy(() => import('./pages/Admin/Admin'));
 
 function App() {
 
   return (
-    <div className='h-full'>
+    <div className='app'>
       <Navbar/>
       <Alert/>
       <Suspense fallback={<LoadingPage/>}>

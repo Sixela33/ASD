@@ -7,7 +7,7 @@ class FlowerColorService {
     }
 
     getFlowerColors = async () => {
-        let response = await this.model.getUniqueFlowerColors()
+        let response = await this.model.getFlowerColors()
         
         return response
     }
@@ -21,6 +21,11 @@ class FlowerColorService {
         await validateQueryString(colorName)
         await validateId(colorID)
         await this.model.editFlowerColor(colorID, colorName)
+    }
+
+    getColorID = async (name) => {
+        const response = await this.model.getColorID(name)
+        return response[0]
     }
 
 

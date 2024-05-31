@@ -21,7 +21,9 @@ CREATE TABLE IF NOT EXISTS flowerVendor (
 
 CREATE TABLE IF NOT EXISTS clients (
     clientID SERIAL PRIMARY KEY,
-    clientName VARCHAR(50) UNIQUE NOT NULL
+    clientName VARCHAR(50) UNIQUE NOT NULL,
+    isActive BOOLEAN DEFAULT true
+
 );
 
 CREATE TABLE IF NOT EXISTS projects (
@@ -43,7 +45,8 @@ CREATE TABLE IF NOT EXISTS additionalsXproejct (
     aditionalID SERIAL PRIMARY KEY,
     additionalDescription VARCHAR(255) NOT NULL,
     projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
-    clientCost INT NOT NULL
+    ammount FLOAT DEFAULT 0 NOT NULL,
+    clientCost FLOAT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS arrangementTypes (
@@ -55,7 +58,8 @@ CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
     flowerName VARCHAR(50) NOT NULL,
     flowerDescription VARCHAR(50),
-    flowerImage VARCHAR(255)
+    flowerImage VARCHAR(255),
+    isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS flowerColors (
@@ -91,6 +95,7 @@ CREATE TABLE IF NOT EXISTS arrangements (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE IF NOT EXISTS flowerXarrangement (
     arrangementID INT REFERENCES arrangements(arrangementID) ON DELETE CASCADE,
@@ -130,9 +135,4 @@ CREATE TABLE IF NOT EXISTS flowerXInvoice (
     numStems FLOAT,
     loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (invoiceID, flowerID, projectID)
-);
-
-CREATE TABLE IF NOT EXISTS aditionalXinvoice (
-    invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
-    aditionalID INT REFERENCES additionalsXproejct(aditionalID)
 );

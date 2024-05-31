@@ -69,7 +69,7 @@ export default function AddInvoice() {
           invoiceAmount: invoiceData.invoiceamount,
           invoiceid: id,
           fileLocation: invoiceData.filelocation,
-          invoiceTax: invoiceData.invoicetax
+          invoiceTax: invoiceData.invoicetax || 0
         })
 
         setSelectedVendor({"vendorid": invoiceData.vendorid, "vendorname": invoiceData.vendorname})

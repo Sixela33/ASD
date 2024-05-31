@@ -4,15 +4,16 @@ import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import PopupBase from './PopupBase';
 import LoadingPopup from './LoadingPopup';
 import SearchableDropdown from './Dropdowns/SearchableDropdown';
+import MultipleFlowerColorSelector from './MultipleFlowerColorSelector';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
-const GET_FLOWER_COLORS_URL = '/api/flowers/flowerColors'
+const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
 
 const defaultFormData = {
   flower: null,
   name: '',
-  color: '',
+  color: [],
 }
 
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit}) {
@@ -28,7 +29,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const fetchFlowerColors = async () => {
       try {
         const response = await axiosPrivate.get(GET_FLOWER_COLORS_URL)
-        console.log(response)
         setFlowerColorList(response.data)
       } catch (error) {
         console.log(error)
@@ -41,6 +41,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
     const handleChange = (e) => {
       const { name, value } = e.target
+
       setFormData({
         ...formData,
         [name]: value,
@@ -48,16 +49,21 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }
 
     useEffect(() => {
-      if(flowerToEdit && flowerColorList) {
-        const flowerPos = flowerColorList.findIndex(item => item.flowercolor == flowerToEdit.flowercolor)
-        console.log("flowerPos", flowerPos)
-        console.log("flowerColorList", flowerColorList)
-      
+
+      if(flowerToEdit?.flowercolors && flowerColorList) {
+        let temp = []
+
+        for(let i = 0; i < flowerToEdit.colorids.length; i++){
+          const flowerPos = flowerColorList.findIndex(item => item.colorname == flowerToEdit.flowercolors[i])
+          temp.push(flowerColorList[flowerPos])
+        }
+
         setFormData({
           flower: defaultFormData.flower,
           name: flowerToEdit.flowername,
-          color: flowerColorList[flowerPos] || defaultFormData.color,
+          color: temp,
         })
+        
       }
     }, [flowerToEdit, flowerColorList])
   
@@ -79,19 +85,20 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         return
       }
 
-      console.log(formData.color)
-      if(!formData.color.flowercolor || formData.color.flowercolor == '') {
-        setMessage("A color must be assigned")
+      if(!formData.color.length > 0) {
+        setMessage("at least 1 color must be assigned")
         return
       }
 
       setIsSubmitting(true) 
-      
       try {
         const formDataToSend = new FormData()
         formDataToSend.append('name', formData.name)
-        formDataToSend.append('color', formData.color.flowercolor)
         formDataToSend.append('flower', formData.flower) 
+
+        for (var i = 0; i < formData.color.length; i++) {
+          formDataToSend.append('colors[]', formData.color[i].colorid)
+        }
 
         let newFlowerData
         
@@ -145,13 +152,12 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
         <div className="flex flex-col mb-4 w-full">
             <label className="mb-1">Color:</label>
-            <SearchableDropdown 
+            <MultipleFlowerColorSelector
               options={flowerColorList}
-              label={'flowercolor'}
-              selectedVal={formData.color}
-              handleChange={(e) => handleChange({target: {name:'color', value: e}})}
-              placeholderText={'color'}
-              />
+              selectedColors = {formData.color}
+              setSelectedColors = {(newValues) => handleChange({target: {name: 'color', value: newValues}})}
+              isListBelow={true}
+            />
         </div>
         <div className='buttons-holder w-full'>
           <button className='buton-secondary' onClick={handleCancel}>Cancel</button>

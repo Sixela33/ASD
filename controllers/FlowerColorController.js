@@ -18,8 +18,9 @@ class FlowerColorController {
 
     createFlowerColor = async (req, res ,next) => {
         try {
-            const {flowerName} = req.body
-            await this.service.createFlowerColor(flowerName)
+            const {colorName} = req.body
+            console.log("req.body", req.body)
+            await this.service.createFlowerColor(colorName)
             res.sendStatus(200)
         } catch (error) {
             next(error)
@@ -28,9 +29,19 @@ class FlowerColorController {
 
     editFlowerColor = async (req, res ,next) => {
         try {
-            const {flowerName, colorID} = req.body
-            await this.service.editFlowerColor(colorID, flowerName)
+            const {colorName, colorID} = req.body
+            await this.service.editFlowerColor(colorID, colorName)
             res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getColorID = async (req, res, nect) => {
+        try {
+            const {name} = req.params
+            const response = await this.service.getColorID(name)
+            res.json(response)
         } catch (error) {
             next(error)
         }

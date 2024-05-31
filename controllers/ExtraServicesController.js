@@ -10,7 +10,6 @@ class ExtraServicesController {
     addNewServiceToProject = async (req, res, next) => {
         try {
             const {serviceData, projectID} = req.body
-            console.log(req.body)
             await this.service.addNewServiceToProject(serviceData, projectID)
             res.sendStatus(200)
         } catch (error) {

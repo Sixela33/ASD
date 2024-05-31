@@ -26,7 +26,6 @@ class FlowerRouter {
         this.router.get('/many/:offset/:query?', this.controller.getFlowers)
         this.router.get('/single/:id',staffuserReq, this.controller.getFlowerData)
         
-        this.router.get('/flowerColors', this.controller.getUniqueFlowerColors)
         this.router.use('/colors', new FlowerColorRouter().start())
         return this.router
     }

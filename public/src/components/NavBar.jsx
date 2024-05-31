@@ -22,7 +22,6 @@ const Navbar = () => {
     return (
         <nav className="p-4">
             <div className="container flex justify-between items-center mx-auto">
-                {/*Don't show logo on login screen*/}
                 {location.pathname != "/login" ? 
                     <Link to="/" className="text-lg font-bold">
                         <img src='./asd-white.png' className={imageHeight} alt="ASD"></img>
