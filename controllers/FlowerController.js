@@ -10,7 +10,6 @@ class FlowerController {
         try {
             const image = req.file
             const { name, colors } = req.body
-            console.log(req.body)
             const response = await this.service.addFlower(image, name, colors)
             res.json(response)
         } catch (error) {

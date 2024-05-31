@@ -136,8 +136,3 @@ CREATE TABLE IF NOT EXISTS flowerXInvoice (
     loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (invoiceID, flowerID, projectID)
 );
-
-CREATE TABLE IF NOT EXISTS aditionalXinvoice (
-    invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
-    aditionalID INT REFERENCES additionalsXproejct(aditionalID)
-);
