@@ -60,7 +60,7 @@ export default function FlowerColors() {
             <h1>FlowerColors</h1>
         </div>
         
-        <div className='table-container h-[70vh]'>
+        <div className='table-container max-h-[60vh]'>
           <TableHeaderSort
             headers={headers}
           >

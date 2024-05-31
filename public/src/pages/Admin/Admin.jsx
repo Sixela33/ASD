@@ -6,6 +6,7 @@ import FlowerColors from './FlowerColors';
 
 export default function Admin() {
   const [componentToShow, setComponentToShow] = useState(<Users />);
+
   const buttons = [
     { id: 1, label: 'Users', component: <Users /> },
     { id: 2, label: 'Vendors', component: <Vendors /> },
@@ -14,19 +15,20 @@ export default function Admin() {
   ];
 
   return (
-    <div className="flex overflow-y-hidden">
-      <div className="w-[20vw] bg-black h-screen" >
-        <ul>
+    <div>
+      <div className="bg-black p-4">
+        <ul className="flex justify-around">
           {buttons.map((button) => (
-            <li key={button.id} className="mb-2 items-center ">
-              <button className="w-[20vw] p-2.5 my-2 flex items-center rounded-md cursor-pointer hover:bg-gray-700" onClick={() => setComponentToShow(button.component)}>
-                <span className="text-[15px] mx-4 text-gray-200">{button.label}</span>
+            <li key={button.id}>
+              <button className="text-white p-2 rounded-md hover:underline" onClick={() => setComponentToShow(button.component)} >
+                {button.label}
               </button>
             </li>
           ))}
         </ul>
       </div>
-      <div className="container my-8 w-[80vw] mx-[5vw] flex justify-center">
+
+      <div className="container mx-auto my-8">
         {componentToShow}
       </div>
     </div>

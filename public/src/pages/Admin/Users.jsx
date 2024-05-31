@@ -104,7 +104,7 @@ export default function Users() {
             <div className=' mb-4'>
                 <h1>Users</h1>
             </div>
-            <div className='table-container h-[70vh]'>
+            <div className='table-container max-h-[60vh]'>
                 <div className='flex items-center'>
                     <label className='mr-2'> Search user by email: </label>
                     <input value={searchByEmail} onChange={(e) => setSearchByEmail(e.target.value)}></input>

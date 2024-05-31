@@ -24,7 +24,6 @@
 }
 
 .page {
-    min-height: fit-content;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

@@ -19,7 +19,6 @@ const colData = {
         "Invoice Date": "invoicedate", 
         "Invoice Number": "invoicenumber",
         "Has transaction": "hastransaction",
-        "": ""
     }
 
 const searchByOptions = [
@@ -209,12 +208,11 @@ export default function ViewInvoices() {
                         <td>${toCurrency(invoice?.invoiceamount)}</td>
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
-                        {invoice?.hastransaction ? 
-                            <td className={'bg-green-500'}>true</td> : 
-                            <td className={'bg-red-500'}>false</td>
-                        }
-                        <td className={'border p-2'} onClick={e => {e.stopPropagation()}}>
-                            <input type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
+                        <td 
+                            className={`${invoice.hastransaction ? 'bg-green-500' : 'bg-red-500'}`}
+                            onClick={e => {e.stopPropagation()}}>
+                            {invoice.hastransaction ? "TRUE": 'FALSE'}
+                            <input className='ml-4' type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
                         </td>
                      </tr>
                     })}
