@@ -44,19 +44,6 @@ class S3FileHandler {
     return `${finalFolder}/${folder}/${filename}`;
   }
 
-  async getObjectSignedUrl(key) {
-    const params = {
-      Bucket: this.bucketName,
-      Key: key
-    }
-  
-    const command = new GetObjectCommand(params);
-    const seconds = 60
-    const url = await getSignedUrl(this.s3, command, { expiresIn: seconds });
-  
-    return url
-  }
-
   async handleReplaceFile(file, allowedExtensions, filepath, finalFolder) {
     const newFileKey = await this.handleNewFile(file, allowedExtensions, finalFolder);
 

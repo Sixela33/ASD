@@ -9,18 +9,9 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
     volumes:
       - ./dbData:/var/lib/postgresql/data
-
-  server:
-    build: .
-    depends_on:
-      - db
-    ports:
-      - "8080:8080"
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_DB_HOST=db
-    volumes:
-      - ./logs:/logs
