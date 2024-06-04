@@ -31,9 +31,9 @@ const Navbar = () => {
 
                 {auth.decoded && 
                     <div className="flex items-center">
-                    <p className="mr-4 hover:cursor-default">{auth.decoded.username}</p>
-                    <img src={auth.decoded.picture} className="rounded-full w-12 h-12 mr-5" alt="Profile Picture"/>
-                    <Link onClick={signOut} className='border-l-2 border-white pl-5'>LogOut</Link>
+                        <p className="mr-4 hover:cursor-default">{auth.decoded.username}</p>
+                        <img src={auth.decoded.picture} className="rounded-full w-12 h-12 mr-5" alt="Profile Picture"/>
+                        <Link onClick={signOut} className='hover:underline pl-5'>LogOut</Link>
                     </div>
                 }
             </div>

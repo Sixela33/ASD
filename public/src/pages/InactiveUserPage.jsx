@@ -8,7 +8,7 @@ export default function InactiveUserPage() {
           Your account is inactive at the moment. Please contact a system
           administrator to grant you access.
         </h2>
-        <a href='/'>Go to home</a>
+        <a href='/' className='go-back-button'>Go to home</a>
     </div>
   );
 }
