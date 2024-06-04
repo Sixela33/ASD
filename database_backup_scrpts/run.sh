@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -eu
 
 if [ "$S3_S3V4" = "yes" ]; then
