@@ -1,13 +1,30 @@
-FROM node:20-alpine
+ARG ALPINE_VERSION
+FROM alpine:${ALPINE_VERSION}
+ARG TARGETARCH
 
-WORKDIR /asd
+ADD shell_scripts/install.sh install.sh
+RUN sh install.sh && rm install.sh
 
-COPY package*.json ./
+ENV POSTGRES_DATABASE ''
+ENV POSTGRES_HOST ''
+ENV POSTGRES_PORT 5432
+ENV POSTGRES_USER ''
+ENV POSTGRES_PASSWORD ''
+ENV PGDUMP_EXTRA_OPTS ''
+ENV S3_ACCESS_KEY_ID ''
+ENV S3_SECRET_ACCESS_KEY ''
+ENV S3_BUCKET ''
+ENV S3_REGION 'us-east-1'
+ENV S3_PATH 'backup'
+ENV S3_ENDPOINT ''
+ENV S3_S3V4 'no'
+ENV SCHEDULE ''
+ENV PASSPHRASE ''
+ENV BACKUP_KEEP_DAYS ''
 
-RUN npm i
+ADD shell_scripts/run.sh run.sh
+ADD shell_scripts/env.sh env.sh
+ADD shell_scripts/backup.sh backup.sh
+ADD shell_scripts/restore.sh restore.sh
 
-COPY . .
-
-EXPOSE 8080
-
-CMD ["node", "index.js"]
+CMD ["sh", "run.sh"]

@@ -1,8 +1,8 @@
-#servercongfig
+# servercongfig
 PORT=8080
 HOST=http://localhost
 SCRIPTS_HOST=http://localhost #This variable is for the loadFLowers script (it doesent like https)
-NODE_ENV=dev #production / dev /test
+NODE_ENV=production #production
 DATABASE=postgres
 REFRESH_TOKEN_SECRET=secretisimo
 ACCESS_TOKEN_SECRET=secretisimo2
@@ -20,22 +20,19 @@ LOCAL_FILES_LOCATION=./SavedFiles
 FILE_STORAGE=local # Local / s3
 
 #S3CONFIG
-# fileStorage
+#File Storage
 BUCKET_NAME=
 BUCKET_REGION=
 ACCESS_KEY=
 SECRET_ACCESS_KEY=
 
-# BackupStorage
-AWS_S3_BACKUPS_BUCKET_NAME=
-AWS_BACKUP_ACCESS_KEY=
-AWS_BACKUP_SECRET_ACCESS_KEY=
-PASSPHRASE=
-BACKUP_KEEP_DAYS=
-SCHEDULE=
-S3_ENDPOINT=
-S3_REGION=
-PGDUMP_EXTRA_OPTS=
+#DB BackupStorage
+BACKUPS_S3_REGION=""
+BACKUPS_S3_ACCESS_KEY_ID=""
+BACKUPS_S3_SECRET_ACCESS_KEY=""
+BACKUPS_S3_BUCKET=""
+AWS_BACKUP_ENCRYPTION_KEY=  # optional
+
 
 #GOOGLEOAUTH
 OAUTH_CLIENT_ID=
