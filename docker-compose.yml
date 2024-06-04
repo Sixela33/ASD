@@ -22,10 +22,12 @@ services:
       context: .
       args:
         ALPINE_VERSION: '3.16'
+    depends_on:
+      - db
     env_file:
       - .env
     environment:
-      SCHEDULE: '@weekly'     # optional
+      SCHEDULE: '*/1 * * * *'     # optional
       BACKUP_KEEP_DAYS: 28     # optional
       PASSPHRASE: $AWS_BACKUP_ENCRYPTION_KEY  # optional
       S3_REGION: $S3_REGION
