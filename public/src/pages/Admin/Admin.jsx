@@ -20,7 +20,7 @@ export default function Admin() {
         <ul className="flex justify-around">
           {buttons.map((button) => (
             <li key={button.id}>
-              <button className="text-white p-2 rounded-md hover:underline" onClick={() => setComponentToShow(button.component)} >
+              <button className="text-white py-4 px-20 md:px-5 rounded-md hover:underline" onClick={() => setComponentToShow(button.component)} >
                 {button.label}
               </button>
             </li>

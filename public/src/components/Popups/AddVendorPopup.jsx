@@ -48,6 +48,8 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
     showPopup={showPopup}
     closePopup={handleClosePopup}
     confirm={addNewVendor}>
+        <h2>{vendorData.vendorid ? "Edit vendor name" : "Add new vendor"}</h2>
+        <br/>
         <label>vendor Name</label>
         <input type='text' value={vendorData.vendorname} onChange={handleInputChange}></input>
     </ConfirmationPopup>

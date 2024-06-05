@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
 import AddVendorPopup from '../../components/Popups/AddVendorPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
+import { debounce } from 'lodash'
 
 const FETCH_VENDORS_URL = '/api/vendors'
 const defaultSortConfig = { key: null, direction: 'asc' }
@@ -18,21 +19,30 @@ export default function Vendors() {
     const [showNewVendorPopup, setShowNewVendorPopup] = useState(false)
     const [vendorsData, setVendorsData] = useState(null)
     const [sortConfig, setSortConfig] = useState(defaultSortConfig);
+    const [searchByName, setSearchByName] = useState()
 
     const [editVendorData, setEditvendordata] = useState(null)
 
-    const fetchVendors = async () => {
+    const fetchVendors = async (name) => {
         try {
-            const response = await axiosPrivate.get(FETCH_VENDORS_URL)
+            const response = await axiosPrivate.get(FETCH_VENDORS_URL, {params:{
+                searchByName: name
+            }})
             setVendorsData(response.data)
         } catch (error) {
             setMessage(error.response?.data)            
         }
     }
 
+    const debounced = useCallback(debounce(fetchVendors, 600))
+
     useEffect(() => {
-        fetchVendors()
+        fetchVendors(searchByName)
     }, [])
+
+    useEffect(() => {
+        debounced(searchByName)
+    }, [searchByName])
     
     const handleEditVendor = (vendor) => {
         setEditvendordata(vendor)
@@ -43,7 +53,7 @@ export default function Vendors() {
         setShowNewVendorPopup(false)
         setEditvendordata(null)
         if(shouldRefresh === true){
-            fetchVendors()
+            fetchVendors(searchByName)
         }
     }
 
@@ -62,11 +72,14 @@ export default function Vendors() {
                     showPopup={showNewVendorPopup} 
                     closePopup={handleCloseVendorPopup} 
                     editVendorData={editVendorData}/>
-
                 <div>
                     <h1>Vendors</h1>
                 </div>
                 <div className='table-container max-h-[60vh]'>
+                    <div className='flex items-center'>
+                        <label className='mr-2'> Search by name: </label>
+                        <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
+                    </div>
                     <TableHeaderSort
                         headers={headers}
                         setSortConfig={setSortConfig}

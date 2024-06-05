@@ -18,7 +18,8 @@ class VendorController {
 
     getVendors = async (req, res, next) => {
         try {
-            const result = await this.service.getVendors()
+            const {searchByName} = req.query
+            const result = await this.service.getVendors(searchByName)
             res.json(result)
         } catch (error) {
             next(error)

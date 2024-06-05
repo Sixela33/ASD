@@ -51,6 +51,8 @@ export default function AddColorPupup({showPopup, closePopup, editClorData}) {
     showPopup={showPopup}
     closePopup={handleClosePopup}
     confirm={addNewColor}>
+        <h2>{colorData.colorID ? "Edit color name" : "Add new color"}</h2>
+        <br/>
         <label>Color Name</label> 
         <input type='text' value={colorData.colorName} onChange={handleChange}></input>
 

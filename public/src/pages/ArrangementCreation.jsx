@@ -5,6 +5,7 @@ import useAlert from '../hooks/useAlert';
 import FlowerListComponent from '../components/FlowerListComponent';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toCurrency } from '../utls/toCurrency';
+import { toInteger } from 'lodash';
 
 const FETCH_ARRANGEMENT_DATA_URL = '/api/arrangements/creation/';
 const SUBMIT_ARRANGEMENT_URL = '/api/arrangements/creation/'
@@ -37,17 +38,14 @@ export default function ArrangementCreation() {
     const submitArrangement = async () => {
         try {
             let tempFlowers = []
-            console.log(selectedFlowers)
             for(let flower of selectedFlowers) {
-                console.log("flower", flower)
                 if (flower.quantity > 0) {
                     tempFlowers.push({
                         flowerID: flower.flowerid,
-                        quantity: flower.quantity
+                        quantity: toInteger(flower.quantity) || ''
                     })
                 }
             }
-            console.log(tempFlowers)
 
             const submitData = {
                 arrangementid: arrangementData.arrangementid,
@@ -69,43 +67,24 @@ export default function ArrangementCreation() {
 
     const selectFlower = (flower) => {
         setActualSelectedFlower(flower);
-        setQuantityToAdd('')
         quantityInputRef.current.focus();
     };
 
-    const addFlower = () => {
-        if (actualSelectedFlower) {
-
-            const index = selectedFlowers.findIndex((flower) => flower.flowerid == actualSelectedFlower.flowerid)
-            
-            if (index != -1) {
-                setMessage("Flower Already in arrangement")
-                return
-            }
-         
-            const newSelected = [...selectedFlowers];
-            const newObject = { ...actualSelectedFlower, quantity: quantityToAdd };
-            newSelected.push(newObject);
-            setSelectedFlowers(newSelected);
-            setQuantityToAdd('');
-        }
-    };
-
     const addFlowerDrop = (flowerToAdd, quantity) => {
-        console.log(flowerToAdd, quantity)
         if (flowerToAdd && quantity>=0) {
 
             const index = selectedFlowers.findIndex((flower) => flower.flowerid == flowerToAdd.flowerid)
-            if (index != -1) {
-                setMessage("Flower Already in arrangement")
-                return
+            const newSelected = [...selectedFlowers];
+            
+            if (index == -1) {
+                const newObject = { ...flowerToAdd, quantity: toInteger(quantity) };
+                newSelected.push(newObject);
+            } else {
+                newSelected[index].quantity = toInteger(newSelected[index].quantity)
+                newSelected[index].quantity += toInteger(quantity)
             }
 
-            const newSelected = [...selectedFlowers];
-            const newObject = { ...flowerToAdd, quantity: 0 };
-            newSelected.push(newObject);
             setSelectedFlowers(newSelected);
-            setQuantityToAdd('');
         }
     }
 
@@ -128,15 +107,14 @@ export default function ArrangementCreation() {
     const sum = selectedFlowers.reduce((accumulator, flower) => accumulator + ((flower.unitprice || 0) * flower.quantity), 0)
 
     const handleOnDrag = (e, flower) => {
+        selectFlower(flower)
         e.dataTransfer.setData('flower', JSON.stringify(flower))
     }
 
     const handleOnDrop = (e) => {
         let flower = e.dataTransfer.getData("flower")
         flower = JSON.parse(flower)
-        console.log(flower)
-        console.log(selectedFlowers)
-        addFlowerDrop(flower, 1)
+        addFlowerDrop(flower, quantityToAdd)
     }
 
     return (
@@ -164,9 +142,6 @@ export default function ArrangementCreation() {
                             <div>
                                 <p>unitPrice: {actualSelectedFlower?.unitprice ? actualSelectedFlower?.unitprice : 'N/A'}</p>
                                 <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />
-                                <button onClick={addFlower} disabled={quantityToAdd <= 0} className={`buton-secondary ${quantityToAdd <= 0 && 'cursor-not-allowed opacity-50'}`} >
-                                    ADD
-                                </button>
                             </div>
                         </div>
                         <div className='mr-10 md:col-span-3'>

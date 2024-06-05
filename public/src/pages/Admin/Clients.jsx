@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
 import AddClientPopup from '../../components/Popups/AddClientPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
+import { debounce } from 'lodash'
 
 const FETCH_CLIENTS_URL = '/api/clients'
 const defaultSortConfig = { key: null, direction: 'asc' }
@@ -18,21 +19,30 @@ export default function Clients() {
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
     const [clientsData, setClientsData] = useState(null)
     const [sortConfig, setSortConfig] = useState(defaultSortConfig);
+    const [searchByName, setSearByName] = useState()
 
     const [editClientData, setEditclientdata] = useState(null)
 
-    const fetchClients = async () => {
+    const fetchClients = async (name) => {
         try {
-            const response = await axiosPrivate.get(FETCH_CLIENTS_URL)
+            const response = await axiosPrivate.get(FETCH_CLIENTS_URL, {params: {
+                searchByName: name
+            }})
             setClientsData(response.data)
         } catch (error) {
             setMessage(error.response?.data)            
         }
     }
 
+    const debounced = useCallback(debounce(fetchClients, 600))
+
     useEffect(() => {
-        fetchClients()
+        fetchClients(searchByName)
     }, [])
+
+    useEffect(() => {
+        debounced(searchByName)
+    }, [searchByName])
     
     const handleEditClient = (client) => {
         setEditclientdata(client)
@@ -43,7 +53,7 @@ export default function Clients() {
         setShowNewClientPopup(false)
         setEditclientdata(null)
         if(shouldRefresh === true){
-            fetchClients()
+            fetchClients(searchByName)
         }
     }
 
@@ -65,6 +75,10 @@ export default function Clients() {
                 
             <div className=' mb-4'>
                 <h1 >Clients</h1>
+            </div>
+            <div className='flex items-center'>
+                <label className='mr-2'> Search by name: </label>
+                <input value={searchByName} onChange={(e) => setSearByName(e.target.value)}></input>
             </div>
             <div className='table-container max-h-[60vh]'>
                 <TableHeaderSort

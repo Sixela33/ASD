@@ -6,8 +6,9 @@ class FlowerColorService {
         this.model = new ModelPostgres();
     }
 
-    getFlowerColors = async () => {
-        let response = await this.model.getFlowerColors()
+    getFlowerColors = async (searchByName) => {
+        await validateQueryString(searchByName)
+        let response = await this.model.getFlowerColors(searchByName)
         
         return response
     }

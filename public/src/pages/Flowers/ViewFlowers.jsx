@@ -40,7 +40,7 @@ export default function ViewFlowers() {
                 cancelButton={() => setShowNewFlowerPupup(false)}
                 title={'Add Flower'}
                 refreshData={() => setRefreshVariable(!refreshVariable)}/>
-            <FlowerListComponent  styles={{ maxHeight: '60vh' }} onFlowerClick={onFlowerClick} refresh={refreshVariable} showToggleIncomplete={true}/>
+            <FlowerListComponent  styles={{ minHeight: '60vh', maxHeight: '60vh' }} onFlowerClick={onFlowerClick} refresh={refreshVariable} showToggleIncomplete={true}/>
         </div>
     );
 };

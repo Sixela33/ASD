@@ -92,6 +92,7 @@ export default function Users() {
         <div className='container mx-auto mt-8 p-4 text-center'>
             <ConfirmationPopup showPopup ={showRolePopup} closePopup={handleCancelPopup} confirm={handleChangeRole}>
                 <h1>Select new role</h1>
+                <br/>
                 <select className="mr-2 px-2 py-1 border border-gray-300 rounded" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
                     <option value={undefined} >Select a role</option>
                     {allRoles.map((role) => (
@@ -116,7 +117,7 @@ export default function Users() {
                             <th>Username</th>
                             <th>Email</th>
                             <th>User role</th>
-                            <th>ADMIN</th>
+                            <th>Admin</th>
                         </tr>
                     </thead>
                     <tbody >

@@ -8,7 +8,8 @@ class FlowerColorController {
 
     getFlowerColors = async (req, res ,next) => {
         try {
-            const response = await this.service.getFlowerColors()
+            const {searchByName} = req.query
+            const response = await this.service.getFlowerColors(searchByName)
             res.json(response)
 
         } catch (error) {

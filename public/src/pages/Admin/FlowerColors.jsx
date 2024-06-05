@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import AddColorPupup from '../../components/Popups/AddColorPupup'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
+import { debounce } from 'lodash'
 
 const GET_COLORS_URL = '/api/flowers/colors'
 
@@ -10,12 +11,15 @@ export default function FlowerColors() {
   const [colorData, setcolorData] = useState(null)
   const [shownewColorPopup, setShowNewColorPopup] = useState(false)
   const [colorToEdit, setColorToEdit] = useState(null) 
+  const [searchBy, setColorSearchBy] = useState()
 
   const axiosPrivate = useAxiosPrivate()
 
-  const fetchColors = async () => {
+  const fetchColors = async (name) => {
     try {
-      const response = await axiosPrivate.get(GET_COLORS_URL)
+      const response = await axiosPrivate.get(GET_COLORS_URL, {params: {
+        searchByName: name
+      }})
       setcolorData(response.data)
     } catch (error) {
       console.log(error)
@@ -23,9 +27,16 @@ export default function FlowerColors() {
     }
   }
 
+  const debounced = useCallback(debounce(fetchColors, 600))
+
+
   useEffect(() => {
-    fetchColors()
+    fetchColors(searchBy)
   }, [])
+
+  useEffect(() => {
+    debounced(searchBy)
+  }, [searchBy])
 
   const handleEditColor = (color) => {
     setColorToEdit(color)
@@ -43,7 +54,7 @@ export default function FlowerColors() {
   
   const handleClosePopup = (shouldRefresh) => {
     if(shouldRefresh) {
-      fetchColors()
+      fetchColors(searchBy)
     }
     setShowNewColorPopup(false)
   }
@@ -61,6 +72,10 @@ export default function FlowerColors() {
         </div>
         
         <div className='table-container max-h-[60vh]'>
+           <div className='flex items-center'>
+                <label className='mr-2'> Search by name: </label>
+                <input value={searchBy} onChange={(e) => setColorSearchBy(e.target.value)}></input>
+            </div>
           <TableHeaderSort
             headers={headers}
           >

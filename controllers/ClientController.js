@@ -19,7 +19,8 @@ class ClientController {
 
     getClients = async (req, res, next) => {
         try {
-            const result = await this.service.getClients()
+            const {searchByName} = req.query
+            const result = await this.service.getClients(searchByName)
             res.json(result)
         } catch (error) {
             next(error)

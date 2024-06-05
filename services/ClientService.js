@@ -1,4 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import { validateQueryString } from "./Validations/IdValidation.js"
 import { validateClient } from "./Validations/clientValidations.js"
 class ClientService {
 
@@ -11,8 +12,9 @@ class ClientService {
         await this.model.createClient(clientName)
     }
 
-    getClients = async () => {
-        const result = await this.model.getClients()
+    getClients = async (searchByName) => {
+        await validateQueryString(searchByName)
+        const result = await this.model.getClients(searchByName)
         return result.rows 
     }
 

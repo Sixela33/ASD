@@ -52,7 +52,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
   };
 
   return (
-    <div className="relative ">
+    <div className="relative w-full">
       <div ref={inputRef}>
         <div className="relative">
           <div className="selected-value relative">

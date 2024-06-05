@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import { validateId } from "./Validations/IdValidation.js"
+import { validateId, validateQueryString } from "./Validations/IdValidation.js"
 import { validateVendor } from "./Validations/VendorValidations.js"
 
 class VendorService {
@@ -13,8 +13,9 @@ class VendorService {
         await this.model.addVender(vendorName)
     }
 
-    getVendors = async () => {
-        const result = await this.model.getVendors()
+    getVendors = async (searchByName) => {
+        await validateQueryString(searchByName)
+        const result = await this.model.getVendors(searchByName)
         return result.rows 
     }
 

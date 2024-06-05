@@ -316,11 +316,11 @@ export default function CreateProject() {
 
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                            <FormItem labelName="Staff Budget percentage:" type="number" inputName="staffBudget" value={staffBudget} handleChange={(e) => handleFormEdit('staffBudget', e.target.value)} error={errors.staffBudget} />
+                            <FormItem labelName="Staff Budget percentage:" step='0.1' type="number" inputName="staffBudget" value={staffBudget} handleChange={(e) => handleFormEdit('staffBudget', e.target.value)} error={errors.staffBudget} />
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem labelName="Profit Margin:" type="number" inputName="profitMargin" value={profitMargin} handleChange={(e) => handleFormEdit('profitMargin', e.target.value)} error={errors.profitMargin} />
+                            <FormItem labelName="Profit Margin:" step='0.1' type="number" inputName="profitMargin" value={profitMargin} handleChange={(e) => handleFormEdit('profitMargin', e.target.value)} error={errors.profitMargin} />
                             </div>
                         </div>
                         </div>

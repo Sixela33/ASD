@@ -135,9 +135,18 @@ class ModelPostgres {
         await CnxPostgress.db.query('INSERT INTO clients (clientname) VALUES ($1);', [clientName])
     }
 
-    getClients = async () => {
+    getClients = async (searchByName) => {
         this.validateDatabaseConnection()
-        return CnxPostgress.db.query('SELECT clientID, clientName FROM clients ORDER BY clientname;')
+        let baseQuery = 'SELECT clientID, clientName FROM clients'
+        let queryParams = []
+        
+        if (searchByName) {
+            baseQuery += ' WHERE clientName ILIKE $1'
+            queryParams.push(`${searchByName}%`)
+        }
+
+        baseQuery += ' ORDER BY clientID;'
+        return CnxPostgress.db.query(baseQuery, queryParams)
     }
 
     editClient = async (clientid, clientname) => {
@@ -149,9 +158,21 @@ class ModelPostgres {
     //                    VENDORS
     // -----------------------------------------------
 
-    getVendors = async () => {
+    getVendors = async (searchByName) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor ORDER BY vendorname;')
+
+        let baseQuery = 'SELECT vendorid, vendorname FROM flowerVendor '
+
+        let queryParams = []
+        
+        if (searchByName) {
+            baseQuery += ' WHERE vendorname ILIKE $1'
+            queryParams.push(`${searchByName}%`)
+        }
+
+        baseQuery += ' ORDER BY vendorid;'
+
+        return await CnxPostgress.db.query(baseQuery, queryParams)
         //return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor LIMIT $1 OFFSET $2 ORDER BY vendorname;')
     }
 
@@ -600,9 +621,19 @@ class ModelPostgres {
     //                 FLOWER COLORS
     // -----------------------------------------------
 
-    getFlowerColors = async () => {
+    getFlowerColors = async (searchByName) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query('SELECT * FROM flowerColors')
+        let baseQUery = 'SELECT * FROM flowerColors'
+
+        const queryparams = []
+
+        if(searchByName) {
+            baseQUery += ' WHERE colorname ILIKE $1'
+            queryparams.push(`${searchByName}%`)
+        }
+
+        baseQUery += ';'
+        const response = await CnxPostgress.db.query(baseQUery, queryparams)
         return response.rows
     }
 
