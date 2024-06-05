@@ -47,7 +47,7 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
         </div>
         <div className='buttons-holder'>
           <button className='buton-secondary' onClick={onClose} >Close</button>
-          <button className='buton-main' onClick={onSubmit} >Add Arrangement</button>
+          <button className='buton-main' onClick={onSubmit} >Add arrangement</button>
         </div>
       </PopupBase>
   );

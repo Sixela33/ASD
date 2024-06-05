@@ -55,7 +55,6 @@ export default function AddColorPupup({showPopup, closePopup, editClorData}) {
         <br/>
         <label>Color Name</label> 
         <input type='text' value={colorData.colorName} onChange={handleChange}></input>
-
     </ConfirmationPopup>
   )
 }
