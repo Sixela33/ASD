@@ -101,7 +101,9 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
       }
 
     return newProjectdata && (
-        <PopupBase showPopup={showPopup}>
+        <PopupBase 
+            showPopup={showPopup}
+            closePopup={closePopup}>
         <div className='my-1'>
             <label>Client:</label>
             <SearchableDropdown options={clientList} label="clientname" selectedVal={newProjectdata.clientid} handleChange={(client) => handleChange('clientid', client)} placeholderText="Select Client"/>

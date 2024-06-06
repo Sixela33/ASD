@@ -6,7 +6,9 @@ import FormError from '../Form/FormError';
 
 const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInputChange, arrangementTypes, newArrangementErrors }) => {
   return (
-    <PopupBase showPopup={showPopup}>
+    <PopupBase 
+      showPopup={showPopup}
+      closePopup={onClose}>
         <h2>Add New Arrangement</h2>
         <div>
           <label >Type:</label>

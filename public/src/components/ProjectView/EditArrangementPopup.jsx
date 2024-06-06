@@ -126,7 +126,9 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
   }
 
   return (
-    <PopupBase showPopup={showPopup}>
+    <PopupBase 
+      showPopup={showPopup}
+      closePopup={handleClosePopup}>
       {arrangementTypes && (
       <div>
         <label>Arrangement Type:</label>

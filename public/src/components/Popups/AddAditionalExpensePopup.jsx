@@ -75,7 +75,9 @@ export default function AddAditionalExpensePopup({showPopup, closePopup, submitF
     }, [editExpense])
 
     return (
-        <PopupBase showPopup={showPopup}>
+        <PopupBase 
+            showPopup={showPopup}
+            closePopup={handleClose}>
             <h2>{!editing ? 'Add new expense' : 'Edit expense'}</h2>
             <FormItem labelName='Description:' type='text' inputName='description' value={aditionalExpenseData.description} handleChange={handleDataChange} error={formErrors.description}/>
             <FormItem labelName='Client cost:' type='number' inputName='clientcost' value={aditionalExpenseData.clientcost} handleChange={handleDataChange} error={formErrors.clientcost}/>

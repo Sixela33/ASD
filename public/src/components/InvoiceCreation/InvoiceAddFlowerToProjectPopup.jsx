@@ -83,7 +83,10 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
     }
 
     return (
-        <PopupBase showPopup={showPopup}>
+        <PopupBase 
+            showPopup={showPopup}
+            closePopup={exitPopup}
+            >
             <NewFlowerForm showPopup={showPopup2} cancelButton={handleCloseFlowerCreation} refreshData={fetchFlowers}/>
             <h3>Select flower</h3>
             <QuerySearchableDropdown 

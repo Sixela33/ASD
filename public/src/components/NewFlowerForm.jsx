@@ -133,7 +133,9 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }
 
   return (
-    <PopupBase showPopup={showPopup}>
+    <PopupBase 
+      showPopup={showPopup}
+      closePopup={handleCancel}>
       <LoadingPopup showPopup={isSubmitting}>
         <h1>Loading Flower</h1>
         <p>Please wait</p>

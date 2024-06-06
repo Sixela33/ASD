@@ -10,7 +10,9 @@ export default function ConfirmationPopup({showPopup, closePopup, confirm, child
   }
 
   return (
-    <PopupBase showPopup={showPopup}>
+    <PopupBase 
+      showPopup={showPopup}
+      closePopup={closePopup}>
         {children}
         <div className='buttons-holder'>
             <button onClick={closePopup} className='buton-secondary'>Cancel</button>
