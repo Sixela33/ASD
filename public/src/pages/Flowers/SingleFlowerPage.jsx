@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
@@ -13,7 +13,7 @@ export default function SingleFlowerPage() {
     const axiosPrivate = useAxiosPrivate();
     const { id } = useParams();
     const {setMessage} = useAlert()
-
+    const navigateTo = useNavigate()
 
     const [baseFlowerData, setBaseFlowerData] = useState({});
     const [flowerPrices, setFlowerPrices] = useState([]);
@@ -36,8 +36,10 @@ export default function SingleFlowerPage() {
 
     const deleteFlower = async () => {
         try {
-            console.log("deleted");
             await axiosPrivate.delete(REMOVE_FLOWER_URL + id)
+            setMessage('Flower removed successfully')
+            navigateTo('/flowers')
+
         } catch (error) {
             console.error(error);
         }
@@ -96,7 +98,7 @@ export default function SingleFlowerPage() {
                             setShowEditFlowerPopup(true)
                             setBaseFlowerData(newFlowerData)
                             }}>Edit</button>
-                         <button className='buton-seconary' onClick={() => {
+                         <button className='buton-secondary' onClick={() => {
                             setShowConfirmationPopup(true)
                             }}>Remove</button>
 
