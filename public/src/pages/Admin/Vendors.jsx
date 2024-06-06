@@ -30,7 +30,7 @@ export default function Vendors() {
             }})
             setVendorsData(response.data)
         } catch (error) {
-            setMessage(error.response?.data)            
+            setMessage(error.response?.data.message)            
         }
     }
 

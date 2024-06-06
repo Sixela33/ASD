@@ -21,10 +21,12 @@ class FlowerRouter {
         // CreateFlower
         this.router.post('/', this.uploads.single('flower'), this.controller.addFlower)
         this.router.patch('/edit', staffuserReq, this.uploads.single('flower'), this.controller.editFlower)
-
+        
         //GetFlowers
         this.router.get('/many/:offset/:query?', this.controller.getFlowers)
         this.router.get('/single/:id',staffuserReq, this.controller.getFlowerData)
+        this.router.delete('/single/:id', staffuserReq, this.controller.deleteFlower)
+        this.router.patch('/single/:id', staffuserReq, this.controller.deleteFlower)
         
         this.router.use('/colors', new FlowerColorRouter().start())
         return this.router

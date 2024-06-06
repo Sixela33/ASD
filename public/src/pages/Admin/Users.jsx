@@ -72,7 +72,7 @@ export default function Users() {
             setMessage('Role changed Successfully!', false)
             getData(searchByEmail)
         } catch (error) {
-            setMessage(error.response?.data, true)
+            setMessage(error.response?.data.message, true)
 
        }
     };

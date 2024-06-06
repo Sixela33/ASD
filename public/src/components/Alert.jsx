@@ -32,7 +32,7 @@ export default function Alert() {
 
     return (
         <div className={alertClass} ref={alertRef} role="alert">
-            <div>{message}</div>
+            <div>{message.message ? message.message : message}</div>
             <button className="ml-auto text-white-500" onClick={closeAlert}>X</button>
         </div>
     );

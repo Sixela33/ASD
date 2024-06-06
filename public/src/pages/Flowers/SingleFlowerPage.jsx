@@ -37,7 +37,7 @@ export default function SingleFlowerPage() {
     const deleteFlower = async () => {
         try {
             console.log("deleted");
-            //await axiosPrivate.delete(REMOVE_FLOWER_URL + id)
+            await axiosPrivate.delete(REMOVE_FLOWER_URL + id)
         } catch (error) {
             console.error(error);
         }
@@ -96,6 +96,9 @@ export default function SingleFlowerPage() {
                             setShowEditFlowerPopup(true)
                             setBaseFlowerData(newFlowerData)
                             }}>Edit</button>
+                         <button className='buton-seconary' onClick={() => {
+                            setShowConfirmationPopup(true)
+                            }}>Remove</button>
 
                     </div>
                 </div>

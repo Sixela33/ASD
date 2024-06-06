@@ -509,10 +509,23 @@ class ModelPostgres {
     
     editFlower = async (name, colors, id, filepath) => {
         this.validateDatabaseConnection()
-        console.log(colors)
         await CnxPostgress.db.query(`
         CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
         [name, filepath, colors, id])
+    }
+
+    deleteFlower = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM flowers WHERE flowerID = $1', [id])
+        } catch (e) {
+            await CnxPostgress.db.query('UPDATE flowers SET isActive = false WHERE flowerID = $1', [id])
+        }
+    }
+
+    recoverFlower = async (id) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('UPDATE flowers SET isActive = true WHERE flowerID = $1', [id])
     }
 
     getFlowerData = async (id) => {
@@ -561,7 +574,7 @@ class ModelPostgres {
         WHERE fxi.flowerID = $1;`, [id])
     }
 
-    getFlowersQuery = async (offset, query, filterByColor, showIncomplete) => {
+    getFlowersQuery = async (offset, query, filterByColor, showIncomplete, showDisabled=false) => {
         this.validateDatabaseConnection()
         const LIMIT = 50
         let sqlQuery = `
@@ -605,6 +618,10 @@ class ModelPostgres {
     
         if (showIncomplete == 'true') {
             queryConditions.push(`f.flowerimage IS NULL OR LENGTH(f.flowerimage) = 0`)
+        }
+
+        if (!showDisabled) {
+            queryConditions.push('f.isActive = true')
         }
     
         if (queryConditions.length > 0) {

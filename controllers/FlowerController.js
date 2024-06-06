@@ -28,13 +28,36 @@ class FlowerController {
             console.log(error)
             next(error)
         }
-    }    
+    }   
+    
+    
+    deleteFlower = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            await this.service.deleteFlower(id)
+            res.sendStatus(200)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }  
+
+    recoverFlower = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            await this.service.recoverFlower(id)
+            res.sendStatus(200)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }  
 
     getFlowers = async (req, res, next) => {
         try {
             const {offset, query} = req.params
-            const { filterByColor, showIncomplete} = req.query
-            const response = await this.service.getFlowers(offset, query, filterByColor, showIncomplete)
+            const { filterByColor, showIncomplete, showDisabled} = req.query
+            const response = await this.service.getFlowers(offset, query, filterByColor, showIncomplete, showDisabled)
             res.json(response)
         } catch (error) {
             next(error)
