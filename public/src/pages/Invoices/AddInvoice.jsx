@@ -16,7 +16,6 @@ const emptyInvoiceObject = {
   vendor: '',
   dueDate: new Date().toISOString().substring(0, 10),
   invoiceAmount: '',
-  invoiceTax: 0
 };
 
 const invoiceDataSchema = Yup.object().shape({
@@ -26,7 +25,6 @@ const invoiceDataSchema = Yup.object().shape({
   invoiceAmount: Yup.number().required('The ammount is required').typeError('The ammount is required'),
   invoiceid: Yup.number().optional(),
   fileLocation: Yup.string().optional(),
-  invoiceTax: Yup.number('The tax field is required (put 0 if 0)').typeError('The tax field is required (put 0 if 0)')
 })
 
 const FETCH_INVOICE_DATA_URL = '/api/invoices/invoiceData/'
@@ -69,7 +67,6 @@ export default function AddInvoice() {
           invoiceAmount: invoiceData.invoiceamount,
           invoiceid: id,
           fileLocation: invoiceData.filelocation,
-          invoiceTax: invoiceData.invoicetax || 0
         })
 
         setSelectedVendor({"vendorid": invoiceData.vendorid, "vendorname": invoiceData.vendorname})

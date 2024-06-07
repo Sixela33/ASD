@@ -23,11 +23,6 @@ const invoiceSchema = Joi.object({
     }),
     fileLocation: Joi.string().messages({
         'string.base': 'File location must be a string.'
-    }),
-    invoiceTax: Joi.number().min(0).messages({
-        'number.base': 'Invoice Tax must be a number.',
-        'number.min': 'Invoice Tax must be greater than or equal to zero.'
-
     })
 });
 

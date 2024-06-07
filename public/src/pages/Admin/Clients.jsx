@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
-import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton'
 import AddClientPopup from '../../components/Popups/AddClientPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
@@ -57,15 +56,6 @@ export default function Clients() {
         }
     }
 
-    const buttonOptions = [
-        {
-            text: 'Add new client', 
-            action: () => setShowNewClientPopup(true), 
-            minPermissionLevel: 999,
-            icon: '+'
-        }, 
-    ]
-
     return (
         clientsData && <div className='container mx-auto mt-8 p-4 text-center'>
             <AddClientPopup
@@ -76,9 +66,12 @@ export default function Clients() {
             <div className=' mb-4'>
                 <h1 >Clients</h1>
             </div>
-            <div className='flex items-center'>
-                <label className='mr-2'> Search by name: </label>
-                <input value={searchByName} onChange={(e) => setSearByName(e.target.value)}></input>
+            <div className='flex items-center justify-between'>
+                <div>
+                    <label className='mr-2'> Search by name: </label>
+                    <input value={searchByName} onChange={(e) => setSearByName(e.target.value)}></input>
+                </div>
+                <button className='buton-main' onClick={() => setShowNewClientPopup(true)}>Add new client</button>
             </div>
             <div className='table-container max-h-[60vh]'>
                 <TableHeaderSort
@@ -97,7 +90,6 @@ export default function Clients() {
                     })}
                 </TableHeaderSort>
             </div>
-            <FloatingMenuButton options={buttonOptions}/>
         </div>
     )
 }

@@ -57,15 +57,6 @@ export default function Vendors() {
         }
     }
 
-    const buttonOptions = [
-        {
-            text: 'Add new vendor', 
-            action: () => setShowNewVendorPopup(true),
-            minPermissionLevel: 999,
-            icon: '+'
-        }, 
-    ]
-
     return (
         vendorsData && <div className='container mx-auto mt-8 p-4 text-center'>
                 <AddVendorPopup
@@ -76,9 +67,12 @@ export default function Vendors() {
                     <h1>Vendors</h1>
                 </div>
                 <div className='table-container max-h-[60vh]'>
-                    <div className='flex items-center'>
-                        <label className='mr-2'> Search by name: </label>
-                        <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
+                    <div className='flex items-center justify-between'>
+                        <div>
+                            <label className='mr-2'> Search by name: </label>
+                            <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
+                        </div>
+                        <button className='buton-main' onClick={() => setShowNewVendorPopup(true)}>Add new color</button>
                     </div>
                     <TableHeaderSort
                         headers={headers}
@@ -96,7 +90,6 @@ export default function Vendors() {
                         })}
                     </TableHeaderSort>
                 </div>
-                <FloatingMenuButton options={buttonOptions}/>  
             </div>
     )
 }

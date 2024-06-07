@@ -108,7 +108,6 @@ CREATE TABLE IF NOT EXISTS invoices (
     invoiceID SERIAL PRIMARY KEY,
     invoiceNumber VARCHAR(255) NOT NULL,
     invoiceAmount FLOAT NOT NULL,
-    invoiceTax FLOAT DEFAULT 0,
     fileLocation VARCHAR(255) NOT NULL,
     uploaderID INT REFERENCES users(userID),
     vendorID INT REFERENCES flowervendor(vendorID),

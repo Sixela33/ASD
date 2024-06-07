@@ -6,7 +6,7 @@ const validateInvoice = invoiceData => {
 
     if (error) {
         throw {message: error.details[0].message, status: 400}
-    } 
+    }
 
     return true
 }

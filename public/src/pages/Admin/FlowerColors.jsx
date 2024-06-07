@@ -42,15 +42,6 @@ export default function FlowerColors() {
     setColorToEdit(color)
     setShowNewColorPopup(true)
   }
-
-  const buttonOptions = [
-    {
-        text: 'Add new color', 
-        action: () => setShowNewColorPopup(true), 
-        minPermissionLevel: 999,
-        icon: '+'
-    }, 
-  ]
   
   const handleClosePopup = (shouldRefresh) => {
     if(shouldRefresh) {
@@ -72,9 +63,13 @@ export default function FlowerColors() {
         </div>
         
         <div className='table-container max-h-[60vh]'>
-           <div className='flex items-center'>
+           <div className='flex items-center justify-between'>
+            <div>
                 <label className='mr-2'> Search by name: </label>
                 <input value={searchBy} onChange={(e) => setColorSearchBy(e.target.value)}></input>
+            </div>
+            <button className='buton-main' onClick={() => setShowNewColorPopup(true)}>Add new color</button>
+
             </div>
           <TableHeaderSort
             headers={headers}
@@ -89,8 +84,6 @@ export default function FlowerColors() {
 
           </TableHeaderSort>
         </div>
-        <FloatingMenuButton options={buttonOptions}/>
-
     </div>
   )
 }

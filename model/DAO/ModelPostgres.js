@@ -796,10 +796,9 @@ class ModelPostgres {
                 uploaderID, 
                 vendorID, 
                 invoiceDate, 
-                invoiceNumber,
-                invoiceTax)
-            VALUES ($1, $2, $3, $4, $5, $6, $7);`, 
-            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceData.invoiceTax])
+                invoiceNumber)
+            VALUES ($1, $2, $3, $4, $5, $6);`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber])
     }
 
     editIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid, invoiceid) => {
@@ -812,11 +811,10 @@ class ModelPostgres {
                 uploaderID = $3,
                 vendorID = $4,
                 invoiceDate = $5,
-                invoiceNumber = $6,
-                invoiceTax = $7
+                invoiceNumber = $6
             WHERE 
-                invoiceID = $8;`, 
-            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceData.invoiceTax, invoiceid]);
+                invoiceID = $7;`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceid]);
     }
 
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
@@ -840,7 +838,6 @@ class ModelPostgres {
             i.invoiceNumber,
             u.email,
             i.fileLocation,
-            i.invoiceTax,
             TO_CHAR(i.invoicedate, 'YYYY-MM-DD') AS invoicedate
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
