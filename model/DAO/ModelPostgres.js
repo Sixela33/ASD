@@ -497,9 +497,6 @@ class ModelPostgres {
 
     addFlower = async (image, name, colors) => {
         this.validateDatabaseConnection()
-        console.log({
-            image, name, colors
-        })
         const response = await CnxPostgress.db.query(`
         CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
         [name, image, colors]);

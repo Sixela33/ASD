@@ -12,6 +12,7 @@ class InvoiceController {
             const {invoiceData, InvoiceFlowerData} = req.body
             const creatorid = req.user.user.userid
             const response = await this.service.addInvoice(invoiceData, InvoiceFlowerData, file, creatorid)
+            req.logger.info(`[NEW INVOICE] ${req.user.user.email} ID: ${JSON.stringify(invoiceData)}`)
             res.json(response)
         } catch (error) {
             console.log(error)
@@ -25,6 +26,8 @@ class InvoiceController {
             const {invoiceData} = req.body
             const creatorid = req.user.user.userid
             await this.service.addIncompleteInvoice(invoiceData, file, creatorid)
+            if (invoiceData.fileLocation) delete invoiceData.fileLocation 
+            req.logger.info(`[NEW INCOMPLETE INVOICE] ${req.user.user.email} ID: ${JSON.stringify(invoiceData)}`)
             res.sendStatus(200)
         } catch (error) {
             console.log(error)
@@ -38,6 +41,8 @@ class InvoiceController {
             const {invoiceData, InvoiceFlowerData} = req.body
             const editorID = req.user.user.userid
             await this.service.editInvoice(invoiceData, InvoiceFlowerData, file, editorID)
+            req.logger.info(`[INVOICE EDIT] ${req.user.user.email} ID: ${JSON.stringify(invoiceData)}`)
+
             res.sendStatus(200)
         } catch (error) {
             console.log(error)
@@ -79,6 +84,7 @@ class InvoiceController {
         try {
             const { bankTransactionData, selectedInvoices } = req.body
             const response = await this.service.linkBaknTransaction(bankTransactionData, selectedInvoices)
+            req.logger.info(`[BANK TRANSACTION LINK] ${req.user.user.email} tx_data: ${bankTransactionData}, invoiceIDS: [${selectedInvoices}]`)
             res.json(response)
         } catch (error) {
             next(error)

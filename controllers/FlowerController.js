@@ -11,6 +11,7 @@ class FlowerController {
             const image = req.file
             const { name, colors } = req.body
             const response = await this.service.addFlower(image, name, colors)
+            req.logger.info(`[NEW FLOWER] ${req.user.user.email} name: ${name}`)
             res.json(response)
         } catch (error) {
             console.log(error)
@@ -23,6 +24,7 @@ class FlowerController {
             const image = req.file
             const { name, colors, id } = req.body
             await this.service.editFlower(image, name, colors, id)
+            req.logger.info(`[FLOWER EDIT] ${req.user.user.email} id: ${id}, name: ${name}`)
             res.sendStatus(200)
         } catch (error) {
             console.log(error)
@@ -35,6 +37,7 @@ class FlowerController {
         try {
             const {id} = req.params
             await this.service.deleteFlower(id)
+            req.logger.info(`[FLOWER DELETE] ${req.user.user.email} id: ${id}`)
             res.sendStatus(200)
         } catch (error) {
             console.log(error)

@@ -10,6 +10,7 @@ class VendorController {
         try {
             const {vendorname} = req.body
             await this.service.addVendor(vendorname)
+            req.logger.info(`[NEW VENDOR] ${req.user.user.email} NAME: ${vendorname}`)
             res.sendStatus(200)
         } catch (error) {
             next(error)
@@ -31,6 +32,8 @@ class VendorController {
             const {vendorname, vendorid} = req.body
 
             await this.service.editVendor(vendorname, vendorid)
+            req.logger.info(`[EDIT VENDOR] ${req.user.user.email} NAME: ${vendorname}`)
+
             res.sendStatus(200)
         } catch (error) {
             next(error)
@@ -40,8 +43,9 @@ class VendorController {
     removeVendor = async (req, res, next) => {
         try {
             const {id} = req.params
-
             await this.service.removeVendor(id)
+            req.logger.info(`[REMOVE VENDOR] ${req.user.user.email} ID: ${id}`)
+
             res.sendStatus(200)
         } catch (error) {
             next(error)

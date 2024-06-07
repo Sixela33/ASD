@@ -110,7 +110,6 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
     try {
       let dataToSend = {...newArrangementData}
       dataToSend.arrangementType = newArrangementData.arrangementType.arrangementtypeid
-
       if (!isCreatingNew.current) {
         await axiosPrivate.patch(EDIT_ARRANGEMENT_URL + arrangementData.arrangementid, JSON.stringify(dataToSend))
         setMessage('Arrangement edited Succesfully', false);

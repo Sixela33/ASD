@@ -193,11 +193,7 @@ export default function ViewProject() {
 
 
     const handleArrangement = data => {
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
-
+        if(!validateProjectIsOpen()) return
         navigateTo("/arrangement/" + data?.arrangementid, {state:{projectID: id}})
     }
 
@@ -230,10 +226,7 @@ export default function ViewProject() {
 
     const handleArrangementEdit = (e, arrData) => {
         if(!(userData.permissionlevel >= permissionsRequired['edit_arrangement'])) return
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         e.stopPropagation()
         setEditArrangementPopupData(arrData)
         setShowArrangementEditPopup(true)
@@ -241,19 +234,13 @@ export default function ViewProject() {
 
     const handleCLickReemoveArrangement = (e, item) =>  {
         if(!(userData.permissionlevel >= permissionsRequired['remove_arrangement'])) return
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         e.stopPropagation() 
         setDeletePopupData({show: true, deleteID:item.arrangementid})
     }
 
     const handleCreateArrangement = () => {
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         setEditArrangementPopupData(undefined)
         setShowArrangementEditPopup(true)
     }
@@ -300,10 +287,7 @@ export default function ViewProject() {
     };
 
     const toggleFlowerChange = async (flowerid) => {
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         setChangeFlowerID(flowerid)
         setChangeFlowersPopup(true)
     }
@@ -360,11 +344,16 @@ export default function ViewProject() {
         */
     }
 
-    const handleEditService = (serviceToEdit) => {
+    const validateProjectIsOpen = () => {
         if(projectData.isclosed) {
             setMessage(PROJECT_CLOSED_ERROR)
-            return
+            return false
         }
+        return true
+    }
+
+    const handleEditService = (serviceToEdit) => {
+        if(!validateProjectIsOpen()) return
         setEditService(serviceToEdit)
         setShowServicePopup(true)
     }
@@ -400,18 +389,12 @@ export default function ViewProject() {
     }
 
     const handleEditProjectData = () => {
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         setShowEditProjectPopup(true)
     }
 
     const handleAddNewService = () => {
-        if(projectData.isclosed) {
-            setMessage(PROJECT_CLOSED_ERROR)
-            return
-        }
+        if(!validateProjectIsOpen()) return
         setShowServicePopup(true)
     }
 
@@ -455,7 +438,7 @@ export default function ViewProject() {
                 actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
                 return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
             </Tooltip>
-            <FloatingMenuButton options={buttonOptions}/>
+            {projectData?.projectid && <FloatingMenuButton options={buttonOptions}/>}
             <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
                 Are you sure you want to Delete this arrangement from the database?
             </ConfirmationPopup>

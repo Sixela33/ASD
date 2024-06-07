@@ -11,6 +11,7 @@ class ProjectController {
             const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras, isRecurrent} = req.body
             const creatorid = req.user.user.userid
             const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid, extras, isRecurrent)
+            req.logger.info(`[PROJECT CREATED] ${req.user.user.email} data: ${JSON.stringify(response)}`)
             res.json(response)
         } catch (error) {
             next(error)
@@ -21,6 +22,8 @@ class ProjectController {
         try {
             const {id} = req.params
             await this.service.closeProject(id)
+            req.logger.info(`[PROJECT CLOSED] ${req.user.user.email} ID: ${id}`)
+
             res.send('Project closed successfully')
         } catch (error) {
             next(error)
@@ -31,6 +34,7 @@ class ProjectController {
         try {
             const {id} = req.params
             await this.service.openProject(id)
+            req.logger.info(`[PROJECT OPENED] ${req.user.user.email} ID: ${id}`)
             res.send('Project opened successfully')
 
         } catch (error) {
@@ -86,6 +90,8 @@ class ProjectController {
             const { id } = req.params
             const projectData = req.body
             await this.service.editProjectData(id, projectData)
+            req.logger.info(`[EDIT PROJECT DATA] ${req.user.user.email} ID: ${id}`)
+
             res.sendStatus(200)
         } catch (error) {
             next(error)
@@ -107,6 +113,8 @@ class ProjectController {
         try {
             const {id} = req.params
             await this.service.deleteProject(id)
+            req.logger.info(`[DELETE PROJECT] ${req.user.user.email} ID: ${id}`)
+
             res.sendStatus(200)
         } catch (error) {
             next(error)

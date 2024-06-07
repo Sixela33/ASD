@@ -20,7 +20,7 @@ const GET_CLIENTS_LIST = '/api/clients'
 
 const defaultSortCOnfig = { key: 'projectid', direction: 'asc' }
 
-const ProjectsList = ({ searchParams }) => {
+const ProjectsList = () => {
     const page = useRef(0)
     const dataLeft = useRef(true)
     
