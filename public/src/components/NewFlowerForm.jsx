@@ -3,7 +3,6 @@ import useAlert from '../hooks/useAlert';
 import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import PopupBase from './PopupBase';
 import LoadingPopup from './LoadingPopup';
-import SearchableDropdown from './Dropdowns/SearchableDropdown';
 import MultipleFlowerColorSelector from './MultipleFlowerColorSelector';
 
 const CREATE_FLOWER_URL = '/api/flowers';
@@ -116,7 +115,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
         await refreshData()
         setFormData(defaultFormData)
-        cancelButton(newFlowerData)
+        cancelButton()
 
       } catch (error) {
           setMessage(error.response?.data, true)

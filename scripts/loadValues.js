@@ -26,17 +26,26 @@ const vendors = [
 ]
 
 const CLIENTS = [
-    "Ford",
-    "Gucci",
-    "Tesla",
-    "Smart Water",
-    "Cocacola",
+
 ]
 
 const ARRANGEMENT_TYPES = [
-    "Petit arrangement",
-    "Normal arrangement",
-    "Big arrangement"
+    "Mini Arrangement",
+    "Petite Arrangement",
+    "Bud Vase Arrangement",
+    "Small Arrangement",
+    "Medium Arrangement",
+    "Medium Tall Arrangement",
+    "Medium Large Arrangement",
+    "Large Arrangement",
+    "Large Low Arrangement",
+    "Extra Large Arrangement",
+    "Plant",
+    "Organic Installation",
+    "Chuppah",
+    "Personals",
+    "Bouquet",
+    "Large Installation"
 ]
 
 const loadVendors = async (model) => {

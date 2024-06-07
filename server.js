@@ -46,9 +46,9 @@ class Server {
     }
 
     async start() {
-        this.app.use(express.json({ limit: '10mb' }));
+        this.app.use(express.json({ limit: '20mb' }));
         this.app.use(credentials)
-        this.app.use(express.urlencoded({ limit: '10mb', extended: true }));
+        this.app.use(express.urlencoded({ limit: '20mb', extended: true }));
         this.app.use(cors(corsOptions));
         this.app.use(cookieParser());
         this.app.use(express.static("public/dist"));
