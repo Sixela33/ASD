@@ -4,6 +4,7 @@ import useAxiosPrivateImage from '../hooks/useAxiosPrivateImage';
 import PopupBase from './PopupBase';
 import LoadingPopup from './LoadingPopup';
 import MultipleFlowerColorSelector from './MultipleFlowerColorSelector';
+import AddColorPupup from './Popups/AddColorPupup';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
@@ -22,8 +23,9 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const { setMessage } = useAlert()
 
     const [formData, setFormData] = useState(defaultFormData)
-    const [isSubmitting, setIsSubmitting] = useState(false) // State to track if form is being submitted
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [flowerColorList, setFlowerColorList] = useState([])
+    const [showNewColorPopup, setNewColorPopup] = useState(false)
 
     const fetchFlowerColors = async () => {
       try {
@@ -131,10 +133,21 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
     }
 
+    const closeNewColorPopup = (shouldrefresh) => {
+      if (shouldrefresh) {
+        fetchFlowerColors()
+      }
+      setNewColorPopup(false)
+    }
+
   return (
     <PopupBase 
       showPopup={showPopup}
       closePopup={handleCancel}>
+      <AddColorPupup
+        showPopup={showNewColorPopup}
+        closePopup={(shouldrefresh) => closeNewColorPopup(shouldrefresh)}
+      ></AddColorPupup>
       <LoadingPopup showPopup={isSubmitting}>
         <h1>Loading Flower</h1>
         <p>Please wait</p>
@@ -160,6 +173,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
               isListBelow={true}
             />
         </div>
+        <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
         <div className='buttons-holder w-full'>
           <button className='buton-secondary' onClick={handleCancel}>Cancel</button>
           <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>
