@@ -67,7 +67,8 @@ class ProjectService {
         flowers = await flowers
         project = await project
         extras = await extras
-        
+
+
         return {
             project: project.rows, 
             arrangements: arrangements.rows,

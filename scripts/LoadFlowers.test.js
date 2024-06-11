@@ -19,7 +19,6 @@ describe('Loading Flowers', () => {
             let response = await request.get('/api/users/oauthlogin').send(loginObject)
             const refreshToken = response.headers['set-cookie']
             
-
             response = await request.get('/api/users/refresh').set('Cookie', refreshToken)
             const accessToken = response.body
 
@@ -37,7 +36,6 @@ describe('Loading Flowers', () => {
                 for (let flowerImage of images){
                     
                     let responseGetColor = await request.get('/api/flowers/colors/colorid/' + subfolderName).set(headers)
-                    
                     let name = flowerImage.split('.')[0]
                     let imageFilePath = path.join(tempPath, flowerImage);
                     

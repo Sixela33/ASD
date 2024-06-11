@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS projects (
     isClosed BOOLEAN DEFAULT false,
     isRecurrent BOOLEAN DEFAULT false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isRemoved BOOLEAN DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS additionalsXproejct (
@@ -64,7 +65,8 @@ CREATE TABLE IF NOT EXISTS flowers (
 
 CREATE TABLE IF NOT EXISTS flowerColors (
     colorID SERIAL PRIMARY KEY,
-    colorName VARCHAR(50) UNIQUE NOT NULL
+    colorName VARCHAR(50) UNIQUE NOT NULL,
+    isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS colorsXFlower (
@@ -89,8 +91,10 @@ CREATE TABLE IF NOT EXISTS arrangements (
     projectID INT REFERENCES projects(projectID) ON DELETE CASCADE,
     arrangementType INT REFERENCES arrangementTypes(arrangementTypeID),
     arrangementDescription VARCHAR(255) NOT NULL,
+    arrangementLocation VARCHAR(100) DEFAULT '',
     clientCost FLOAT,
     arrangementQuantity INT,
+    installationTimes INT DEFAULT 1,
     designerID INT REFERENCES users(userID),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -113,12 +117,8 @@ CREATE TABLE IF NOT EXISTS invoices (
     vendorID INT REFERENCES flowervendor(vendorID),
     invoiceDate DATE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS invoiceCategory (
-    categoryID SERIAL PRIMARY KEY,
-    categoryName VARCHAR(50) NOT NULL
+    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isRemoved BOOLEAN DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS invoiceTransaction (

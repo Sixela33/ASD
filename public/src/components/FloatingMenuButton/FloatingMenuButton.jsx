@@ -37,13 +37,19 @@ const FloatingMenuButton = ({ options }) => {
 
   const handleMouseEnter = (text) => {
     setShowTooltip(true);
-    setTooltipText(text);
+    if(text) {
+      setTooltipText(text);
+    }
   };
 
   const handleMouseLeave = () => {
     setShowTooltip(false);
     setTooltipText(null);
   };
+
+  if(!options) {
+    return <></>
+  }
 
   return (
     <>

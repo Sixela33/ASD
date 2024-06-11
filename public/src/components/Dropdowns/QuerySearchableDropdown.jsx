@@ -40,9 +40,12 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
   };
 
   const selectOption = (option) => {
+    
     setIsOpen(false)
     setQuery("");
-    handleChange(option);
+    if(option) {
+      handleChange(option);
+    }
   };
 
 

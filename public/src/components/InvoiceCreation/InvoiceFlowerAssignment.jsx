@@ -295,11 +295,11 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>
-                            $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
+                                $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
                             </td>
                             <td>
-                            <input className='w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
-                            <button className='buton-secondary' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>all</button>
+                                <input className='w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
+                                <button className='mx-2 go-back-button' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>All</button>
                             </td>
                         </tr>
                     })}

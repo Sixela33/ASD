@@ -121,7 +121,7 @@ export default function ViewInvoices() {
         });
     }
 
-     const isInvoiceSelected = (invoiceID) => {
+    const isInvoiceSelected = (invoiceID) => {
         return selectedInvoices.hasOwnProperty(invoiceID);
     }
 

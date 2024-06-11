@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
 import ConfirmationPopup from './ConfirmationPopup'
@@ -9,6 +9,7 @@ const DEFAULT_COLOR_DATA = {}
 
 export default function AddColorPupup({showPopup, closePopup, editClorData}) {
     const [colorData, setColorData] = useState(editClorData || DEFAULT_COLOR_DATA)
+    const inputRef = useRef(null) 
 
     const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
@@ -46,6 +47,13 @@ export default function AddColorPupup({showPopup, closePopup, editClorData}) {
         setColorData({...colorData, colorName: e.target.value})
     }
 
+    useEffect(() => {
+        if (showPopup && inputRef.current) {
+            inputRef.current.focus()
+            inputRef.current.select()
+        }
+    }, [showPopup])
+    
   return (
     <ConfirmationPopup
     showPopup={showPopup}
@@ -54,7 +62,7 @@ export default function AddColorPupup({showPopup, closePopup, editClorData}) {
         <h2>{colorData.colorID ? "Edit color name" : "Add new color"}</h2>
         <br/>
         <label>Color Name</label> 
-        <input type='text' value={colorData.colorName} onChange={handleChange}></input>
+        <input ref={inputRef} type='text' value={colorData.colorName} onChange={handleChange}></input>
     </ConfirmationPopup>
   )
 }

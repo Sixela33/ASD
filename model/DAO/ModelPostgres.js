@@ -368,6 +368,8 @@ class ModelPostgres {
             a.arrangementquantity,
             a.designerid,
             a.arrangementtype,
+            a.arrangementlocation,
+            a.installationtimes,
             at.typeName AS typename
             FROM arrangements a 
             LEFT JOIN arrangementTypes at ON at.arrangementTypeID = a.arrangementType
@@ -432,10 +434,10 @@ class ModelPostgres {
     addArrangementToProject = async (id, arrangementData) => {
         this.validateDatabaseConnection();
         const result = await CnxPostgress.db.query(`
-            INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity, installationTimes, arrangementLocation)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING arrangementID;`, 
-            [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity]);
+            [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.installationTimes, arrangementData.arrangementLocation]);
         
         const arrangementID = result.rows[0].arrangementID;
         
@@ -691,6 +693,8 @@ class ModelPostgres {
             a.clientcost,
             a.arrangementquantity,
             a.designerid,
+            a.installationtimes,
+            a.arrangementlocation,
             at.typeName,
             p.profitMargin
         FROM arrangements a
@@ -741,9 +745,11 @@ class ModelPostgres {
         arrangementType = $1,
         arrangementDescription = $2,
         clientCost = $3,
-        arrangementQuantity = $4
-        WHERE arrangementID = $5;`, 
-        [arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, id])
+        arrangementQuantity = $4,
+        arrangementLocation = $5,
+        installationTimes = $6
+        WHERE arrangementID = $7;`, 
+        [arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.arrangementLocation, arrangementData.installationTimes, id])
     }
 
     deleteArrangement = async (id) => {

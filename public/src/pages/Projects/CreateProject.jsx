@@ -17,7 +17,14 @@ const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
 const GET_CLIENTS_LIST = '/api/clients'
 
-const emptyArrangement = { arrangementType: '', arrangementDescription: '', clientCost: '', arrangementQuantity: '' }
+const emptyArrangement = { 
+    arrangementType: '', 
+    arrangementDescription: '', 
+    clientCost: '', 
+    arrangementQuantity: '' ,
+    installationTimes: '', 
+    arrangementLocation: ''
+}
 
 const initialState = {
   client: '',
@@ -52,7 +59,9 @@ const arrangementSchema = Yup.object().shape({
     arrangementType: Yup.object().required('The arrangement type is required').typeError('The arrangement type is required'), 
     arrangementDescription: Yup.string().required('Arrangement Description is required').max(255, 'The description cannot be longet than 255 characters'), 
     clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
-    arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required')
+    arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required').min(1),
+    installationTimes: Yup.number().required('The Arrangement must be installed at least once').typeError('The Arrangement must be installed at least once').min(1), 
+    arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters')
 })
 
 export default function CreateProject() {
@@ -146,7 +155,6 @@ export default function CreateProject() {
             return
         }
 
-
         const updatedArrangementsList = [...arrangements]
         if (newArrangement.index != null) {
             const index = newArrangement.index
@@ -155,9 +163,8 @@ export default function CreateProject() {
         } else {
             updatedArrangementsList.push(newArrangement)
         }
-        
+        setnewArrangementErrors({})
         setArrangements(updatedArrangementsList)
-
         setNewArrangement(emptyArrangement)
         setShowArrangementPopup(false)
     }

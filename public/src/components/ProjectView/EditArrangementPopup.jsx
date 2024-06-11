@@ -12,14 +12,18 @@ const baseArrangementData = {
   arrangementType: '', 
   arrangementDescription: '', 
   clientCost: '', 
-  arrangementQuantity: '' 
+  arrangementQuantity: '',
+  installationTimes: '',
+  arrangementLocation: ''
 }
 
 const arrangementSchema = Yup.object().shape({
   arrangementType: Yup.object().required('The arrangement type is required').typeError('The arrangement type is required'), 
   arrangementDescription: Yup.string().required('Arrangement Description is required'), 
   clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
-  arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required')
+  arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required'),
+  installationTimes: Yup.number().required('The Arrangement must be installed at least once').typeError('The Arrangement must be installed at least once').min(1), 
+  arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters')
 })
 
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
@@ -82,7 +86,9 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         arrangementType: arrangementTypes[ix],
         arrangementDescription:arrangementData.arrangementdescription,
         clientCost: arrangementData.clientcost,
-        arrangementQuantity: arrangementData.arrangementquantity
+        arrangementQuantity: arrangementData.arrangementquantity,
+        arrangementLocation: arrangementData.arrangementlocation,
+        installationTimes: arrangementData.installationtimes
       })
 
     }
@@ -129,11 +135,11 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
       showPopup={showPopup}
       closePopup={handleClosePopup}>
       {arrangementTypes && (
-      <div>
-        <label>Arrangement Type:</label>
-        <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangementData.arrangementType} handleChange={(obj) => handleChange('arrangementType', obj)} placeholderText='Select Arrangement Type' />
-        <FormError error={newArrangementErrors.arrangementType}/>
-      </div>
+        <div>
+          <label>Arrangement Type:</label>
+          <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangementData.arrangementType} handleChange={(obj) => handleChange('arrangementType', obj)} placeholderText='Select Arrangement Type' />
+          <FormError error={newArrangementErrors.arrangementType}/>
+        </div>
       )}
       <div>
         <div>
@@ -144,6 +150,26 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
             value={newArrangementData.arrangementDescription}
             handleChange={(e) => handleChange('arrangementDescription', e.target.value)}
             error={newArrangementErrors.arrangementDescription}
+            />
+        </div>
+        <div >
+          <FormItem
+            labelName="Location:"
+            type="text"
+            inputName="arrangementLocation"
+            value={newArrangementData.arrangementLocation}
+            handleChange={(e) => handleChange('arrangementLocation', e.target.value)}
+            error={newArrangementErrors.arrangementLocation}
+          />
+        </div>
+        <div>
+          <FormItem
+            labelName="Arrangement Quantity:"
+            type="number"
+            inputName="arrangementQuantity"
+            value={newArrangementData.arrangementQuantity}
+            handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
+            error={newArrangementErrors.arrangementQuantity}
             />
         </div>
         <div>
@@ -158,14 +184,15 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         </div>
         <div>
           <FormItem
-            labelName="Arrangement Quantity:"
-            type="number"
-            inputName="arrangementQuantity"
-            value={newArrangementData.arrangementQuantity}
-            handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
-            error={newArrangementErrors.arrangementQuantity}
+              labelName="Installation times:"
+              type="number"
+              inputName="installationTimes"
+              value={newArrangementData.installationTimes}
+              handleChange={(e) => handleChange('installationTimes', e.target.value)}
+              error={newArrangementErrors.arrangementQuantity}
             />
         </div>
+        
       </div>
       <div className='text-start mt-2'>
         <p>Total client cost: ${toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity)}</p>

@@ -128,7 +128,7 @@ export default function ViewProject() {
         if (arrangementData.length > 0){
             const estimate = flowerData.reduce(countFlowerCostAndFlowerCostyProject, {totalFlowerCost: 0, totalFlowerCostByArrangement: {}})
             let totalAditional = extraServicesData.reduce((accumulator, service) => accumulator + parseFloat(service.clientcost * service.ammount) , 0)
-            let totalClientFlowerCost = arrangementData.reduce((accumulator, arrang) => accumulator + arrang.clientcost * arrang.arrangementquantity, 0)
+            let totalClientFlowerCost = arrangementData.reduce((accumulator, arrang) => accumulator + (arrang.clientcost * arrang.arrangementquantity * arrang.installationtimes), 0)
 
             addAssignedBudget(estimate.totalFlowerCostByArrangement)
             setEstimatedFlowerCost(estimate.totalFlowerCost)
@@ -502,7 +502,7 @@ export default function ViewProject() {
             </div>
             <div className='table-container h-[20vh]'>
                 <TableHeaderSort
-                headers={{'Type': ' ', 'Description': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ', 'Status': ' ', 'admin': ' '}}>
+                headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'admin': ' '}}>
                     {arrangementData?.map((item, index) => (
                         <tr key={index}  
                             onClick={() => handleArrangement(item)}      
@@ -511,9 +511,11 @@ export default function ViewProject() {
                             onMouseLeave={handleMouseLeave}>
                             <td>{item?.typename}</td>
                             <td>{item?.arrangementdescription}</td>
+                            <td>{item?.arrangementlocation}</td>
                             <td>{item?.arrangementquantity}</td>
                             <td>${toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
                             <td>${item?.assignedBudget}</td>
+                            <td>{item.installationtimes}</td>
                             <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>

@@ -26,6 +26,17 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
             error={newArrangementErrors.arrangementDescription}
           />
         </div>
+        <div >
+            <FormItem
+            labelName="Location:"
+            type="text"
+            inputName="arrangementLocation"
+            value={newArrangement.arrangementLocation}
+            handleChange={(e) => onInputChange('arrangementLocation', e.target.value)}
+            error={newArrangementErrors.arrangementDescription}
+          />
+        </div>
+
         <div>
           <FormItem
             labelName="Client cost:"
@@ -35,7 +46,6 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
             handleChange={(e) => onInputChange('clientCost', e.target.value)}
             error={newArrangementErrors.clientCost}
           />                      
-
         </div>
         <div>
           <FormItem
@@ -44,6 +54,16 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
             inputName="arrangementQuantity"
             value={newArrangement.arrangementQuantity}
             handleChange={(e) => onInputChange('arrangementQuantity', e.target.value)}
+            error={newArrangementErrors.arrangementQuantity}
+          />
+        </div>
+        <div>
+          <FormItem
+            labelName="Installation times:"
+            type="number"
+            inputName="installationTimes"
+            value={newArrangement.installationTimes}
+            handleChange={(e) => onInputChange('installationTimes', e.target.value)}
             error={newArrangementErrors.arrangementQuantity}
           />
         </div>

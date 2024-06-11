@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ConfirmationPopup from './ConfirmationPopup'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
@@ -9,6 +9,7 @@ const DEFAULT_VENDOR_DATA = {vendorname: ''}
 
 export default function AddVendorPopup({showPopup, closePopup, editVendorData}) {
     const [vendorData, setVendorData] = useState(editVendorData || DEFAULT_VENDOR_DATA)
+    const inputRef = useRef(null) 
 
     const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
@@ -43,6 +44,13 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
         setVendorData({...vendorData, vendorname: e.target.value})
     }
 
+    useEffect(() => {
+        if (showPopup && inputRef.current) {
+            inputRef.current.focus()
+            inputRef.current.select()
+        }
+    }, [showPopup])
+
   return (
     <ConfirmationPopup
     showPopup={showPopup}
@@ -51,7 +59,7 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
         <h2>{vendorData.vendorid ? "Edit vendor name" : "Add new vendor"}</h2>
         <br/>
         <label>Vendor name</label>
-        <input type='text' value={vendorData.vendorname} onChange={handleInputChange}></input>
+        <input ref={inputRef} type='text' value={vendorData.vendorname} onChange={handleInputChange}></input>
     </ConfirmationPopup>
   )
 }

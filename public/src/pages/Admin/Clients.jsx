@@ -59,12 +59,12 @@ export default function Clients() {
     return (
         clientsData && <div className='container mx-auto mt-8 p-4 text-center'>
             <AddClientPopup
-                showPopup={showNewClientPopup} 
+                showPopup={showNewClientPopup}
                 closePopup={handleCloseClientPopup} 
                 editClientData={editClientData}/>
                 
             <div className=' mb-4'>
-                <h1 >Clients</h1>
+                <h1>Clients</h1>
             </div>
             <div className='flex items-center justify-between'>
                 <div>
@@ -73,7 +73,7 @@ export default function Clients() {
                 </div>
                 <button className='buton-main' onClick={() => setShowNewClientPopup(true)}>Add new client</button>
             </div>
-            <div className='table-container max-h-[60vh]'>
+            <div className='table-container max-h-[50vh]'>
                 <TableHeaderSort
                     headers={headers}
                     setSortConfig={setSortConfig}

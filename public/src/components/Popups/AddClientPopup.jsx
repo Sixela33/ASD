@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ConfirmationPopup from './ConfirmationPopup'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import useAlert from '../../hooks/useAlert'
@@ -9,6 +9,7 @@ const DEFAULT_CLIENT_DATA = {clientname: ''}
 
 export default function AddClientPopup({showPopup, closePopup, editClientData}) {
     const [clientData, setClientData] = useState(editClientData || DEFAULT_CLIENT_DATA)
+    const inputRef = useRef(null) 
 
     const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
@@ -38,6 +39,13 @@ export default function AddClientPopup({showPopup, closePopup, editClientData}) 
             setClientData(editClientData)
         }
     }, [editClientData])
+
+    useEffect(() => {
+        if (showPopup && inputRef.current) {
+            inputRef.current.focus()
+            inputRef.current.select()
+        }
+    }, [showPopup])
     
     const handleInputChange = (e) => {
         setClientData({...clientData, clientname: e.target.value})
@@ -51,7 +59,7 @@ export default function AddClientPopup({showPopup, closePopup, editClientData}) 
         <h2>{clientData.clientid ? "Edit client name" : "Add new client"}</h2>
         <br/>
         <label>Client Name: </label>
-        <input type='text' value={clientData.clientname} onChange={handleInputChange}></input>
+        <input ref={inputRef} type='text' value={clientData.clientname} onChange={handleInputChange}></input>
     </ConfirmationPopup>
   )
 }

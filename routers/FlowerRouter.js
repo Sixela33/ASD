@@ -17,7 +17,7 @@ class FlowerRouter {
 
     start(){
         const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
-
+        
         // CreateFlower
         this.router.post('/', this.uploads.single('flower'), this.controller.addFlower)
         this.router.patch('/edit', staffuserReq, this.uploads.single('flower'), this.controller.editFlower)

@@ -22,13 +22,15 @@ BEGIN
     -- STORE ALL THE ARRANGEMENTS
     FOREACH arrangement_record IN ARRAY p_arrangements_arr
     LOOP
-        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity)
+        INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity, arrangementLocation, installationTimes)
         VALUES (
             p_projectClient, 
             (arrangement_record->>'arrangementType')::INT, 
             arrangement_record->>'arrangementDescription', 
             (arrangement_record->>'clientCost')::FLOAT, 
-            (arrangement_record->>'arrangementQuantity')::INT);
+            (arrangement_record->>'arrangementQuantity')::INT,
+            (arrangement_record->>'arrangementLocation')::VARCHAR, 
+            (arrangement_record->>'installationTimes')::INT);
     END LOOP;
 
     --store extra services

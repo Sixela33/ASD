@@ -17,10 +17,13 @@ export default function Admin() {
   return (
     <div>
       <div className="bg-black p-4">
-        <ul className="flex justify-around">
+        <ul className="flex flex-wrap justify-around  md:space-x-4">
           {buttons.map((button) => (
-            <li key={button.id}>
-              <button className="text-white py-4 px-20 md:px-5 rounded-md hover:underline" onClick={() => setComponentToShow(button.component)} >
+            <li key={button.id} className="my-2">
+              <button 
+                className="text-white py-2 px-4 md:px-5 rounded-md hover:underline" 
+                onClick={() => setComponentToShow(button.component)}
+              >
                 {button.label}
               </button>
             </li>

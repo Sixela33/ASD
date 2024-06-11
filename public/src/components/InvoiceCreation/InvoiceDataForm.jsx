@@ -4,7 +4,6 @@ import useAlert from '../../hooks/useAlert';
 import SearchableDropdown from '../Dropdowns/SearchableDropdown';
 import FormItem from '../Form/FormItem';
 import FormError from '../Form/FormError';
-import { toCurrency } from '../../utls/toCurrency';
 
 const GET_VENDORS_URL = '/api/vendors';
 
@@ -37,7 +36,7 @@ export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoi
       <h2 className='mb-4'>Invoice Data</h2>
       <form className="space-y-2">
         <div className="flex flex-col">
-          <SearchableDropdown options={vendors} label={'vendorname'} selectedVal={selectedVendor} handleChange={(vendor)=> {handleSelectVendor(vendor)}} placeholderText="Select vendor"/>
+          <SearchableDropdown options={vendors || []} label={'vendorname'} selectedVal={selectedVendor} handleChange={(vendor)=> {handleSelectVendor(vendor)}} placeholderText="Select vendor"/>
           <FormError error={invoiceFormErrors.vendor}/>
           </div>
         <div className="flex flex-col">

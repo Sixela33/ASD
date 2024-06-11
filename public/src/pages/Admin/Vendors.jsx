@@ -66,14 +66,14 @@ export default function Vendors() {
                 <div>
                     <h1>Vendors</h1>
                 </div>
-                <div className='table-container max-h-[60vh]'>
-                    <div className='flex items-center justify-between'>
-                        <div>
-                            <label className='mr-2'> Search by name: </label>
-                            <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
-                        </div>
-                        <button className='buton-main' onClick={() => setShowNewVendorPopup(true)}>Add new color</button>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <label className='mr-2'> Search by name: </label>
+                        <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
                     </div>
+                    <button className='buton-main' onClick={() => setShowNewVendorPopup(true)}>Add new color</button>
+                </div>
+                <div className='table-container max-h-[50vh]'>
                     <TableHeaderSort
                         headers={headers}
                         setSortConfig={setSortConfig}

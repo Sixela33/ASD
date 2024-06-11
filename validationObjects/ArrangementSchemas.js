@@ -19,6 +19,17 @@ const arrangementSchema = Joi.object({
         'number.base': 'Arrangement quantity must be a number.',
         'number.min': 'Arrangement quantity must be greater than or equal to zero.',
         'any.required': 'Arrangement quantity is required.'
+    }),
+    installationTimes: Joi.number().min(1).required().messages({
+        'number.base': 'Installation times must be a number.',
+        'number.min': 'Installation times must be greater than or equal to one.',
+        'any.required': 'Installation times are required.'
+    }),
+    arrangementLocation: Joi.string().max(100).required().messages({
+        'string.base': 'Arrangement location must be a string.',
+        'string.max': 'Arrangement location must be at most 100 characters long.',
+        'any.required': 'Arrangement location is required.',
+        'string.empty': 'Arrangement location cannot be empty.'
     })
 });
 

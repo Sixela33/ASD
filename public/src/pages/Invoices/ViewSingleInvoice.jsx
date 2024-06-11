@@ -79,7 +79,6 @@ export default function ViewSingleInvoice() {
     return (
         <div className='container mx-auto pt-8 p-4 text-center page'>
             <FloatingMenuButton options={buttonOptions}/>
-
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >Go Back</button>
                 <h1 className='col-span-1'>Invoice Overview</h1>

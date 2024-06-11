@@ -61,16 +61,14 @@ export default function FlowerColors() {
         <div className=' mb-4'>
             <h1>FlowerColors</h1>
         </div>
-        
-        <div className='table-container max-h-[60vh]'>
-           <div className='flex items-center justify-between'>
-            <div>
-                <label className='mr-2'> Search by name: </label>
-                <input value={searchBy} onChange={(e) => setColorSearchBy(e.target.value)}></input>
-            </div>
-            <button className='buton-main' onClick={() => setShowNewColorPopup(true)}>Add new color</button>
-
-            </div>
+        <div className='flex items-center justify-between'>
+          <div>
+              <label className='mr-2'> Search by name: </label>
+              <input value={searchBy} onChange={(e) => setColorSearchBy(e.target.value)}></input>
+          </div>
+          <button className='buton-main' onClick={() => setShowNewColorPopup(true)}>Add new color</button>
+        </div>
+        <div className='table-container max-h-[50vh]'>
           <TableHeaderSort
             headers={headers}
           >
