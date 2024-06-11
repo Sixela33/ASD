@@ -21,9 +21,8 @@ import ViewInvoices from './pages/Invoices/ViewInvoices';
 import LoadingPage from './LoadingPage';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
-
-const InactiveUserPage = lazy(() => import('./pages/InactiveUserPage'));
-const Admin = lazy(() => import('./pages/Admin/Admin'));
+import InactiveUserPage from './pages/InactiveUserPage';
+import Admin from './pages/Admin/Admin';
 
 function App() {
 
