@@ -1,5 +1,7 @@
 import express from 'express'
 import ClientController from '../controllers/ClientController.js'
+import PermissionsMiddelware from '../middleware/PermissionMiddleware.js'
+import ROLES_LIST from '../config/rolesList.js'
 
 class ClientRouter {
 
@@ -9,10 +11,14 @@ class ClientRouter {
     }
 
     start(){
+
+        const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
+
         
-        this.router.post('/', this.controller.addClient)
         this.router.get('/', this.controller.getClients)
-        this.router.patch('/', this.controller.editClient)
+        this.router.post('/', staffuserReq, this.controller.addClient)
+        this.router.patch('/', staffuserReq, this.controller.editClient)
+        this.router.delete('/', staffuserReq, this.controller.deleteClient)
         return this.router
     }
     

@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import { validateQueryString } from "./Validations/IdValidation.js"
+import { validateId, validateQueryString } from "./Validations/IdValidation.js"
 import { validateClient } from "./Validations/clientValidations.js"
 class ClientService {
 
@@ -15,11 +15,18 @@ class ClientService {
     getClients = async (searchByName) => {
         await validateQueryString(searchByName)
         const result = await this.model.getClients(searchByName)
-        return result.rows 
+        return result.rows
     }
 
     editClient = async (clientid, clientname) => {
+        await validateId(clientid)
+        await validateQueryString(clientname)
         await this.model.editClient(clientid, clientname)
+    }
+
+    deleteClient = async (id) => {
+        await validateId(id)
+        await this.model.deleteClient(id)
     }
 }
 

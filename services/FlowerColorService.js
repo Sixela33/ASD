@@ -25,8 +25,15 @@ class FlowerColorService {
     }
 
     getColorID = async (name) => {
+        await validateQueryString(name)
         const response = await this.model.getColorID(name)
         return response[0]
+    }
+    
+    deleteColor = async (id) => {
+        await validateId(id)
+        await this.model.deleteColor(id)
+        
     }
 
 

@@ -14,7 +14,7 @@ class ProjectRouter {
         const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
 
         this.router.post('/create', staffuserReq, this.controller.createProject)
-        this.router.delete('/remove/:id', this.controller.deleteProject)
+        this.router.delete('/remove/:id', staffuserReq, this.controller.deleteProject)
         this.router.patch('/:id', staffuserReq, this.controller.editProjectData)
 
         // Wrongly posts, should be gets

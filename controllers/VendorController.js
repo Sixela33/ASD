@@ -42,7 +42,7 @@ class VendorController {
 
     removeVendor = async (req, res, next) => {
         try {
-            const {id} = req.params
+            const {id} = req.query
             await this.service.removeVendor(id)
             req.logger.info(`[REMOVE VENDOR] ${req.user.user.email} ID: ${id}`)
 

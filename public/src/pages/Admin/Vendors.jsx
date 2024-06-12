@@ -6,8 +6,11 @@ import AddVendorPopup from '../../components/Popups/AddVendorPopup'
 import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { sortData } from '../../utls/sortData'
 import { debounce } from 'lodash'
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
 
 const FETCH_VENDORS_URL = '/api/vendors'
+const DELETE_VENDOR_URL = '/api/vendors'
+
 const defaultSortConfig = { key: null, direction: 'asc' }
 
 const headers = {'Vendor ID': 'vendorid', 'Name': 'vendorname', 'Admin': ''}
@@ -19,7 +22,9 @@ export default function Vendors() {
     const [showNewVendorPopup, setShowNewVendorPopup] = useState(false)
     const [vendorsData, setVendorsData] = useState(null)
     const [sortConfig, setSortConfig] = useState(defaultSortConfig);
-    const [searchByName, setSearchByName] = useState()
+    const [searchByName, setSearchByName] = useState('')
+    const [showConfirmation, setShowConfirmation] = useState(false)
+    const [selectedForRemoval, setSelectedForRemoval] = useState()
 
     const [editVendorData, setEditvendordata] = useState(null)
 
@@ -57,12 +62,36 @@ export default function Vendors() {
         }
     }
 
+    const deleteVendor = async (id) => {
+        try {
+            await axiosPrivate.delete(DELETE_VENDOR_URL, {params: {
+                id: id
+            }})
+            fetchVendors(searchByName)
+        } catch (error) {
+            setMessage(error.response?.data)            
+        }
+    }
+
     return (
         vendorsData && <div className='container mx-auto mt-8 p-4 text-center'>
-                <AddVendorPopup
-                    showPopup={showNewVendorPopup} 
-                    closePopup={handleCloseVendorPopup} 
-                    editVendorData={editVendorData}/>
+            <AddVendorPopup
+                showPopup={showNewVendorPopup} 
+                closePopup={handleCloseVendorPopup} 
+                editVendorData={editVendorData}/>
+            <ConfirmationPopup 
+                showPopup={showConfirmation}
+                closePopup={() => {
+                    setSelectedForRemoval(undefined)
+                    setShowConfirmation(false)
+                }}
+                confirm={() => deleteVendor(selectedForRemoval)}
+            >
+            <div>
+                <h1>Are you sure you want to remove this color?</h1>
+                <p>This action is permanent</p>
+            </div>
+                </ConfirmationPopup>
                 <div>
                     <h1>Vendors</h1>
                 </div>
@@ -84,7 +113,11 @@ export default function Vendors() {
                                 <td>{vendor.vendorid}</td>
                                 <td>{vendor.vendorname}</td>
                                 <td>
-                                    <button onClick={() => handleEditVendor(vendor)} className='go-back-button'>Edit</button>
+                                    <button onClick={() => {
+                                        setSelectedForRemoval(vendor.vendorid)
+                                        setShowConfirmation(true)
+                                    }} className='go-back-button mx-4'>Remove</button>
+                                    <button onClick={() => handleEditVendor(vendor)} className='go-back-button mx-4'>Edit</button>
                                 </td>
                             </tr>
                         })}

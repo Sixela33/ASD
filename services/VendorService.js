@@ -26,12 +26,11 @@ class VendorService {
     }
 
     removeVendor = async (id) => {
+        console.log(id)
+        await validateId(id)
         await this.model.removeVendor(id)
     }
 
-    reactivateVendor = async (id) => {
-        await this.model.reactivateVendor(id)
-    }
 }
 
 export default VendorService

@@ -92,10 +92,8 @@ class Server {
         
         this.app.use(errorLogger)
         this.app.use(unhandledErrorLogger)
-        
         this.app.use(errorHandler)
 
-        
         // -----------------------------------------------
         //                 SERVER LISTEN
         // -----------------------------------------------

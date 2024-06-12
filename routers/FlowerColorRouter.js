@@ -12,10 +12,14 @@ class FlowerColorRouter {
 
     start(){
 
+        const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
+
+
         this.router.get('/', this.controller.getFlowerColors)
         this.router.post('/', this.controller.createFlowerColor)
-        this.router.patch('/', this.controller.editFlowerColor)
-        this.router.get('/colorid/:name', this.controller.getColorID)
+        this.router.patch('/',staffuserReq, this.controller.editFlowerColor)
+        this.router.get('/colorid/:name', staffuserReq, this.controller.getColorID)
+        this.router.delete('/', staffuserReq, this.controller.deleteColor)
         return this.router
     }
     

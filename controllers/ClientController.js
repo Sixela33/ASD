@@ -37,6 +37,16 @@ class ClientController {
         }
     }
 
+    deleteClient = async (req, res, next) => {
+        try {
+            const {id} = req.query
+            await this.service.deleteClient(id)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     
 }
 

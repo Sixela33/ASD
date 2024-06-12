@@ -87,7 +87,7 @@ class ModelPostgres {
 
         await CnxPostgress.db.query(`
         INSERT INTO users (username, email, picture, permissionLevel)
-        VALUES ($1, $2, $3, (SELECT roleID FROM userRole WHERE roleCode = $4));`, [username, email, picture, ROLES_LIST['Inactive']])    
+        VALUES ($1, $2, $3, (SELECT roleID FROM userRole WHERE roleCode = $4));`, [username, email, picture, ROLES_LIST['User']])    
     }
 
     // -----------------------------------------------
@@ -137,14 +137,14 @@ class ModelPostgres {
 
     getClients = async (searchByName) => {
         this.validateDatabaseConnection()
-        let baseQuery = 'SELECT clientID, clientName FROM clients'
+        let baseQuery = 'SELECT clientID, clientName FROM clients WHERE isActive = true'
         let queryParams = []
         
         if (searchByName) {
-            baseQuery += ' WHERE clientName ILIKE $1'
+            baseQuery += ' AND clientName ILIKE $1'
             queryParams.push(`${searchByName}%`)
         }
-
+    
         baseQuery += ' ORDER BY clientID;'
         return CnxPostgress.db.query(baseQuery, queryParams)
     }
@@ -152,6 +152,15 @@ class ModelPostgres {
     editClient = async (clientid, clientname) => {
         this.validateDatabaseConnection()
         return CnxPostgress.db.query('UPDATE clients SET clientName = $1 WHERE clientID=$2', [clientname, clientid])
+    }
+
+    deleteClient = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM clients WHERE clientID = $1', [id])
+        } catch (error) {
+            await CnxPostgress.db.query("UPDATE clients SET isActive=false WHERE clientID=$1;", [id])
+        }
     }
 
     // -----------------------------------------------
@@ -189,13 +198,12 @@ class ModelPostgres {
 
     removeVendor = async (id) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=false WHERE vendorID=$1;", [id])
+        try {
+            await CnxPostgress.db.query('DELETE FROM flowerVendor WHERE vendorID = $1', [id])
+        } catch (error) {
+            await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=false WHERE vendorID=$1;", [id])
+        }
     }
-
-    reactivateVendor = async (id) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query("UPDATE flowerVendor SET isActive=true WHERE vendorID=$1;", [id])
-    }  
 
     // -----------------------------------------------
     //                   PROJECTS
@@ -639,12 +647,12 @@ class ModelPostgres {
 
     getFlowerColors = async (searchByName) => {
         this.validateDatabaseConnection()
-        let baseQUery = 'SELECT * FROM flowerColors'
+        let baseQUery = 'SELECT * FROM flowerColors WHERE isActive = true'
 
         const queryparams = []
 
         if(searchByName) {
-            baseQUery += ' WHERE colorname ILIKE $1'
+            baseQUery += ' AND colorname ILIKE $1'
             queryparams.push(`${searchByName}%`)
         }
 
@@ -671,6 +679,15 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const response = await CnxPostgress.db.query("SELECT colorid FROM flowerColors WHERE colorname = $1;",[colorName])
         return response.rows
+    }
+
+    deleteColor = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM flowerColors WHERE colorID = $1', [id])
+        } catch (error) {
+            await CnxPostgress.db.query("UPDATE flowerColors SET isActive=false WHERE colorID=$1;", [id])
+        }
     }
 
     // -----------------------------------------------
