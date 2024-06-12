@@ -88,7 +88,7 @@ export default function Vendors() {
                 confirm={() => deleteVendor(selectedForRemoval)}
             >
             <div>
-                <h1>Are you sure you want to remove this color?</h1>
+                <h1>Are you sure you want to remove this vendor?</h1>
                 <p>This action is permanent</p>
             </div>
                 </ConfirmationPopup>
@@ -100,7 +100,7 @@ export default function Vendors() {
                         <label className='mr-2'> Search by name: </label>
                         <input value={searchByName} onChange={(e) => setSearchByName(e.target.value)}></input>
                     </div>
-                    <button className='buton-main' onClick={() => setShowNewVendorPopup(true)}>Add new color</button>
+                    <button className='buton-main' onClick={() => setShowNewVendorPopup(true)}>Add new vendor</button>
                 </div>
                 <div className='table-container max-h-[50vh]'>
                     <TableHeaderSort
