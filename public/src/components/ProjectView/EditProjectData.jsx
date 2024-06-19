@@ -14,8 +14,12 @@ const GET_CLIENTS_LIST = '/api/clients'
 const baseProjectSchema = Yup.object().shape({
     clientid: Yup.string().required('Client is required'),
     projectDescription: Yup.string().required('Description is required'),
-    projectDate: Yup.date().min("1900-12-31").max("9999-12-31").required('Date is required'),
-    projectEndDate: Yup.date().max("9999-12-31").required('End date is required').when("projectDate", (projectDate, schema) => projectDate && schema.min(projectDate, "End date can't be before Start date")),
+    projectDate: Yup.date().nullable().transform((value, originalValue) => originalValue === "" ? null : value).min("1900-12-31", 'Date must be after 1900-12-31').max("9999-12-31", 'Date must be before 9999-12-31').required('Date is required'),
+    projectEndDate: Yup.date().nullable().transform((value, originalValue) => originalValue === "" ? null : value).max("9999-12-31", 'End date must be before 9999-12-31').required('End date is required')
+    .when("projectDate", {
+        is: (projectDate) => projectDate !== null,
+        then: (schema) => schema.min(Yup.ref('projectDate'), "End date can't be before Start date"),
+    }),
     projectContact: Yup.string().required('Contact is required'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),

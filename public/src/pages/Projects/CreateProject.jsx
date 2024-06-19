@@ -49,8 +49,12 @@ const baseProjectStatsData = {
 const baseProjectSchema = Yup.object().shape({
     client: Yup.string().required('Client is required'),
     description: Yup.string().required('Description is required').max(255, 'The description cannot be longet than 255 characters'),
-    date: Yup.date().min("1900-12-31").max("9999-12-31").required('Date is required'),
-    endDate: Yup.date().max("9999-12-31").required('End date is required').when("date", (date, schema) => date && schema.min(date, "End date can't be before Start date")),
+    date: Yup.date().nullable().transform((value, originalValue) => originalValue === "" ? null : value).min("1900-12-31", 'Date must be after 1900-12-31').max("9999-12-31", 'Date must be before 9999-12-31').required('Date is required'),
+    endDate: Yup.date().nullable().transform((value, originalValue) => originalValue === "" ? null : value).max("9999-12-31", 'End date must be before 9999-12-31').required('End date is required')
+        .when("date", {
+            is: (date) => date !== null,
+            then: (schema) => schema.min(Yup.ref('date'), "End date can't be before Start date"),
+        }),
     contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
     staffBudget: Yup.number('Staff Budget is required').min(0).required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').min(0).required('Profit Margin is required').typeError('Profit Margin is required'),
