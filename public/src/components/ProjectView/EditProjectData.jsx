@@ -34,8 +34,6 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
 
         const cliendIndex = clientList.findIndex(item => item.clientid == projectData.clientid)
 
-        console.log("projectData", projectData)
-
         const tempObject = {
             clientid: clientList[cliendIndex],
             projectDescription: projectData.projectdescription,
