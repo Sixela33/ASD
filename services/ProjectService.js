@@ -21,14 +21,14 @@ class ProjectService {
         }
     }
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras, isRecurrent) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectEndDate, projectDescription, clientid, profitMargin, arrangements, creatorid, extras, isRecurrent) => {
         extras = extras || []
         arrangements = arrangements || []
         
-        await validateProject({staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, isRecurrent})
+        await validateProject({staffBudget, projectContact, projectDate, projectEndDate, projectDescription, clientid, profitMargin, creatorid, isRecurrent})
         await validateArrangement(arrangements)
         await validateNewSericeArray(extras)
-        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectDescription, clientid, profitMargin, creatorid, arrangements, extras, isRecurrent)
+        const response = await this.model.createProject(staffBudget, projectContact, projectDate, projectEndDate, projectDescription, clientid, profitMargin, creatorid, arrangements, extras, isRecurrent)
 
         return response
     }

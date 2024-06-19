@@ -12,6 +12,9 @@ import { HiChevronDown } from "react-icons/hi";
   */
 
 const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText, InViewRef, query, setQuery}) => {
+  if(!selectedVal) selectedVal = ''
+  if(!handleChange) handleChange = () => {}
+  if(!placeholderText) placeholderText = ''
 
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef(null);

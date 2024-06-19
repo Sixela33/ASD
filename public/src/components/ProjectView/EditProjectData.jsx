@@ -15,6 +15,7 @@ const baseProjectSchema = Yup.object().shape({
     clientid: Yup.string().required('Client is required'),
     projectDescription: Yup.string().required('Description is required'),
     projectDate: Yup.date().min("1900-12-31").max("9999-12-31").required('Date is required'),
+    projectEndDate: Yup.date().max("9999-12-31").required('End date is required').when("projectDate", (projectDate, schema) => projectDate && schema.min(projectDate, "End date can't be before Start date")),
     projectContact: Yup.string().required('Contact is required'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
@@ -39,7 +40,8 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
             projectDate: new Date(projectData.projectdate).toLocaleDateString('fr-CA'),
             projectContact: projectData.projectcontact,
             staffBudget: projectData.staffbudget,
-            profitMargin: projectData.profitmargin
+            profitMargin: projectData.profitmargin,
+            projectEndDate: new Date(projectData.projectenddate).toLocaleDateString('fr-CA')
         }
 
         setNewProjectdata(tempObject)
@@ -65,9 +67,8 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
     }, [projectData])
 
     const confirmEdit = async () => {
-        console.log("first")
         try {
-            const dataTosend = {...newProjectdata, clientid: newProjectdata.clientid.clientid}
+            const dataTosend = {...newProjectdata, clientid: newProjectdata?.clientid?.clientid}
 
             let schemaErrors = null
             try {
@@ -86,29 +87,31 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 await axiosPrivate.patch(EDIT_PROJECT_URL + projectData.projectid, JSON.stringify(dataTosend))
                 setMessage('Project edited Successfully', false)
                 closePopup(true)
+                setErrors({})
             }
+
 
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true);
         }
     }
-    
+
     const handleChange = (label, value) => {
         setNewProjectdata({
           ...newProjectdata,
           [label]: value,
         });
-      }
+    }
 
-    return newProjectdata && (
+    return newProjectdata && clientList && (
         <PopupBase 
             showPopup={showPopup}
             closePopup={closePopup}>
         <div className='my-1'>
             <label>Client:</label>
             <SearchableDropdown options={clientList} label="clientname" selectedVal={newProjectdata.clientid} handleChange={(client) => handleChange('clientid', client)} placeholderText="Select Client"/>
-            <FormError error={errors.client}/>
+            <FormError error={errors.clientid}/>
         </div>
         <div>
             <FormItem
@@ -117,8 +120,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 inputName="projectDescription"
                 value={newProjectdata.projectDescription}
                 handleChange={(e) => handleChange('projectDescription', e.target.value)}
-                error={errors.description}
-
+                error={errors.projectDescription}
             />
             <FormItem
                 labelName="Project Date:"
@@ -126,8 +128,15 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 inputName="projectDate"
                 value={newProjectdata.projectDate}
                 handleChange={(e) => handleChange('projectDate', e.target.value)}
-                error={errors.date}
-
+                error={errors.projectDate}
+            />
+            <FormItem
+                labelName="Project End Date:"
+                type="date"
+                inputName="projectEndDate"
+                value={newProjectdata.projectEndDate}
+                handleChange={(e) => handleChange('projectEndDate', e.target.value)}
+                error={errors.projectEndDate}
             />
             <FormItem
                 labelName="Project Contact:"
@@ -135,8 +144,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 inputName="projectContact"
                 value={newProjectdata.projectContact}
                 handleChange={(e) => handleChange('projectContact', e.target.value)}
-                error={errors.contact}
-
+                error={errors.projectContact}
             />
             <FormItem
                 labelName="Staff Budget:"
@@ -145,7 +153,6 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 value={newProjectdata.staffBudget}
                 handleChange={(e) => handleChange('staffBudget', e.target.value)}
                 error={errors.staffBudget}
-
             />
             <FormItem
                 labelName="Profit Margin:"
@@ -157,7 +164,10 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
             />
         </div>
         <div className='buttons-holder'>
-            <button onClick={closePopup} className='buton-secondary'>Cancel</button>
+            <button onClick={() => {
+                closePopup()
+                setErrors({})
+            }} className='buton-secondary'>Cancel</button>
             <button onClick={confirmEdit} className='buton-main'>Confirm</button>
         </div>
         </PopupBase>

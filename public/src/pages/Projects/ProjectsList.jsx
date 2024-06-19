@@ -122,7 +122,6 @@ const ProjectsList = () => {
                 <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create new Project</Link>
             </div>
             <div className="flex items-center mb-4 space-x-4 justify-evenly">
-                
                 <div className='flex items-center'>
                     <label className="mr-2">Show closed projects:</label>
                     <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
