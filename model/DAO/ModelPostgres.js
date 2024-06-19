@@ -209,10 +209,10 @@ class ModelPostgres {
     //                   PROJECTS
     // -----------------------------------------------
 
-    createProject = async (staffBudget, projectContact, projectDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras, isRecurrent) => {
+    createProject = async (staffBudget, projectContact, projectDate, projectEndDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras, isRecurrent) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN);",
-        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras, isRecurrent]);
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN, $11::DATE);",
+        [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras, isRecurrent, projectEndDate]);
         return response.rows[0]
     }
 
@@ -253,6 +253,7 @@ class ModelPostgres {
                 projects.clientID,
                 projects.isRecurrent,
                 clients.clientName AS projectclient, 
+                TO_CHAR(projects.projectEndDate, 'MM-DD-YYYY') AS projectEndDate,
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
                 FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
                 WHERE projects.projectID = $1;`,
@@ -269,6 +270,7 @@ class ModelPostgres {
                 projects.projectdate, 
                 projects.projectdescription, 
                 projects.projectcontact, 
+                projects.projectenddate,
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
                 FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
@@ -420,8 +422,6 @@ class ModelPostgres {
         return response
     }
 
-
-
     getProjectFlowersForPpt = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
@@ -454,6 +454,7 @@ class ModelPostgres {
 
     editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
+        console.log("projectData", projectData)
         await CnxPostgress.db.query(`
         UPDATE projects SET 
             clientID = $1,
@@ -462,9 +463,10 @@ class ModelPostgres {
             projectContact = $4,
             staffBudget = $5,
             profitMargin = $6,
+            projectEndDate = $7,
             lastEdit = CURRENT_TIMESTAMP
-        WHERE projects.projectID = $7
-        `, [projectData.clientid, projectData.projectDate, projectData.projectDescription, projectData.projectContact, projectData.staffBudget, projectData.profitMargin, id]
+        WHERE projects.projectID = $8
+        `, [projectData.clientid, projectData.projectDate, projectData.projectDescription, projectData.projectContact, projectData.staffBudget, projectData.profitMargin, projectData.projectEndDate, id]
         )
     }
 

@@ -8,9 +8,9 @@ class ProjectController {
 
     createProject = async (req, res, next) => {
         try {
-            const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras, isRecurrent} = req.body
+            const { staffBudget, contact, date, description, client, profitMargin, arrangements, extras, isRecurrent, endDate} = req.body
             const creatorid = req.user.user.userid
-            const response = await this.service.createProject(staffBudget, contact, date, description, client, profitMargin, arrangements, creatorid, extras, isRecurrent)
+            const response = await this.service.createProject(staffBudget, contact, date, endDate, description, client, profitMargin, arrangements, creatorid, extras, isRecurrent)
             req.logger.info(`[PROJECT CREATED] ${req.user.user.email} data: ${JSON.stringify(response)}`)
             res.json(response)
         } catch (error) {
@@ -57,6 +57,7 @@ class ProjectController {
         try {
             const { id } = req.params
             const result = await this.service.getProjectArrangements(id)
+            console.log("result", result)
             res.json(result)
         } catch (error) {
             next(error)
@@ -89,6 +90,7 @@ class ProjectController {
         try {
             const { id } = req.params
             const projectData = req.body
+            console.log(projectData)
             await this.service.editProjectData(id, projectData)
             req.logger.info(`[EDIT PROJECT DATA] ${req.user.user.email} ID: ${id}`)
 

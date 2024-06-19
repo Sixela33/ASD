@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { aggregateFlowerData } from '../../utls/flowerAggregation/aggregateFlowerDataArrangements';
-import { BASE_TD_STYLE } from '../../styles';
 import { useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
 import EditArrangementPopup from '../../components/ProjectView/EditArrangementPopup';
@@ -484,7 +483,6 @@ export default function ViewProject() {
                 closePopup={() => setShowRedirectPopup(false)}
                 url={fileRedirectUrl}>
             </RedirectToFilePopup>
-            
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>
                 <h2 className='col-span-1'>Project Overview</h2>
@@ -519,7 +517,7 @@ export default function ViewProject() {
                             <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>
-                            <td className={BASE_TD_STYLE}>
+                            <td className='border-b p-2 text-center'>
                                 <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
                                 <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) => handleCLickReemoveArrangement(e, item)}>remove</button>
                             </td>

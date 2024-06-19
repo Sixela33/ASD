@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import QuerySearchableDropdown from "./QuerySearchableDropdown";
 
   /*
@@ -10,6 +10,9 @@ import QuerySearchableDropdown from "./QuerySearchableDropdown";
   */
 
 const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText }) => {
+  if(!label) label = ''
+  if(!options) options = []
+
   const [query, setQuery] = useState("");
 
   const filterOptions = () => {

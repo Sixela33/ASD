@@ -70,7 +70,7 @@ class Server {
         schedule.scheduleJob('checkpointer', '@weekly', checkpointer.createRecurentProjectCheckpoints)
 
         // -----------------------------------------------
-        //                  ROUTES
+        //                  ROUTES                        
         // -----------------------------------------------
         const loginreq = new PermissionsMiddelware(ROLES_LIST['User']).call
         const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call

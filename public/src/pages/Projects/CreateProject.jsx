@@ -30,6 +30,7 @@ const initialState = {
   client: '',
   description: '',
   date: '',
+  endDate: '',
   contact: '',
   staffBudget: 0.3,
   profitMargin: 0.7,
@@ -49,6 +50,7 @@ const baseProjectSchema = Yup.object().shape({
     client: Yup.string().required('Client is required'),
     description: Yup.string().required('Description is required').max(255, 'The description cannot be longet than 255 characters'),
     date: Yup.date().min("1900-12-31").max("9999-12-31").required('Date is required'),
+    endDate: Yup.date().max("9999-12-31").required('End date is required').when("date", (date, schema) => date && schema.min(date, "End date can't be before Start date")),
     contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
     staffBudget: Yup.number('Staff Budget is required').min(0).required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').min(0).required('Profit Margin is required').typeError('Profit Margin is required'),
@@ -89,12 +91,12 @@ export default function CreateProject() {
     const [refreshUe, setrefreshUe] = useState(false)
     const [isSubmitting, setIsSubmiting] = useState(false)
 
-    const { client, description, date, contact, staffBudget, profitMargin, isRecurrent } = formState
+    const { client, description, date, contact, staffBudget, profitMargin, isRecurrent, endDate } = formState
 
     // sums all the budgets 
     useEffect(() => {
         let tempProjectStats = {}
-        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity, 0)
+        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity * arrang.installationTimes, 0)
         let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + (expense.clientcost * expense.ammount) , 0)
         
         totalFlowerCost = totalFlowerCost || 0
@@ -102,8 +104,8 @@ export default function CreateProject() {
         
         tempProjectStats.totalFlowerCost = totalFlowerCost
         tempProjectStats.totalExtrasCost = totalAditional
-        tempProjectStats.totalProjectCost = totalFlowerCost + totalAditional
         tempProjectStats.totalFlowerBudget = totalFlowerCost * (1-profitMargin)
+        tempProjectStats.totalProjectCost = totalFlowerCost + totalAditional
         tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * staffBudget
         tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
         
@@ -313,7 +315,15 @@ export default function CreateProject() {
                         <div>
                         <div className={formRowClass}>
                             <div className={formColClass}>
-                            <FormItem labelName="Project Date:" type="date" inputName="date" max="9999-12-31" value={date} handleChange={(e) => handleFormEdit('date', e.target.value)} error={errors.date}/>
+                                <div className='flex justify-evenly md:flex-row'>
+                                    <div className='flex flex-col w-full mx-1'>
+                                        <FormItem labelName="Starting Date:" type="date" inputName="date" max="9999-12-31" value={date} handleChange={(e) => handleFormEdit('date', e.target.value)} error={errors.date}/>
+                                    </div>
+                                    <div className='flex flex-col w-full mx-1'>
+                                        <FormItem labelName="Closing Date:" type="date" inputName="date" max="9999-12-31" value={endDate} handleChange={(e) => handleFormEdit('endDate', e.target.value)} error={errors.endDate}/>
+
+                                    </div>
+                                </div>
                             </div>
 
                             <div className={formColClass}>
@@ -346,6 +356,7 @@ export default function CreateProject() {
                                             <th>Unit Cost</th>
                                             <th>Unit Budget</th>
                                             <th>Quantity</th>
+                                            <th>Installation times</th>
                                             <th>Total Cost</th>
                                             <th>Total Budget</th>
                                         </tr>
@@ -358,8 +369,9 @@ export default function CreateProject() {
                                                 <td>${arrangement.clientCost}</td>
                                                 <td>${toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
                                                 <td>{arrangement.arrangementQuantity}</td>
-                                                <td>${arrangement.clientCost * arrangement.arrangementQuantity}</td>
-                                                <td>${toCurrency((arrangement.clientCost * arrangement.arrangementQuantity) *  (1-formState.profitMargin))}</td>
+                                                <td>{arrangement.installationTimes}</td>
+                                                <td>${arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes}</td>
+                                                <td>${toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes) *  (1-formState.profitMargin))}</td>
                                             </tr>
                             
                                         ))}

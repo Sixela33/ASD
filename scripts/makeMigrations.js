@@ -15,6 +15,11 @@ const makeMigrations = async () => {
             const sql = fs.readFileSync(filesFolder + "/database.sql", "utf8");
             await model.runQuery(sql)
 
+            console.log("editing base db implementation")
+
+            const sql_edits = fs.readFileSync(filesFolder + '/db_edits.sql', "utf8")
+            await model.runQuery(sql_edits)
+
             console.log("Creating default roles")
  
             for (let [key, value] of Object.entries(ROLES_LIST)) {
