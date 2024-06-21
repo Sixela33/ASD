@@ -51,10 +51,10 @@ export default function Users() {
         }
     }
 
-    const debounced = useCallback(debounce(getData, 600))
+    const debounced = useCallback(debounce(getData, 200))
 
     useEffect(() => {
-        getData(searchByEmail);
+        debounced(searchByEmail);
         getRoles()
         
     }, []);
