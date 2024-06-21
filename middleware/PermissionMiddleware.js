@@ -14,7 +14,7 @@ class PermissionsMiddelware {
         try {
             const token = req.header('Authorization');
             if (!token) {
-                return res.status(403).json({ message: 'Unauthorised' })
+                return res.status(403)
             }
             let decoded = null
 
