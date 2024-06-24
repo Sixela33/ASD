@@ -432,7 +432,7 @@ export default function ViewProject() {
     ]
 
     return (
-        <div className='container mx-auto pt-12 p-4 text-center page'>
+        projectData ? <div className='container mx-auto pt-12 p-4 text-center page'>
             <Tooltip showTooltip={showTooltip} tooltipPosition={tooltipPosition}>{
                 actualHoveredArr && flowersByArrangement[actualHoveredArr]?.map((flower, index) => {
                 return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
@@ -586,6 +586,6 @@ export default function ViewProject() {
                         </div>
                     </RestrictedComponent>
                 </div>
-        </div>    
+        </div> : <p>Loading</p>
     );
 }

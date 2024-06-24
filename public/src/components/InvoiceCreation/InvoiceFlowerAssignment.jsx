@@ -51,19 +51,27 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
     useEffect(() => {
         
-        let {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers} = aggregateFlowerData(flowerData)
-        // setting the prices to the ones that where laoded before
+        let temp_flower_data = flowerData
+
+        if(loadedFlowers) {
+            temp_flower_data.push(...loadedFlowers)
+        }
+
+        let {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers} = aggregateFlowerData(temp_flower_data)
+        
+        // Forcing prices to be the ones added in this invoice
         if(loadedFlowers) {
             loadedFlowers.map(flower => {
                 let ix = aggregatedUniqueFlowers.findIndex(f => f.flowerid == flower.flowerid)
                 if (ix != -1) {
                     aggregatedUniqueFlowers[ix].unitprice = flower.unitprice
                 }
-            }) 
+            })
         }
 
         // adding whitespaces so that the arrangements coincide with their projects
         const sortedArray = Array(CHOSEN_PROJECTS_SORTED.length).fill([])
+
         aggregatedFlowerArrayByProject.map(item => {
             let index = CHOSEN_PROJECTS_SORTED.findIndex(element => element == item[0].projectid)
             sortedArray[index] = item

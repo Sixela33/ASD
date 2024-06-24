@@ -57,7 +57,6 @@ class ProjectController {
         try {
             const { id } = req.params
             const result = await this.service.getProjectArrangements(id)
-            console.log("result", result)
             res.json(result)
         } catch (error) {
             next(error)

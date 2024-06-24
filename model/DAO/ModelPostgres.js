@@ -618,7 +618,6 @@ class ModelPostgres {
             queryParams.push(`%${query}%`)
         }
         
-        console.log("filterByColor", filterByColor)
         if (filterByColor && filterByColor.length > 0) {
             const colorPlaceholders = filterByColor.map((_, index) => `$${queryParams.length + index + 1}`);
             queryConditions.push(`fc.colorid IN (${colorPlaceholders.join(',')})`);
