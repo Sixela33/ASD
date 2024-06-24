@@ -157,6 +157,8 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 value={newProjectdata.staffBudget}
                 handleChange={(e) => handleChange('staffBudget', e.target.value)}
                 error={errors.staffBudget}
+                step={0.1}
+
             />
             <FormItem
                 labelName="Profit Margin:"
@@ -165,6 +167,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 value={newProjectdata.profitMargin}
                 handleChange={(e) => handleChange('profitMargin', e.target.value)}
                 error={errors.profitMargin}
+                step={0.1}
             />
         </div>
         <div className='buttons-holder'>
