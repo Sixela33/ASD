@@ -1,7 +1,6 @@
 const aggregateFlowerData = (flowerData) => {
     const aggregatedData = {}
     const uniqueFlowers = {}
-    const projects = []
 
     flowerData?.forEach(flower => {
         let { flowerid, flowername, amount, unitprice, projectid, numstems } = flower;
