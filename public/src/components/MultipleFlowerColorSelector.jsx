@@ -41,11 +41,11 @@
                 selectedVal={{ flowerColor: '' }}
                 placeholderText={'Add a color'}
             />
-                <div className={`overflow-y-auto h-20 w-full mt-4 ${isListBelow ? 'grid grid-cols-1 sm:grid-cols-2' : 'flex flex-wrap gap-2'}`}>
+            <div className={`overflow-y-auto h-20 w-full mt-4 grid grid-cols-1 sm:grid-cols-2`}>
                 {selectedColors.map((item) => (
-                    <div onClick={() => handleRemoveColor(item)} key={item.colorname} className="bg-gray-300 rounded-md m-2 px-2 py-1 flex items-center max-h-5 space-x-2 hover:cursor-pointer">
+                    <div onClick={() => handleRemoveColor(item)} key={item.colorname} className="bg-gray-300 rounded-md m-2 px-2 py-1 flex items-center justify-between max-h-5 hover:cursor-pointer">
                         <p className="text-sm font-medium">{item.colorname}</p>
-                        <button className="text-xs hover:text-red-700">X</button>
+                        <button className="text-xs hover:text-red-700 ml-auto">X</button>
                     </div>
                 ))}
             </div>

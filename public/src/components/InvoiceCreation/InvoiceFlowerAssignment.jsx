@@ -290,7 +290,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipie stems', 'Unit price', 'Stems Used'].map((name, index) => (
+                        {['Flower name', 'Recipie stems', 'Stems Used', 'Unit price'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                     </tr>
@@ -303,11 +303,11 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>
-                                $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
-                            </td>
-                            <td>
                                 <input className='w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
                                 <button className='mx-2 go-back-button' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>All</button>
+                            </td>
+                            <td>
+                                $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
                             </td>
                         </tr>
                     })}
@@ -318,6 +318,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <div className="flex justify-between items-center my-1">
                 <p className="font-bold">Total invoice amount: ${toCurrency(invoiceData.invoiceAmount)}</p>
                 <p className="font-bold">Registered Expenses: ${toCurrency(flowerPriceTracker?.reduce((value, flower) => {
+                    console.log("value", value)
+                    console.log("flower", flower)
                     return value + flower.addedStems * flower.unitprice
                 }, 0))}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
