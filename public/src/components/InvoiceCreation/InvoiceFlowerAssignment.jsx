@@ -54,7 +54,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         let temp_flower_data = flowerData
 
         if(loadedFlowers) {
-            temp_flower_data.push(...loadedFlowers)
+            console.log("BEFORE", loadedFlowers)
+            let tempLoadedFlowers = loadedFlowers.filter(item => chosenProjects.includes(item.projectid));
+            console.log("AFTER", tempLoadedFlowers)
+            temp_flower_data.push(...tempLoadedFlowers)
         }
 
         let {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers} = aggregateFlowerData(temp_flower_data)
@@ -68,23 +71,21 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 }
             })
         }
-
-        // adding whitespaces so that the arrangements coincide with their projects
+    
         const sortedArray = Array(CHOSEN_PROJECTS_SORTED.length).fill([])
-
-        aggregatedFlowerArrayByProject.map(item => {
+    
+        aggregatedFlowerArrayByProject.forEach(item => {
             let index = CHOSEN_PROJECTS_SORTED.findIndex(element => element == item[0].projectid)
-            sortedArray[index] = item
+            sortedArray[index] = item;
         })
-
+    
         while (sortedArray.length < CHOSEN_PROJECTS_SORTED.length) {
             sortedArray.push([])
         }
-
+    
         setFlowerPriceTracker(aggregatedUniqueFlowers)
         setDisplayFlowerData(sortedArray)
-
-    }, [flowerData])
+    }, [flowerData, loadedFlowers, CHOSEN_PROJECTS_SORTED])
     
     const changeFlowerUnitPrice = (e, flowerID) => {
         e.preventDefault()
@@ -318,8 +319,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <div className="flex justify-between items-center my-1">
                 <p className="font-bold">Total invoice amount: ${toCurrency(invoiceData.invoiceAmount)}</p>
                 <p className="font-bold">Registered Expenses: ${toCurrency(flowerPriceTracker?.reduce((value, flower) => {
-                    console.log("value", value)
-                    console.log("flower", flower)
                     return value + flower.addedStems * flower.unitprice
                 }, 0))}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
