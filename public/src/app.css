@@ -1,5 +1,6 @@
 :root {
     --main-color: black;
+    --main-color-disabled: rgb(99, 99, 99);
     --main-hover-color: rgb(63, 63, 63);
     --secondary-color: #6b7280;
     --secondary-hover-color: #84868a;
@@ -156,7 +157,11 @@ h1 {
     border-radius: 0.25rem;
 }
 
-.buton-main:hover {
+.buton-main:disabled {
+    background-color: var(--main-color-disabled);
+}
+
+.buton-main:enabled:hover {
     background-color: var(--main-hover-color);
 }
 

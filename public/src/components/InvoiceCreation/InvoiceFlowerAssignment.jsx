@@ -54,9 +54,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         let temp_flower_data = flowerData
 
         if(loadedFlowers) {
-            console.log("BEFORE", loadedFlowers)
             let tempLoadedFlowers = loadedFlowers.filter(item => chosenProjects.includes(item.projectid));
-            console.log("AFTER", tempLoadedFlowers)
             temp_flower_data.push(...tempLoadedFlowers)
         }
 
@@ -199,6 +197,12 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         return result;
     }
 
+    const getTotalAdded = () => {
+        return flowerPriceTracker?.reduce((value, flower) => {
+            return value + flower.addedStems * flower.unitprice
+        }, 0)
+    }
+
     const submitInvoiceCreation = async (e) => {
         e.preventDefault();
         try {
@@ -318,12 +322,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             </div>
             <div className="flex justify-between items-center my-1">
                 <p className="font-bold">Total invoice amount: ${toCurrency(invoiceData.invoiceAmount)}</p>
-                <p className="font-bold">Registered Expenses: ${toCurrency(flowerPriceTracker?.reduce((value, flower) => {
-                    return value + flower.addedStems * flower.unitprice
-                }, 0))}</p>
+                <p className="font-bold">Registered Expenses: ${toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className='buton-main my-1 w-1/2 mx-auto' onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' disabled={getTotalAdded() != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
   )
 }

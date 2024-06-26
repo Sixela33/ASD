@@ -14,13 +14,13 @@ const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
 const GET_VENDORS_URL = '/api/vendors';
 
 const colData = {
-        "Invoice ID": "invoiceid", 
-        "Vendor": "vendorname", 
-        "Invoice Amount": "invoiceamount", 
-        "Invoice Date": "invoicedate", 
-        "Invoice Number": "invoicenumber",
-        "Has transaction": "hastransaction",
-    }
+    "Invoice ID": "invoiceid", 
+    "Vendor": "vendorname", 
+    "Invoice Amount": "invoiceamount", 
+    "Invoice Date": "invoicedate", 
+    "Invoice Number": "invoicenumber",
+    "Has transaction": "hastransaction",
+}
 
 const searchByOptions = [
     {displayName: "Invoice ID", value: "invoiceid"}, 
