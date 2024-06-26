@@ -23,8 +23,8 @@ const colData = {
 }
 
 const searchByOptions = [
+    {displayName: "Invoice Number", value: "invoicenumber"},
     {displayName: "Invoice ID", value: "invoiceid"}, 
-    {displayName: "Invoice Number", value: "invoicenumber"}
 ] 
 
 const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }

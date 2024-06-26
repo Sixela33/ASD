@@ -360,7 +360,7 @@ export default function CreateProject() {
                                             <th>Unit Cost</th>
                                             <th>Unit Budget</th>
                                             <th>Quantity</th>
-                                            <th>Installation times</th>
+                                            <th>Installation Times</th>
                                             <th>Total Cost</th>
                                             <th>Total Budget</th>
                                         </tr>
@@ -390,7 +390,7 @@ export default function CreateProject() {
                                     <thead>
                                         <tr>
                                             <th>Description</th>
-                                            <th>Client cost</th>
+                                            <th>Client Cost</th>
                                             <th>Quantity</th>
                                         </tr>
                                     </thead>

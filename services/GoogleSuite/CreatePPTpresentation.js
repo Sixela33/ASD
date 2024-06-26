@@ -47,7 +47,6 @@ export default async function createPresentation(googleAccessToken, presentation
             }
         );
         
-        
         let requests = [];
         
         const maxItemsPerSlide = 8
@@ -97,24 +96,26 @@ function addSlide (title, items) {
             }
         },
     },
-    {
-        createImage: {
-            url: 'https://ramelax.com.ar/asd-black.png',
-            elementProperties: {
-                pageObjectId: slideID,
-                size: {
-                    height: {magnitude: 75, unit: 'PT'},
-                    width: {magnitude: 150, unit: 'PT'}, 
+    /*
+        {
+            createImage: {
+                url: 'https://ramelax.com.ar/asd-black.png',
+                elementProperties: {
+                    pageObjectId: slideID,
+                    size: {
+                        height: {magnitude: 75, unit: 'PT'},
+                        width: {magnitude: 150, unit: 'PT'}, 
+                    },
+                    transform: {
+                        scaleX: 1,
+                        scaleY: 1,
+                        translateY: 20,
+                        unit: 'PT',
+                    },
                 },
-                transform: {
-                    scaleX: 1,
-                    scaleY: 1,
-                    translateY: 20,
-                    unit: 'PT',
-                },
-            },
-        }
-    },
+            }
+        },
+    */
     {
         createShape: {
             objectId: titleTextBoxID,
