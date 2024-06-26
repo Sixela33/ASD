@@ -310,7 +310,7 @@ export default function ViewProject() {
             let text = ''
     
             showFlowerData.forEach(item => {
-                text += `${item.flowername} - ${item.flowercolor}  X ${item.totalstems} units`
+                text += `${item.flowername}: ${item.totalstems} units`
                 text += '\n'
             })
     
@@ -399,8 +399,26 @@ export default function ViewProject() {
 
     const buttonOptions = [
         {
+            text: "delete project",
+            action: () => setShowDeleteProjectPopup(true),
+            icon: <FiTrash/>,
+            minPermissionLevel: permissionsRequired['delete_project']
+        },
+        {
+            text: 'Generate floral selection', 
+            action: handleGeneratePPTslides,
+            icon: <FiDownload/>,
+            minPermissionLevel:permissionsRequired['download_projectppt']
+        },
+        {
             text: 'Add New Arrangement', 
             action: handleCreateArrangement,
+            icon: '+',
+            minPermissionLevel:permissionsRequired['add_arrangement']
+        },
+        {
+            text: 'Add new service', 
+            action: handleAddNewService,
             icon: '+',
             minPermissionLevel:permissionsRequired['add_arrangement']
         },
@@ -410,25 +428,6 @@ export default function ViewProject() {
             icon: <FiEdit/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
         },
-        {
-            text: 'Download ppt slides', 
-            action: handleGeneratePPTslides,
-            icon: <FiDownload/>,
-            minPermissionLevel:permissionsRequired['download_projectppt']
-        },
-        {
-            text: 'Add new service', 
-            action: handleAddNewService,
-            icon: '+',
-            minPermissionLevel:permissionsRequired['add_arrangement']
-        },
-        {
-            text: "delete project",
-            action: () => setShowDeleteProjectPopup(true),
-            icon: <FiTrash/>,
-            minPermissionLevel: permissionsRequired['delete_project']
-        }
-
     ]
 
     return (
@@ -532,7 +531,7 @@ export default function ViewProject() {
                             <TableHeaderSort
                                 headers={{'Flower Name': ' ', 'Total Stems': ' ', 'Unit Price': ' ', 'Estimated Cost': ' ', 'Change Stem': ' '}}>
                                 {showFlowerData?.map((item, index) => (
-                                    <tr key={index} >
+                                    <tr key={index}>
                                         <td>{item?.flowername}</td>
                                         <td>{item?.totalstems}</td>
                                         <td>${toCurrency(item?.unitprice)}</td>
@@ -546,7 +545,7 @@ export default function ViewProject() {
 
                         <div className='flex mt-5'>
                             <div className='flex-row'>
-                                <button className='buton-secondary mx-3 my-2' onClick={downloadFlowerList} >Download Flower Order</button>
+                                <button className='buton-secondary mx-3 my-2' onClick={downloadFlowerList}>Download Floral Order</button>
                                 <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
                             </div>
                             <div className='flex-row text-left ml-5'>

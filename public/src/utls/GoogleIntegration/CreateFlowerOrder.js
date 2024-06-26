@@ -29,25 +29,9 @@ export default async function CreateFlowerOrder(googleAccessToken, text) {
       {
         requests: [
           {
-            insertInlineImage: {
-              location: {index: 1},
-              uri: "https://ramelax.com.ar/asd-2.png", // logo de la compañía
-              objectSize: {
-                width:  {magnitude: 200, unit: "PT"},
-                height: {magnitude: 150, unit: "PT"},
-              },
-            },
-          },
-          {
-            insertText: {
-              text: "\n\n",
-              location: {index: 2},
-            },
-          },
-          {
             insertText: {
               text: text,
-              location: {index: 3}
+              location: {index: 2}
             }
           }          
         ],
