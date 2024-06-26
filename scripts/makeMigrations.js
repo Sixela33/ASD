@@ -5,6 +5,7 @@ import ROLES_LIST from '../config/rolesList.js'
 
 const filesFolder = "./migrations"
 const spFolder = "/storedProcedures"
+const editsFolder = "/edits"
 
 const makeMigrations = async () => {
     if (process.env.DATABASE === "postgres") {
@@ -15,10 +16,18 @@ const makeMigrations = async () => {
             const sql = fs.readFileSync(filesFolder + "/database.sql", "utf8");
             await model.runQuery(sql)
 
-            console.log("editing base db implementation")
+            console.log("editing db")
 
-            const sql_edits = fs.readFileSync(filesFolder + '/db_edits.sql', "utf8")
-            await model.runQuery(sql_edits)
+            var editFiles = fs.readdirSync(filesFolder + editsFolder);
+            editFiles.forEach(async (file) => {
+                try {
+                    const sql = fs.readFileSync(filesFolder + editsFolder + "/" + file, "utf8");
+                    await model.runQuery(sql)
+                    console.log(file, "ran successfully" )
+                } catch {
+                    console.log(file, "did not run" )
+                }
+            })
 
             console.log("Creating default roles")
  
