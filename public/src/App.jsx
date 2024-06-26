@@ -6,7 +6,7 @@ import RequireAuth from './components/RequireAuth';
 import Navbar from './components/NavBar';
 import Alert from './components/Alert';
 import ROLES_LIST from '../../config/rolesList';
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
