@@ -172,8 +172,8 @@ export default function ArrangementCreation() {
                                     <button onClick={() => addFlowerDrop(actualSelectedFlower, quantityToAdd)} className='buton-secondary'>Add</button>
                                 </div>
                                 <div>
-                                    <p className="mt-4">Flower Budget: ${toCurrency(arrangementData.clientcost * (1 - arrangementData.profitmargin))}</p>
-                                    <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) ? 'text-red-500' : ''}>${sum}</span></p>
+                                    <p className="mt-4">Flower Budget: {toCurrency(arrangementData.clientcost * (1 - arrangementData.profitmargin))}</p>
+                                    <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * (1 - arrangementData.profitmargin) < sum) ? 'text-red-500' : ''}>{toCurrency(sum)}</span></p>
                                     <button className='buton-main' onClick={submitArrangement}>Save</button>
                                 </div>
                                 <div>

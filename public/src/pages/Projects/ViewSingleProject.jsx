@@ -510,8 +510,8 @@ export default function ViewProject() {
                             <td>{item?.arrangementdescription}</td>
                             <td>{item?.arrangementlocation}</td>
                             <td>{item?.arrangementquantity}</td>
-                            <td>${toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
-                            <td>${item?.assignedBudget}</td>
+                            <td>{toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
+                            <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
                             <td>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
@@ -534,8 +534,8 @@ export default function ViewProject() {
                                     <tr key={index}>
                                         <td>{item?.flowername}</td>
                                         <td>{item?.totalstems}</td>
-                                        <td>${toCurrency(item?.unitprice)}</td>
-                                        <td>${toCurrency(item?.estimatedcost)}</td>
+                                        <td>{toCurrency(item?.unitprice)}</td>
+                                        <td>{toCurrency(item?.estimatedcost)}</td>
                                         <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
                                     </tr>
                                     ))}
@@ -549,9 +549,9 @@ export default function ViewProject() {
                                 <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
                             </div>
                             <div className='flex-row text-left ml-5'>
-                                <p>Flower budget: ${toCurrency(totalBudget)}</p>
-                                <p>Estimate spent in flowers: ${toCurrency(estimatedFlowerCost)}</p>
-                                <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>${toCurrency(totalBudget-estimatedFlowerCost)}</span></p>
+                                <p>Flower budget: {toCurrency(totalBudget)}</p>
+                                <p>Estimate spent in flowers: {toCurrency(estimatedFlowerCost)}</p>
+                                <p>Diference: <span className={totalBudget-estimatedFlowerCost > 0 ? 'text-green-700' : 'text-red-700'}>{toCurrency(totalBudget-estimatedFlowerCost)}</span></p>
                             </div>
                         </div>
                     </div>
@@ -564,7 +564,7 @@ export default function ViewProject() {
                                     {extraServicesData?.map((item, index) => (
                                         <tr key={index} onClick={() => handleEditService(item)}>
                                             <td>{item?.description}</td>
-                                            <td>${toCurrency(item?.clientcost)}</td>
+                                            <td>{toCurrency(item?.clientcost)}</td>
                                             <td>{item?.ammount}</td>
                                         </tr>
                                         ))}
@@ -572,13 +572,13 @@ export default function ViewProject() {
                             </div>
                             <div className='text-left ml-5 grid grid-cols-2'>
                                 <div className='grid-col'>
-                                    <p className='mr-4'>Total extras costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
-                                    <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
-                                    <p className='mr-4'>Total project cost: ${toCurrency(projectStats.totalProjectCost)}</p>
+                                    <p className='mr-4'>Total extras costs: {toCurrency(projectStats.totalExtrasCost)}</p>
+                                    <p className='mr-4'>Total flower costs: {toCurrency(projectStats.totalFlowerCost)}</p>
+                                    <p className='mr-4'>Total project cost: {toCurrency(projectStats.totalProjectCost)}</p>
                                 </div>
                                 <div className='grid-col'>
-                                    <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
-                                    <p>Estimate spent in flowers ${toCurrency(estimatedFlowerCost)}</p>
+                                    <p className='mr-4'>Total staff budget: {toCurrency(projectStats.totalStaffBudget)}</p>
+                                    <p>Estimate spent in flowers {toCurrency(estimatedFlowerCost)}</p>
                                     <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>${toCurrency(projectStats.totalProjectProfit)}</span> </p>
                                 </div>
                             </div>

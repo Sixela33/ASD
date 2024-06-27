@@ -321,8 +321,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             </table>
             </div>
             <div className="flex justify-between items-center my-1">
-                <p className="font-bold">Total invoice amount: ${toCurrency(invoiceData.invoiceAmount)}</p>
-                <p className="font-bold">Registered Expenses: ${toCurrency(getTotalAdded())}</p>
+                <p className="font-bold">Total invoice amount: {toCurrency(invoiceData.invoiceAmount)}</p>
+                <p className="font-bold">Registered Expenses: {toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
             <button className='buton-main my-1 w-1/2 mx-auto' disabled={getTotalAdded() != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>

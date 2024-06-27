@@ -206,7 +206,7 @@ export default function ViewInvoices() {
                     return <tr key={index}  onClick={() => handleInvoiceSelection(invoice)}>
                         <td>{invoice?.invoiceid}</td>
                         <td>{invoice?.vendorname}</td>
-                        <td>${toCurrency(invoice?.invoiceamount)}</td>
+                        <td>{toCurrency(invoice?.invoiceamount)}</td>
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
                         <td 

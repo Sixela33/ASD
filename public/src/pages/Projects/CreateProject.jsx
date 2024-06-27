@@ -370,12 +370,12 @@ export default function CreateProject() {
                                             <tr key={index}  onClick={() => handleEdit(index)}>
                                                 <td>{arrangement?.arrangementType.typename}</td>
                                                 <td>{arrangement.arrangementDescription}</td>
-                                                <td>${arrangement.clientCost}</td>
-                                                <td>${toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
+                                                <td>{toCurrency(arrangement.clientCost)}</td>
+                                                <td>{toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
                                                 <td>{arrangement.arrangementQuantity}</td>
                                                 <td>{arrangement.installationTimes}</td>
-                                                <td>${arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes}</td>
-                                                <td>${toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes) *  (1-formState.profitMargin))}</td>
+                                                <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes)}</td>
+                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes) *  (1-formState.profitMargin))}</td>
                                             </tr>
                             
                                         ))}
@@ -398,7 +398,7 @@ export default function CreateProject() {
                                     {aditionalExpenses.map((expense, index) => {
                                         return <tr key={index} onClick={() => editExistingExpense(expense)}>
                                             <td>{expense.description}</td>
-                                            <td>${toCurrency(expense.clientcost)}</td>
+                                            <td>{toCurrency(expense.clientcost)}</td>
                                             <td>{expense.ammount}</td>
                                         </tr>
                                     })}
@@ -410,13 +410,13 @@ export default function CreateProject() {
                     </div>
 
                      <div className='flex '>
-                        <p className='mr-4'>Total client cost: ${projectStats.totalProjectCost}</p>
-                        <p className='mr-4'>Total flower budget: ${toCurrency(projectStats.totalFlowerBudget)}</p>
-                        <p className='mr-4'>Total aditional costs: ${toCurrency(projectStats.totalExtrasCost)}</p>
-                        <p className='mr-4'>Total flower costs: ${toCurrency(projectStats.totalFlowerCost)}</p>
-                        <p className='mr-4'>Total staff budget: ${toCurrency(projectStats.totalStaffBudget)}</p>
+                        <p className='mr-4'>Total client cost: {toCurrency(projectStats.totalProjectCost)}</p>
+                        <p className='mr-4'>Total flower budget: {toCurrency(projectStats.totalFlowerBudget)}</p>
+                        <p className='mr-4'>Total aditional costs: {toCurrency(projectStats.totalExtrasCost)}</p>
+                        <p className='mr-4'>Total flower costs: {toCurrency(projectStats.totalFlowerCost)}</p>
+                        <p className='mr-4'>Total staff budget: {toCurrency(projectStats.totalStaffBudget)}</p>
 
-                        <p className={projectStats.totalProjectProfit>0? 'text-green-500' : 'text-red-500'}>Project Profit: ${toCurrency(projectStats.totalProjectProfit)}</p>
+                        <p className={projectStats.totalProjectProfit>0? 'text-green-500' : 'text-red-500'}>Project Profit: {toCurrency(projectStats.totalProjectProfit)}</p>
                     </div>
                        
                     <div className=' flex flex-row'>

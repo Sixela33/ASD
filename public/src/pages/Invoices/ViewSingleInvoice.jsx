@@ -91,7 +91,7 @@ export default function ViewSingleInvoice() {
                     <div className="items-center grid grid-row md:grid-cols-2 gap-8 my-4 mx-auto text-left font-bold ">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
-                            <p>Invoice amount: ${toCurrency(invoiceData.invoiceamount)}</p>
+                            <p>Invoice amount: {toCurrency(invoiceData.invoiceamount)}</p>
                         </div>
                         <div className='grid-row'>
                             <p>Invoice Date: {invoiceData.invoicedate}</p>
@@ -121,7 +121,7 @@ export default function ViewSingleInvoice() {
                             {invoiceFlowers.map((item, index) => {
                                 return <tr key={index}  onClick={() => onRowClick(item)}>
                                     <td>{item.flowername}</td>
-                                    <td>$ {toCurrency(item.unitprice)}</td>
+                                    <td>{toCurrency(item.unitprice)}</td>
                                     <td>{item.numstems}</td>
                                 </tr>
                             })}
