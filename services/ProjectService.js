@@ -132,7 +132,7 @@ class ProjectService {
         const flowersByColor = {}
 
         for (let flower of flowers) {
-            if(!flower.flowerimage && !flower.flowercolors && !flower.flowername) continue
+            if(!flower.flowerimage || !flower.flowercolors || !flower.flowername) continue
             flower.flowercolor = flower.flowercolors[0]
             flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage, 100)
             if(!flowersByColor[flower.flowercolor]) {
@@ -142,9 +142,10 @@ class ProjectService {
             }     
         }
 
-        if (Object.keys(flowersByColor).length == 0) {
+        if (Object.keys(flowersByColor).length == 1 && Object.keys(flowersByColor)[0] == 'null') {
             throw {message: 'This project has no flowers assigned', status: 400}
         }
+
         const presentationid = await createPresentation(googleAccessToken, flowersByColor)
         return presentationid
     }
