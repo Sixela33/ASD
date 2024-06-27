@@ -405,7 +405,7 @@ export default function ViewProject() {
             minPermissionLevel: permissionsRequired['delete_project']
         },
         {
-            text: 'Generate floral selection', 
+            text: 'Generate Floral Selection', 
             action: handleGeneratePPTslides,
             icon: <FiDownload/>,
             minPermissionLevel:permissionsRequired['download_projectppt']

@@ -168,7 +168,7 @@ export default function ViewInvoices() {
             <div className="grid grid-cols-3 mb-4">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Invoices</h1>
-                <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Load Invoice</Link>
+                <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Add New Invoice</Link>
             </div>
             <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
                     <div className='flex items-center space-x-1'>
