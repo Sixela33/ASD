@@ -66,7 +66,6 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
 
     useEffect(() => {
         if(clientList && projectData) {
-            console.log('first')
             handleProjectData()
         }
     }, [projectData])
