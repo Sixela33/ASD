@@ -976,19 +976,21 @@ class ModelPostgres {
 
     getFlowersXInvoice = async (invoiceid) => {
         this.validateDatabaseConnection()
-        const respone = await CnxPostgress.db.query(
+        const response = await CnxPostgress.db.query(
             `SELECT
                 f.flowerid,
                 f.flowername,
                 FxI.unitPrice,
-                FxI.numStems,
+                FxI.stemsPerBox,
+                FxI.boxPrice,
+                FxI.boxesPurchased,
                 p.projectID
-                FROM flowerXInvoice FxI
-                LEFT JOIN flowers f ON f.flowerID = FxI.flowerID
-                LEFT JOIN projects p ON p.projectID = FxI.projectID
-                WHERE FxI.invoiceID = $1;`, [invoiceid])
-
-        return respone
+            FROM flowerXInvoice FxI
+            LEFT JOIN flowers f ON f.flowerID = FxI.flowerID
+            LEFT JOIN projects p ON p.projectID = FxI.projectID
+            WHERE FxI.invoiceID = $1;`, [invoiceid])
+    
+        return response
     }
 
     linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {

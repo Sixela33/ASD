@@ -42,9 +42,13 @@ const makeMigrations = async () => {
             console.log("Creating stored procedures")
             var files = fs.readdirSync(filesFolder + spFolder);
             files.forEach(async (file) => {
-                const sql = fs.readFileSync(filesFolder + spFolder + "/" + file, "utf8");
-                await model.runQuery(sql)
-                console.log("created: ", file)
+                try {
+                    const sql = fs.readFileSync(filesFolder + spFolder + "/" + file, "utf8");
+                    await model.runQuery(sql)
+                    console.log("created: ", file)
+                } catch (e) {
+                    console.log("error with file: ", file)
+                }
             })
 
             console.log("migrations ran successfully");

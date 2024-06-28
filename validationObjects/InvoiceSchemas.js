@@ -33,15 +33,25 @@ const invoiceFlowerSchema = Joi.object({
     projectid: schemas.idSchema.required().messages({
         'any.required': 'Project ID is required.'
     }),
-    unitPrice: Joi.number().min(0).required().messages({
+    unitprice: Joi.number().min(0).required().messages({
         'number.base': 'Unit price must be a number.',
         'number.min': 'Unit price must be greater than or equal to zero.',
         'any.required': 'Unit price is required.'
     }),
-    filledStems: Joi.number().min(0).required().messages({
-        'number.base': 'Filled stems must be a number.',
-        'number.min': 'Filled stems must be greater than or equal to zero.',
-        'any.required': 'Filled stems is required.'
+    stemsperbox: Joi.number().min(1).required().messages({
+        'number.base': 'Stems per box must be a number.',
+        'number.min': 'Stems per box must be greater than or equal to one.',
+        'any.required': 'Stems per box is required.'
+    }),
+    boxprice: Joi.number().min(0).required().messages({
+        'number.base': 'Box price must be a number.',
+        'number.min': 'Box price must be greater than or equal to zero.',
+        'any.required': 'Box price is required.'
+    }),
+    boxespurchased: Joi.number().min(1).required().messages({
+        'number.base': 'Boxes purchased must be a number.',
+        'number.min': 'Boxes purchased must be greater than or equal to one.',
+        'any.required': 'Boxes purchased is required.'
     })
 });
 

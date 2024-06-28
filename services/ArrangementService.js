@@ -34,6 +34,10 @@ class ArrangementService {
         return response.rows
     }
 
+    createArrangementType = async (name) => {
+        await this.model.loadArrangementType(name)
+    }
+
     getArrangementData = async (id) => {
         let arrangementData = this.model.getArrangementDataByID(id)
         let arrangementFLowerData = this.model.getFlowersByArrangementID(id)

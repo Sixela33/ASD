@@ -31,14 +31,13 @@ export default function ViewSingleInvoice() {
                 setMessage("Server Error")
                 useNavigate('/invoice')
             }
-            
             const processedFlowerData = []
             flowers.map((flower) => {
-                let ix = processedFlowerData.findIndex((item) => item.flowerid == flower.flowerid)
+                let ix = processedFlowerData.findIndex((item) => (item.flowerid == flower.flowerid && flower.unitprice == item.unitprice && flower.stemsperbox == item.stemsperbox))
                 if (ix == -1) {
                     processedFlowerData.push(flower)
                 } else {
-                    processedFlowerData[ix].numstems = processedFlowerData[ix].numstems + flower.numstems
+                    processedFlowerData[ix].boxespurchased = processedFlowerData[ix].boxespurchased + flower.boxespurchased
                 }
             })
 
@@ -114,19 +113,22 @@ export default function ViewSingleInvoice() {
                         <TableHeaderSort
                             headers = {{
                                 "Flower Name": "flowername", 
-                                "Unit Price": "unitprice",
-                                "Stem Quantity": "numstems", 
+                                "Stem Price": "unitprice",
+                                "Unit price": "boxprice" ,
+                                "Units Purchased": "boxespurchased",
+                                "Stems per Unit": "stemsperbox" ,
                             }}
                         >
                             {invoiceFlowers.map((item, index) => {
                                 return <tr key={index}  onClick={() => onRowClick(item)}>
                                     <td>{item.flowername}</td>
                                     <td>{toCurrency(item.unitprice)}</td>
-                                    <td>{item.numstems}</td>
+                                    <td>{toCurrency(item.boxprice)}</td>
+                                    <td>{item.boxespurchased}</td>
+                                    <td>{item.stemsperbox}</td>
                                 </tr>
                             })}
                         </TableHeaderSort>
-                      
                     </div>
                     {bankTxs && <div className='h-[10vh] overflow-y-auto'>
                             <h3>Bank Transactions</h3>

@@ -25,7 +25,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     const [displayFlowerData, setDisplayFlowerData] = useState([])
     const [selectedRow, setSelectedRow] = useState(0)
     const [addFlowerPopup, toggleAddFlowerPopup] = useState(false)
-    const [flowerPriceTracker, setFlowerPriceTracker] = useState([])
 
     const CHOSEN_PROJECTS_SORTED = chosenProjects.sort((a, b) => a - b)
     if (!loadedFlowers) loadedFlowers = []
@@ -37,7 +36,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             const resSorted = projects.sort((a, b) => a.projectid - b.projectid )
             setProjectsInfo(resSorted)
             setFlowerData(flowers)
-                
+
         } catch (error) {
             //console.log(error)
             console.error('Error fetching data:', error);
@@ -58,17 +57,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             temp_flower_data.push(...tempLoadedFlowers)
         }
 
-        let {aggregatedFlowerArrayByProject, aggregatedUniqueFlowers} = aggregateFlowerData(temp_flower_data)
-        
-        // Forcing prices to be the ones added in this invoice
-        if(loadedFlowers) {
-            loadedFlowers.map(flower => {
-                let ix = aggregatedUniqueFlowers.findIndex(f => f.flowerid == flower.flowerid)
-                if (ix != -1) {
-                    aggregatedUniqueFlowers[ix].unitprice = flower.unitprice
-                }
-            })
-        }
+        let {aggregatedFlowerArrayByProject} = aggregateFlowerData(temp_flower_data)
+    
     
         const sortedArray = Array(CHOSEN_PROJECTS_SORTED.length).fill([])
     
@@ -81,160 +71,125 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             sortedArray.push([])
         }
     
-        setFlowerPriceTracker(aggregatedUniqueFlowers)
         setDisplayFlowerData(sortedArray)
     }, [flowerData, loadedFlowers, CHOSEN_PROJECTS_SORTED])
-    
-    const changeFlowerUnitPrice = (e, flowerID) => {
+
+    const modifyFlowerData = (e, flowerIndex) => {
         e.preventDefault()
-        // I find the index fo the flower id 
-        const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerID)
 
-        if (existingFlowerIndex !== -1) {
-            const updatedFlowerPriceTracker = [...flowerPriceTracker]
+        const { name, value } = e.target
 
-            updatedFlowerPriceTracker[existingFlowerIndex].unitprice = e.target.value
-            setFlowerPriceTracker(updatedFlowerPriceTracker)
+        if(!displayFlowerData[selectedRow][flowerIndex]) {
+            console.log("ups")
+            return
         }
-    }
 
-    // I use this function to track the total ammount of evry stem so i dont have to iterate through the whole flower x projects array
-    const changeTotalFlowersInInvoice = (flowerID, diference) => {
-        const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerID)
-        
-        if (existingFlowerIndex !== -1) {
-            const updatedFlowerPriceTracker = [...flowerPriceTracker]
+        const temp_var = [...displayFlowerData]
 
-            updatedFlowerPriceTracker[existingFlowerIndex].addedStems += diference
-
-            setFlowerPriceTracker(updatedFlowerPriceTracker)
+        temp_var[selectedRow][flowerIndex] = {
+            ...displayFlowerData[selectedRow][flowerIndex],
+            [name]:value
         }
-    }
 
-    // Change the ammount of flowers that are added to the invoice
-    const fillFlowerDemand = (e, flowerIndex) => {
-        e.preventDefault();
-        const { value } = e.target;
-
-        if (!isNaN(value)) {
-            const updatedDisplayFlowerData = [...displayFlowerData];
-            const selectedFlower = updatedDisplayFlowerData[selectedRow][flowerIndex];
-            
-            // Modificar el valor de la demanda de la flor seleccionada
-            const ammountDif = value - selectedFlower.filledStems
-            changeTotalFlowersInInvoice(selectedFlower.flowerid, ammountDif)
-            selectedFlower.filledStems = value;
-
-            // Actualizar el estado displayFlowerData
-            updatedDisplayFlowerData[selectedRow][flowerIndex] = selectedFlower;
-            setDisplayFlowerData(updatedDisplayFlowerData);
-        }
+        setDisplayFlowerData(temp_var)
     }
 
     const addFlowerToProject = (flowerData) => {
-        // checking if the project already has this flower
-        const flowerExists = displayFlowerData[selectedRow].findIndex(item => item.flowerid === flowerData.flowerid);
-        
-        // if it doies, error
-        if (flowerExists !== -1) {
+        try {
+            let newFlowerData = displayFlowerData
 
-            setMessage("Flower already exists in the project")
-            return;
-        }
-
-        // checking if the price of the type of flower is being tracked
-        const existingFlowerPriceIndex = flowerPriceTracker.findIndex(item => item.flowerid === flowerData.flowerid);
-    
-        // if its not, i add it
-        if (existingFlowerPriceIndex === -1) {
-            const newPriceObject = {
-                addedStems: 0,
+            // adding the flower to the project
+            const newFlowerObject = {
                 flowerid: flowerData.flowerid,
+                projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
+                stemsperbox: 0,
+                boxprice: 0,
+                boxespurchased: 0,
+                totalstems: 0,
                 flowername: flowerData.flowername,
-                unitprice: ""
             };
     
-            const newPrices = [...flowerPriceTracker, newPriceObject];
-            setFlowerPriceTracker(newPrices);
+            newFlowerData[selectedRow] = [...newFlowerData[selectedRow], newFlowerObject]
+            setDisplayFlowerData(newFlowerData)
+            
+        } catch (e)  {
+            console.log(e)
         }
-    
-        // adding the flower to the project
-        const newFlowerObject = {
-            filledStems: "",
-            flowerid: flowerData.flowerid,
-            flowername: flowerData.flowername,
-            projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
-            totalstems: 0,
-        };
-        
-        const newFlowerData = displayFlowerData.map((projectFlowers, index) => {
-            if (index === selectedRow) {
-                return [...projectFlowers, newFlowerObject];
-            }
-            return projectFlowers.slice(); // Creating shallow copy of other project arrays
-        });
-    
-        setDisplayFlowerData(newFlowerData);
     };
-  
-    const addPrices = () => {
-        const result = displayFlowerData.flatMap(project => {
-            return project.map(flowerItem => {
-                const existingPriceFlower = flowerPriceTracker.find(item => item.flowerid === flowerItem.flowerid);
-                
-                // cleaning up the flower data object
-                if (!(flowerItem.filledStems == '' || flowerItem.filledStems == 0)) {
-                    return {
-                        flowerid: flowerItem.flowerid, 
-                        projectid: flowerItem.projectid, 
-                        unitPrice: existingPriceFlower.unitprice,
-                        filledStems: flowerItem.filledStems
-                    };
-                }
-            }).filter(Boolean); // Filtering indefined values
-        });
-    
-        return result;
-    }
 
     const getTotalAdded = () => {
-        return flowerPriceTracker?.reduce((value, flower) => {
-            return value + flower.addedStems * flower.unitprice
-        }, 0)
+        // Iterates through all the projects and its flowers and adds up how much spending is registered
+        return displayFlowerData?.reduce((value, projects) => {
+            let projectSum = projects.reduce((sum, flower) => {
+                return sum + (flower.boxprice * flower.boxespurchased)
+            }, 0)
+            return value + projectSum
+        }, 0) ?? 0
     }
+
+    const getTotalAddedAndWithNoStemData = () => {
+        // Iterates through all the projects and its flowers and adds up how much spending is registered
+        // AND records wich flowers got added the "stemsperbox" property but with no "stemsperbox" specified
+        return displayFlowerData?.reduce((value, project) => {
+            let projectSum = project.reduce((sum, flower) => {
+                sum.totalAdded += (flower.boxprice * flower.boxespurchased);
+                if (flower.boxespurchased != 0 && flower.stemsperbox == 0) {
+                    sum.addedWIthNoStemInfo += 1;
+                    if (!sum.noStemInfoFlowers[flower.projectid]) {
+                        sum.noStemInfoFlowers[flower.projectid] = [];
+                    }
+                    sum.noStemInfoFlowers[flower.projectid].push(flower.flowerid);
+                }
+                return sum;
+            }, {totalAdded: 0, addedWIthNoStemInfo: 0, noStemInfoFlowers: {}});
+            
+            value.totalAdded += projectSum.totalAdded;
+            value.addedWIthNoStemInfo += projectSum.addedWIthNoStemInfo;
+            value.noStemInfoFlowers = { ...value.noStemInfoFlowers, ...projectSum.noStemInfoFlowers };
+            
+            return value;
+        }, {totalAdded: 0, addedWIthNoStemInfo: 0, noStemInfoFlowers: {}}) ?? {totalAdded: 0, addedWIthNoStemInfo: 0, noStemInfoFlowers: {}};
+    };
 
     const submitInvoiceCreation = async (e) => {
         e.preventDefault();
         try {
             setLoading(true)
-            let invoiceFlowerData = addPrices()
             const formDataToSend = new FormData();
 
-            invoiceFlowerData = invoiceFlowerData.flat(0)
             
             // this function checks if the total of flowers added coincide with the invoice AND
             // if the user added stems but did not set the price
-            const validationInput = flowerPriceTracker?.reduce((value, flower) => {
-                let temp = value
-                temp.totalAdded += flower.addedStems * flower.unitprice
-                if (flower.addedStems != 0 && flower.unitprice == 0) {
-                temp.AddedWithNoPrice += 1
-                }
-                return temp 
-            }, {totalAdded: 0, AddedWithNoPrice: 0})
+            const validationOutput = getTotalAddedAndWithNoStemData()
 
-            if (invoiceData.invoiceAmount != validationInput.totalAdded) {
+            console.log("validationOutput", validationOutput)
+
+            if (invoiceData.invoiceAmount != validationOutput.totalAdded) {
                 setMessage("The invoice ammount and Registered Expenses do not coincide", true)
                 return
             }
 
-            if (validationInput.AddedWithNoPrice != 0){
+            if (validationOutput.addedWIthNoStemInfo != 0){
                 setMessage("Added stems with no price assigned")
                 return
             }
 
+            let invoiceFlowerData = displayFlowerData.flat(Infinity)
+
+            let temp = invoiceFlowerData
+            .filter(item => item.boxespurchased)
+            .map(item => {
+                let temp = {
+                    ...item,
+                    unitprice: item.boxprice / item.boxespurchased,
+                }
+                delete temp.totalstems
+                delete temp.flowername
+                return temp
+            })
+
             formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
-            formDataToSend.append('InvoiceFlowerData', JSON.stringify(invoiceFlowerData));
+            formDataToSend.append('InvoiceFlowerData', JSON.stringify(temp));
             formDataToSend.append('invoiceFile', invoiceFile);
 
             if (!invoiceData.invoiceid) {
@@ -295,24 +250,25 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipe stems', 'Stems Used', 'Unit price'].map((name, index) => (
+                        {['Flower name', 'Recipe stems', 'Bought Stems', 'Stems per Unit', 'Unit price', 'Units purchased'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
                     {displayFlowerData[selectedRow]?.map((flower, index) => {
-                        const existingFlowerIndex = flowerPriceTracker.findIndex(item => item.flowerid === flower.flowerid);
-
                         return <tr key={index}>
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
+                            <td>{flower.stemsperbox * flower.boxespurchased}</td>
                             <td>
-                                <input className='w-1/2' type='number' min={0} value={flower.filledStems} onChange={(e) => fillFlowerDemand(e, index)}></input> 
-                                <button className='mx-2 go-back-button' value={flower?.totalstems} onClick={(e) => fillFlowerDemand(e, index)}>All</button>
+                                <input className='w-1/2' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                             <td>
-                                $<input className=' w-1/2' type='number' min={0} value={flowerPriceTracker[existingFlowerIndex].unitprice} onChange={(e) => changeFlowerUnitPrice(e, flower.flowerid)}/>
+                                $<input className=' w-1/2' type='number' name='boxprice' min={0} value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                            </td>
+                            <td>
+                                <input className='w-1/2' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                         </tr>
                     })}
@@ -325,7 +281,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <p className="font-bold">Registered Expenses: {toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className='buton-main my-1 w-1/2 mx-auto' disabled={getTotalAdded() != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
   )
 }

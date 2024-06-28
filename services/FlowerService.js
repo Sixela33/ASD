@@ -17,7 +17,7 @@ class FlowerService {
         await validateFlower({name, colors})
         let savePath = ''
         if (image) {
-            savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH)
+            savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH, true)
         }
         
         const response = await this.model.addFlower(savePath, name, colors)
@@ -33,7 +33,7 @@ class FlowerService {
         let filepath = flowerData.flowerimage
 
         if (image) {
-            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, flowerData.flowerimage, FLOWER_IMAGE_PATH)
+            filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, flowerData.flowerimage, FLOWER_IMAGE_PATH, true)
         }
 
         await this.model.editFlower(name, colors, id, filepath)

@@ -21,6 +21,13 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
   const searchRef = useRef(null)
 
   useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (inputRef.current && !inputRef.current.contains(e.target)) {
+          setQuery("")
+          setIsOpen(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     
     return () => {
@@ -35,12 +42,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
       }}
   }, [isOpen]);
 
-  const handleClickOutside = (e) => {
-    if (inputRef.current && !inputRef.current.contains(e.target)) {
-        setQuery("")
-        setIsOpen(false);
-    }
-  };
+
 
   const selectOption = (option) => {
     

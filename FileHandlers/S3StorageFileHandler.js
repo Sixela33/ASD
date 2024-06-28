@@ -17,7 +17,7 @@ class S3FileHandler {
       })
     }
 
-  async handleNewFile(file, allowedExtensions, finalFolder) {
+  async handleNewFile(file, allowedExtensions, finalFolder, crop) {
     const fileExtension = path.extname(file?.originalname).toLowerCase().substring(1);
 
     if (!allowedExtensions.includes(fileExtension)) {
@@ -28,8 +28,8 @@ class S3FileHandler {
     const filename = crypto.randomBytes(32).toString('hex');
     let buffer = file.buffer
 
-    if(fileExtension != 'pdf'){
-      buffer = await sharp(file.buffer).resize(512, 512).toBuffer() 
+    if(crop === true && fileExtension != 'pdf'){
+      buffer = await sharp(file.buffer).resize(512, 512, {fit: 'contain'}).toBuffer() 
     }
     
     const params = {
@@ -44,8 +44,8 @@ class S3FileHandler {
     return `${finalFolder}/${folder}/${filename}`;
   }
 
-  async handleReplaceFile(file, allowedExtensions, filepath, finalFolder) {
-    const newFileKey = await this.handleNewFile(file, allowedExtensions, finalFolder);
+  async handleReplaceFile(file, allowedExtensions, filepath, finalFolder, crop) {
+    const newFileKey = await this.handleNewFile(file, allowedExtensions, finalFolder, crop);
 
     // Remove old file
     if (!newFileKey) {

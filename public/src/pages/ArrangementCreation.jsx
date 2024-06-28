@@ -158,7 +158,7 @@ export default function ArrangementCreation() {
                                                 <td >
                                                     <input type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
                                                 </td>
-                                                <td >${flower.unitprice || 'N/A'}</td>
+                                                <td >{toCurrency(flower.unitprice || 0)}</td>
                                                 <td ><button className='go-back-button' onClick={() => removeFlower(index)}>remove</button></td>
                                             </tr>
                                         ))}
@@ -167,7 +167,7 @@ export default function ArrangementCreation() {
                             </div>
                             <div className='flex flex-row items-center justify-evenly'>
                                 <div>
-                                    <p>unitPrice: {actualSelectedFlower?.unitprice ? actualSelectedFlower?.unitprice : 'N/A'}</p>
+                                    <p>unitPrice: {actualSelectedFlower ? toCurrency(actualSelectedFlower?.unitprice) : 'N/A'}</p>
                                     <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />
                                     <button onClick={() => addFlowerDrop(actualSelectedFlower, quantityToAdd)} className='buton-secondary'>Add</button>
                                 </div>

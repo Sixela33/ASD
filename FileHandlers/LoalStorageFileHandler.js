@@ -21,7 +21,7 @@ class LocalStorageFileHandler {
     }
 
 
-    handleNewFile = async (file, allowedExtensions, finalFolder) => {
+    handleNewFile = async (file, allowedExtensions, finalFolder, crop) => {
         const fileExtension = path.extname(file?.originalname).toLowerCase().substring(1);
 
         if (!allowedExtensions.includes(fileExtension)) {
@@ -46,7 +46,7 @@ class LocalStorageFileHandler {
 
         let buffer = file.buffer
 
-        if(fileExtension != 'pdf'){
+        if(crop ===true, fileExtension != 'pdf'){
             buffer = await sharp(file.buffer).resize(512, 512, {fit: 'contain'}).toBuffer() 
         }
         
@@ -56,8 +56,8 @@ class LocalStorageFileHandler {
         return folder
     }
 
-    handleReplaceFile = async (file, allowedExtensions, filepath, finalFolder) => {
-        const newFile = this.handleNewFile(file, allowedExtensions, finalFolder)
+    handleReplaceFile = async (file, allowedExtensions, filepath, finalFolder, crop) => {
+        const newFile = this.handleNewFile(file, allowedExtensions, finalFolder, crop)
 
         //removes old file
         if (newFile && filepath) {
