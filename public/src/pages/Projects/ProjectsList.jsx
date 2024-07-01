@@ -153,10 +153,11 @@ const ProjectsList = () => {
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort
-                headers={colData} 
-                setSortConfig={setSortConfig}
-                sortConfig={sortConfig} 
-                defaultSortConfig={defaultSortCOnfig}
+                    headers={colData} 
+                    setSortConfig={setSortConfig}
+                    sortConfig={sortConfig} 
+                    defaultSortConfig={defaultSortCOnfig}
+                    styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
                 {projectsInfo.map((item, rowIndex) => (
                     <tr key={rowIndex}  onClick={() => handleRowClick(item)}>

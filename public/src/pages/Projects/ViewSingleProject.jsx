@@ -491,7 +491,6 @@ export default function ViewProject() {
                 <h3>{projectData?.projectdescription}</h3>
                 <p className={projectData?.isclosed ? 'text-red-500' : 'text-green-700'}>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
             </div>
-            {console.log(projectData)}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
                 <div>
                     <p>Client: {projectData?.projectclient}</p>
@@ -505,7 +504,9 @@ export default function ViewProject() {
             </div>
             <div className='table-container h-[20vh]'>
                 <TableHeaderSort
-                headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'Admin': ' '}}>
+                    headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'Admin': ' '}}
+                    styles={{"tbodyStyles": 'hover:cursor-pointer'}}
+                >
                     {arrangementData?.map((item, index) => (
                         <tr key={index}  
                             onClick={() => handleArrangement(item)}      
@@ -519,7 +520,7 @@ export default function ViewProject() {
                             <td>{toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
                             <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
-                            <td >
+                            <td className={item?.hasFlowers ? 'bg-green-500' : 'bg-yellow-500'}>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>
                             <td className='border-b p-2 text-center'>
@@ -544,7 +545,7 @@ export default function ViewProject() {
                                         <td>{toCurrency(item?.estimatedcost)}</td>
                                         <td><button className='go-back-button' onClick={() => toggleFlowerChange(item.flowerid)}>Change stem</button></td>
                                     </tr>
-                                    ))}
+                                ))}
                             </TableHeaderSort>
                             
                         </div>

@@ -117,6 +117,8 @@ export default function InvoiceProjectSelector({ goBack, selectedProjects, setSe
                 setSortConfig = {setSortConfig}
                 defaultSortConfig ={defaultSortCOnfig}
                 sortConfig ={sortConfig}
+                styles={{"tbodyStyles": 'hover:cursor-pointer'}}
+
                 > 
                     {projectsInfo.map((item, index) => (
                         <tr key={index} onClick={() => handleRowClick(item)} >

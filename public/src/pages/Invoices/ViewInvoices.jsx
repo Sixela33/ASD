@@ -200,9 +200,9 @@ export default function ViewInvoices() {
                     setSortConfig={setSortConfig} 
                     defaultSortConfig={defaultSortConfig} 
                     sortConfig={sortConfig} 
+                    styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
-
-                    {invoiceData.map((invoice, index) => {
+                {invoiceData.map((invoice, index) => {
                     return <tr key={index}  onClick={() => handleInvoiceSelection(invoice)}>
                         <td>{invoice?.invoiceid}</td>
                         <td>{invoice?.vendorname}</td>
@@ -210,7 +210,7 @@ export default function ViewInvoices() {
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
                         <td 
-                            className={`${invoice.hastransaction ? 'bg-green-500' : 'bg-red-500'}`}
+                            className={`${invoice.hastransaction ? 'bg-green-500' : 'bg-red-500'} hover:cursor-default`}
                             onClick={e => {e.stopPropagation()}}>
                             {invoice.hastransaction ? "Yes": 'No'}
                             <input className='ml-4' type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
