@@ -103,11 +103,11 @@ export default function FlowerColors() {
              return <tr key={index}>
                 <td>{color.colorname}</td>
                 <td>
+                  <button className='go-back-button mx-4' onClick={() => {handleEditColor(color)}}>Edit</button>
                   <button onClick={() => {
                     setSelectedForRemoval(color.colorid)
                     setShowConfirmation(true)
                   }} className='go-back-button mx-4'>Remove</button>
-                  <button className='go-back-button mx-4' onClick={() => {handleEditColor(color)}}>Edit</button>
                 </td>
               </tr>
               

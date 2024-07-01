@@ -7,11 +7,11 @@ BEGIN;
 
     CREATE TABLE flowerXInvoice (
         invoiceID INT REFERENCES invoices(invoiceID) ON DELETE CASCADE,
-        flowerID INT REFERENCES flowers(flowerID),
-        projectID INT REFERENCES projects(projectID),
-        unitPrice FLOAT,
-        stemsPerBox FLOAT REQUIRED,
-        boxPrice FLOAT REQUIRED,
+        flowerID INT REFERENCES flowers(flowerID) NOT NULL,
+        projectID INT REFERENCES projects(projectID) NOT NULL,
+        unitPrice FLOAT NOT NULL,
+        stemsPerBox FLOAT REQUIRED NOT NULL,
+        boxPrice FLOAT REQUIRED NOT NULL,
         boxesPurchased FLOAT DEFAULT 1 REQUIRED,
         loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

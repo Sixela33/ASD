@@ -113,11 +113,11 @@ export default function Vendors() {
                                 <td>{vendor.vendorid}</td>
                                 <td>{vendor.vendorname}</td>
                                 <td>
+                                    <button onClick={() => handleEditVendor(vendor)} className='go-back-button mx-4'>Edit</button>
                                     <button onClick={() => {
                                         setSelectedForRemoval(vendor.vendorid)
                                         setShowConfirmation(true)
                                     }} className='go-back-button mx-4'>Remove</button>
-                                    <button onClick={() => handleEditVendor(vendor)} className='go-back-button mx-4'>Edit</button>
                                 </td>
                             </tr>
                         })}

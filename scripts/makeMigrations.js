@@ -24,8 +24,8 @@ const makeMigrations = async () => {
                     const sql = fs.readFileSync(filesFolder + editsFolder + "/" + file, "utf8");
                     await model.runQuery(sql)
                     console.log(file, "ran successfully" )
-                } catch {
-                    console.log(file, "did not run" )
+                } catch (e) {
+                    console.log(file, "did not run", "\n", e.message )
                 }
             })
 
@@ -47,7 +47,7 @@ const makeMigrations = async () => {
                     await model.runQuery(sql)
                     console.log("created: ", file)
                 } catch (e) {
-                    console.log("error with file: ", file)
+                    console.log("error with file: ", file, "\n", e.message)
                 }
             })
 

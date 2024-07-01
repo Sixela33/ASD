@@ -192,7 +192,6 @@ export default function AddInvoice() {
       setShowLoadingInvoice(false)
       isSendingRequest.current = false
     }
-    
   }
   
   const steps = [

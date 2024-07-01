@@ -123,7 +123,7 @@ class UserService {
                     client_secret: process.env.OAUTH_CLIENT_SECRET,
                     refresh_token: payload.google_refresh,
                     grant_type: 'refresh_token'
-                } 
+                }
 
                 const response = await axios.post(url, qs.stringify(values), {headers: {"Content-Type": "application/x-www-form-urlencoded"}});
                 googleAccessToken = response.data.access_token
@@ -132,7 +132,7 @@ class UserService {
             }
 
             // creates new temporary token
-            const accessToken = await Jwt.sign({user, googleAccessToken}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30m'})
+            const accessToken = await Jwt.sign({user, googleAccessToken}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
 
             return {accessToken}
         } catch (error) {

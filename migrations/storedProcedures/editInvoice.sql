@@ -6,7 +6,7 @@ CREATE OR REPLACE PROCEDURE editInvoice(
 ) AS $$
 DECLARE
     single_flower_price JSONB;
-    filled_stems_value TEXT;
+    boxes_purchased TEXT;
 BEGIN
     UPDATE invoices
     SET
@@ -24,16 +24,18 @@ BEGIN
 
     FOREACH single_flower_price IN ARRAY p_invoiceFlowerData
     LOOP
-        filled_stems_value := single_flower_price->>'filledStems';
+        boxes_purchased := single_flower_price->>'boxespurchased';
 
-        IF NOT(filled_stems_value = '' OR filled_stems_value::NUMERIC <= 0) THEN
-            INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, numStems)
+        IF NOT(boxes_purchased = '' OR boxes_purchased::NUMERIC <= 0) THEN
+            INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, stemsPerBox, boxPrice, boxesPurchased)
             VALUES (
                 (p_invoiceData->>'invoiceid')::INT,
                 (single_flower_price->>'flowerid')::INT,
                 (single_flower_price->>'projectid')::INT,
-                (single_flower_price->>'unitPrice')::FLOAT,
-                (filled_stems_value)::FLOAT
+                (single_flower_price->>'unitprice')::FLOAT,
+                (single_flower_price->>'stemsperbox')::FLOAT,
+                (single_flower_price->>'boxprice')::FLOAT,
+                (single_flower_price->>'boxespurchased')::FLOAT
             );
         END IF;
     END LOOP;

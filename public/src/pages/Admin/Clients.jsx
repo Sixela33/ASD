@@ -112,11 +112,11 @@ export default function Clients() {
                             <td>{client.clientid}</td>
                             <td>{client.clientname}</td>
                             <td>
+                                <button onClick={() => handleEditClient(client)} className='go-back-button mx-4'>Edit</button>
                                 <button onClick={() => {
                                     setSelectedForRemoval(client.clientid)
                                     setShowConfirmation(true)
                                 }} className='go-back-button mx-4'>Remove</button>
-                                <button onClick={() => handleEditClient(client)} className='go-back-button mx-4'>Edit</button>
                             </td>
                         </tr>
                     })}

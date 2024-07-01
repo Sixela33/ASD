@@ -26,6 +26,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     const [selectedRow, setSelectedRow] = useState(0)
     const [addFlowerPopup, toggleAddFlowerPopup] = useState(false)
 
+    const[errorRows, setErrorRows] = useState({})
+
     const CHOSEN_PROJECTS_SORTED = chosenProjects.sort((a, b) => a - b)
     if (!loadedFlowers) loadedFlowers = []
 
@@ -51,14 +53,15 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     useEffect(() => {
         
         let temp_flower_data = flowerData
+        
+        console.log(loadedFlowers)
 
-        if(loadedFlowers) {
+        if(loadedFlowers && loadedFlowers.length != 0) {
             let tempLoadedFlowers = loadedFlowers.filter(item => chosenProjects.includes(item.projectid));
-            temp_flower_data.push(...tempLoadedFlowers)
+            temp_flower_data = tempLoadedFlowers
         }
-
+        
         let {aggregatedFlowerArrayByProject} = aggregateFlowerData(temp_flower_data)
-    
     
         const sortedArray = Array(CHOSEN_PROJECTS_SORTED.length).fill([])
     
@@ -130,15 +133,15 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
     const getTotalAddedAndWithNoStemData = () => {
         // Iterates through all the projects and its flowers and adds up how much spending is registered
         // AND records wich flowers got added the "stemsperbox" property but with no "stemsperbox" specified
-        return displayFlowerData?.reduce((value, project) => {
-            let projectSum = project.reduce((sum, flower) => {
+        return displayFlowerData?.reduce((value, project, projectIndex) => {
+            let projectSum = project.reduce((sum, flower, flowerIndex) => {
                 sum.totalAdded += (flower.boxprice * flower.boxespurchased);
                 if (flower.boxespurchased != 0 && flower.stemsperbox == 0) {
                     sum.addedWIthNoStemInfo += 1;
-                    if (!sum.noStemInfoFlowers[flower.projectid]) {
-                        sum.noStemInfoFlowers[flower.projectid] = [];
+                    if (!sum.noStemInfoFlowers[projectIndex]) {
+                        sum.noStemInfoFlowers[projectIndex] = [];
                     }
-                    sum.noStemInfoFlowers[flower.projectid].push(flower.flowerid);
+                    sum.noStemInfoFlowers[projectIndex].push(flowerIndex);
                 }
                 return sum;
             }, {totalAdded: 0, addedWIthNoStemInfo: 0, noStemInfoFlowers: {}});
@@ -156,7 +159,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         try {
             setLoading(true)
             const formDataToSend = new FormData();
-
             
             // this function checks if the total of flowers added coincide with the invoice AND
             // if the user added stems but did not set the price
@@ -170,7 +172,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             }
 
             if (validationOutput.addedWIthNoStemInfo != 0){
-                setMessage("Added stems with no price assigned")
+                setMessage("Added stems with no stems per unit assigned")
+                setErrorRows(validationOutput.noStemInfoFlowers)
                 return
             }
 
@@ -181,7 +184,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             .map(item => {
                 let temp = {
                     ...item,
-                    unitprice: item.boxprice / item.boxespurchased,
+                    unitprice: parseFloat(item.boxprice / item.boxespurchased).toFixed(2),
                 }
                 delete temp.totalstems
                 delete temp.flowername
@@ -257,7 +260,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 </thead>
                 <tbody>
                     {displayFlowerData[selectedRow]?.map((flower, index) => {
-                        return <tr key={index}>
+                        return <tr key={index} className={errorRows[selectedRow]?.includes(index) && 'border-2 border-rose-500'}>
+                            {console.log("errorRows", errorRows)}
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>{flower.stemsperbox * flower.boxespurchased}</td>

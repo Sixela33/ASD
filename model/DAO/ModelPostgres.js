@@ -397,28 +397,33 @@ class ModelPostgres {
             f.flowerName,
             ARRAY_AGG(fc.colorName) AS flowerColors,
             fxa.amount,
-            FxI.unitPrice
-            FROM projects p
-            JOIN arrangements a ON p.projectID = a.projectID
-            LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
-            LEFT JOIN flowers f ON fxa.flowerID = f.flowerID 
-            LEFT JOIN (
-                SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
-                FROM flowerXInvoice fx
-                JOIN (
-                    SELECT 
-                        MAX(loadedDate) AS max_loaded_date,
-                        flowerID
-                    FROM flowerXInvoice
-                    GROUP BY 
-                        flowerID
-                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
-                GROUP BY fx.flowerID
-            ) FxI ON f.flowerID = FxI.flowerID
-            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
-            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
-            WHERE p.projectID = ANY($1)
-            GROUP BY f.flowerID, p.projectid, a.arrangementid, fxa.amount, fxi.unitprice;`, [ids])
+            FxI.unitPrice,
+            FxI.boxPrice,
+            FxI.stemsPerBox
+        FROM projects p
+        JOIN arrangements a ON p.projectID = a.projectID
+        LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
+        LEFT JOIN flowers f ON fxa.flowerID = f.flowerID 
+        LEFT JOIN (
+            SELECT 
+                fx.flowerID, 
+                MAX(fx.unitPrice) AS unitPrice,
+                MAX(fx.boxPrice) AS boxPrice,
+                MAX(fx.stemsPerBox) AS stemsPerBox
+            FROM flowerXInvoice fx
+            JOIN (
+                SELECT 
+                    MAX(loadedDate) AS max_loaded_date,
+                    flowerID
+                FROM flowerXInvoice
+                GROUP BY flowerID
+            ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+            GROUP BY fx.flowerID
+        ) FxI ON f.flowerID = FxI.flowerID
+        LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+        LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+        WHERE p.projectID = ANY($1)
+        GROUP BY f.flowerID, p.projectid, a.arrangementid, fxa.amount, FxI.unitPrice,FxI.boxPrice,FxI.stemsPerBox;`, [ids])
         return response
     }
 

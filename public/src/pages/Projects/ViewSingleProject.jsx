@@ -12,6 +12,7 @@ import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenu
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
 import { FiDownload, FiEdit, FiTrash } from "react-icons/fi";
+import { RiFlowerLine } from "react-icons/ri";
 import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup'
@@ -399,12 +400,6 @@ export default function ViewProject() {
 
     const buttonOptions = [
         {
-            text: "delete project",
-            action: () => setShowDeleteProjectPopup(true),
-            icon: <FiTrash/>,
-            minPermissionLevel: permissionsRequired['delete_project']
-        },
-        {
             text: 'Generate Floral Selection', 
             action: handleGeneratePPTslides,
             icon: <FiDownload/>,
@@ -413,20 +408,26 @@ export default function ViewProject() {
         {
             text: 'Add New Arrangement', 
             action: handleCreateArrangement,
-            icon: '+',
+            icon: <RiFlowerLine/>,
             minPermissionLevel:permissionsRequired['add_arrangement']
         },
         {
-            text: 'Add new service', 
+            text: 'Add New Service', 
             action: handleAddNewService,
             icon: '+',
             minPermissionLevel:permissionsRequired['add_arrangement']
         },
         {
-            text: 'Edit project Data', 
+            text: 'Edit Project Data', 
             action: handleEditProjectData,
             icon: <FiEdit/>,
             minPermissionLevel:permissionsRequired['edit_project_data']
+        },
+        {
+            text: "Delete Project",
+            action: () => setShowDeleteProjectPopup(true),
+            icon: <FiTrash/>,
+            minPermissionLevel: permissionsRequired['delete_project']
         },
     ]
 
@@ -486,20 +487,25 @@ export default function ViewProject() {
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/projects')} >Go Back</button>
                 <h2 className='col-span-1'>Project Overview</h2>
             </div>
-            <p className={projectData?.isclosed ? 'text-red-500' : 'text-green-700'}>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
+            <div>
+                <h3>{projectData?.projectdescription}</h3>
+                <p className={projectData?.isclosed ? 'text-red-500' : 'text-green-700'}>Project status: {projectData?.isclosed ? 'Closed': 'Open'}</p>
+            </div>
+            {console.log(projectData)}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-10 font-bold my-5">
                 <div>
                     <p>Client: {projectData?.projectclient}</p>
-                    <p>Project Date: {projectData?.projectdate}</p>
+                    <p>Project Start Date: {projectData?.projectdate}</p>
                 </div>
                 <div className="md:col-start-2">
                     <p>Project Contact: {projectData?.projectcontact}</p>
-                    <p>Project Description: {projectData?.projectdescription}</p>
+                    <p>Project End Date: {projectData?.projectenddate}</p>
+                    
                 </div>
             </div>
             <div className='table-container h-[20vh]'>
                 <TableHeaderSort
-                headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'admin': ' '}}>
+                headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'Admin': ' '}}>
                     {arrangementData?.map((item, index) => (
                         <tr key={index}  
                             onClick={() => handleArrangement(item)}      
@@ -513,12 +519,12 @@ export default function ViewProject() {
                             <td>{toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
                             <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
-                            <td>
+                            <td >
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>
                             <td className='border-b p-2 text-center'>
                                 <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) => handleCLickReemoveArrangement(e, item)}>remove</button>
+                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) => handleCLickReemoveArrangement(e, item)}>Remove</button>
                             </td>
                         </tr>
                     ))}
@@ -545,8 +551,8 @@ export default function ViewProject() {
 
                         <div className='flex mt-5'>
                             <div className='flex-row'>
-                                <button className='buton-secondary mx-3 my-2' onClick={downloadFlowerList}>Download Floral Order</button>
-                                <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open project": "Close project"}</button>
+                                <button className='buton-secondary mx-3 my-2' onClick={downloadFlowerList}>Download Shopping List</button>
+                                <button className='buton-secondary' onClick={closeProject} >{projectData.isclosed ? "Open Project": "Close Project"}</button>
                             </div>
                             <div className='flex-row text-left ml-5'>
                                 <p>Flower budget: {toCurrency(totalBudget)}</p>
@@ -560,7 +566,7 @@ export default function ViewProject() {
                             <h2>Extra Services</h2>
                             <div className='table-container h-[20vh] mt-2'>
                                 <TableHeaderSort
-                                    headers={{'Description': ' ', 'Client cost': ' ', 'Quantity': ' '}}>
+                                    headers={{'Description': ' ', 'Cost to Client': ' ', 'Quantity': ' '}}>
                                     {extraServicesData?.map((item, index) => (
                                         <tr key={index} onClick={() => handleEditService(item)}>
                                             <td>{item?.description}</td>
