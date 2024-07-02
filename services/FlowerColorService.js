@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js";
-import { validateId, validateQueryString } from "./Validations/IdValidation.js";
+import { validateId, validateQueryString, validateRequiredQueryString } from "./Validations/IdValidation.js";
 
 class FlowerColorService {
     constructor() {
@@ -14,18 +14,18 @@ class FlowerColorService {
     }
 
     createFlowerColor = async (colorName) => {
-        await validateQueryString(colorName)
+        await validateRequiredQueryString(colorName)
         await this.model.createFlowerColor(colorName)
     }
 
     editFlowerColor = async (colorID, colorName) => {
-        await validateQueryString(colorName)
+        await validateRequiredQueryString(colorName)
         await validateId(colorID)
         await this.model.editFlowerColor(colorID, colorName)
     }
 
     getColorID = async (name) => {
-        await validateQueryString(name)
+        await validateRequiredQueryString(name)
         const response = await this.model.getColorID(name)
         return response[0]
     }

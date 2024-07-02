@@ -28,12 +28,13 @@ describe('Projects Routes api/projects', () => {
 
             
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
                 client: 3, 
                 profitMargin: 0.7, 
+                isRecurrent: false,
                 arrangements: [
                     {
                         arrangementType: 1,
@@ -69,12 +70,13 @@ describe('Projects Routes api/projects', () => {
 
             
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
                 client: 3, 
                 profitMargin: 0.7, 
+                isRecurrent: false,
                 extras: [
                     {
                         description: 'Building',
@@ -94,14 +96,14 @@ describe('Projects Routes api/projects', () => {
 
         it('should create a new project with no extras', async () => {
 
-            
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
                 client: 3, 
                 profitMargin: 0.7, 
+                isRecurrent: false,
                 arrangements: [
                     {
                         arrangementType: 1,
@@ -126,12 +128,13 @@ describe('Projects Routes api/projects', () => {
         it('should return 400 with invalid data', async () => {
 
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
-                client: "pepe",  // string instead of int
+                client: 3, 
                 profitMargin: 0.7, 
+                isRecurrent: false,
                 arrangements: []
             }
             const response = await request.post('/api/projects/create').set('Authorization', `${adminToken}`).send(queryObject)
@@ -142,7 +145,7 @@ describe('Projects Routes api/projects', () => {
         it('should return 400 with invalid arrangement data', async () => {
 
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
@@ -171,12 +174,13 @@ describe('Projects Routes api/projects', () => {
         it('should return 400 with invalid extras data', async () => {
 
             const queryObject = {
-                staffBudget: 100, 
+                staffBudget: 0.3, 
                 contact: "me", 
                 date: new Date(), 
                 description: "best project ever", 
-                client: "pepe",  // string instead of int
+                client: 3, 
                 profitMargin: 0.7, 
+                isRecurrent: false,
                 arrangements: [],
                 extras: [
                     {

@@ -11,7 +11,9 @@ const invoiceFlowerDataGenerator = (flowerid, projectid) => ({
     flowerid: flowerid,
     projectid: projectid,
     unitPrice: faker.datatype.float({min:1, max:100}),
-    filledStems: faker.datatype.number({min:1, max:200}),
+    stemsperbox: faker.datatype.number({min:1, max: 100}),
+    boxprice: faker.datatype.number({min:1, max: 100}),
+    boxespurchased: faker.datatype.number({min:1, max: 100}),
 })
 
 export {invoiceDataGenerator, invoiceFlowerDataGenerator}

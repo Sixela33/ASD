@@ -13,7 +13,9 @@ class ArrangementService {
     validateProjectStatus = async(arrangementid) => {
         const isClosed = await this.model.isArrangementsProjectClosed(arrangementid)
 
-        console.log(isClosed)
+        if(isClosed || isClosed.lenght == 0) {
+            throw {message: "Project not found" , status: 404}
+        }
 
         if (isClosed[0].isclosed) {
             throw {message: "You can't edit a closed project" , status: 400}

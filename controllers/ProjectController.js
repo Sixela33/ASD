@@ -89,7 +89,6 @@ class ProjectController {
         try {
             const { id } = req.params
             const projectData = req.body
-            console.log(projectData)
             await this.service.editProjectData(id, projectData)
             req.logger.info(`[EDIT PROJECT DATA] ${req.user.user.email} ID: ${id}`)
 

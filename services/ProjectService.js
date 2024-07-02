@@ -16,6 +16,11 @@ class ProjectService {
 
     validateProjectStatus = async(id) => {
         const isClosed = await this.model.getIsProjectClosed(id)
+
+        if (isclosed.length == 0) {
+            throw {message: "Project not found" , status: 404}
+        }
+
         if (isClosed[0].isclosed) {
             throw {message: "You can't edit a closed project" , status: 400}
         }

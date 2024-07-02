@@ -50,6 +50,17 @@ const validateQueryString = string => {
         throw {message: error.details[0].message, status: 400}
     } 
 
-    return true}
+    return true
+}
 
-export {validateId, validateIdArray, validateQueryStringLength, validateIdnotRequired, validateQueryString}
+const validateRequiredQueryString = string => {
+    const { error } = schemas.maxLengthString.required().validate(string)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 400}
+    } 
+
+    return true
+}
+
+export {validateId, validateIdArray, validateQueryStringLength, validateIdnotRequired, validateQueryString, validateRequiredQueryString}

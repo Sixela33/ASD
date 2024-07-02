@@ -30,6 +30,10 @@ class FlowerService {
         let flowerData = await this.model.getFlowerData(id)
         flowerData = flowerData.rows[0]
 
+        if(!flowerData) {
+            throw { message: "Flower not found", status: 404 };
+        }
+
         let filepath = flowerData.flowerimage
 
         if (image) {

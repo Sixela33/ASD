@@ -37,17 +37,22 @@ class FlowerColorController {
         }
     }
 
-    getColorID = async (req, res, nect) => {
+    getColorID = async (req, res, next) => {
         try {
             const {name} = req.params
             const response = await this.service.getColorID(name)
-            res.json(response)
+
+            if(!response) {
+                res.sendStatus(404)
+            } else {
+                res.json(response).status(200)
+            }
         } catch (error) {
             next(error)
         }
     }
 
-    deleteColor = async (req, res, nect) => {
+    deleteColor = async (req, res, next) => {
         try {
             const {id} = req.query
             await this.service.deleteColor(id)
