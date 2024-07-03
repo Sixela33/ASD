@@ -164,8 +164,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             // if the user added stems but did not set the price
             const validationOutput = getTotalAddedAndWithNoStemData()
 
-            console.log("validationOutput", validationOutput)
-
             if (invoiceData.invoiceAmount != validationOutput.totalAdded) {
                 setMessage("The invoice ammount and Registered Expenses do not coincide", true)
                 return
@@ -269,7 +267,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                                 <input className='w-1/2' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                             <td>
-                                $<input className=' w-1/2' type='number' name='boxprice' min={0} value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className=' w-1/2' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
                                 <input className='w-1/2' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 

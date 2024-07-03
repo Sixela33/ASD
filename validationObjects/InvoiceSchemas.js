@@ -2,9 +2,8 @@ import Joi from "joi";
 import schemas from "./schemas.js";
 
 const invoiceSchema = Joi.object({
-    invoiceAmount: Joi.number().min(0).required().messages({
+    invoiceAmount: Joi.number().required().messages({
         'number.base': 'Invoice amount must be a number.',
-        'number.min': 'Invoice amount must be greater than or equal to zero.',
         'any.required': 'Invoice amount is required.'
     }),
     vendor: schemas.idSchema.required().messages({
@@ -33,9 +32,8 @@ const invoiceFlowerSchema = Joi.object({
     projectid: schemas.idSchema.required().messages({
         'any.required': 'Project ID is required.'
     }),
-    unitprice: Joi.number().min(0).required().messages({
+    unitprice: Joi.number().required().messages({
         'number.base': 'Unit price must be a number.',
-        'number.min': 'Unit price must be greater than or equal to zero.',
         'any.required': 'Unit price is required.'
     }),
     stemsperbox: Joi.number().min(1).required().messages({
@@ -43,9 +41,8 @@ const invoiceFlowerSchema = Joi.object({
         'number.min': 'Stems per box must be greater than or equal to one.',
         'any.required': 'Stems per box is required.'
     }),
-    boxprice: Joi.number().min(0).required().messages({
+    boxprice: Joi.number().required().messages({
         'number.base': 'Box price must be a number.',
-        'number.min': 'Box price must be greater than or equal to zero.',
         'any.required': 'Box price is required.'
     }),
     boxespurchased: Joi.number().min(1).required().messages({

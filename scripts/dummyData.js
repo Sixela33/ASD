@@ -1,51 +1,32 @@
-import CnxPostgress from '../model/CnxPostgress.js';
-import ModelPostgres from '../model/DAO/ModelPostgres.js';
-import faker from 'faker';
+import CnxPostgress from '../model/CnxPostgress.js'
+import ModelPostgres from '../model/DAO/ModelPostgres.js'
+import faker from 'faker'
 
 const extrasGenerator = () => ({
     description: faker.commerce.department(), 
-    clientcost: faker.datatype.float({min: 0, max:1000}),
+    clientcost: faker.datatype.float({min: 0, max: 1000}),
     ammount: faker.datatype.number({ min: 1, max: 5 })
 })
 
 const arrangementGenerator = () => ({
-    arrangementType: faker.datatype.number({min: 1, max:3}),
+    arrangementType: faker.datatype.number({min: 1, max: 3}),
     arrangementDescription: faker.commerce.department(),
-    clientCost: faker.datatype.number({min:0, max:5000}),
-    arrangementQuantity: faker.datatype.number({min:1, max: 100})
+    clientCost: faker.datatype.number({min: 0, max: 5000}),
+    arrangementQuantity: faker.datatype.number({min: 1, max: 100})
 })
 
-const projectGenerator = () => [{
+const projectGenerator = () => ({
     staffBudget: 0.3,
     projectContact: faker.commerce.department(),
-    projectDate: faker.date.between('2024-01-01T00:00:00.000Z', '2024-12-31T00:00:00.000Z'),
+    projectDate: faker.date.between('2024-01-01', '2024-12-31'),
+    projectEndDate: faker.date.between('2025-1-31', '2026-1-31'),
     projectDescription: faker.commerce.department(),
-    projectClient: faker.datatype.number({ min: 1, max: 5 }),
+    clientid: 1,
     profitMargin: 0.7,
-    creatorid: 1
-}]
+    creatorid: 1,
+    isRecurrent: false
+})
 
-const projects = [
-    { 
-    staffBudget: 0.3, 
-    projectContact: 'John Doe', 
-    projectDate: '2024-01-16', 
-    projectDescription: 'Conference', 
-    projectClient: 1, 
-    profitMargin: 0.7, 
-    creatorid: 1 
-    },
-    { staffBudget: 0.3, projectContact: 'Alice Smith', projectDate: '2024-01-17', projectDescription: 'Product Launch', projectClient: 2, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Bob Johnson', projectDate: '2024-01-18', projectDescription: 'Workshop', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Emma Brown', projectDate: '2024-01-19', projectDescription: 'Trade Show', projectClient: 4, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Michael Davis', projectDate: '2024-01-20', projectDescription: 'Seminar', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Sarah Wilson', projectDate: '2024-01-21', projectDescription: 'Expo', projectClient: 4, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'William Martinez', projectDate: '2024-01-22', projectDescription: 'Symposium', projectClient: 1, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Olivia Taylor', projectDate: '2024-01-23', projectDescription: 'Convention', projectClient: 3, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'James Anderson', projectDate: '2024-01-24', projectDescription: 'Training Session', projectClient: 5, profitMargin: 0.7, creatorid: 1 },
-    { staffBudget: 0.3, projectContact: 'Sophia White', projectDate: '2024-01-25', projectDescription: 'Hackathon', projectClient: 1, profitMargin: 0.2, creatorid: 1 }
-];
-  
 const flowerXArrangement = [
     [{ flowerID: 1, quantity: 4 }, { flowerID: 2, quantity: 2 }],
     [{ flowerID: 3, quantity: 5 }],
@@ -54,16 +35,24 @@ const flowerXArrangement = [
     [{ flowerID: 1, quantity: 6 }, { flowerID: 5, quantity: 5 }, { flowerID: 8, quantity: 3 }],
     [{ flowerID: 3, quantity: 4 }, { flowerID: 9, quantity: 6 }],
     [{ flowerID: 10, quantity: 8 }]
-];
-
+]
 
 const createProjects = async (model) => {
     try {
-        console.log('Creating projects');
-        for (let i = 0; i <= 20 ; i++) {
-            
-            let {staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid} = projectGenerator()[0];
-    
+        console.log('Creating projects')
+        for (let i = 0; i < 20; i++) {
+            let {
+                staffBudget, 
+                projectContact, 
+                projectDate, 
+                projectEndDate, 
+                projectDescription, 
+                clientid: projectClient, 
+                profitMargin, 
+                creatorid, 
+                isRecurrent
+            } = projectGenerator()
+
             let extrasArray = []
             let arrangementsArray = []
 
@@ -74,43 +63,69 @@ const createProjects = async (model) => {
             for (let i = 0; i <= Math.round(Math.random()) * 10 ; i++) {
                 arrangementsArray.push(arrangementGenerator())
             }
-        
-            await model.createProject(staffBudget, projectContact, projectDate, projectDescription, projectClient, profitMargin, creatorid, arrangementsArray, extrasArray, false);
+
+            await model.createProject(
+                staffBudget, 
+                projectContact, 
+                projectDate, 
+                projectEndDate, 
+                projectDescription, 
+                projectClient, 
+                profitMargin, 
+                creatorid, 
+                arrangementsArray, 
+                extrasArray, 
+                isRecurrent
+            )
         }
     } catch (error) {
-        console.error('Error during project creation: \n', error);
+        console.error('Error during project creation: \n', error)
     }
-};
+}
 
-const populateArangement = async (model) => {
+const populateArrangement = async (model) => {
     try {
         const initialValue = 3
         for (let i = initialValue; i <= initialValue + 15 ; i++) {
             await model.populateArrangement(i, flowerXArrangement[Math.floor(Math.random()*flowerXArrangement.length)])           
         }
-
     } catch (error) {
-        console.error('error during arrangementPopulation: \n', error)
-
+        console.error('Error during arrangement population: \n', error)
     }
 }
 
+const loadInvoices = async (model) => {
+    try {
+        const invoiceData = {
+            invoiceAmount: "100", 
+            vendor: "1", 
+            dueDate: "2024-01-01", 
+            invoiceNumber: "asdfasdfasdf"}
+
+        const invoiceFileLocation = "añsdfkja"
+
+        for(let i=0; i<50; i++) {
+            await model.addIncompleteInvoice(invoiceData, invoiceFileLocation, 1)
+        }
+    } catch (error) {
+        console.error("error during invoice loading", error )
+    }
+}
 
 const runScript = async() => {
     try {
-        await CnxPostgress.connect();
-        const model = new ModelPostgres();
+        await CnxPostgress.connect()
+        const model = new ModelPostgres()
         await createProjects(model)
-        await populateArangement(model)
+        await populateArrangement(model)
+        await loadInvoices(model)
     } catch (error) {
         console.log(error)
     } finally {
-        await CnxPostgress.disconnect();
-
+        await CnxPostgress.disconnect()
     }
-
 }
 
 (async () => {
-    await runScript();
-})();
+    await runScript()
+})()

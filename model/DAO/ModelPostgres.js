@@ -416,6 +416,7 @@ class ModelPostgres {
                     MAX(loadedDate) AS max_loaded_date,
                     flowerID
                 FROM flowerXInvoice
+                WHERE unitPrice > 0
                 GROUP BY flowerID
             ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
             GROUP BY fx.flowerID
@@ -607,6 +608,7 @@ class ModelPostgres {
                         MAX(loadedDate) AS max_loaded_date,
                         flowerID
                     FROM flowerXInvoice
+                    WHERE unitPrice > 0
                     GROUP BY 
                         flowerID
                 ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
@@ -747,6 +749,7 @@ class ModelPostgres {
                     MAX(loadedDate) AS max_loaded_date,
                     flowerID
                 FROM flowerXInvoice
+                WHERE unitPrice > 0
                 GROUP BY 
                     flowerID
             ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date

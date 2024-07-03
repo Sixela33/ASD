@@ -47,7 +47,7 @@ class LocalStorageFileHandler {
         let buffer = file.buffer
 
         if(crop ===true, fileExtension != 'pdf'){
-            buffer = await sharp(file.buffer).resize(512, 512, {fit: 'contain'}).toBuffer() 
+            buffer = await sharp(file.buffer).resize(512, 512, {fit: 'fill'}).toBuffer() 
         }
         
         folder = path.join(folder, filename)

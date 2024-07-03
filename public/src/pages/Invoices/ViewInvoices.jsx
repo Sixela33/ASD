@@ -8,6 +8,7 @@ import { debounce } from 'lodash';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import { toCurrency } from '../../utls/toCurrency';
 import LoadingPopup from '../../components/LoadingPopup';
+import { useInView } from 'react-intersection-observer';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
@@ -30,7 +31,7 @@ const searchByOptions = [
 const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
 
 export default function ViewInvoices() {
-    let [sortConfig, setSortConfig] = useState(defaultSortConfig)
+    const [sortConfig, setSortConfig] = useState(defaultSortConfig)
     const [invoiceData, setInvoiceData] = useState(null)
     const [bankTransactionData, setBankTransactionData] = useState('')
     const [selectedInvoices, setSelectedInvoices] = useState([])
@@ -44,10 +45,12 @@ export default function ViewInvoices() {
 
     const page = useRef(0)
     const dataLeft = useRef(false)
+    const initialLoading = useRef(false)
 
     const {setMessage} = useAlert()
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
+    const [ref, inView] = useInView({});
 
 
     const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor, showOnlyWithMissingLink) => {
@@ -71,6 +74,7 @@ export default function ViewInvoices() {
                 return;
             }
             page.current = page.current + 1;
+
             setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
         } catch (error) {
             setMessage(error.response?.data);
@@ -78,10 +82,6 @@ export default function ViewInvoices() {
     };
 
     const debounced = useCallback(debounce(fetchData, 200), []);
-
-    useEffect(() => {
-        fetchData(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink);
-    }, []);
 
     const fetchVendors = async () => {
         try {
@@ -92,23 +92,35 @@ export default function ViewInvoices() {
             console.error('Error fetching data:', error);
         }
     }
-        
-    useEffect(() => {
-        fetchVendors()
-    }, [])
 
     useEffect(() => {
-        setInvoiceData([])
-        page.current = 0
-        dataLeft.current=true
-
-        debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
+        if(initialLoading.current) {
+            setInvoiceData([])
+            page.current = 0
+            dataLeft.current=true
+    
+            debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
+        }
         
     }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink])
+
+    useEffect(() => {
+        if (inView && initialLoading.current) {
+
+            debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
+        }
+    }, [inView])
 
     const handleInvoiceSelection = (invoiceData) => {
         navigateTo(`/invoice/view/${invoiceData.invoiceid}`)
     }
+
+    useEffect(() => {
+        fetchData(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink);
+        fetchVendors()
+        initialLoading.current = true
+
+    }, []);
 
     const handleCheckboxClick = (e, invoiceID) => {
         setSelectedInvoices(prevState => {
@@ -130,7 +142,7 @@ export default function ViewInvoices() {
             const selectedInvoicesTemp = Object.keys(selectedInvoices)
 
             await axiosPrivate.post(LINK_BAKK_TX_URL, JSON.stringify({bankTransactionData, selectedInvoices: selectedInvoicesTemp}))
-            setMessage('Bank transacion added succesfully.', false)
+            setMessage('Bank transaction added successfully.', false)
             setBankTransactionData('')
             setSelectedInvoices({})
             page.current = page.current - 1;
@@ -144,12 +156,12 @@ export default function ViewInvoices() {
 
     const tryToAddBankTX = () => {
         if (Object.keys(selectedInvoices).length == 0 ) {
-            setMessage('Please select the projects you want to link with this bank transaction')
+            setMessage('Please select the invoices you want to link with this bank transaction')
             return
         }
         
         if (!bankTransactionData || bankTransactionData == '') {
-            setMessage('Please fill the bank transaction information to procede')
+            setMessage('Please fill the bank transaction information to proceed')
             return
         } 
 
@@ -192,7 +204,6 @@ export default function ViewInvoices() {
                         <label className="mr-2">Only show incomplete invoices</label>
                         <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
                     </div>
-                
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort
@@ -218,7 +229,12 @@ export default function ViewInvoices() {
                      </tr>
                     })}
 
-                </TableHeaderSort>                    
+                    {dataLeft.current && (
+                        <tr ref={ref}>
+                            <></>
+                        </tr>
+                    )}
+                </TableHeaderSort>                 
             </div>
             <div className='my-2'>
                 <input  type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
