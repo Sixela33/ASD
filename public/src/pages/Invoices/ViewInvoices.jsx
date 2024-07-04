@@ -23,11 +23,6 @@ const colData = {
     "Has transaction": "hastransaction",
 }
 
-const searchByOptions = [
-    {displayName: "Invoice Number", value: "invoicenumber"},
-    {displayName: "Invoice ID", value: "invoiceid"}, 
-] 
-
 const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
 
 export default function ViewInvoices() {
@@ -36,9 +31,14 @@ export default function ViewInvoices() {
     const [bankTransactionData, setBankTransactionData] = useState('')
     const [selectedInvoices, setSelectedInvoices] = useState([])
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
-    const [searchByInputvalue, setSearchByInputValue] = useState('')
-    const [selectedSearchFilter, setSelectedSearchFilter] = useState(searchByOptions[0].value)
     const [showOnlyWithMissingLink, setShowOnlyWithMissingLink] = useState(false)
+    const [startDate, setStartDate] = useState('')
+    const [endDate, setEndDate] = useState('')
+    const [searchByInvoiceID, setSearchByInvoiceID] = useState('')
+    const [searchByInvoiceNumber, setSearchByInvoiceNumber] = useState('')
+    const [minAmount, setMinAmmount] = useState('')
+    const [maxAmount, setMaxAmmount] = useState('')
+
 
     const [allVendors, setAllVendors] = useState([])
     const [selectedVendor, setSelectedVendor] = useState('')
@@ -53,7 +53,7 @@ export default function ViewInvoices() {
     const [ref, inView] = useInView({});
 
 
-    const fetchData = async (sortConfig, searchValue, searchCol, selectedVendor, showOnlyWithMissingLink) => {
+    const fetchData = async (sortConfig, searchByInvoiceNumber, searchByInvoiceID, selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount) => {
         try {
             if (!dataLeft.current) {
                 return;
@@ -61,13 +61,19 @@ export default function ViewInvoices() {
 
             const tempSelectedVendor = selectedVendor == undefined ? '': selectedVendor
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current + 
-                '?orderBy='+ sortConfig.key + 
-                '&order=' + sortConfig.direction + 
-                '&searchQuery=' + searchValue +
-                '&searchBy=' + searchCol + 
-                '&specificVendor=' + tempSelectedVendor+ 
-                '&onlyMissing=' + showOnlyWithMissingLink || false );
+            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
+                params: {
+                    orderBy: sortConfig.key,
+                    order: sortConfig.direction,
+                    invoiceNumber: searchByInvoiceNumber,
+                    invoiceID: searchByInvoiceID,
+                    specificVendor: tempSelectedVendor,
+                    onlyMissing: showOnlyWithMissingLink || false,
+                    startDate: startDate,
+                    endDate: endDate,
+                    minAmount: minAmount,
+                    maxAmount: maxAmount
+                }})
 
             if (response.data?.length === 0) {
                 dataLeft.current = false;
@@ -95,19 +101,30 @@ export default function ViewInvoices() {
 
     useEffect(() => {
         if(initialLoading.current) {
+
+            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.', false);
+                return;
+            }
+            
+            if (minAmount && maxAmount && minAmount > maxAmount) {
+                setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.', false);
+                return;
+            }
+
             setInvoiceData([])
             page.current = 0
             dataLeft.current=true
     
-            debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
+            debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
         }
         
-    }, [sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink])
+    }, [sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount])
 
     useEffect(() => {
         if (inView && initialLoading.current) {
 
-            debounced(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink)
+            debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
         }
     }, [inView])
 
@@ -116,7 +133,7 @@ export default function ViewInvoices() {
     }
 
     useEffect(() => {
-        fetchData(sortConfig, searchByInputvalue, selectedSearchFilter, selectedVendor, showOnlyWithMissingLink);
+        fetchData(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
         fetchVendors()
         initialLoading.current = true
 
@@ -146,7 +163,7 @@ export default function ViewInvoices() {
             setBankTransactionData('')
             setSelectedInvoices({})
             page.current = page.current - 1;
-            fetchData(sortConfig, searchByInputvalue, selectedSearchFilter)
+            fetchData(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
        
         } catch (error) {
             console.log(error)
@@ -169,7 +186,6 @@ export default function ViewInvoices() {
 
     }
 
-
     return (
         invoiceData ? <div className='container mx-auto pt-12 p-4 text-center page'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
@@ -183,27 +199,47 @@ export default function ViewInvoices() {
                 <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Add New Invoice</Link>
             </div>
             <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
-                    <div className='flex items-center space-x-1'>
-                        <input type="text" placeholder='search by...' value={searchByInputvalue} onChange={(e) => setSearchByInputValue(e.target.value)} />
-                        <select className='p-2' onChange={e => setSelectedSearchFilter(e.target.value)}>
-                            {searchByOptions.map((item, index) => {
-                                return <option value={item.value} key={index}>{item.displayName}</option>
-                            })}
-                        </select>
+                <div className='flex flex-col w-full items-center space-x-1'>
+                    <label>Invoice ID</label>
+                    <input type='text' onChange={(e) =>setSearchByInvoiceID(e.target.value)}/>
+                </div>
+                <div className='flex flex-col w-full items-center space-x-1'>
+                    <label>Invoice Number</label>
+                    <input type='text' onChange={(e) =>setSearchByInvoiceNumber(e.target.value)}/>
+                </div>
+                <div className='flex flex-col w-full items-center space-x-1'>
+                    <span className='ml-4'>Filter by vendor: </span>
+                    <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
+                        <option value={''}>Select Vendor</option>
+                        {allVendors.map((item, index) => {
+                            return <option value={item.vendorid} key={index}>{item.vendorname}</option>
+                        })}
+                    </select>
+                </div>
+                <div className='flex flex-col items-center space-x-1'>
+                    <div className='flex w-full justify-between'>
+                        <button className='text-purple-700 text-opacity-0' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
+                        <label>Date Range</label> 
+                        <button className='go-back-button' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
                     </div>
-                    <div className='flex items-center space-x-1'>
-                        <span className='ml-4'>Filter by vendor: </span>
-                        <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
-                            <option value={''}>Select Vendor</option>
-                            {allVendors.map((item, index) => {
-                                return <option value={item.vendorid} key={index}>{item.vendorname}</option>
-                            })}
-                        </select>
+                    <div className='flex flex-row'>
+                        <input type='date' value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        <input type='date' value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
-                    <div className='flex items-center space-x-1'>
-                        <label className="mr-2">Only show incomplete invoices</label>
-                        <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
+                </div>
+                <div className='flex flex-col w-full items-center space-x-1'>
+                    <div className='flex w-full justify-center'>
+                        <label>Ammount Range</label> 
                     </div>
+                    <div className='flex flex-row'>
+                        <input className='w-1/2' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+                        <input className='w-1/2' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+                    </div>
+                </div>
+                <div className='flex w-full items-center space-x-1'>
+                    <label className="mr-2">Only show incomplete invoices</label>
+                    <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
+                </div>
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort

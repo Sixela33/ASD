@@ -63,4 +63,33 @@ const validateRequiredQueryString = string => {
     return true
 }
 
-export {validateId, validateIdArray, validateQueryStringLength, validateIdnotRequired, validateQueryString, validateRequiredQueryString}
+const startDateEndDateValidation = dates => {
+    const { error } = schemas.startDateEndDateSchema.validate(dates)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 400}
+    } 
+
+    return true
+}
+
+const minMaxNumbersValidation = numbers => {
+    const { error } = schemas.minMaxNumbers.validate(numbers)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 400}
+    } 
+
+    return true
+}
+
+export {
+    validateId, 
+    validateIdArray, 
+    validateQueryStringLength, 
+    validateIdnotRequired, 
+    validateQueryString, 
+    validateRequiredQueryString, 
+    startDateEndDateValidation,
+    minMaxNumbersValidation
+}

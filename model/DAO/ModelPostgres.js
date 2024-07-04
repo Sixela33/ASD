@@ -885,10 +885,10 @@ class ModelPostgres {
         return respone
     }
 
-    getInvoices = async (offset,  orderBy, order, searchQuery, searchBy, specificVendor, onlyMissing, rows) => {
+    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount) => {
         this.validateDatabaseConnection()
         const LIMIT = rows || 50
-
+    
         const invoiceColumns = {
             invoiceid: " ORDER BY i.invoiceid",
             vendorname: " ORDER BY fv.vendorname",
@@ -897,12 +897,7 @@ class ModelPostgres {
             invoicenumber: " ORDER BY i.invoicenumber",
             hastransaction: " ORDER BY hastransaction"
         }
-
-        const invoiceSearchColumns = {
-            "invoiceid": " i.invoiceid",
-            "invoicenumber": " i.invoicenumber",
-        }
-
+    
         let queryBase = `
             SELECT 
                 i.invoiceid, 
@@ -921,46 +916,70 @@ class ModelPostgres {
                 SELECT DISTINCT invoiceID FROM invoiceTransaction
             ) it ON it.invoiceID = i.invoiceID`
     
-        
         const queryParams = []
         let queryConditions = []
-
-        if(onlyMissing == 'true') {
+    
+        if (onlyMissing == 'true') {
             queryBase += " LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID"
             queryConditions.push('fxi.invoiceID IS NULL ')
         }
-
-        // Agregar filtro para el vendor específico si se proporciona
+    
         if (specificVendor) {
             queryConditions.push('i.vendorID = $1')
             queryParams.push(specificVendor)
         }
     
-        const queryString = `%${searchQuery}%`
-        if (invoiceSearchColumns[searchBy] && searchQuery) {
-            queryConditions.push(`CAST(${invoiceSearchColumns[searchBy]} AS TEXT) LIKE $${queryParams.length + 1}`)
-            queryParams.push(queryString)
+        if (startDate && endDate) {
+            queryConditions.push(`i.invoicedate BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`)
+            queryParams.push(startDate, endDate)
+        } else if (startDate) {
+            queryConditions.push(`i.invoicedate >= $${queryParams.length + 1}`)
+            queryParams.push(startDate)
+        } else if (endDate) {
+            queryConditions.push(`i.invoicedate <= $${queryParams.length + 1}`)
+            queryParams.push(endDate)
+        }
+    
+        if (invoiceNumber) {
+            queryConditions.push(`i.invoicenumber::text LIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${invoiceNumber}%`)
+        }
+    
+        if (invoiceID) {
+            queryConditions.push(`i.invoiceid::text LIKE $${queryParams.length + 1}`)
+            queryParams.push(`%${invoiceID}%`)
+        }
+    
+        if (minAmount && maxAmount) {
+            queryConditions.push(`i.invoiceamount BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`)
+            queryParams.push(minAmount, maxAmount)
+        } else if (minAmount) {
+            queryConditions.push(`i.invoiceamount >= $${queryParams.length + 1}`)
+            queryParams.push(minAmount)
+        } else if (maxAmount) {
+            queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`)
+            queryParams.push(maxAmount)
         }
     
         if (queryConditions.length > 0) {
             queryBase += ' WHERE ' + queryConditions.join(' AND ')
         }
-
+    
         if (invoiceColumns[orderBy]) {
             queryBase += invoiceColumns[orderBy]
-            if (order && order === 'desc'){
+            if (order && order === 'desc') {
                 queryBase += ' DESC'
             }
         }
-        
+    
         queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
-        queryParams.push(LIMIT, offset*LIMIT)
-
+        queryParams.push(LIMIT, offset * LIMIT)
+    
         const response = await CnxPostgress.db.query(queryBase, queryParams)
-
+    
         return response
-        
     }
+    
 
     getProvidedProjects = async (invoiceID) => {
         this.validateDatabaseConnection()
