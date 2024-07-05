@@ -11,7 +11,7 @@ BEGIN
     UPDATE flowers
     SET
         flowerName = p_flowerName,
-        flowerImage = p_flowerImage
+        flowerImage = p_flowerImage,
         initialPrice = P_initialPrice
     WHERE
         flowerID = p_flowerid;

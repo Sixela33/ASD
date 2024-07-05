@@ -10,6 +10,11 @@ class ExtraServicesService {
 
     validateProjectStatus = async (extraid) => {
         const isClosed = await this.model.isExtraProjectClosed(extraid)
+
+        if(!isClosed || isClosed.length == 0) {
+            throw {message: "Project not found" , status: 404}
+        }
+
         if (isClosed[0].isclosed) {
             throw {message: "You can't edit a closed project" , status: 400}
         }

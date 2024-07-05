@@ -17,7 +17,7 @@ class ProjectService {
     validateProjectStatus = async(id) => {
         const isClosed = await this.model.getIsProjectClosed(id)
 
-        if (isclosed.length == 0) {
+        if(!isClosed || isClosed.length == 0) {
             throw {message: "Project not found" , status: 404}
         }
 
@@ -118,6 +118,10 @@ class ProjectService {
 
     changeFlowerInProject = async (projectid, previousflowerid, newflowerid) => {
         await validateIdArray([projectid, previousflowerid, newflowerid])
+
+        if (previousflowerid == newflowerid) {
+            throw {message: 'You cannot assign a flower to itself.', status: 400}
+        }
 
         await this.validateProjectStatus(projectid)
 
