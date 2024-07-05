@@ -14,6 +14,7 @@ const defaultFormData = {
   flower: null,
   name: '',
   color: [],
+  initialPrice: ''
 }
 
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit}) {
@@ -63,6 +64,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
           flower: defaultFormData.flower,
           name: flowerToEdit.flowername,
           color: temp,
+          initialPrice: flowerToEdit.initialprice || ''
         })
         
       }
@@ -96,6 +98,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         const formDataToSend = new FormData()
         formDataToSend.append('name', formData.name)
         formDataToSend.append('flower', formData.flower) 
+        formDataToSend.append('initialPrice', formData.initialPrice) 
 
         for (var i = 0; i < formData.color.length; i++) {
           formDataToSend.append('colors[]', formData.color[i].colorid)
@@ -162,6 +165,11 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         <div className="flex flex-col mb-4 w-full ">
             <label className="mb-1">Name:</label>
             <input className='w-full' type="text" name="name" value={formData.name} onChange={handleChange} required />
+        </div>
+
+        <div className="flex flex-col mb-4 w-full ">
+            <label className="mb-1">Initial price:</label>
+            <input className='w-full' type="number" min={0} name="initialPrice" value={formData.initialPrice} onChange={handleChange}/>
         </div>
 
         <div className="flex flex-col mb-4 w-full">

@@ -13,19 +13,19 @@ class FlowerService {
         this.fileHandler = new FileHandlerSelector(fileStorage).start()
     }
 
-    addFlower = async (image, name, colors) => {
-        await validateFlower({name, colors})
+    addFlower = async (image, name, colors, initialPrice) => {
+        await validateFlower({name, colors, initialPrice})
         let savePath = ''
         if (image) {
             savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH, true)
         }
         
-        const response = await this.model.addFlower(savePath, name, colors)
+        const response = await this.model.addFlower(savePath, name, colors, initialPrice)
         return response[0]
     };
 
-    editFlower = async (image, name, colors, id ) => {
-        await validateFlower({name, colors})
+    editFlower = async (image, name, colors, id, initialPrice ) => {
+        await validateFlower({name, colors, initialPrice})
         await validateId(id)
         let flowerData = await this.model.getFlowerData(id)
         flowerData = flowerData.rows[0]
@@ -40,7 +40,7 @@ class FlowerService {
             filepath = await this.fileHandler.handleReplaceFile(image, ALLOWED_IMAGE_EXTENSIONS, flowerData.flowerimage, FLOWER_IMAGE_PATH, true)
         }
 
-        await this.model.editFlower(name, colors, id, filepath)
+        await this.model.editFlower(name, colors, id, filepath, initialPrice)
     }
 
     deleteFlower = async (id) => {
@@ -80,6 +80,16 @@ class FlowerService {
           }
 
         return {flowerData: data, flowerPrices: prices.rows}
+    }
+
+    getLatestFlowerData = async (id) => {
+        await validateId(id)
+
+        let data = await this.model.getLatestFlowerData(id)
+
+        data = data.rows
+
+        return data
     }
 
     getIncompleteFlowers = async () => {

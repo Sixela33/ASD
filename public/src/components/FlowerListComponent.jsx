@@ -3,7 +3,6 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import useAlert from '../hooks/useAlert'
 import { useInView } from 'react-intersection-observer'
 import { debounce } from "lodash"
-import SearchableDropdown from './Dropdowns/SearchableDropdown.jsx'
 import MultipleFlowerColorSelector from './MultipleFlowerColorSelector.jsx'
 
 const GET_FLOWERS_URL = '/api/flowers/many/'

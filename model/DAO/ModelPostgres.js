@@ -513,20 +513,31 @@ class ModelPostgres {
     //                   FLOWERS
     // -----------------------------------------------
 
-    addFlower = async (image, name, colors) => {
+    addFlower = async (image, name, colors, initialPrice) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query(`
-        CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
-        [name, image, colors]);
+        let response
+        if(initialPrice) {
+            response = await CnxPostgress.db.query(`
+                CALL createFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::FLOAT);`, 
+                [name, image, colors, initialPrice]);
+        } else {
+            response = await CnxPostgress.db.query(`
+            CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
+            [name, image, colors]);
+        }
         return response.rows
         
     }
     
-    editFlower = async (name, colors, id, filepath) => {
+    editFlower = async (name, colors, id, filepath, initialPrice) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`
-        CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
-        [name, filepath, colors, id])
+        if(initialPrice) {
+            await CnxPostgress.db.query(`CALL editFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT, $5::FLOAT)`, 
+            [name, filepath, colors, id, initialPrice])
+        } else {
+            await CnxPostgress.db.query(`CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
+            [name, filepath, colors, id])
+        }
     }
 
     deleteFlower = async (id) => {
@@ -550,6 +561,7 @@ class ModelPostgres {
         f.flowerid, 
         f.flowername, 
         f.flowerimage, 
+        f.initialPrice,
         ARRAY_AGG(fc.colorName) AS flowerColors,
         ARRAY_AGG(fc.colorID) AS colorids
         FROM flowers f
@@ -582,7 +594,6 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`SELECT 
         fxi.unitPrice, 
-        
         TO_CHAR(i.createdAt , 'MM-DD-YYYY') AS createdAt
         FROM flowerXInvoice fxi 
         LEFT JOIN invoices i ON fxi.invoiceID = i.invoiceID
@@ -598,7 +609,7 @@ class ModelPostgres {
                 f.flowername, 
                 f.flowerimage, 
                 ARRAY_AGG(fc.colorName) AS flowerColors,
-                FxI.unitPrice 
+                COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice
             FROM flowers f
             LEFT JOIN (
                 SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
@@ -616,7 +627,6 @@ class ModelPostgres {
             ) FxI ON f.flowerID = FxI.flowerID 
             LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
             LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID `
-    
         const queryParams = []
         let queryConditions = []
     
@@ -646,6 +656,39 @@ class ModelPostgres {
         sqlQuery += ` ORDER BY f.flowerName LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};`
         queryParams.push(LIMIT, offset*LIMIT)
         return await CnxPostgress.db.query(sqlQuery, queryParams);
+    }
+    
+    getLatestFlowerData = async (id) => {
+        this.validateDatabaseConnection();
+        let sqlQuery = `
+            SELECT 
+                f.flowerid, 
+                f.flowername, 
+                f.flowerimage, 
+                COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice,
+                COALESCE(FxI.stemsPerBox, 0) AS stemsPerBox,
+                COALESCE(FxI.boxPrice, 0) AS boxPrice
+            FROM flowers f
+            LEFT JOIN (
+                SELECT 
+                    fx.flowerID, 
+                    MAX(fx.unitPrice) AS unitPrice,
+                    MAX(fx.stemsPerBox) AS stemsPerBox,
+                    MAX(fx.boxPrice) AS boxPrice
+                FROM flowerXInvoice fx
+                JOIN (
+                    SELECT 
+                        MAX(loadedDate) AS max_loaded_date,
+                        flowerID
+                    FROM flowerXInvoice
+                    WHERE unitPrice > 0
+                    GROUP BY flowerID
+                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+                GROUP BY fx.flowerID
+            ) FxI ON f.flowerID = FxI.flowerID 
+            WHERE f.flowerid = $1`;
+    
+        return await CnxPostgress.db.query(sqlQuery, [id]);
     }
     
 
@@ -738,7 +781,7 @@ class ModelPostgres {
             f.flowerName,
             f.flowerImage,
             ARRAY_AGG(fc.colorName) AS flowerColors,
-            FxI.unitPrice
+            COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice
         FROM flowerXarrangement FxA 
         LEFT JOIN flowers f ON FxA.flowerID = f.flowerID
         LEFT JOIN (
@@ -758,7 +801,7 @@ class ModelPostgres {
         LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
         LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID
         WHERE FxA.arrangementID = $1
-        GROUP BY FxA.flowerID, fxa.amount, f.flowername, f.flowerimage, fxi.unitprice;
+        GROUP BY FxA.flowerID, fxa.amount, f.flowername, f.flowerimage, fxi.unitprice, f.initialPrice;
         `, [id])
         return flowers
     }

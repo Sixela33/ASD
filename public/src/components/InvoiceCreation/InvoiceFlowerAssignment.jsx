@@ -7,8 +7,10 @@ import InvoiceAddFlowerToProjectPopup from './InvoiceAddFlowerToProjectPopup'
 import { useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
 import { toCurrency } from '../../utls/toCurrency'
+import LoadingPopup from '../LoadingPopup'
 
-const GET_PROJECTS_URL = '/api/projects/manyByID';
+const GET_PROJECTS_URL = '/api/projects/manyByID'
+const GET_SINGLE_FLOWER_DATA_URL = '/api/flowers/addToinvoice/'
 const ADD_INVOICE_URL = '/api/invoices'
 const UPDATE_INVOICE_URL = '/api/invoices'
 
@@ -21,7 +23,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
     const [flowerData, setFlowerData] = useState([])
     const [projectsInfo, setProjectsInfo] = useState([])
-
+    const [showLoading, setShowLoading] = useState(false)
     const [displayFlowerData, setDisplayFlowerData] = useState([])
     const [selectedRow, setSelectedRow] = useState(0)
     const [addFlowerPopup, toggleAddFlowerPopup] = useState(false)
@@ -33,6 +35,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
     const fetchData = useCallback(async () => {
         try {
+            setShowLoading(true)
             const response = await axiosPrivate.post(GET_PROJECTS_URL, JSON.stringify({ids: chosenProjects}))
             const {projects, flowers} = response.data
             const resSorted = projects.sort((a, b) => a.projectid - b.projectid )
@@ -43,6 +46,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             //console.log(error)
             console.error('Error fetching data:', error);
             setMessage(error.response?.data, true);
+        } finally {
+            setShowLoading(false)
         }
     })
 
@@ -97,29 +102,43 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         setDisplayFlowerData(temp_var)
     }
 
-    const addFlowerToProject = (flowerData) => {
+    const addFlowerToProject = async (flowerData) => {
         try {
-            let newFlowerData = displayFlowerData
-
-            // adding the flower to the project
+            let getFlowerData
+            setShowLoading(true)
+            // Getting latest invoice data from the database
+            try {
+                getFlowerData = await axiosPrivate.get(GET_SINGLE_FLOWER_DATA_URL + flowerData.flowerid)
+                getFlowerData = getFlowerData.data[0]
+            } catch (e) {
+                console.log("Could not get flower data")
+            }
+    
             const newFlowerObject = {
                 flowerid: flowerData.flowerid,
                 projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
-                stemsperbox: 0,
-                boxprice: 0,
+                stemsperbox: getFlowerData?.stemsperbox || 0,
+                boxprice: getFlowerData?.unitprice || 0,
                 boxespurchased: 0,
                 totalstems: 0,
                 flowername: flowerData.flowername,
-            };
+            }
     
-            newFlowerData[selectedRow] = [...newFlowerData[selectedRow], newFlowerObject]
-            setDisplayFlowerData(newFlowerData)
-            
-        } catch (e)  {
+            console.log(newFlowerObject)
+    
+            setDisplayFlowerData(prevData => {
+                const updatedData = [...prevData]
+                updatedData[selectedRow] = [...updatedData[selectedRow], newFlowerObject]
+                return updatedData
+            })
+    
+        } catch (e) {
             console.log(e)
+        } finally {
+            setShowLoading(false)
         }
-    };
-
+    }
+    
     const getTotalAdded = () => {
         // Iterates through all the projects and its flowers and adds up how much spending is registered
         return displayFlowerData?.reduce((value, projects) => {
@@ -210,8 +229,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         }
     }
 
+
     return (
         <div className='container mx-auto flex flex-col'>
+            <LoadingPopup showPopup={showLoading}/>
             <InvoiceAddFlowerToProjectPopup 
                 showPopup={addFlowerPopup} 
                 submitFunction={flower => addFlowerToProject(flower)} 
@@ -259,7 +280,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <tbody>
                     {displayFlowerData[selectedRow]?.map((flower, index) => {
                         return <tr key={index} className={errorRows[selectedRow]?.includes(index) && 'border-2 border-rose-500'}>
-                            {console.log("errorRows", errorRows)}
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>{flower.stemsperbox * flower.boxespurchased}</td>

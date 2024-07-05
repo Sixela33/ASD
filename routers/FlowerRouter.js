@@ -25,6 +25,7 @@ class FlowerRouter {
         //GetFlowers
         this.router.get('/many/:offset/:query?', this.controller.getFlowers)
         this.router.get('/single/:id',staffuserReq, this.controller.getFlowerData)
+        this.router.get('/addToinvoice/:id', this.controller.getLatestFlowerData)
         this.router.delete('/single/:id', staffuserReq, this.controller.deleteFlower)
         
         this.router.use('/colors', new FlowerColorRouter().start())

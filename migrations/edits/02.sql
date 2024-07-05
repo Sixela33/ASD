@@ -1,4 +1,5 @@
 BEGIN;
+DO $$ BEGIN
 
     -- ALTER TABLE STATEMENT SO THAT THIS SCRIPT ONLY RUNS ONCE
     ALTER TABLE flowerXInvoice ADD boxPrice FLOAT;
@@ -10,9 +11,9 @@ BEGIN;
         flowerID INT REFERENCES flowers(flowerID) NOT NULL,
         projectID INT REFERENCES projects(projectID) NOT NULL,
         unitPrice FLOAT NOT NULL,
-        stemsPerBox FLOAT REQUIRED NOT NULL,
-        boxPrice FLOAT REQUIRED NOT NULL,
-        boxesPurchased FLOAT DEFAULT 1 REQUIRED,
+        stemsPerBox FLOAT NOT NULL NOT NULL,
+        boxPrice FLOAT NOT NULL NOT NULL,
+        boxesPurchased FLOAT DEFAULT 1 NOT NULL,
         loadedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -28,6 +29,10 @@ BEGIN;
     boxPrice       -> Unit Price - manually enter
     unitPrice      -> Stem Price - auto-calculate Unit Price divided by Stems per Unit
     */
-
+EXCEPTION
+    WHEN others THEN
+        -- Ignore errors related to table dropping
+        NULL;
+END $$;
 COMMIT;
 

@@ -9,10 +9,13 @@ const flowerSchema = Joi.object({
     }), 
     colors: Joi.array().items(schemas.idSchema).unique().required().messages({
         'array.base': 'Colors must be an array.',
-        'array.unique': 'The same color was assinged twice.',
+        'array.unique': 'The same color was assigned twice.',
         'any.required': 'At least one color is required.'
     }),    
-    id: schemas.idSchema
+    id: schemas.idSchema,
+    initialPrice: Joi.number().min(0).allow('').messages({
+        'number.min': 'Initial price cannot be less than 0.'
+    })
 });
 
 export { flowerSchema };

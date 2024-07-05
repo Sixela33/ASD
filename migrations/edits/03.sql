@@ -1,0 +1,1 @@
+ALTER TABLE flowers ADD COLUMN initialPrice FLOAT DEFAULT 0;

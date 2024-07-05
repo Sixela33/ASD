@@ -9,8 +9,8 @@ class FlowerController {
     addFlower = async (req, res, next) => {
         try {
             const image = req.file
-            const { name, colors } = req.body
-            const response = await this.service.addFlower(image, name, colors)
+            const { name, colors, initialPrice } = req.body
+            const response = await this.service.addFlower(image, name, colors, initialPrice)
             req.logger.info(`[NEW FLOWER] ${req.user.user.email} name: ${name}`)
             res.json(response)
         } catch (error) {
@@ -22,8 +22,8 @@ class FlowerController {
     editFlower = async (req, res, next) => {
         try {
             const image = req.file
-            const { name, colors, id } = req.body
-            await this.service.editFlower(image, name, colors, id)
+            const { name, colors, id, initialPrice } = req.body
+            await this.service.editFlower(image, name, colors, id, initialPrice)
             req.logger.info(`[FLOWER EDIT] ${req.user.user.email} id: ${id}, name: ${name}`)
             res.sendStatus(200)
         } catch (error) {
@@ -71,6 +71,16 @@ class FlowerController {
         try {
             const { id } = req.params
             const response = await this.service.getFlowerData(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getLatestFlowerData = async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const response = await this.service.getLatestFlowerData(id)
             res.json(response)
         } catch (error) {
             next(error)
