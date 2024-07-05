@@ -12,8 +12,7 @@ class ArrangementService {
 
     validateProjectStatus = async(arrangementid) => {
         const isClosed = await this.model.isArrangementsProjectClosed(arrangementid)
-
-        if(isClosed || isClosed.lenght == 0) {
+        if(!isClosed || isClosed.length == 0) {
             throw {message: "Project not found" , status: 404}
         }
 
