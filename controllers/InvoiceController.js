@@ -49,6 +49,20 @@ class InvoiceController {
             next(error)
         }
     }    
+
+    deleteInvoice = async (req, res, next) => {
+        try {
+            const {id} = req.body
+            await this.service.deleteInvoice(id)
+            req.logger.info(`[INVOICE DELETE] ${req.user.user.email} ID: ${id}`)
+
+            res.sendStatus(200)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }    
+
     getInvoices = async (req, res, next) => {
         try {
             const { offset } = req.params

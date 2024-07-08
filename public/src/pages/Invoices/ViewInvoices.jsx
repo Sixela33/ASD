@@ -187,7 +187,7 @@ export default function ViewInvoices() {
     }
 
     return (
-        (invoiceData && invoiceData[0]) ? <div className='container mx-auto pt-12 p-4 text-center page'>
+        <div className='container mx-auto pt-12 p-4 text-center page'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
                 <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
                 <br/>
@@ -276,6 +276,6 @@ export default function ViewInvoices() {
                 <input  type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
                 <button onClick={tryToAddBankTX} className='buton-main ml-3'>Link bank transaction</button>
             </div>
-        </div>: <LoadingPopup/>
+        </div>
     );
 }

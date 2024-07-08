@@ -103,6 +103,17 @@ class InvoiceService {
         return response
     }
 
+    deleteInvoice = async (id) => {
+        const invoiceData = this.model.getInvoiceData(id)
+
+        if(invoiceData && invoiceData[0]) {
+            await this.fileHandler.handleDeleteFile(flowerData[0].fileLocation)
+            await this.model.deleteInvoice(id)
+        } else {
+            throw { message: "Invoice not found", status: 404 };
+        }
+    }
+
     getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount) => {
         await validateId(offset)
         await validateQueryStringLength([orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing])

@@ -892,6 +892,15 @@ class ModelPostgres {
             [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber, invoiceid]);
     }
 
+    deleteInvoice = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM invoices WHERE invoiceID = $1', [id])
+        } catch (e) {
+            await CnxPostgress.db.query('UPDATE invoices SET isRemoved = true WHERE invoiceID = $1', [id])
+        }
+    }
+
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query('CALL editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
@@ -920,7 +929,6 @@ class ModelPostgres {
             WHERE i.invoiceid = $1;`, [id])
             return respone
     }
-
 
     getInvoiceProjects = async (invoiceID) => {
         this.validateDatabaseConnection()
@@ -1003,6 +1011,8 @@ class ModelPostgres {
             queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`)
             queryParams.push(maxAmount)
         }
+
+        queryConditions.push("i.isRemoved = false")
     
         if (queryConditions.length > 0) {
             queryBase += ' WHERE ' + queryConditions.join(' AND ')
