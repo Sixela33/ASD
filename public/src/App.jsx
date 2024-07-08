@@ -18,7 +18,7 @@ import ViewFlowers from './pages/Flowers/ViewFlowers';
 import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
 import AddInvoice from './pages/Invoices/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
-import LoadingPage from './LoadingPage';
+import LoadingPage from './pages/LoadingPage';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
 import ArrangementCreation from './pages/ArrangementCreation';
 import InactiveUserPage from './pages/InactiveUserPage';

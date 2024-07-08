@@ -1,12 +1,15 @@
 import React from 'react'
-import LoadingPopup from '../components/LoadingPopup'
+import spinnerSvg from '/spinner.svg'
 
 export default function LoadingPage() {
   return (
-    <div className='page'>
-        <LoadingPopup>
-            <h1>Loading...</h1>
-        </LoadingPopup>
-    </div>
+    <>
+     <div className='flex flex-col items-center text-center my-auto py-[30vh]'>
+          <img src={spinnerSvg} className='w-[5vw]'/>
+          <div className='my-5'>
+              <h1>Loading</h1>
+          </div>
+      </div>
+    </>
   )
 }
