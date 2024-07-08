@@ -138,7 +138,9 @@ export default function ViewInvoices() {
     }
 
     useEffect(() => {
+        console.log("calling debounced")
         debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
+        console.log("after")
         fetchVendors()
         
     }, []);
