@@ -27,7 +27,7 @@ const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
 
 export default function ViewInvoices() {
     const [sortConfig, setSortConfig] = useState(defaultSortConfig)
-    const [invoiceData, setInvoiceData] = useState(null)
+    const [invoiceData, setInvoiceData] = useState([])
     const [bankTransactionData, setBankTransactionData] = useState('')
     const [selectedInvoices, setSelectedInvoices] = useState([])
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
@@ -44,7 +44,7 @@ export default function ViewInvoices() {
     const [selectedVendor, setSelectedVendor] = useState('')
 
     const page = useRef(0)
-    const dataLeft = useRef(false)
+    const dataLeft = useRef(true)
     const initialLoading = useRef(false)
 
     const {setMessage} = useAlert()
@@ -80,9 +80,10 @@ export default function ViewInvoices() {
                 return;
             }
             page.current = page.current + 1;
-
+            initialLoading.current = true
             setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
         } catch (error) {
+            console.log(error)
             setMessage(error.response?.data);
         }
     };
@@ -133,10 +134,9 @@ export default function ViewInvoices() {
     }
 
     useEffect(() => {
-        fetchData(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
+        debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
         fetchVendors()
-        initialLoading.current = true
-
+        
     }, []);
 
     const handleCheckboxClick = (e, invoiceID) => {
@@ -187,7 +187,7 @@ export default function ViewInvoices() {
     }
 
     return (
-        invoiceData ? <div className='container mx-auto pt-12 p-4 text-center page'>
+        (invoiceData && invoiceData[0]) ? <div className='container mx-auto pt-12 p-4 text-center page'>
             <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
                 <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
                 <br/>
