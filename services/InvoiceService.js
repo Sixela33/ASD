@@ -107,7 +107,6 @@ class InvoiceService {
         await validateId(offset)
         await validateQueryStringLength([orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing])
         await startDateEndDateValidation({startDate, endDate})
-        console.log(minAmount, maxAmount)
         await minMaxNumbersValidation({minAmount, maxAmount})
         const result = await this.model.getInvoices(offset,  orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount)
         return result.rows 

@@ -45,7 +45,15 @@ class FlowerService {
 
     deleteFlower = async (id) => {
         await validateId(id)
-        await this.model.deleteFlower(id)
+        let flowerData = await this.model.getFlowerData(id)
+        flowerData = flowerData.rows
+        if(flowerData && flowerData[0]) {
+            await this.fileHandler.handleDeleteFile(flowerData[0].flowerimage)
+            await this.model.deleteFlower(id)
+        } else {
+            throw { message: "Flower not found", status: 404 };
+        }
+
     }
 
     recoverFlower = async (id) => {

@@ -44,14 +44,7 @@ class S3FileHandler {
     return `${finalFolder}/${folder}/${filename}`;
   }
 
-  async handleReplaceFile(file, allowedExtensions, filepath, finalFolder, crop) {
-    const newFileKey = await this.handleNewFile(file, allowedExtensions, finalFolder, crop);
-
-    // Remove old file
-    if (!newFileKey) {
-        throw {message: 'Error loading file', status: 500}
-    }
-    
+  async handleDeleteFile(filepath) {
     if(filepath) {
       const params = {
         Bucket: this.bucketName,
@@ -60,6 +53,17 @@ class S3FileHandler {
       
       await this.s3.send(new DeleteObjectCommand(params))
     }
+  }
+
+  async handleReplaceFile(file, allowedExtensions, filepath, finalFolder, crop) {
+    const newFileKey = await this.handleNewFile(file, allowedExtensions, finalFolder, crop);
+
+    // Remove old file
+    if (!newFileKey) {
+        throw {message: 'Error loading file', status: 500}
+    }
+    
+    await handleDeleteFile(filepath)
 
     return newFileKey;
   }

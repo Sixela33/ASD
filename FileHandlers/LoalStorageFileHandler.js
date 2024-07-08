@@ -56,14 +56,20 @@ class LocalStorageFileHandler {
         return folder
     }
 
+    async handleDeleteFile(filepath) {
+        if(filepath) {
+            if(fs.existsSync(filepath)){
+                fs.unlink(filepath, (err) => {if(err) throw err})
+            }
+        }
+      }
+
     handleReplaceFile = async (file, allowedExtensions, filepath, finalFolder, crop) => {
         const newFile = this.handleNewFile(file, allowedExtensions, finalFolder, crop)
 
         //removes old file
         if (newFile && filepath) {
-            if(fs.existsSync(filepath)){
-                fs.unlink(filepath, (err) => {if(err) throw err})
-            }
+            await handleDeleteFile(filepath)
         }
 
         return newFile
