@@ -1,4 +1,5 @@
 import React from 'react'
+import spinnerSvg from '/spinner.svg'
 
 export default function LoadingPage() {
   return (
