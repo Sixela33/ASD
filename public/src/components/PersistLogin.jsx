@@ -34,7 +34,7 @@ const PersistLogin = () => {
             {!persist
                 ? <Outlet />
                 : isLoading
-                    ? <p><LoadingPage/></p>
+                    ? <LoadingPage/>
                     : <Outlet />
             }
         </>

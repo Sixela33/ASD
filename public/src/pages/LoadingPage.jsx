@@ -7,7 +7,7 @@ export default function LoadingPage() {
      <div className='flex flex-col items-center text-center my-auto py-[30vh]'>
           <img src={spinnerSvg} className='w-[5vw]'/>
           <div className='my-5'>
-              <h1>Loading</h1>
+              <h1>Loading...</h1>
           </div>
       </div>
     </>

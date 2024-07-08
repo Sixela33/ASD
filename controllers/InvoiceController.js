@@ -52,7 +52,7 @@ class InvoiceController {
 
     deleteInvoice = async (req, res, next) => {
         try {
-            const {id} = req.body
+            const {id} = req.params
             await this.service.deleteInvoice(id)
             req.logger.info(`[INVOICE DELETE] ${req.user.user.email} ID: ${id}`)
 

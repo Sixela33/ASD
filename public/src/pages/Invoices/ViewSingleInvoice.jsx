@@ -5,11 +5,13 @@ import useAlert from '../../hooks/useAlert';
 import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
-import { FiEdit, FiDownload } from 'react-icons/fi';
+import { FiEdit, FiDownload, FiTrash } from 'react-icons/fi';
 import { permissionsRequired } from '../../utls/permissions';
 import { toCurrency } from '../../utls/toCurrency';
+import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 
 const GET_PROVIDED_PROJECTS_URL = '/api/invoices/providedProjects/'
+const DELETE_INVOICE_URL = '/api/invoices'
 
 export default function ViewSingleInvoice() {
     const axiosPrivate = useAxiosPrivate()
@@ -21,6 +23,7 @@ export default function ViewSingleInvoice() {
     const [invoiceData, setInvoiceData] = useState([])
     const [invoiceFlowers, setInvoiceFlowers] = useState([])
     const [bankTxs, setBankTxs] = useState([])
+    const [showDeleteInvoiceConfirmation, setShowDeleteInvoiceConfirmation] = useState(false)
 
     const fetchProjectsProvided = async () => {
         try {
@@ -60,6 +63,17 @@ export default function ViewSingleInvoice() {
         window.open(`${invoiceData.filelocation}`, '_blank', 'noreferrer')
     }
 
+    const handleDeleteInvoice = async () => {
+        try {
+            await axiosPrivate.delete(DELETE_INVOICE_URL + '/' + id)
+            navigateTo('/invoice')
+        } catch (error) {
+            console.log(error)
+            setMessage(error.response?.data, true);
+            setShowDeleteInvoiceConfirmation(false)
+        }
+    }
+
     const buttonOptions = [
         {
             text: 'Download Invoice', 
@@ -72,12 +86,25 @@ export default function ViewSingleInvoice() {
             action: () => navigateTo('/invoice/add/' + id),
             icon: <FiEdit/>,
             minPermissionLevel: permissionsRequired['edit_invoice']
-        }
+        },
+        {
+            text: "Delete Invoice",
+            action: () => setShowDeleteInvoiceConfirmation(true),
+            icon: <FiTrash/>,
+            minPermissionLevel: permissionsRequired['edit_invoice']
+        },
     ]
+
 
     return (
         <div className='container mx-auto pt-8 p-4 text-center page'>
             <FloatingMenuButton options={buttonOptions}/>
+            <ConfirmationPopup 
+                showPopup={showDeleteInvoiceConfirmation} 
+                closePopup={() => setShowDeleteInvoiceConfirmation(false)} 
+                confirm={handleDeleteInvoice}> 
+                Are you sure you want to Delete this invoice from the database?
+            </ConfirmationPopup>
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >Go Back</button>
                 <h1 className='col-span-1'>Invoice Overview</h1>
@@ -132,8 +159,8 @@ export default function ViewSingleInvoice() {
                     </div>
                     {bankTxs && <div className='h-[10vh] overflow-y-auto'>
                             <h3>Bank Transactions</h3>
-                            {bankTxs.map(tx => {
-                                return <p>{tx.transactionnumber}</p>
+                            {bankTxs.map((tx, index) => {
+                                return <p key={index}>{tx.transactionnumber}</p>
                             })}
                     </div>}
                                    

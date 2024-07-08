@@ -53,16 +53,13 @@ export default function ViewInvoices() {
 
     const fetchData = async (sortConfig, searchByInvoiceNumber, searchByInvoiceID, selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount) => {
         
-        console.log("fetchDataBeingCalled")
         try {
-            console.log("dataLeft.current", dataLeft.current)
             if (!dataLeft.current) {
                 return;
             }
 
             const tempSelectedVendor = selectedVendor == undefined ? '': selectedVendor
 
-            console.log("making request")
             const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
                 params: {
                     orderBy: sortConfig.key,
@@ -77,16 +74,13 @@ export default function ViewInvoices() {
                     maxAmount: maxAmount
                 }})
                 
-            console.log("after request")
             page.current = page.current + 1;
             
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;
             }
-            console.log("pageLength")
             setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
-            console.log("SET")
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data);
@@ -138,9 +132,7 @@ export default function ViewInvoices() {
     }
 
     useEffect(() => {
-        console.log("calling debounced")
         debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
-        console.log("after")
         fetchVendors()
         
     }, []);
