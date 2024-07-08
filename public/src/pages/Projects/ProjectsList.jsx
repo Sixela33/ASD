@@ -6,6 +6,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 
+const GET_PROJECTS_URL = '/api/projects/list/';
+const GET_CLIENTS_LIST = '/api/clients'
+
 const colData = {
     "Project ID": "projectid",
     "Client": "projectclient",
@@ -15,21 +18,10 @@ const colData = {
     "Status": "projectstatus"
 }
 
-const GET_PROJECTS_URL = '/api/projects/list/';
-const GET_CLIENTS_LIST = '/api/clients'
 
 const defaultSortCOnfig = { key: 'projectid', direction: 'asc' }
 
 const ProjectsList = () => {
-    const page = useRef(0)
-    const dataLeft = useRef(true)
-    
-    const [ref, inView] = useInView({});
-
-    const { setMessage } = useAlert();
-    const axiosPrivate = useAxiosPrivate();
-    const navigateTo = useNavigate();
-
     const [projectsInfo, setProjectsInfo] = useState([]);
     const [clientsList, setClientsList] = useState([])
 
@@ -40,6 +32,16 @@ const ProjectsList = () => {
     const [searchByContact, setSearchByContact] = useState('')
     const [searchByDescription, setSearchByDescription] = useState('')
     const [selectedClient, setSelectedClient] = useState('')
+    
+    const page = useRef(0)
+    const dataLeft = useRef(true)
+    
+    const [ref, inView] = useInView({});
+
+    const { setMessage } = useAlert();
+    const axiosPrivate = useAxiosPrivate();
+    const navigateTo = useNavigate();
+
 
     const handleRowClick = (row) => {
         navigateTo(`/projects/${row?.projectid}`, {state: row});

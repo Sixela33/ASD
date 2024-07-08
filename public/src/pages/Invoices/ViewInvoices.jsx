@@ -7,7 +7,6 @@ import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import { toCurrency } from '../../utls/toCurrency';
-import LoadingPopup from '../../components/LoadingPopup';
 import { useInView } from 'react-intersection-observer';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
@@ -45,7 +44,6 @@ export default function ViewInvoices() {
 
     const page = useRef(0)
     const dataLeft = useRef(true)
-    const initialLoading = useRef(false)
 
     const {setMessage} = useAlert()
     const axiosPrivate = useAxiosPrivate()
@@ -75,12 +73,12 @@ export default function ViewInvoices() {
                     maxAmount: maxAmount
                 }})
 
+            page.current = page.current + 1;
+
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;
             }
-            page.current = page.current + 1;
-            initialLoading.current = true
             setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
         } catch (error) {
             console.log(error)
@@ -101,29 +99,28 @@ export default function ViewInvoices() {
     }
 
     useEffect(() => {
-        if(initialLoading.current) {
 
-            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-                setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.', false);
-                return;
-            }
-            
-            if (minAmount && maxAmount && minAmount > maxAmount) {
-                setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.', false);
-                return;
-            }
-
-            setInvoiceData([])
-            page.current = 0
-            dataLeft.current=true
-    
-            debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.', false);
+            return;
         }
+        
+        if (minAmount && maxAmount && minAmount > maxAmount) {
+            setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.', false);
+            return;
+        }
+
+        setInvoiceData([])
+        page.current = 0
+        dataLeft.current=true
+
+        debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
+        
         
     }, [sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount])
 
     useEffect(() => {
-        if (inView && initialLoading.current) {
+        if (inView) {
 
             debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
         }
