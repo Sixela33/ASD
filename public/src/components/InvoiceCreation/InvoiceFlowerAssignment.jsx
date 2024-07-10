@@ -123,9 +123,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 totalstems: 0,
                 flowername: flowerData.flowername,
             }
-    
-            console.log(newFlowerObject)
-    
+        
             setDisplayFlowerData(prevData => {
                 const updatedData = [...prevData]
                 updatedData[selectedRow] = [...updatedData[selectedRow], newFlowerObject]
@@ -179,6 +177,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             setLoading(true)
             const formDataToSend = new FormData();
             
+            
             // this function checks if the total of flowers added coincide with the invoice AND
             // if the user added stems but did not set the price
             const validationOutput = getTotalAddedAndWithNoStemData()
@@ -193,11 +192,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 setErrorRows(validationOutput.noStemInfoFlowers)
                 return
             }
-
+            
             let invoiceFlowerData = displayFlowerData.flat(Infinity)
 
             let temp = invoiceFlowerData
-            .filter(item => item.boxespurchased)
+            .filter(item => item.boxespurchased && item.boxespurchased != 0)
+
+            temp = temp
             .map(item => {
                 let temp = {
                     ...item,
@@ -211,6 +212,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
             formDataToSend.append('InvoiceFlowerData', JSON.stringify(temp));
             formDataToSend.append('invoiceFile', invoiceFile);
+
+            console.log(temp)
 
             if (!invoiceData.invoiceid) {
                 await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
@@ -303,7 +306,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <p className="font-bold">Registered Expenses: {toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != getTotalAdded()} onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
   )
 }

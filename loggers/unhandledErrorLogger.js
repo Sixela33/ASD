@@ -16,6 +16,7 @@ let unhandledErrorLogger = expressWinston.errorLogger({
         format.timestamp()
     ),
     meta: true,
+    requestWhitelist: [...expressWinston.requestWhitelist, 'body', 'params', 'query'],
     skip: (err, req, res) => res.status && res.status !=  500,
 })
 
