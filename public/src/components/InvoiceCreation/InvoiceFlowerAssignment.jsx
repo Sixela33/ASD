@@ -284,13 +284,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.totalstems}</td>
                             <td>{flower.stemsperbox * flower.boxespurchased}</td>
                             <td>
-                                <input className='w-1/2' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
+                                <input className='w-1/2 no-spinner' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                             <td>
-                                $<input className=' w-1/2' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className=' w-1/2 no-spinner' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
-                                <input className='w-1/2' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
+                                <input className='w-1/2 no-spinner' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                         </tr>
                     })}
