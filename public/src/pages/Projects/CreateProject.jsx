@@ -23,7 +23,8 @@ const emptyArrangement = {
     clientCost: '', 
     arrangementQuantity: '' ,
     installationTimes: '', 
-    arrangementLocation: ''
+    arrangementLocation: '',
+    timesBilled: ''
 }
 
 const initialState = {
@@ -67,7 +68,9 @@ const arrangementSchema = Yup.object().shape({
     clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
     arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required').min(1),
     installationTimes: Yup.number().required('The Arrangement must be installed at least once').typeError('The Arrangement must be installed at least once').min(1), 
-    arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters')
+    arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters'),
+    timesBilled: Yup.number().required().min(1)
+
 })
 
 export default function CreateProject() {
@@ -100,7 +103,7 @@ export default function CreateProject() {
     // sums all the budgets 
     useEffect(() => {
         let tempProjectStats = {}
-        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity * arrang.installationTimes, 0)
+        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity * arrang.installationTimes * arrang.timesBilled, 0)
         let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + (expense.clientcost * expense.ammount) , 0)
         
         totalFlowerCost = totalFlowerCost || 0
@@ -288,13 +291,22 @@ export default function CreateProject() {
                 showPopup={isSubmitting}>
             </LoadingPopup>
             <AddClientPopup showPopup={showNewClientPopup} closePopup={handleCloseNewClientPopup} />
-            <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
+            <ArrangementPopup 
+                showPopup={showArrangementPopup} 
+                onClose={closePopup} 
+                onSubmit={addArrangement} 
+                newArrangement={newArrangement} 
+                onInputChange={handleInputChange} 
+                arrangementTypes={arrangementTypes} 
+                newArrangementErrors={newArrangementErrors}
+                />
             <AddAditionalExpensePopup 
                 showPopup={showExpensesPopup} 
                 closePopup={() => setShowExpensesPopup(false)} 
                 submitFunc={addNewExpense} 
                 projectData={''} 
-                editExpense={editExpense}/>
+                editExpense={editExpense}
+                />
             <div className="grid grid-cols-3 mb-2">
                 <GoBackButton className='col-span-1'/>
                 <h2 className='col-span-1'>Create Project</h2>
@@ -360,7 +372,8 @@ export default function CreateProject() {
                                             <th>Unit Cost</th>
                                             <th>Unit Budget</th>
                                             <th>Quantity</th>
-                                            <th>Installation Times</th>
+                                            <th>Installation Quantity per Week</th>
+                                            <th>Quantity of Weeks per Billing Period</th>
                                             <th>Total Cost</th>
                                             <th>Total Budget</th>
                                         </tr>
@@ -374,8 +387,9 @@ export default function CreateProject() {
                                                 <td>{toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
                                                 <td>{arrangement.arrangementQuantity}</td>
                                                 <td>{arrangement.installationTimes}</td>
-                                                <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes)}</td>
-                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes) *  (1-formState.profitMargin))}</td>
+                                                <td>{arrangement.timesBilled}</td>
+                                                <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled)}</td>
+                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled) *  (1-formState.profitMargin))}</td>
                                             </tr>
                             
                                         ))}

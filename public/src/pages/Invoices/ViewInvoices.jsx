@@ -227,7 +227,7 @@ export default function ViewInvoices() {
                 </div>
                 <div className='flex flex-col w-full items-center space-x-1'>
                     <div className='flex w-full justify-center'>
-                        <label>Ammount Range</label> 
+                        <label>Amount Range</label> 
                     </div>
                     <div className='flex flex-row'>
                         <input className='w-1/2' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />

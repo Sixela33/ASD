@@ -1,0 +1,1 @@
+ALTER TABLE arrangements ADD COLUMN timesBilled INT DEFAULT 1;

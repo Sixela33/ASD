@@ -59,12 +59,22 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
         </div>
         <div>
           <FormItem
-            labelName="Installation times:"
+            labelName="Installation Quantity per Week:"
             type="number"
             inputName="installationTimes"
             value={newArrangement.installationTimes}
             handleChange={(e) => onInputChange('installationTimes', e.target.value)}
             error={newArrangementErrors.arrangementQuantity}
+          />
+        </div>
+        <div>
+          <FormItem
+            labelName="Quantity of Weeks per Billing Period:"
+            type="number"
+            inputName="timesBilled"
+            value={newArrangement.timesBilled}
+            handleChange={(e) => onInputChange('timesBilled', e.target.value)}
+            error={newArrangementErrors.timesBilled}
           />
         </div>
         <div className='buttons-holder'>
