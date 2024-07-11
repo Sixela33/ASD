@@ -8,6 +8,7 @@ import { debounce } from 'lodash';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import { toCurrency } from '../../utls/toCurrency';
 import { useInView } from 'react-intersection-observer';
+import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
@@ -57,8 +58,7 @@ export default function ViewInvoices() {
             if (!dataLeft.current) {
                 return;
             }
-
-            const tempSelectedVendor = selectedVendor == undefined ? '': selectedVendor
+            if(!selectedVendor?.vendorid) selectedVendor = {vendorid: ''}
 
             const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
                 params: {
@@ -66,7 +66,7 @@ export default function ViewInvoices() {
                     order: sortConfig.direction,
                     invoiceNumber: searchByInvoiceNumber,
                     invoiceID: searchByInvoiceID,
-                    specificVendor: tempSelectedVendor,
+                    specificVendor: selectedVendor.vendorid,
                     onlyMissing: showOnlyWithMissingLink || false,
                     startDate: startDate,
                     endDate: endDate,
@@ -207,12 +207,13 @@ export default function ViewInvoices() {
                 </div>
                 <div className='flex flex-col w-full items-center space-x-1'>
                     <span className='ml-4'>Filter by vendor: </span>
-                    <select className='p-2' onChange={e => setSelectedVendor(e.target.value)}>
-                        <option value={''}>Select Vendor</option>
-                        {allVendors.map((item, index) => {
-                            return <option value={item.vendorid} key={index}>{item.vendorname}</option>
-                        })}
-                    </select>
+                    <SearchableDropdown
+                        options={allVendors}
+                        label='vendorname'
+                        selectedVal={selectedVendor}
+                        handleChange={(vendor) => setSelectedVendor(vendor)}
+                        placeholderText={'Select Vendor'}
+                    />
                 </div>
                 <div className='flex flex-col items-center space-x-1'>
                     <div className='flex w-full justify-between'>
@@ -230,14 +231,8 @@ export default function ViewInvoices() {
                         <label>Amount Range</label> 
                     </div>
                     <div className='flex flex-row'>
-                        <div>
-                            min: <input className='w-1/2 no-spinner' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
-
-                        </div>
-                        <div>
-                            max: <input className='w-1/2 no-spinner' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
-
-                        </div>
+                        <input className='w-1/2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+                        <input className='w-1/2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
                     </div>
                 </div>
                 <div className='flex w-full items-center space-x-1'>

@@ -31,7 +31,6 @@ const ProjectsList = () => {
     const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
     const [showOpenOnly, setShowOpenOnly] = useState(true)
 
-    const [searchByID, setSearchByID] = useState('')
     const [searchByContact, setSearchByContact] = useState('')
     const [searchByDescription, setSearchByDescription] = useState('')
     const [selectedClient, setSelectedClient] = useState('')
@@ -66,7 +65,7 @@ const ProjectsList = () => {
         }
     }
     
-    const fetchData =  async (sortConfig, showOpen, searchByID, searchByContact, searchByDescription, selectedClient) => {
+    const fetchData =  async (sortConfig, showOpen, searchByContact, searchByDescription, selectedClient) => {
         if (!dataLeft.current) {
             return;
         }
@@ -80,7 +79,6 @@ const ProjectsList = () => {
                 '?orderBy='+ sortConfig.key + 
                 '&order=' + sortConfig.direction + 
                 '&showOpenOnly=' + showOpen +
-                '&searchByID=' + searchByID + 
                 '&searchByContact=' + searchByContact.contactname +
                 '&searchByDescription=' + searchByDescription + 
                 '&searchByClient=' + selectedClient.clientid)
@@ -104,13 +102,13 @@ const ProjectsList = () => {
         setProjectsInfo([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
+        debounced(sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient)
         
-    }, [sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient])
+    }, [sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient])
 
     useEffect(() => {
         if (inView) {
-            debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
+            debounced(sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient)
         }
     }, [inView]);
 
@@ -167,12 +165,10 @@ const ProjectsList = () => {
                     <label>Project Description:</label>
                     <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
                 </div>
-                                     
-                
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort
-                    headers={colData} 
+                    headers={colData}
                     setSortConfig={setSortConfig}
                     sortConfig={sortConfig} 
                     defaultSortConfig={defaultSortCOnfig}
