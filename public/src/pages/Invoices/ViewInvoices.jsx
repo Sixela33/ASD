@@ -241,7 +241,7 @@ export default function ViewInvoices() {
                     </div>
                 </div>
                 <div className='flex w-full items-center space-x-1'>
-                    <label className="mr-2">Only show incomplete invoices</label>
+                    <label className="mr-2">Only Incomplete: </label>
                     <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
                 </div>
             </div>

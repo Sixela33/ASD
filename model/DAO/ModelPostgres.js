@@ -376,7 +376,7 @@ class ModelPostgres {
         
         if(searchByContact && searchByContact != '') {
             queryConditions.push(`co.contactName ILIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${searchByContact}%`)
+            queryParams.push(`${searchByContact}`)
         }
 
         if(searchByDescription && searchByDescription != '') {
