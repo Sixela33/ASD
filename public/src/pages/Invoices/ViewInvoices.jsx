@@ -231,11 +231,11 @@ export default function ViewInvoices() {
                     </div>
                     <div className='flex flex-row'>
                         <div>
-                            min: <input className='w-1/2' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+                            min: <input className='w-1/2 no-spinner' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
 
                         </div>
                         <div>
-                            max: <input className='w-1/2' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+                            max: <input className='w-1/2 no-spinner' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
 
                         </div>
                     </div>

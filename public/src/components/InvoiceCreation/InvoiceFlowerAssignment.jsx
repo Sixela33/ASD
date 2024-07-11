@@ -197,7 +197,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             let invoiceFlowerData = displayFlowerData.flat(Infinity)
 
             let temp = invoiceFlowerData
-            .filter(item => item.boxespurchased)
+            .filter(item => item.boxespurchased && item.boxespurchased != 0)
             .map(item => {
                 let temp = {
                     ...item,
@@ -284,13 +284,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.totalstems}</td>
                             <td>{flower.stemsperbox * flower.boxespurchased}</td>
                             <td>
-                                <input className='w-1/2' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
+                                <input className='w-1/2 no-spinner' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                             <td>
-                                $<input className=' w-1/2' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className='w-1/2 no-spinner' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
-                                <input className='w-1/2' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
+                                <input className='w-1/2 no-spinner' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                         </tr>
                     })}
@@ -303,7 +303,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <p className="font-bold">Registered Expenses: {toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != invoiceData.invoiceAmount} onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != getTotalAdded()} onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
   )
 }
