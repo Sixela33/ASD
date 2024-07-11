@@ -27,6 +27,7 @@ import RecurrentProjectCheckpointer from "./scripts/createRecurentProjectCheckpo
 
 import ROLES_LIST from "./config/rolesList.js";
 import ExtraServicesRouter from "./routers/ExtraServicesRouter.js";
+import ContactRouter from "./routers/ContactRouter.js";
 
 /*
     This code was written by S1X3L4
@@ -85,6 +86,7 @@ class Server {
         this.app.use('/api/vendors', loginreq, new VendorRouter().start())
         this.app.use('/api/invoices', staffuserReq, new InvoiceRouter(this.fileStorage).start())
         this.app.use('/api/extraServices', staffuserReq, new ExtraServicesRouter().start())
+        this.app.use('/api/contacts', loginreq, new ContactRouter().start())
         
         // -----------------------------------------------
         //                 MIDDLEWARES

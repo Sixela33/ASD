@@ -111,7 +111,7 @@ export default function ViewSingleInvoice() {
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
                 <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
-                    <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />
+                {invoiceData.filelocation ? <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />:'file not found'}
                 </div>
                 <div className='mx-10 w-full md:w-2/4 grid grid-col'>
                     <div className="items-center grid grid-row md:grid-cols-2 gap-8 my-4 mx-auto text-left font-bold ">
@@ -129,7 +129,7 @@ export default function ViewSingleInvoice() {
                             headers = {{
                                 "Project ID": "projectid",
                                 "Project Client": "projectclient", 
-                                "Project Contact": "projectcontact", 
+                                "Project Contact": "contactname", 
                                 "Project Description": "projectdescription", 
                                 "Project Date": "projectdate"}
                             }

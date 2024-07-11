@@ -230,8 +230,14 @@ export default function ViewInvoices() {
                         <label>Amount Range</label> 
                     </div>
                     <div className='flex flex-row'>
-                        <input className='w-1/2' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
-                        <input className='w-1/2' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+                        <div>
+                            min: <input className='w-1/2' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+
+                        </div>
+                        <div>
+                            max: <input className='w-1/2' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+
+                        </div>
                     </div>
                 </div>
                 <div className='flex w-full items-center space-x-1'>

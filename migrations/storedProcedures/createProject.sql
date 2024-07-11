@@ -1,7 +1,7 @@
 CREATE OR REPLACE PROCEDURE createProject(
     p_projectDate DATE, 
     p_projectDescription VARCHAR(255), 
-    p_projectContact VARCHAR(255), 
+    p_projectContact INT, 
     p_staffBudget FLOAT, 
     p_profitMargin FLOAT, 
     INOUT p_projectClient INT, --this is disgusting

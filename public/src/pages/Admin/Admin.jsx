@@ -3,6 +3,7 @@ import Vendors from './Vendors';
 import Users from './Users';
 import Clients from './Clients';
 import FlowerColors from './FlowerColors';
+import Contacts from './Contact';
 
 export default function Admin() {
   const [componentToShow, setComponentToShow] = useState(<Users />);
@@ -11,7 +12,8 @@ export default function Admin() {
     { id: 1, label: 'Users', component: <Users /> },
     { id: 2, label: 'Vendors', component: <Vendors /> },
     { id: 3, label: 'Clients', component: <Clients /> },
-    { id: 4, label: 'Flower Colors', component: <FlowerColors /> },
+    { id: 4, label: 'Contacts', component: <Contacts /> },
+    { id: 5, label: 'Flower Colors', component: <FlowerColors /> },
   ];
 
   return (

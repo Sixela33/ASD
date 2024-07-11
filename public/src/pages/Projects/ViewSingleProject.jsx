@@ -497,7 +497,7 @@ export default function ViewProject() {
                     <p>Project Start Date: {projectData?.projectdate}</p>
                 </div>
                 <div className="md:col-start-2">
-                    <p>Project Contact: {projectData?.projectcontact}</p>
+                    <p>Project Contact: {projectData?.contactname}</p>
                     <p>Project End Date: {projectData?.projectenddate}</p>
                     
                 </div>

@@ -166,7 +166,7 @@ const ProjectsList = () => {
                         <td>{item.projectid}</td>
                         <td>{item.projectclient}</td>
                         <td>{item.projectdescription}</td>
-                        <td>{item.projectcontact}</td>
+                        <td>{item.contactname}</td>
                         <td>{item.projectdate}</td>
                         <td className={`${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
                     </tr>

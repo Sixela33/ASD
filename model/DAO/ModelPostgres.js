@@ -164,6 +164,43 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
+    //                    CONTACTS
+    // -----------------------------------------------
+
+    createContact = async (contactName) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('INSERT INTO contacts (contactname) VALUES ($1);', [contactName])
+    }
+
+    getContacts = async (searchByName) => {
+        this.validateDatabaseConnection()
+        let baseQuery = 'SELECT contactID, contactName FROM contacts WHERE isActive = true'
+        let queryParams = []
+        
+        if (searchByName) {
+            baseQuery += ' AND contactName ILIKE $1'
+            queryParams.push(`${searchByName}%`)
+        }
+    
+        baseQuery += ' ORDER BY contactID;'
+        return CnxPostgress.db.query(baseQuery, queryParams)
+    }
+
+    editContact = async (contactid, contactname) => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query('UPDATE contacts SET contactName = $1 WHERE contactID=$2', [contactname, contactid])
+    }
+
+    deleteContact = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM contacts WHERE contactID = $1', [id])
+        } catch (error) {
+            await CnxPostgress.db.query("UPDATE contacts SET isActive=false WHERE contactID=$1;", [id])
+        }
+    }
+
+    // -----------------------------------------------
     //                    VENDORS
     // -----------------------------------------------
 
@@ -211,7 +248,7 @@ class ModelPostgres {
 
     createProject = async (staffBudget, projectContact, projectDate, projectEndDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras, isRecurrent) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN, $11::DATE);",
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::INT, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN, $11::DATE);",
         [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras, isRecurrent, projectEndDate]);
         return response.rows[0]
     }
@@ -245,7 +282,8 @@ class ModelPostgres {
                 projects.projectid, 
                 projects.clientid, 
                 projects.projectdescription, 
-                projects.projectcontact, 
+                projects.projectcontact,
+                c.contactName, 
                 projects.profitmargin, 
                 projects.staffbudget, 
                 projects.creatorid, 
@@ -255,7 +293,9 @@ class ModelPostgres {
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectEndDate, 'MM-DD-YYYY') AS projectEndDate,
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
-                FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                FROM projects 
+                LEFT JOIN contacts c ON projects.projectcontact = c.contactid
+                INNER JOIN clients ON projects.clientID = clients.clientID 
                 WHERE projects.projectID = $1;`,
                 [id]
         );
@@ -270,10 +310,12 @@ class ModelPostgres {
                 projects.projectdate, 
                 projects.projectdescription, 
                 projects.projectcontact, 
+                c.contactName, 
                 projects.projectenddate,
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
                 FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                LEFT JOIN contacts c ON projects.projectcontact = c.contactid
                 WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));`,
             [ids]
         );
@@ -286,7 +328,7 @@ class ModelPostgres {
             projectid : ' ORDER BY p.projectID',
             projectclient : ' ORDER BY c.clientName',
             projectdescription : ' ORDER BY p.projectDescription',
-            projectcontact : ' ORDER BY p.projectContact',
+            projectcontact : ' ORDER BY co.contactName',
             projectdate : ' ORDER BY p.projectDate',
             projectstatus: ' ORDER BY projectstatus'
         }
@@ -298,6 +340,7 @@ class ModelPostgres {
             p.projectdescription,
             p.projectcontact,
             p.isclosed, 
+            co.contactName, 
             c.clientName AS projectclient, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
             CASE
@@ -305,10 +348,9 @@ class ModelPostgres {
                 WHEN num_arrangements_with_no_flowers > 0 THEN 1
                 ELSE 2
             END AS projectStatus
-        FROM 
-            projects p 
-        INNER JOIN 
-            clients c ON p.clientID = c.clientID
+        FROM projects p 
+        INNER JOIN clients c ON p.clientID = c.clientID
+        LEFT JOIN contacts co ON P.projectcontact = co.contactid
         LEFT JOIN (
             SELECT 
                 projectID,
@@ -333,7 +375,7 @@ class ModelPostgres {
         }
         
         if(searchByContact && searchByContact != '') {
-            queryConditions.push(`p.projectcontact ILIKE $${queryParams.length + 1}`)
+            queryConditions.push(`co.contactName ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${searchByContact}%`)
         }
 
@@ -458,6 +500,8 @@ class ModelPostgres {
         
         return arrangementID;
     }
+
+    // TODO
 
     editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
@@ -1040,20 +1084,22 @@ class ModelPostgres {
     getProvidedProjects = async (invoiceID) => {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`
-        SELECT 
+            SELECT 
             p.projectid,
             p.projectcontact, 
             p.projectdate, 
             p.projectdescription,
             clients.clientName AS projectclient, 
+            co.contactName, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate 
             FROM projects p
             INNER JOIN clients ON p.clientID = clients.clientID 
+            LEFT JOIN contacts co ON p.projectcontact = co.contactid
             WHERE p.projectID IN (
                 SELECT DISTINCT projectID 
                 FROM flowerXInvoice 
                 WHERE invoiceID = $1);`
-        , [invoiceID])
+                , [invoiceID])
         return respone
     }
 
