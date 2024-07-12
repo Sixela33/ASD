@@ -1,3 +1,6 @@
+ALTER TABLE flowerVendor 
+ADD COLUMN vendorCode VARCHAR(50);
+
 CREATE TABLE IF NOT EXISTS contacts (
     contactID SERIAL PRIMARY KEY,
     contactName VARCHAR(255) NOT NULL,

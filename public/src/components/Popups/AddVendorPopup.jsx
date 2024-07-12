@@ -5,7 +5,10 @@ import useAlert from '../../hooks/useAlert'
 
 const CREATE_VENDOR_URL = '/api/vendors'
 const EDIT_VENDOR_URL = '/api/vendors/edit'
-const DEFAULT_VENDOR_DATA = {vendorname: ''}
+const DEFAULT_VENDOR_DATA = {
+    vendorname: '',
+    vendorCode: ''
+}
 
 export default function AddVendorPopup({showPopup, closePopup, editVendorData}) {
     const [vendorData, setVendorData] = useState(editVendorData || DEFAULT_VENDOR_DATA)
@@ -41,8 +44,12 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
     }, [editVendorData])
     
     const handleInputChange = (e) => {
-        setVendorData({...vendorData, vendorname: e.target.value})
-    }
+        const { value, name } = e.target
+        setVendorData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     useEffect(() => {
         if (showPopup && inputRef.current) {
@@ -56,10 +63,16 @@ export default function AddVendorPopup({showPopup, closePopup, editVendorData}) 
     showPopup={showPopup}
     closePopup={handleClosePopup}
     confirm={addNewVendor}>
-        <h2>{vendorData.vendorid ? "Edit vendor name" : "Add new vendor"}</h2>
+        <h2>{vendorData.vendorid ? "Edit vendor" : "Add new vendor"}</h2>
         <br/>
-        <label>Vendor name</label>
-        <input ref={inputRef} type='text' value={vendorData.vendorname} onChange={handleInputChange}></input>
+        <div>
+            <label>Vendor name</label>
+            <input ref={inputRef} type='text' name='vendorname' value={vendorData.vendorname} onChange={handleInputChange}></input>
+        </div>
+        <div>
+            <label>Vendor code</label>
+            <input type='text' name='vendorcode' value={vendorData.vendorcode} onChange={handleInputChange}></input>
+        </div>
     </ConfirmationPopup>
   )
 }

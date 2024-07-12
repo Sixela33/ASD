@@ -207,7 +207,7 @@ class ModelPostgres {
     getVendors = async (searchByName) => {
         this.validateDatabaseConnection()
 
-        let baseQuery = 'SELECT vendorid, vendorname FROM flowerVendor '
+        let baseQuery = 'SELECT vendorid, vendorname, vendorCode FROM flowerVendor '
 
         let queryParams = []
         
@@ -222,15 +222,28 @@ class ModelPostgres {
         //return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor LIMIT $1 OFFSET $2 ORDER BY vendorname;')
     }
 
-    addVender = async (vendorName) => {
+    addVendor = async (vendorName, vendorCode) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
+        if (vendorCode) {
+            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName, vendorCode) VALUES ($1, $2);', [vendorName, vendorCode])
+        } else {
+            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
+        }
 
     }
 
-    editVendor = async (vendorname, vendorid) => {
+    editVendor = async (vendorname, vendorCode, vendorid) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
+        if (vendorCode) {
+            await CnxPostgress.db.query(`
+                UPDATE flowerVendor 
+                SET 
+                    vendorName=$1,
+                    vendorCode=$2
+                WHERE vendorID=$3;`, [vendorname, vendorCode, vendorid])
+        } else {
+            await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
+        }
     }
 
     removeVendor = async (id) => {

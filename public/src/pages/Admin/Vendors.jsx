@@ -13,7 +13,12 @@ const DELETE_VENDOR_URL = '/api/vendors'
 
 const defaultSortConfig = { key: null, direction: 'asc' }
 
-const headers = {'Vendor ID': 'vendorid', 'Name': 'vendorname', 'Admin': ''}
+const headers = {
+    'Vendor ID': 'vendorid', 
+    'Name': 'vendorname', 
+    'Code': 'vendorcode', 
+    'Admin': ''
+}
 
 export default function Vendors() {
     const axiosPrivate = useAxiosPrivate()
@@ -110,8 +115,10 @@ export default function Vendors() {
                         sortConfig={sortConfig}>
                         {sortData(vendorsData, sortConfig).map((vendor, index) => {
                             return <tr key={index}>
+                                {console.log(vendor)}
                                 <td>{vendor.vendorid}</td>
                                 <td>{vendor.vendorname}</td>
+                                <td>{vendor.vendorcode}</td>
                                 <td>
                                     <button onClick={() => handleEditVendor(vendor)} className='go-back-button mx-4'>Edit</button>
                                     <button onClick={() => {
