@@ -14,7 +14,15 @@ const baseArrangementData = {
   clientCost: '', 
   arrangementQuantity: '',
   installationTimes: '',
-  arrangementLocation: ''
+  arrangementLocation: '',
+  timesBilled: ''
+}
+
+const baseArrangementStats = {
+  totalClientCost: '',
+  individualFlowerBudget: '',
+  totalFlowerBudget: '',
+  totalProfit: '',
 }
 
 const arrangementSchema = Yup.object().shape({
@@ -23,7 +31,9 @@ const arrangementSchema = Yup.object().shape({
   clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
   arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required'),
   installationTimes: Yup.number().required('The Arrangement must be installed at least once').typeError('The Arrangement must be installed at least once').min(1), 
-  arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters')
+  arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters'),
+  timesBilled: Yup.number().required().min(1)
+
 })
 
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
@@ -37,6 +47,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
   const [newArrangementData, setNewArrangementData] = useState(baseArrangementData)
   const [arrangementTypes, setArrangementTypes] = useState()
   const [newArrangementErrors, setnewArrangementErrors] = useState({})
+  const [newArrangementStats, setNewArrangementStats] = useState(baseArrangementStats)
 
   const isCreatingNew = useRef(false)
 
@@ -76,6 +87,21 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
   }, [])
 
   useEffect(() => {
+    const totalClientCost = newArrangementData.clientCost * newArrangementData.arrangementQuantity * newArrangementData.installationTimes * newArrangementData.timesBilled
+    const individualFlowerBudget = newArrangementData.clientCost * (1 - projectData.profitmargin)
+    const totalFlowerBudget = totalClientCost * (1-projectData.profitmargin)
+    const totalProfit = totalClientCost - totalFlowerBudget
+
+    setNewArrangementStats({
+      totalClientCost,
+      individualFlowerBudget,
+      totalFlowerBudget,
+      totalProfit,
+    })
+    
+  }, [newArrangementData])
+
+  useEffect(() => {
     if (arrangementTypes && arrangementData) {
       let ix = arrangementTypes?.findIndex(item => item.arrangementtypeid == arrangementData.arrangementtype)
       if (ix == -1) {
@@ -88,7 +114,8 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         clientCost: arrangementData.clientcost,
         arrangementQuantity: arrangementData.arrangementquantity,
         arrangementLocation: arrangementData.arrangementlocation,
-        installationTimes: arrangementData.installationtimes
+        installationTimes: arrangementData.installationtimes,
+        timesBilled: arrangementData.timesbilled
       })
 
     }
@@ -166,6 +193,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
           <FormItem
             labelName="Arrangement Quantity:"
             type="number"
+            min={1}
             inputName="arrangementQuantity"
             value={newArrangementData.arrangementQuantity}
             handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
@@ -176,6 +204,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
           <FormItem
             labelName="Client Cost:"
             type="number"
+            min={0}
             inputName="clientCost"
             value={newArrangementData.clientCost}
             handleChange={(e) => handleChange('clientCost', e.target.value)}
@@ -184,21 +213,33 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         </div>
         <div>
           <FormItem
-              labelName="Installation times:"
+              labelName="Quantity of Weeks per Billing Period:"
               type="number"
+              min={1}
               inputName="installationTimes"
               value={newArrangementData.installationTimes}
               handleChange={(e) => handleChange('installationTimes', e.target.value)}
               error={newArrangementErrors.arrangementQuantity}
             />
         </div>
+        <div>
+          <FormItem
+              labelName="Installation Quantity per Week:"
+              type="number"
+              min={1}
+              inputName="timesBilled"
+              value={newArrangementData.timesBilled}
+              handleChange={(e) => handleChange('timesBilled', e.target.value)}
+              error={newArrangementErrors.timesBilled}
+            />
+        </div>
         
       </div>
       <div className='text-start mt-2'>
-        <p>Total client cost: {toCurrency(newArrangementData.clientCost * newArrangementData.arrangementQuantity)}</p>
-        <p>Individual flower budget: {toCurrency(newArrangementData.clientCost * (1 - projectData.profitmargin))}</p>
-        <p>Total flower budget: {toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
-        <p>Total profit: {toCurrency((newArrangementData.clientCost * newArrangementData.arrangementQuantity) - (newArrangementData.clientCost * newArrangementData.arrangementQuantity) * (1-projectData.profitmargin))}</p>
+        <p>Total client cost: {toCurrency(newArrangementStats.totalClientCost)}</p>
+        <p>Individual flower budget: {toCurrency(newArrangementStats.individualFlowerBudget)}</p>
+        <p>Total flower budget: {toCurrency(newArrangementStats.totalFlowerBudget)}</p>
+        <p>Total profit: {toCurrency(newArrangementStats.totalProfit)}</p>
       </div>
       
       <div className='buttons-holder'>

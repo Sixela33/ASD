@@ -5,9 +5,11 @@ import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
+import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 
 const GET_PROJECTS_URL = '/api/projects/list/';
 const GET_CLIENTS_LIST = '/api/clients'
+const GET_CONTACTS_LIST = '/api/contacts'
 
 const colData = {
     "Project ID": "projectid",
@@ -24,11 +26,11 @@ const defaultSortCOnfig = { key: 'projectid', direction: 'asc' }
 const ProjectsList = () => {
     const [projectsInfo, setProjectsInfo] = useState([]);
     const [clientsList, setClientsList] = useState([])
+    const [contactsList, setContactsList] = useState([])
 
     const [sortConfig, setSortConfig] = useState(defaultSortCOnfig);
     const [showOpenOnly, setShowOpenOnly] = useState(true)
 
-    const [searchByID, setSearchByID] = useState('')
     const [searchByContact, setSearchByContact] = useState('')
     const [searchByDescription, setSearchByDescription] = useState('')
     const [selectedClient, setSelectedClient] = useState('')
@@ -47,29 +49,39 @@ const ProjectsList = () => {
         navigateTo(`/projects/${row?.projectid}`, {state: row});
     }
 
+
     const getClientList = async () => {
         try {
-            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
-            setClientsList(clientsResponse?.data)
-        } catch (error) {
-            setMessage(error.response?.data, true);
+            let clientsResponse =  axiosPrivate.get(GET_CLIENTS_LIST)
+            let contactsResponse = axiosPrivate.get(GET_CONTACTS_LIST)
 
+            clientsResponse = await clientsResponse
+            contactsResponse = await contactsResponse
+
+            setClientsList(clientsResponse?.data)
+            setContactsList(contactsResponse?.data)
+        } catch (error) {
+            setMessage('Error fetching data')
         }
     }
     
-    const fetchData =  async (sortConfig, showOpen, searchByID, searchByContact, searchByDescription, selectedClient) => {
+    const fetchData =  async (sortConfig, showOpen, searchByContact, searchByDescription, selectedClient) => {
         if (!dataLeft.current) {
             return;
         }
+
+        if (!searchByContact.contactname) searchByContact = {contactname: ''}
+
+        if (!selectedClient.clientid) selectedClient = {clientid: ''}
+
         try {
             const response = await axiosPrivate.get(GET_PROJECTS_URL + page.current + 
                 '?orderBy='+ sortConfig.key + 
                 '&order=' + sortConfig.direction + 
                 '&showOpenOnly=' + showOpen +
-                '&searchByID=' + searchByID + 
-                '&searchByContact=' + searchByContact +
+                '&searchByContact=' + searchByContact.contactname +
                 '&searchByDescription=' + searchByDescription + 
-                '&searchByClient=' + selectedClient)
+                '&searchByClient=' + selectedClient.clientid)
             
             page.current = page.current + 1;
     
@@ -90,13 +102,13 @@ const ProjectsList = () => {
         setProjectsInfo([])
         page.current = 0
         dataLeft.current=true
-        debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
+        debounced(sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient)
         
-    }, [sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient])
+    }, [sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient])
 
     useEffect(() => {
         if (inView) {
-            debounced(sortConfig, showOpenOnly, searchByID, searchByContact, searchByDescription, selectedClient)
+            debounced(sortConfig, showOpenOnly, searchByContact, searchByDescription, selectedClient)
         }
     }, [inView]);
 
@@ -111,7 +123,7 @@ const ProjectsList = () => {
     }
 
     const projectStatusText = {
-        0: "No arrangements Created",
+        0: "No Arrangements Created",
         1: "Designs Needed",
         2: "Complete"
     }
@@ -121,41 +133,42 @@ const ProjectsList = () => {
             <div  className="grid grid-cols-3 mb-4 ">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Projects</h1>
-                <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create new Project</Link>
+                <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create New Project</Link>
             </div>
             <div className="flex items-center mb-4 space-x-4 justify-evenly">
                 <div className='flex items-center'>
-                    <label className="mr-2">Show closed projects:</label>
+                    <label className="mr-2">Show Closed Projects:</label>
                     <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
                 </div>
                 <div className='flex flex-col'>
-                    <label >Search by project id:</label>
-                    <input type="text" value={searchByID} onChange={(e) => setSearchByID(e.target.value)}/>
+                    <label>Filter by Client:</label>
+                        <SearchableDropdown
+                            options={clientsList}
+                            label={'clientname'}
+                            selectedVal={selectedClient} 
+                            handleChange={(client) => setSelectedClient(client)} 
+                            placeholderText="Search By Client"
+                        />
+                </div>  
+                <div className='flex flex-col'>
+                    <label >Filter by Contact:</label>
+                    <SearchableDropdown
+                        options={contactsList}
+                        label={'contactname'}
+                        selectedVal={searchByContact} 
+                        handleChange={(contact) => setSearchByContact(contact)} 
+                        placeholderText="Select Contact"
+                    />
                 </div>
 
                 <div className='flex flex-col'>
-                    <label >Search by contact:</label>
-                    <input type="text" value={searchByContact} onChange={(e) => setSearchByContact(e.target.value)}/>
-                </div>
-
-                <div className='flex flex-col'>
-                    <label>Search by description:</label>
+                    <label>Project Description:</label>
                     <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
                 </div>
-                <div className='flex flex-col'>
-                    <label>Filter by client:</label>
-                        <select className='p-2' onChange={e => setSelectedClient(e.target.value)}>
-                                <option value={''}>Select client</option>
-                                {clientsList.map((item, index) => {
-                                    return <option value={item.clientid} key={index}>{item.clientname}</option>
-                                })}
-                        </select>
-                </div>                        
-                
             </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort
-                    headers={colData} 
+                    headers={colData}
                     setSortConfig={setSortConfig}
                     sortConfig={sortConfig} 
                     defaultSortConfig={defaultSortCOnfig}
@@ -166,7 +179,7 @@ const ProjectsList = () => {
                         <td>{item.projectid}</td>
                         <td>{item.projectclient}</td>
                         <td>{item.projectdescription}</td>
-                        <td>{item.projectcontact}</td>
+                        <td>{item.contactname}</td>
                         <td>{item.projectdate}</td>
                         <td className={`${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
                     </tr>

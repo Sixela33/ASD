@@ -197,8 +197,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
 
             let temp = invoiceFlowerData
             .filter(item => item.boxespurchased && item.boxespurchased != 0)
-
-            temp = temp
             .map(item => {
                 let temp = {
                     ...item,
@@ -290,7 +288,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                                 <input className='w-1/2 no-spinner' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
                             </td>
                             <td>
-                                $<input className=' w-1/2 no-spinner' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className='w-1/2 no-spinner' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
                                 <input className='w-1/2 no-spinner' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 

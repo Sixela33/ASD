@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import ConfirmationPopup from '../Popups/ConfirmationPopup'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import SearchableDropdown from '../Dropdowns/SearchableDropdown'
 import useAlert from '../../hooks/useAlert'
@@ -10,6 +9,7 @@ import PopupBase from '../PopupBase'
 
 const EDIT_PROJECT_URL = '/api/projects/'
 const GET_CLIENTS_LIST = '/api/clients'
+const GET_CONTACTS_LIST = '/api/contacts'
 
 const baseProjectSchema = Yup.object().shape({
     clientid: Yup.string().required('Client is required'),
@@ -20,7 +20,7 @@ const baseProjectSchema = Yup.object().shape({
         is: (projectDate) => projectDate !== null,
         then: (schema) => schema.min(Yup.ref('projectDate'), "End date can't be before Start date"),
     }),
-    projectContact: Yup.string().required('Contact is required'),
+    projectContact: Yup.number().required('Project contact is required').typeError('Project contact is required'),
     staffBudget: Yup.number('Staff Budget is required').required('Staff Budget is required').typeError('Staff Budget is required'),
     profitMargin: Yup.number('Profit Margin is required').required('Profit Margin is required').typeError('Profit Margin is required'),
 });
@@ -29,6 +29,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
   
     const [newProjectdata, setNewProjectdata] = useState(projectData)
     const [clientList, setClientsList] = useState(null)
+    const [contactsList, setContactsList] = useState(null)
     const [errors, setErrors] = useState({})
 
     const axiosPrivate = useAxiosPrivate()
@@ -37,12 +38,13 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
     const handleProjectData = async () => {
 
         const cliendIndex = clientList.findIndex(item => item.clientid == projectData.clientid)
+        const contactIndex = contactsList.findIndex(item => item.contactid == projectData.projectcontact)
 
         const tempObject = {
             clientid: clientList[cliendIndex],
             projectDescription: projectData.projectdescription,
             projectDate: new Date(projectData.projectdate).toLocaleDateString('fr-CA'),
-            projectContact: projectData.projectcontact,
+            projectContact: contactsList[contactIndex],
             staffBudget: projectData.staffbudget,
             profitMargin: projectData.profitmargin,
             projectEndDate: new Date(projectData.projectenddate).toLocaleDateString('fr-CA')
@@ -53,8 +55,14 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
 
     const fetchData = async () => {
         try {
-            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
+            let clientsResponse =  axiosPrivate.get(GET_CLIENTS_LIST)
+            let contactsResponse = axiosPrivate.get(GET_CONTACTS_LIST)
+
+            clientsResponse = await clientsResponse
+            contactsResponse = await contactsResponse
+
             setClientsList(clientsResponse?.data)
+            setContactsList(contactsResponse?.data)
         } catch (error) {
             setMessage('Error fetching data')
         }
@@ -65,15 +73,19 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
     }, [])
 
     useEffect(() => {
-        if(clientList && projectData) {
+        if(clientList && contactsList && projectData) {
             handleProjectData()
         }
     }, [projectData])
 
     const confirmEdit = async () => {
         try {
-            const dataTosend = {...newProjectdata, clientid: newProjectdata?.clientid?.clientid}
-
+            const dataTosend = {
+                ...newProjectdata, 
+                clientid: newProjectdata?.clientid?.clientid,
+                projectContact: newProjectdata.projectContact.contactid
+            }
+            
             let schemaErrors = null
             try {
                 await baseProjectSchema.validateSync(dataTosend, { abortEarly: false })
@@ -114,9 +126,27 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
             closePopup={closePopup}>
         <div className='my-1'>
             <label>Client:</label>
-            <SearchableDropdown options={clientList} label="clientname" selectedVal={newProjectdata.clientid} handleChange={(client) => handleChange('clientid', client)} placeholderText="Select Client"/>
+            <SearchableDropdown 
+                options={clientList} 
+                label="clientname" 
+                selectedVal={newProjectdata.clientid} 
+                handleChange={(client) => handleChange('clientid', client)} 
+                placeholderText="Select Client"
+            />
             <FormError error={errors.clientid}/>
         </div>
+        <div>
+            <label>Contact:</label>
+            <SearchableDropdown
+                options={contactsList}
+                label={'contactname'}
+                selectedVal={newProjectdata.projectContact} 
+                handleChange={(contact) => handleChange('projectContact', contact)} 
+                placeholderText="Select Contact"
+                />
+        </div>
+        <FormError error={errors.projectContact}/>
+
         <div>
             <FormItem
                 labelName="Project Description:"
@@ -141,14 +171,6 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 value={newProjectdata.projectEndDate}
                 handleChange={(e) => handleChange('projectEndDate', e.target.value)}
                 error={errors.projectEndDate}
-            />
-            <FormItem
-                labelName="Project Contact:"
-                type="text"
-                inputName="projectContact"
-                value={newProjectdata.projectContact}
-                handleChange={(e) => handleChange('projectContact', e.target.value)}
-                error={errors.projectContact}
             />
             <FormItem
                 labelName="Staff Budget:"

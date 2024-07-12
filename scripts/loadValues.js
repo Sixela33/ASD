@@ -52,7 +52,7 @@ const loadVendors = async (model) => {
     console.log('loading Vendors')
     try {
         for (let v of vendors) {
-            await model.addVender(v)
+            await model.addVendor(v)
         }
     } catch (error) {
         console.error('error while loading providers: \n', error)

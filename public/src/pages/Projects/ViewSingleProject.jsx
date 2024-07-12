@@ -497,14 +497,14 @@ export default function ViewProject() {
                     <p>Project Start Date: {projectData?.projectdate}</p>
                 </div>
                 <div className="md:col-start-2">
-                    <p>Project Contact: {projectData?.projectcontact}</p>
+                    <p>Project Contact: {projectData?.contactname}</p>
                     <p>Project End Date: {projectData?.projectenddate}</p>
                     
                 </div>
             </div>
             <div className='table-container h-[20vh]'>
                 <TableHeaderSort
-                    headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','Installation times': ' ' , 'Status': ' ', 'Admin': ' '}}
+                    headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','"Installation Quantity per Week': ' ', 'Quantity of Weeks per Billing Period': ' ' , 'Status': ' ', 'Admin': ' '}}
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
                     {arrangementData?.map((item, index) => (
@@ -520,6 +520,7 @@ export default function ViewProject() {
                             <td>{toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
                             <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
+                            <td>{item.timesbilled}</td>
                             <td className={item?.hasFlowers ? 'bg-green-500' : 'bg-yellow-500'}>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
                             </td>

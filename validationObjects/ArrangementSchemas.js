@@ -30,7 +30,12 @@ const arrangementSchema = Joi.object({
         'string.max': 'Arrangement location must be at most 100 characters long.',
         'any.required': 'Arrangement location is required.',
         'string.empty': 'Arrangement location cannot be empty.'
-    })
+    }),
+    timesBilled: Joi.number().min(1).required().messages({
+        'number.base': 'Quantity of Weeks per Billing Period must be a number.',
+        'number.min': 'Quantity of Weeks per Billing Period must be greater than or equal to one.',
+        'any.required': 'Quantity of Weeks per Billing Period is required.'
+    }),
 });
 
 const flowerToPopulateArrangementSchema = Joi.object({

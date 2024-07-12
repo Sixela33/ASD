@@ -12,10 +12,12 @@ import FormError from '../../components/Form/FormError';
 import AddAditionalExpensePopup from '../../components/Popups/AddAditionalExpensePopup';
 import { toCurrency } from '../../utls/toCurrency';
 import LoadingPopup from '../../components/LoadingPopup';
+import AddContactPopup from '../../components/Popups/AddContactPopup';
 
 const CREATE_PROJECT_URL = '/api/projects/create'
 const GET_ARRANGEMENT_TYPES_URL = '/api/arrangements/types'
 const GET_CLIENTS_LIST = '/api/clients'
+const GET_CONTACTS_LIST = '/api/contacts'
 
 const emptyArrangement = { 
     arrangementType: '', 
@@ -23,7 +25,8 @@ const emptyArrangement = {
     clientCost: '', 
     arrangementQuantity: '' ,
     installationTimes: '', 
-    arrangementLocation: ''
+    arrangementLocation: '',
+    timesBilled: ''
 }
 
 const initialState = {
@@ -55,10 +58,10 @@ const baseProjectSchema = Yup.object().shape({
             is: (date) => date !== null,
             then: (schema) => schema.min(Yup.ref('date'), "End date can't be before Start date"),
         }),
-    contact: Yup.string().required('Contact is required').max(50, 'the contact cannot be longet than 50 characters'),
-    staffBudget: Yup.number('Staff Budget is required').min(0).required('Staff Budget is required').typeError('Staff Budget is required'),
-    profitMargin: Yup.number('Profit Margin is required').min(0).required('Profit Margin is required').typeError('Profit Margin is required'),
-    isRecurrent: Yup.boolean('isRecurrent is required').required('isRecurrent is required').typeError('isRecurrent is required'),
+    contact: Yup.number().required('Project Contact is required').typeError('Project Contact is required (TypeError)'),
+    staffBudget: Yup.number('Staff Budget is required').min(0).required('Staff Budget is required').typeError('Staff Budget is required (TypeError)'),
+    profitMargin: Yup.number('Profit Margin is required').min(0).required('Profit Margin is required').typeError('Profit Margin is required (TypeError)'),
+    isRecurrent: Yup.boolean('isRecurrent is required').required('isRecurrent is required').typeError('isRecurrent is required (TypeError)'),
 });
 
 const arrangementSchema = Yup.object().shape({
@@ -67,7 +70,9 @@ const arrangementSchema = Yup.object().shape({
     clientCost: Yup.number().required('The client cost is required').typeError('The client cost is required'), 
     arrangementQuantity: Yup.number().required('The Arrangement quantity is required').typeError('The Arrangement quantity is required').min(1),
     installationTimes: Yup.number().required('The Arrangement must be installed at least once').typeError('The Arrangement must be installed at least once').min(1), 
-    arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters')
+    arrangementLocation: Yup.string().required('Arrangement location is required').max(255, 'The location cannot be longet than 100 characters'),
+    timesBilled: Yup.number().required().min(1)
+
 })
 
 export default function CreateProject() {
@@ -89,9 +94,12 @@ export default function CreateProject() {
 
     const [arrangementTypes, setArrangementTypes] = useState([])
     const [clientsList, setClientsList] = useState([])
-    
+    const [contactsList, setContactsList] = useState(null)
+
     const [projectStats, setProjectStats] = useState(baseProjectStatsData)
     const [showNewClientPopup, setShowNewClientPopup] = useState(false)
+    const [ShowNewContactpopup, setShowNewContactpopup] = useState(false)
+
     const [refreshUe, setrefreshUe] = useState(false)
     const [isSubmitting, setIsSubmiting] = useState(false)
 
@@ -100,7 +108,7 @@ export default function CreateProject() {
     // sums all the budgets 
     useEffect(() => {
         let tempProjectStats = {}
-        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity * arrang.installationTimes, 0)
+        let totalFlowerCost = arrangements.reduce((accumulator, arrang) => accumulator + arrang.clientCost * arrang.arrangementQuantity * arrang.installationTimes * arrang.timesBilled, 0)
         let totalAditional = aditionalExpenses.reduce((accumulator, expense) => accumulator + (expense.clientcost * expense.ammount) , 0)
         
         totalFlowerCost = totalFlowerCost || 0
@@ -131,11 +139,16 @@ export default function CreateProject() {
 
     const getClientList = async () => {
         try {
-            const clientsResponse = await axiosPrivate.get(GET_CLIENTS_LIST)
-            setClientsList(clientsResponse?.data)
-        } catch (error) {
-            setMessage(error.response?.data, true);
+            let clientsResponse =  axiosPrivate.get(GET_CLIENTS_LIST)
+            let contactsResponse = axiosPrivate.get(GET_CONTACTS_LIST)
 
+            clientsResponse = await clientsResponse
+            contactsResponse = await contactsResponse
+
+            setClientsList(clientsResponse?.data)
+            setContactsList(contactsResponse?.data)
+        } catch (error) {
+            setMessage('Error fetching data')
         }
     }
     
@@ -201,10 +214,14 @@ export default function CreateProject() {
         // The same with the client
         try {
             setIsSubmiting(true)
-           
+            
+            console.log(formState)
+
             let newData = {
                 ...formState,
                 client: formState.client.clientid,
+                contact: formState.contact.contactid
+
             };
     
             let schemaErrors = null
@@ -244,7 +261,7 @@ export default function CreateProject() {
             }
         } catch (error) {
             console.log(error)
-
+            setMessage(error.message)
         }finally {
             setIsSubmiting(false)
         }
@@ -257,6 +274,15 @@ export default function CreateProject() {
         }
         
         setShowNewClientPopup(false)
+    }
+
+    const handleCloseNewContactPopup = (shouldRefresh) => {
+        
+        if(shouldRefresh) {
+            getClientList()
+        }
+        
+        setShowNewContactpopup(false)
     }
 
     const addNewExpense = (expense) => {
@@ -288,13 +314,23 @@ export default function CreateProject() {
                 showPopup={isSubmitting}>
             </LoadingPopup>
             <AddClientPopup showPopup={showNewClientPopup} closePopup={handleCloseNewClientPopup} />
-            <ArrangementPopup showPopup={showArrangementPopup} onClose={closePopup} onSubmit={addArrangement} newArrangement={newArrangement} onInputChange={handleInputChange} arrangementTypes={arrangementTypes} newArrangementErrors={newArrangementErrors}/>
+            <AddContactPopup showPopup={ShowNewContactpopup} closePopup={handleCloseNewContactPopup}/>
+            <ArrangementPopup 
+                showPopup={showArrangementPopup} 
+                onClose={closePopup} 
+                onSubmit={addArrangement} 
+                newArrangement={newArrangement} 
+                onInputChange={handleInputChange} 
+                arrangementTypes={arrangementTypes} 
+                newArrangementErrors={newArrangementErrors}
+                />
             <AddAditionalExpensePopup 
                 showPopup={showExpensesPopup} 
                 closePopup={() => setShowExpensesPopup(false)} 
                 submitFunc={addNewExpense} 
                 projectData={''} 
-                editExpense={editExpense}/>
+                editExpense={editExpense}
+                />
             <div className="grid grid-cols-3 mb-2">
                 <GoBackButton className='col-span-1'/>
                 <h2 className='col-span-1'>Create Project</h2>
@@ -306,13 +342,28 @@ export default function CreateProject() {
                         <div className={formRowClass}>
                             <div className={formColClass}>
                                 <label className="mb-1">Client:</label>
-                                <SearchableDropdown options={clientsList} label="clientname" selectedVal={client} handleChange={(client) => handleFormEdit('client', client)} placeholderText="Select Client"/>
+                                <SearchableDropdown 
+                                    options={clientsList} 
+                                    label="clientname" 
+                                    selectedVal={client} 
+                                    handleChange={(client) => handleFormEdit('client', client)} 
+                                    placeholderText="Select Client"
+                                    />
                                 <button onClick={() => setShowNewClientPopup(true)} className='go-back-button'>Add new Client</button>
                                 <FormError error={errors.client}/>
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem labelName="Project Description:" type="text" inputName="description" value={description} handleChange={(e) => handleFormEdit('description', e.target.value)} error={errors.description} />                 
+                                <label  className="mb-1">Project Contact:</label>
+                                <SearchableDropdown
+                                    options={contactsList}
+                                    label={'contactname'}
+                                    selectedVal={contact} 
+                                    handleChange={(contact) => handleFormEdit('contact', contact)} 
+                                    placeholderText="Select Contact"
+                                    />
+                                <button onClick={() => setShowNewContactpopup(true)} className='go-back-button'>Add new Client</button>
+                                <FormError error={errors.contact}/>
                             </div>
                         </div>
 
@@ -331,7 +382,7 @@ export default function CreateProject() {
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem labelName="Project Contact:" type="text" inputName="contact" value={contact} handleChange={(e) => handleFormEdit('contact', e.target.value)} error={errors.contact} />
+                                <FormItem labelName="Project Description:" type="text" inputName="description" value={description} handleChange={(e) => handleFormEdit('description', e.target.value)} error={errors.description} />                 
                             </div>
                         </div>
 
@@ -360,7 +411,8 @@ export default function CreateProject() {
                                             <th>Unit Cost</th>
                                             <th>Unit Budget</th>
                                             <th>Quantity</th>
-                                            <th>Installation Times</th>
+                                            <th>Installation Quantity per Week</th>
+                                            <th>Quantity of Weeks per Billing Period</th>
                                             <th>Total Cost</th>
                                             <th>Total Budget</th>
                                         </tr>
@@ -374,8 +426,9 @@ export default function CreateProject() {
                                                 <td>{toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
                                                 <td>{arrangement.arrangementQuantity}</td>
                                                 <td>{arrangement.installationTimes}</td>
-                                                <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes)}</td>
-                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes) *  (1-formState.profitMargin))}</td>
+                                                <td>{arrangement.timesBilled}</td>
+                                                <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled)}</td>
+                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled) *  (1-formState.profitMargin))}</td>
                                             </tr>
                             
                                         ))}

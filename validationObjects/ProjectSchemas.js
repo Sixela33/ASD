@@ -8,9 +8,10 @@ const projectSchema = Joi.object({
         'number.max': 'Staff budget must be less than or equal to one.',
         'any.required': 'Staff budget is a required field.'
     }),
-    projectContact: Joi.string().max(255).messages({
-        'string.base': 'Project contact must be a valid string.',
-        'string.max': 'Project contact cannot exceed 255 characters.'
+    projectContact: Joi.number().min(0).messages({
+        'number.base': 'Project contact must be a valid number.',
+        'number.min': 'Project contact must be greater than or equal to zero.',
+        'string.required': 'Project contact is a required field.'
     }),
     projectDate: Joi.date().required().min("1900-12-31").max("9999-12-31").messages({
         'date.base': 'Project date must be a valid date format.',

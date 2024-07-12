@@ -22,7 +22,7 @@ const invoiceDataSchema = Yup.object().shape({
   invoiceNumber: Yup.string().required('the invoice number is required').typeError('the invoice number is required'),
   vendor: Yup.number().required('The vendor field is required').typeError('The vendor field is required'),
   dueDate: Yup.date().min("1900-12-31").max("9999-12-31").required('The date is required'),
-  invoiceAmount: Yup.number().required('The ammount is required').typeError('The ammount is required'),
+  invoiceAmount: Yup.number().required('The amount is required').typeError('The amount is required'),
   invoiceid: Yup.number().optional(),
   fileLocation: Yup.string().optional(),
 })
@@ -223,7 +223,7 @@ export default function AddInvoice() {
               <div className="flex flex-row">
                 {DisplayPdfFile ? (
                   <embed src={DisplayPdfFile} type="application/pdf" width="100%" height="500vh" />
-                ): prevInvoiceFile && <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/>}
+                ): prevInvoiceFile && <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/> && 'file not found'}
               </div>
             </div>
           </div>

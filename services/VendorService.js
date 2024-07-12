@@ -8,9 +8,10 @@ class VendorService {
         this.model = new ModelPostgres()
     }
 
-    addVendor = async (vendorName) => {
-        await validateVendor(vendorName)
-        await this.model.addVender(vendorName)
+    addVendor = async (vendorname, vendorcode) => {
+        console.log(vendorname, vendorcode)
+        await validateVendor({vendorname, vendorcode})
+        await this.model.addVendor(vendorname, vendorcode)
     }
 
     getVendors = async (searchByName) => {
@@ -19,10 +20,11 @@ class VendorService {
         return result.rows 
     }
 
-    editVendor = async (vendorname, vendorid) => {
-        await validateVendor(vendorname)
+    editVendor = async (vendorname, vendorcode, vendorid) => {
+        console.log(vendorname, vendorcode)
+        await validateVendor({vendorname, vendorcode})
         await validateId(vendorid)
-        await this.model.editVendor(vendorname, vendorid)
+        await this.model.editVendor(vendorname, vendorcode, vendorid)
     }
 
     removeVendor = async (id) => {

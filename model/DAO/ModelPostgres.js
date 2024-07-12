@@ -164,13 +164,50 @@ class ModelPostgres {
     }
 
     // -----------------------------------------------
+    //                    CONTACTS
+    // -----------------------------------------------
+
+    createContact = async (contactName) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('INSERT INTO contacts (contactname) VALUES ($1);', [contactName])
+    }
+
+    getContacts = async (searchByName) => {
+        this.validateDatabaseConnection()
+        let baseQuery = 'SELECT contactID, contactName FROM contacts WHERE isActive = true'
+        let queryParams = []
+        
+        if (searchByName) {
+            baseQuery += ' AND contactName ILIKE $1'
+            queryParams.push(`${searchByName}%`)
+        }
+    
+        baseQuery += ' ORDER BY contactID;'
+        return CnxPostgress.db.query(baseQuery, queryParams)
+    }
+
+    editContact = async (contactid, contactname) => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query('UPDATE contacts SET contactName = $1 WHERE contactID=$2', [contactname, contactid])
+    }
+
+    deleteContact = async (id) => {
+        this.validateDatabaseConnection()
+        try {
+            await CnxPostgress.db.query('DELETE FROM contacts WHERE contactID = $1', [id])
+        } catch (error) {
+            await CnxPostgress.db.query("UPDATE contacts SET isActive=false WHERE contactID=$1;", [id])
+        }
+    }
+
+    // -----------------------------------------------
     //                    VENDORS
     // -----------------------------------------------
 
     getVendors = async (searchByName) => {
         this.validateDatabaseConnection()
 
-        let baseQuery = 'SELECT vendorid, vendorname FROM flowerVendor '
+        let baseQuery = 'SELECT vendorid, vendorname, vendorCode FROM flowerVendor '
 
         let queryParams = []
         
@@ -185,15 +222,28 @@ class ModelPostgres {
         //return await CnxPostgress.db.query('SELECT vendorid, vendorname FROM flowerVendor LIMIT $1 OFFSET $2 ORDER BY vendorname;')
     }
 
-    addVender = async (vendorName) => {
+    addVendor = async (vendorName, vendorCode) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
+        if (vendorCode) {
+            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName, vendorCode) VALUES ($1, $2);', [vendorName, vendorCode])
+        } else {
+            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
+        }
 
     }
 
-    editVendor = async (vendorname, vendorid) => {
+    editVendor = async (vendorname, vendorCode, vendorid) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
+        if (vendorCode) {
+            await CnxPostgress.db.query(`
+                UPDATE flowerVendor 
+                SET 
+                    vendorName=$1,
+                    vendorCode=$2
+                WHERE vendorID=$3;`, [vendorname, vendorCode, vendorid])
+        } else {
+            await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
+        }
     }
 
     removeVendor = async (id) => {
@@ -211,7 +261,7 @@ class ModelPostgres {
 
     createProject = async (staffBudget, projectContact, projectDate, projectEndDate, projectDescription, projectClientID, profitMargin, creatorid, arrangements, extras, isRecurrent) => {
         this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::VARCHAR, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN, $11::DATE);",
+        const response = await CnxPostgress.db.query("CALL createProject($1::DATE, $2::VARCHAR, $3::INT, $4::FLOAT, $5::FLOAT, $6::INT, $7::INT, $8::JSONB[], $9::JSONB[], $10::BOOLEAN, $11::DATE);",
         [projectDate, projectDescription, projectContact, staffBudget, profitMargin, projectClientID, creatorid, arrangements, extras, isRecurrent, projectEndDate]);
         return response.rows[0]
     }
@@ -245,7 +295,8 @@ class ModelPostgres {
                 projects.projectid, 
                 projects.clientid, 
                 projects.projectdescription, 
-                projects.projectcontact, 
+                projects.projectcontact,
+                c.contactName, 
                 projects.profitmargin, 
                 projects.staffbudget, 
                 projects.creatorid, 
@@ -255,7 +306,9 @@ class ModelPostgres {
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectEndDate, 'MM-DD-YYYY') AS projectEndDate,
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
-                FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                FROM projects 
+                LEFT JOIN contacts c ON projects.projectcontact = c.contactid
+                INNER JOIN clients ON projects.clientID = clients.clientID 
                 WHERE projects.projectID = $1;`,
                 [id]
         );
@@ -270,10 +323,12 @@ class ModelPostgres {
                 projects.projectdate, 
                 projects.projectdescription, 
                 projects.projectcontact, 
+                c.contactName, 
                 projects.projectenddate,
                 clients.clientName AS projectclient, 
                 TO_CHAR(projects.projectDate, 'MM-DD-YYYY') AS projectDate 
                 FROM projects INNER JOIN clients ON projects.clientID = clients.clientID 
+                LEFT JOIN contacts c ON projects.projectcontact = c.contactid
                 WHERE projects.projectID IN (SELECT * FROM UNNEST($1::int[]));`,
             [ids]
         );
@@ -286,7 +341,7 @@ class ModelPostgres {
             projectid : ' ORDER BY p.projectID',
             projectclient : ' ORDER BY c.clientName',
             projectdescription : ' ORDER BY p.projectDescription',
-            projectcontact : ' ORDER BY p.projectContact',
+            projectcontact : ' ORDER BY co.contactName',
             projectdate : ' ORDER BY p.projectDate',
             projectstatus: ' ORDER BY projectstatus'
         }
@@ -298,6 +353,7 @@ class ModelPostgres {
             p.projectdescription,
             p.projectcontact,
             p.isclosed, 
+            co.contactName, 
             c.clientName AS projectclient, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
             CASE
@@ -305,10 +361,9 @@ class ModelPostgres {
                 WHEN num_arrangements_with_no_flowers > 0 THEN 1
                 ELSE 2
             END AS projectStatus
-        FROM 
-            projects p 
-        INNER JOIN 
-            clients c ON p.clientID = c.clientID
+        FROM projects p 
+        INNER JOIN clients c ON p.clientID = c.clientID
+        LEFT JOIN contacts co ON P.projectcontact = co.contactid
         LEFT JOIN (
             SELECT 
                 projectID,
@@ -333,8 +388,8 @@ class ModelPostgres {
         }
         
         if(searchByContact && searchByContact != '') {
-            queryConditions.push(`p.projectcontact ILIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${searchByContact}%`)
+            queryConditions.push(`co.contactName ILIKE $${queryParams.length + 1}`)
+            queryParams.push(`${searchByContact}`)
         }
 
         if(searchByDescription && searchByDescription != '') {
@@ -380,6 +435,7 @@ class ModelPostgres {
             a.arrangementtype,
             a.arrangementlocation,
             a.installationtimes,
+            a.timesbilled,
             at.typeName AS typename
             FROM arrangements a 
             LEFT JOIN arrangementTypes at ON at.arrangementTypeID = a.arrangementType
@@ -448,15 +504,17 @@ class ModelPostgres {
     addArrangementToProject = async (id, arrangementData) => {
         this.validateDatabaseConnection();
         const result = await CnxPostgress.db.query(`
-            INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity, installationTimes, arrangementLocation)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO arrangements (projectID, arrangementType, arrangementDescription, clientCost, arrangementQuantity, installationTimes, arrangementLocation, timesBilled)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING arrangementID;`, 
-            [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.installationTimes, arrangementData.arrangementLocation]);
+            [id, arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.installationTimes, arrangementData.arrangementLocation, arrangementData.timesBilled]);
         
         const arrangementID = result.rows[0].arrangementID;
         
         return arrangementID;
     }
+
+    // TODO
 
     editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
@@ -762,6 +820,7 @@ class ModelPostgres {
             a.arrangementquantity,
             a.designerid,
             a.installationtimes,
+            a.timesbilled,
             a.arrangementlocation,
             at.typeName,
             p.profitMargin
@@ -816,9 +875,10 @@ class ModelPostgres {
         clientCost = $3,
         arrangementQuantity = $4,
         arrangementLocation = $5,
-        installationTimes = $6
-        WHERE arrangementID = $7;`, 
-        [arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.arrangementLocation, arrangementData.installationTimes, id])
+        installationTimes = $6,
+        timesBilled = $7
+        WHERE arrangementID = $8;`, 
+        [arrangementData.arrangementType, arrangementData.arrangementDescription, arrangementData.clientCost, arrangementData.arrangementQuantity, arrangementData.arrangementLocation, arrangementData.installationTimes, arrangementData.timesBilled,id])
     }
 
     deleteArrangement = async (id) => {
@@ -1037,20 +1097,22 @@ class ModelPostgres {
     getProvidedProjects = async (invoiceID) => {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query(`
-        SELECT 
+            SELECT 
             p.projectid,
             p.projectcontact, 
             p.projectdate, 
             p.projectdescription,
             clients.clientName AS projectclient, 
+            co.contactName, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate 
             FROM projects p
             INNER JOIN clients ON p.clientID = clients.clientID 
+            LEFT JOIN contacts co ON p.projectcontact = co.contactid
             WHERE p.projectID IN (
                 SELECT DISTINCT projectID 
                 FROM flowerXInvoice 
                 WHERE invoiceID = $1);`
-        , [invoiceID])
+                , [invoiceID])
         return respone
     }
 

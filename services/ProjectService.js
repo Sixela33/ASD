@@ -50,7 +50,7 @@ class ProjectService {
 
     getProjects = async (offset, orderBy, order, showOpenOnly, searchByID, searchByContact, searchByDescription, rows, searchByClient) => {
         await validateId(offset)
-        console.log(searchByID)
+
         if(Number(searchByID)){
             await validateId(Number(searchByID))
         }
