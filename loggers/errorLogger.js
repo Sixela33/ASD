@@ -17,6 +17,7 @@ let errorLogger = expressWinston.errorLogger({
     ),
     meta: true,
     requestWhitelist: [...expressWinston.requestWhitelist, 'body', 'params', 'query'],
-    skip: (err, req, res) => !res.status || res.status == 500,})
+    skip: (err, req, res) => !res.status || res.status == 500,
+})
 
 export default errorLogger

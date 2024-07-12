@@ -86,13 +86,7 @@ export default function ViewSingleInvoice() {
             action: () => navigateTo('/invoice/add/' + id),
             icon: <FiEdit/>,
             minPermissionLevel: permissionsRequired['edit_invoice']
-        },
-        {
-            text: "Delete Invoice",
-            action: () => setShowDeleteInvoiceConfirmation(true),
-            icon: <FiTrash/>,
-            minPermissionLevel: permissionsRequired['edit_invoice']
-        },
+        }
     ]
 
 

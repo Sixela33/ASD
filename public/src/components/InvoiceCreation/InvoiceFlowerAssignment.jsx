@@ -123,9 +123,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 totalstems: 0,
                 flowername: flowerData.flowername,
             }
-    
-            console.log(newFlowerObject)
-    
+        
             setDisplayFlowerData(prevData => {
                 const updatedData = [...prevData]
                 updatedData[selectedRow] = [...updatedData[selectedRow], newFlowerObject]
@@ -179,6 +177,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             setLoading(true)
             const formDataToSend = new FormData();
             
+            
             // this function checks if the total of flowers added coincide with the invoice AND
             // if the user added stems but did not set the price
             const validationOutput = getTotalAddedAndWithNoStemData()
@@ -193,7 +192,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 setErrorRows(validationOutput.noStemInfoFlowers)
                 return
             }
-
+            
             let invoiceFlowerData = displayFlowerData.flat(Infinity)
 
             let temp = invoiceFlowerData
@@ -211,6 +210,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
             formDataToSend.append('InvoiceFlowerData', JSON.stringify(temp));
             formDataToSend.append('invoiceFile', invoiceFile);
+
+            console.log(temp)
 
             if (!invoiceData.invoiceid) {
                 await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);
