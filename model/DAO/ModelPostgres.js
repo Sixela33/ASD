@@ -224,26 +224,20 @@ class ModelPostgres {
 
     addVendor = async (vendorName, vendorCode) => {
         this.validateDatabaseConnection()
-        if (vendorCode) {
-            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName, vendorCode) VALUES ($1, $2);', [vendorName, vendorCode])
-        } else {
-            await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName) VALUES ($1);', [vendorName])
-        }
+        await CnxPostgress.db.query('INSERT INTO flowerVendor (vendorName, vendorCode) VALUES ($1, $2);', [vendorName, vendorCode])
+    
 
     }
 
     editVendor = async (vendorname, vendorCode, vendorid) => {
         this.validateDatabaseConnection()
-        if (vendorCode) {
-            await CnxPostgress.db.query(`
-                UPDATE flowerVendor 
-                SET 
-                    vendorName=$1,
-                    vendorCode=$2
-                WHERE vendorID=$3;`, [vendorname, vendorCode, vendorid])
-        } else {
-            await CnxPostgress.db.query('UPDATE flowerVendor SET vendorName=$1 WHERE vendorID=$2;', [vendorname, vendorid])
-        }
+        await CnxPostgress.db.query(`
+            UPDATE flowerVendor 
+            SET 
+                vendorName=$1,
+                vendorCode=$2
+            WHERE vendorID=$3;`, [vendorname, vendorCode, vendorid])
+     
     }
 
     removeVendor = async (id) => {
