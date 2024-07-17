@@ -131,7 +131,6 @@ class InvoiceService {
         let invoiceData = this.model.getInvoiceData(id)
         let projects = this.model.getProvidedProjects(id)
         let flowers = this.model.getFlowersXInvoice(id) 
-        let bankTransactions = this.model.getInvoiceBankTransactions(id)
         
         invoiceData = await invoiceData
         invoiceData = invoiceData.rows
@@ -146,10 +145,7 @@ class InvoiceService {
         flowers = await flowers
         flowers = flowers.rows
 
-        bankTransactions = await bankTransactions
-        bankTransactions = bankTransactions.rows
-
-        return {projects, flowers, invoiceData, bankTransactions}
+        return {projects, flowers, invoiceData, bankTransactions:[]}
     }
 
     getInvoiceData = async (id) => {

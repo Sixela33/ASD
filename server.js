@@ -28,6 +28,8 @@ import RecurrentProjectCheckpointer from "./scripts/createRecurentProjectCheckpo
 import ROLES_LIST from "./config/rolesList.js";
 import ExtraServicesRouter from "./routers/ExtraServicesRouter.js";
 import ContactRouter from "./routers/ContactRouter.js";
+import BankStatementRouter from "./routers/BankStatementRouter.js";
+import BankTransactionRouter from "./routers/BankTransactionsRouter.js";
 
 /*
     This code was written by S1X3L4
@@ -87,6 +89,8 @@ class Server {
         this.app.use('/api/invoices', staffuserReq, new InvoiceRouter(this.fileStorage).start())
         this.app.use('/api/extraServices', staffuserReq, new ExtraServicesRouter().start())
         this.app.use('/api/contacts', loginreq, new ContactRouter().start())
+        this.app.use('/api/bankStatements', staffuserReq, new BankStatementRouter().start())
+        this.app.use('/api/bankTransactions', staffuserReq, new BankTransactionRouter().start())
         
         // -----------------------------------------------
         //                 MIDDLEWARES

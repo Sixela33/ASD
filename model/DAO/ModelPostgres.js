@@ -1010,16 +1010,11 @@ class ModelPostgres {
                 i.invoiceamount, 
                 i.invoiceNumber,
                 TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-                CASE 
-                    WHEN it.invoiceID IS NOT NULL THEN TRUE 
-                    ELSE FALSE 
-                END AS hasTransaction
+                i.bankTransaction as hasTransaction
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
-            LEFT JOIN (
-                SELECT DISTINCT invoiceID FROM invoiceTransaction
-            ) it ON it.invoiceID = i.invoiceID`
+  `
     
         const queryParams = []
         let queryConditions = []
@@ -1134,11 +1129,6 @@ class ModelPostgres {
         await CnxPostgress.db.query(`CALL linkBankTx($1::VARCHAR(255), $2::INT[])`, [bankTransactionData, selectedInvoices])
     }
 
-    getInvoiceBankTransactions = async (id) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`SELECT * FROM invoiceTransaction WHERE invoiceID = $1`, [id])
-    }
-
     // -----------------------------------------------
     //                  SERVICES
     // -----------------------------------------------
@@ -1178,6 +1168,135 @@ class ModelPostgres {
         return res.rows
     }
 
+    // -----------------------------------------------
+    //                BANK STATEMENTS
+    // -----------------------------------------------
+    
+
+    addStatement = async (statementData, file, creatorid) => {
+        this.validateDatabaseConnection()
+        const result = await CnxPostgress.db.query(`
+            INSERT INTO bankStatements (vendorID, fileLocation, statementDate)
+            VALUES ($1, $2, $3)
+            RETURNING statementID;
+        `, [statementData.vendorid, file, statementData.statementdate])
+
+        return {
+            ...statementData,
+            fileLocation: file,
+            statementid: result.rows[0].statementid
+        };
+    }
+    
+    getStatements = async () => {
+        this.validateDatabaseConnection();
+        return CnxPostgress.db.query(`
+        SELECT 
+            bs.statementID,
+            fv.vendorName,
+            fv.vendorID,
+            bs.fileLocation,
+            TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate,
+            COALESCE(SUM(bt.transactionAmount), 0) AS StatementAmount,
+            COALESCE(SUM(i.invoiceAmount), 0) AS AmountRegistered
+        FROM bankStatements bs
+        LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+        LEFT JOIN bankTransactions bt ON bt.statementID = bs.statementID
+        LEFT JOIN invoices i ON i.bankTransaction = bt.transactionID
+        GROUP BY bs.statementID, fv.vendorName, fv.vendorID, bs.fileLocation, bs.statementDate
+        ;`);
+    }
+
+
+    getStatementDataByID = async (id) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            SELECT 
+                bs.statementID,
+                fv.vendorName,
+                fv.vendorID,
+                bs.fileLocation,
+                TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate
+            FROM bankStatements bs
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+            WHERE bs.statementID = $1;
+        `, [id])
+        
+        return response.rows[0]
+    }
+    
+    editStatement = async (statementData, file) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            UPDATE bankStatements 
+            SET 
+                vendorID=$1, 
+                fileLocation=$2, 
+                statementDate=$3
+            WHERE statementID=$4
+        `, [statementData.vendorid, file, statementData.statementdate, statementData.statementid])
+        return response.rows[0]
+    }
+
+    getStatementFileLocation = async (id) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            SELECT filelocation FROM bankStatements WHERE statementID = $1
+        `, [id])
+        return response.rows[0]
+    }
+    // -----------------------------------------------
+    //              BANK TRANSACTIONS
+    // -----------------------------------------------
+
+    addBankTransactions = async (transactionData) => {
+        console.log("transactionData", transactionData)
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`
+            INSERT INTO bankTransactions (statementID, bankID,transactionDate, transactionAmount, transactionCode)
+            VALUES ($1, $2, $3, $4, $5);
+        `, [transactionData.statementid, transactionData.bankid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
+    }
+
+    getBankTransactions = async () => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`SELECT * FROM bankTransactions`, )
+    }
+
+    getBankTransactionsByStatement = async (statementid) => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`
+        SELECT 
+            bt.*,
+            COALESCE(SUM(i.invoiceAmount), 0) AS totalInvoiceAmount
+        FROM 
+            bankTransactions bt
+        LEFT JOIN 
+            invoices i ON bt.transactionID = i.bankTransaction
+        WHERE bt.statementID = $1
+        GROUP BY bt.transactionID
+        ;`, [statementid])
+    }
+
+    linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+            UPDATE invoices
+            SET bankTransaction = null
+            `)
+        return await CnxPostgress.db.query(`    
+            UPDATE invoices
+            SET bankTransaction = $1
+            WHERE invoiceID = ANY($2::int[])`, [selectedTransactionID, selectedInvoicesData ])
+
+    }
+
+    getTransactionInvoices = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT * FROM invoices 
+            WHERE bankTransaction = $1;`, [id])
+    }
 }
 
 export default ModelPostgres
