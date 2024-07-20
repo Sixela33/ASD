@@ -1,7 +1,7 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 import { validateInvoice, validateFlowers, validateBankTransaction } from "./Validations/InvoiceValidations.js";
-import { minMaxNumbersValidation, startDateEndDateValidation, validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js";
+import { minMaxNumbersValidation, startDateEndDateValidation, validateBoolean, validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'pdf'];
 
@@ -116,12 +116,13 @@ class InvoiceService {
         }
     }
 
-    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount) => {
+    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction) => {
         await validateId(offset)
         await validateQueryStringLength([orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing])
         await startDateEndDateValidation({startDate, endDate})
         await minMaxNumbersValidation({minAmount, maxAmount})
-        const result = await this.model.getInvoices(offset,  orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount)
+        await validateBoolean(withoutTransaction)
+        const result = await this.model.getInvoices(offset,  orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction)
         return result.rows 
     }
 

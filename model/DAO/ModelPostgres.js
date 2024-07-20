@@ -989,8 +989,22 @@ class ModelPostgres {
         const respone = await CnxPostgress.db.query(`SELECT DISTINCT projectID FROM flowerXInvoice WHERE invoiceID = $1;`, [invoiceID])
         return respone
     }
-
-    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount) => {
+    getInvoices = async (
+        offset, 
+        orderBy, 
+        order, 
+        invoiceNumber, 
+        invoiceID, 
+        specificVendor, 
+        onlyMissing, 
+        rows, 
+        startDate, 
+        endDate, 
+        minAmount, 
+        maxAmount, 
+        withoutTransaction = false
+    ) => {
+           
         this.validateDatabaseConnection()
         const LIMIT = rows || 50
     
@@ -1014,18 +1028,18 @@ class ModelPostgres {
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
-  `
+        `
     
         const queryParams = []
         let queryConditions = []
     
         if (onlyMissing == 'true') {
             queryBase += " LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID"
-            queryConditions.push('fxi.invoiceID IS NULL ')
+            queryConditions.push('fxi.invoiceID IS NULL')
         }
     
         if (specificVendor) {
-            queryConditions.push('i.vendorID = $1')
+            queryConditions.push(`i.vendorID = $${queryParams.length + 1}`)
             queryParams.push(specificVendor)
         }
     
@@ -1046,21 +1060,25 @@ class ModelPostgres {
         }
     
         if (invoiceID) {
-            queryConditions.push(`i.invoiceid::text LIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${invoiceID}%`)
+            queryConditions.push(`i.invoiceid::text LIKE $${queryParams.length + 1}`);
+            queryParams.push(`%${invoiceID}%`);
         }
     
         if (minAmount && maxAmount) {
-            queryConditions.push(`i.invoiceamount BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`)
-            queryParams.push(minAmount, maxAmount)
+            queryConditions.push(`i.invoiceamount BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`);
+            queryParams.push(minAmount, maxAmount);
         } else if (minAmount) {
-            queryConditions.push(`i.invoiceamount >= $${queryParams.length + 1}`)
-            queryParams.push(minAmount)
+            queryConditions.push(`i.invoiceamount >= $${queryParams.length + 1}`);
+            queryParams.push(minAmount);
         } else if (maxAmount) {
-            queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`)
-            queryParams.push(maxAmount)
+            queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`);
+            queryParams.push(maxAmount);
         }
-
+    
+        if (withoutTransaction) {
+            queryConditions.push(`i.bankTransaction IS NULL`)
+        }
+    
         queryConditions.push("i.isRemoved = false")
     
         if (queryConditions.length > 0) {
@@ -1253,7 +1271,7 @@ class ModelPostgres {
         console.log("transactionData", transactionData)
         this.validateDatabaseConnection()
         return CnxPostgress.db.query(`
-            INSERT INTO bankTransactions (statementID, bankID,transactionDate, transactionAmount, transactionCode)
+            INSERT INTO bankTransactions (statementID, bankID, transactionDate, transactionAmount, transactionCode)
             VALUES ($1, $2, $3, $4, $5);
         `, [transactionData.statementid, transactionData.bankid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
     }
@@ -1268,6 +1286,7 @@ class ModelPostgres {
         return CnxPostgress.db.query(`
         SELECT 
             bt.*,
+            TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
             COALESCE(SUM(i.invoiceAmount), 0) AS totalInvoiceAmount
         FROM 
             bankTransactions bt
@@ -1276,6 +1295,26 @@ class ModelPostgres {
         WHERE bt.statementID = $1
         GROUP BY bt.transactionID
         ;`, [statementid])
+    }
+
+    deleteBankTransaction = async (id) => {
+        this.validateDatabaseConnection();
+        return await CnxPostgress.db.query(`
+            CALL removeBankTransaction($1);
+        `, [id]);
+    }
+
+    editBankTransaction = async (transactionData) => {
+        this.validateDatabaseConnection();
+        return await CnxPostgress.db.query(`
+            UPDATE bankTransactions
+            SET 
+                bankID = $1,
+                transactionDate = $2,
+                transactionAmount = $3,
+                transactionCode = $4
+            WHERE transactionID = $5;
+        `, [transactionData.bankid, transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode, transactionData.transactionid]);
     }
 
     linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {

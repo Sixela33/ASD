@@ -57,7 +57,8 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                     startDate: startDate,
                     endDate: endDate,
                     minAmount: minAmount,
-                    maxAmount: maxAmount
+                    maxAmount: maxAmount,
+                    withoutTransaction: true
                 }})
                 
             page.current = page.current + 1;
@@ -73,15 +74,17 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
         }
     };
 
-    const fetchAlreadyLinked = async () => {
+    const fetchAlreadyLinked = async (id) => {
         try {
-            const response = await axiosPrivate.get(GET_LINKED_INVOICES + selectedTransaction.transactionid)
+            const response = await axiosPrivate.get(GET_LINKED_INVOICES + id)
             response.data.map(invoice => {
                 setSelectedInvoices(prevState => {
                     return { ...prevState, [invoice.invoiceid]: {amount: invoice.invoiceamount} };
 
                 })
             })
+            setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
+
 
         } catch (error) {
             console.log(error)
@@ -90,6 +93,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
     }
 
     const debounced = useCallback(debounce(fetchData, 200), []);
+    const fetch_already_linked_debounced = useCallback(debounce(fetchAlreadyLinked, 200), []);
 
     useEffect(() => {
 
@@ -121,7 +125,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
 
     useEffect(() => {
         debounced(sortConfig, searchByInvoiceNumber,  startDate, endDate, minAmount, maxAmount);   
-        fetchAlreadyLinked()     
+        fetch_already_linked_debounced(selectedTransaction.transactionid)
     }, [selectedTransaction]);
 
     const handleCheckboxClick = (e, invoice) => {
@@ -215,7 +219,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                         <td>{invoice?.invoicedate}</td>
                         <td>{toCurrency(invoice?.invoiceamount)}</td>
                         <td>
-                            <input className='ml-4' type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)}/>
+                            <input className='ml-4' type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={() => {}}/>
                         </td>
                      </tr>
                     })}

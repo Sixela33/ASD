@@ -50,4 +50,6 @@ const minMaxNumbers = Joi.object({
     })
 })
 
-export default { idSchema, idArrays, maxLengthString, maxLengthStringMany, startDateEndDateSchema, minMaxNumbers };
+const validateBoolean = Joi.boolean()
+
+export default { idSchema, idArrays, maxLengthString, maxLengthStringMany, startDateEndDateSchema, minMaxNumbers, validateBoolean };

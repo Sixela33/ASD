@@ -38,6 +38,26 @@ class BankTransactionController {
         }
     }
 
+    deleteBankTransaction = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            await this.service.deleteBankTransaction(id)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    editBankTransaction = async (req, res, next) => {
+        try {
+            const transactionData = req.body
+            await this.service.editBankTransaction(transactionData)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     linkInvoices = async (req, res, next) => {
         try {
             const {selectedInvoicesData, selectedTransactionID} = req.body

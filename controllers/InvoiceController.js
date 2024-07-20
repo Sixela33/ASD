@@ -66,8 +66,8 @@ class InvoiceController {
     getInvoices = async (req, res, next) => {
         try {
             const { offset } = req.params
-            const { orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount } = req.query
-            const response = await this.service.getInvoices(offset,  orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount)
+            const { orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction } = req.query
+            const response = await this.service.getInvoices(offset,  orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction)
             res.json(response)
         } catch (error) {
             next(error)

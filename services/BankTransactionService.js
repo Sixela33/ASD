@@ -21,6 +21,15 @@ class BankTransactionService {
         return result.rows
     }
 
+    deleteBankTransaction = async (id) => {
+        const result = await this.model.deleteBankTransaction(id)
+        return result.rows
+    }
+
+    editBankTransaction = async (transactionData) => {
+        await this.model.editBankTransaction(transactionData)
+    }
+
     linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {
         const result = await this.model.linkInvoices(selectedInvoicesData, selectedTransactionID)
     }

@@ -32,7 +32,7 @@ export default function CreateBankTransactionPopup({showPopup, closePopup, editB
                 transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate
             }
 
-            if (!transactionData.banktransactionid) {
+            if (!transactionData.transactionid) {
                 await axiosPrivate.post(CREATE_TRANSACTION_URL, JSON.stringify(transactionData))
                 setMessage('Banktransaction created Successfully', false)
             } else {

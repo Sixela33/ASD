@@ -3,12 +3,12 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import useAlert from '../../../hooks/useAlert'
 import TableHeaderSort from '../../../components/Tables/TableHeaderSort'
 import { sortData } from '../../../utls/sortData'
-import { debounce } from 'lodash'
 import CreateBankTransactionPopup from '../Popups/CreateBankTransactionPopup'
 import { useNavigate } from 'react-router-dom'
 import { toCurrency } from '../../../utls/toCurrency'
 
 const FETCH_TRACTIONS_URL = '/api/bankTransactions/statement/'
+const DELETE_TRANSACTION_URL = '/api/bankTransactions/'
 
 const defaultSortConfig = { key: null, direction: 'asc' }
 
@@ -55,13 +55,30 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
             fetchBankTransactions()
         }
     }
+
+    const handleEditBankTransaction = (bankTransaction) => {
+        console.log(bankTransaction)
+        setEditbankTransactiondata(bankTransaction)
+        setShowNewBankTransactionPopup(true)
+    }
+    
+    const handleRemoveBankTrnansaction = async (transactionID) => {
+        try {
+            await axiosPrivate.delete(DELETE_TRANSACTION_URL + transactionID)
+            fetchBankTransactions()
+        } catch (error) {
+            console.log(error)
+            setMessage(error.message)
+        }
+        
+    }
     
     return (
         bankTransactionsData && <div className='container mx-auto mt-8 p-4 text-center'>
             <CreateBankTransactionPopup
                 showPopup={showNewBankTransactionPopup} 
                 closePopup={handleCloseBankTransactionPopup} 
-                editBankTransactionData={editBankTransactionData}
+                editBanktransactionData={editBankTransactionData}
                 bankStatementData={bankStatementData}
             />
                 <div className='my-2'>
@@ -82,9 +99,9 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                                 <td>{bankTransaction.transactioncode}</td>
                                 <td>{toCurrency(bankTransaction.transactionamount)}</td>
                                 <td>{toCurrency(bankTransaction.totalinvoiceamount)}</td>
-                                <td>
-                                    <button className='go-back-button'>Edit</button>
-                                    <button className='go-back-button'>Remove</button>
+                                <td onClick={e => e.stopPropagation()}>
+                                    <button className='go-back-button px-1' onClick={() => handleEditBankTransaction(bankTransaction)}>Edit</button>
+                                    <button className='go-back-button px-1' onClick={() => handleRemoveBankTrnansaction(bankTransaction.transactionid)}>Remove</button>
                                 </td>
                             </tr>
                         })}
