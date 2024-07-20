@@ -55,8 +55,8 @@ class StatementService {
         return response
     }
 
-    getStatements = async () => {
-        const response = await this.model.getStatements()
+    getStatements = async (offset, orderBy, order, specificVendor, startDate, endDate) => {
+        const response = await this.model.getStatements(offset, orderBy, order, specificVendor, startDate, endDate)
         return response.rows
     }
 

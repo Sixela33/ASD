@@ -50,6 +50,7 @@ export default function BankStatementsList() {
 
             const response = await axiosPrivate.get(GET_STATEMENTS_URL , {
                 params: {
+                    offset: page.current,
                     orderBy: sortConfig.key,
                     order: sortConfig.direction,
                     specificVendor: selectedVendor.vendorid,
@@ -149,7 +150,7 @@ export default function BankStatementsList() {
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
                 {statementData.map((statement, index) => {
-                    return <tr key={index}  onClick={() => navigateTo('/bankStatement/link/' + statement.statementid)}>
+                    return <tr key={index}  onClick={() => navigateTo('/bankStatement/' + statement.statementid)}>
                         <td>{statement?.statementid}</td>
                         <td>{statement?.vendorname}</td>
                         <td>{statement?.statementdate}</td>

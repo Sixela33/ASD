@@ -18,18 +18,6 @@ export default function LinkBankStatement() {
   const [bankStatementData, setBankStatementData] = useState(null)
   const [selectedBankTransaction, setSelectedBankTransaction] = useState(null)
 
-  const [bankStatementFormData, setBankStatementFormData] = useState({
-    selectedvendor: '',
-    selectedDate: ''
-  })
-
-
-  const handleFileChange = (e) => {
-    e.preventDefault()
-    const file = e.target.files[0];
-    setDisplayPdfFile(file && URL.createObjectURL(file) + '#toolbar=0')
-  };
-
   const handleNextStep =() => {
     setCurrentstep(step => step += 1)
     console.log("aiaiai")
@@ -40,29 +28,11 @@ export default function LinkBankStatement() {
 
   }
 
-  const handleBankStatementCreation = (bankStatement) => {
-    if (bankStatement) {
-      console.log("first")
-      console.log(bankStatement)
-      console.log("first")
-      setBankStatementData(bankStatement)
-      console.log("first")
-      id = bankStatement.statementid
-      console.log(id)
-      handleNextStep()
-    }
-  }
-
   const fetchBankTransactionData = async () => {
     try {
       if (id) {
         const result = await axiosPrivate.get(FETCH_STATEMENT_DATA + id)
-        console.log(result.data)
         setBankStatementData(result.data)
-        setBankStatementFormData({
-          selectedvendor: {vendorname: result.data.vendorname, vendorcode: result.data.vendorid},
-          selectedDate: result.data.statementdate
-        })
         setDisplayPdfFile(result.data.filelocation+ '#toolbar=0')
         setFileToSend(result.data.filelocation)
       }

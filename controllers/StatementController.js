@@ -36,7 +36,8 @@ class StatementController {
 
     getStatements = async (req, res, next) => {
         try {
-            const response = await this.service.getStatements()
+            const {offset, orderBy, order, specificVendor, startDate, endDate} = req.query
+            const response = await this.service.getStatements(offset, orderBy, order, specificVendor, startDate, endDate)
             res.json(response)
         } catch (error) {
             console.log(error)

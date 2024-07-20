@@ -57,7 +57,6 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
     }
 
     const handleEditBankTransaction = (bankTransaction) => {
-        console.log(bankTransaction)
         setEditbankTransactiondata(bankTransaction)
         setShowNewBankTransactionPopup(true)
     }
@@ -107,7 +106,7 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                         })}
                     </TableHeaderSort>
                 </div>
-                <button className='buton-main' onClick={() => navigateTo('/')}>Save</button>
+                <button className='buton-main' onClick={() => navigateTo('/bankStatements')}>Save</button>
             </div>
     )
 }

@@ -65,7 +65,7 @@ class LocalStorageFileHandler {
 
         //removes old file
         if (newFile && filepath) {
-            await handleDeleteFile(filepath)
+            await this.handleDeleteFile(filepath)
         }
 
         return newFile

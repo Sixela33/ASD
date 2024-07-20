@@ -5,28 +5,28 @@ import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import FormItem from '../../components/Form/FormItem';
 import FormError from '../../components/Form/FormError';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const GET_VENDORS_URL = '/api/vendors';
-const CREATE_BANK_STATEMENT_URL = '/api/bankStatements';
+const GET_BANK_STATEMENT_URL = '/api/bankStatements/byID/'
+const CREATE_BANK_STATEMENT_URL = '/api/bankStatements'
 
 const DEFAULT_STATEMENT_DATA = {
   selectedVendor: '',
   selectedDate: ''
 };
 
-export default function CreateBankStatement({ editBankStatementData }) {
-  const [statementData, setStatementData] = useState(editBankStatementData || DEFAULT_STATEMENT_DATA);
+export default function CreateBankStatement() {
+  const { id } = useParams();
+  const [statementData, setStatementData] = useState(DEFAULT_STATEMENT_DATA);
   const [displayPdfFile, setDisplayPdfFile] = useState(null);
   const [fileToSend, setFileToSend] = useState(null);
   const [vendors, setVendors] = useState([]);
-
   const [statementFormErrors, setStatementFormErrors] = useState({});
-
   const axiosPrivate = useAxiosPrivateImage();
   const { setMessage } = useAlert();
   const isSendingRequest = useRef(false);
-  const navigateTo = useNavigate()
+  const navigateTo = useNavigate();
 
   const fetchVendors = async () => {
     try {
@@ -34,20 +34,35 @@ export default function CreateBankStatement({ editBankStatementData }) {
       setVendors(response.data);
     } catch (error) {
       setMessage(error.response?.data, true);
-      console.error('Error fetching data:', error);
+      console.error('Error fetching vendors:', error)
+    }
+  };
+
+  const fetchStatementData = async () => {
+    try {
+      const response = await axiosPrivate.get(GET_BANK_STATEMENT_URL + id)
+      console.log(response.data)
+      setStatementData({
+        selectedVendor: {
+          vendorid: response.data.vendorid,
+          vendorname: response.data.vendorname
+        },
+        selectedDate: response.data.statementdate,
+        statementid: response.data.statementid
+      })
+      setDisplayPdfFile(`${response.data.filelocation}#toolbar=0`)
+    } catch (error) {
+      setMessage(error.response?.data, true)
+      console.error('Error fetching statement data:', error)
     }
   };
 
   useEffect(() => {
     fetchVendors();
-  }, []);
-
-  useEffect(() => {
-    if (editBankStatementData) {
-      setStatementData(editBankStatementData);
-      setDisplayPdfFile(`${editBankStatementData.filelocation}#toolbar=0`);
+    if (id) {
+      fetchStatementData()
     }
-  }, [editBankStatementData]);
+  }, [id]);
 
   const handleFormDataChange = (name, value) => {
     setStatementData(prevState => ({
@@ -71,29 +86,32 @@ export default function CreateBankStatement({ editBankStatementData }) {
     isSendingRequest.current = true;
 
     try {
-      if (!fileToSend) {
+      const formDataToSend = new FormData();
+      
+      if (!fileToSend && !statementData.statementid) {
         setMessage("Please load a file");
         return;
+      } else if (fileToSend){
+        formDataToSend.append('statementFile', fileToSend);
       }
 
-      const formDataToSend = new FormData();
-      formDataToSend.append('statementFile', fileToSend);
+      
 
-      const invoiceData = {
+      const tempStatementData = {
         vendorid: statementData.selectedVendor.vendorid,
-        statementdate: statementData.selectedDate
+        statementdate: statementData.selectedDate,
+        statementid: statementData.statementid
       };
 
-      if (statementData.statementid) {
-        invoiceData.statementid = statementData.statementid;
-        formDataToSend.append('statementData', JSON.stringify(invoiceData));
-        const response = await axiosPrivate.patch(CREATE_BANK_STATEMENT_URL, formDataToSend);
-        navigateTo('/')
+      if (tempStatementData.statementid) {
+        tempStatementData.statementid = tempStatementData.statementid;
+        formDataToSend.append('statementData', JSON.stringify(tempStatementData));
+        await axiosPrivate.patch(CREATE_BANK_STATEMENT_URL, formDataToSend);
+        navigateTo('/bankStatement/' + tempStatementData.statementid)
       } else {
-        formDataToSend.append('statementData', JSON.stringify(invoiceData));
+        formDataToSend.append('statementData', JSON.stringify(tempStatementData));
         const response = await axiosPrivate.post(CREATE_BANK_STATEMENT_URL, formDataToSend);
         navigateTo('/bankStatement/link/' + response.data.statementid)
-
       }
     } catch (error) {
       console.error(error);
@@ -106,50 +124,49 @@ export default function CreateBankStatement({ editBankStatementData }) {
   return (
     <div className='container mx-auto page pt-12 p-4 text-center'>
       <div className="mb-4 text-center">
-          <h2>{statementData.BankStatementid ? "Edit Bank Statement" : "Add New Bank Statement"}</h2>
+        <h2>{statementData.statementid ? "Edit Bank Statement" : "Add New Bank Statement"}</h2>
       </div>
-
       <div className="flex justify-center items-center mt-8">
         <div className="bg-white flex w-full">
-            <div className="w-1/2 px-6 py-8">
-                <div className="flex flex-col space-y-4">
-                    <div className="flex flex-col">
-                    <label className="mb-1">Select or drop file:</label>
-                    <input type="file" name="statementFile" onChange={handleFileChange} className="w-full" required />
-                    </div>
-                    <div className="flex flex-row">
-                    {displayPdfFile && (
-                        <embed src={displayPdfFile} type="application/pdf" width="100%" height="500px" />
-                    ) }
-                    </div>
-                </div>
+          <div className="w-1/2 px-6 py-8">
+            <div className="flex flex-col space-y-4">
+              <div className="flex flex-col">
+                <label className="mb-1">Select or drop file:</label>
+                <input type="file" name="statementFile" onChange={handleFileChange} className="w-full" required />
+              </div>
+              <div className="flex flex-row">
+                {displayPdfFile && (
+                  <embed src={displayPdfFile} type="application/pdf" width="100%" height="500px" />
+                )}
+              </div>
             </div>
-            <div className="w-1/2 px-4 py-8">
+          </div>
+          <div className="w-1/2 px-4 py-8">
             <div className="flex flex-col">
               <label>Select vendor</label>
               <SearchableDropdown
-                  options={vendors || []}
-                  label={'vendorname'}
-                  selectedVal={statementData.selectedVendor}
-                  handleChange={(vendor) => handleFormDataChange('selectedVendor', vendor)}
-                  placeholderText="Select vendor"
-                  disabled={statementData.statementid}
+                options={vendors || []}
+                label={'vendorname'}
+                selectedVal={statementData.selectedVendor}
+                handleChange={(vendor) => handleFormDataChange('selectedVendor', vendor)}
+                placeholderText="Select vendor"
+                disabled={statementData.statementid}
               />
               <FormError error={statementFormErrors.vendor} />
             </div>
             <div className="flex flex-col">
-                <FormItem
-                    labelName="Bank Statement date:"
-                    type="date"
-                    value={statementData.selectedDate}
-                    handleChange={(e) => handleFormDataChange('selectedDate', e.target.value)}
-                    error={statementFormErrors.statementdate}
-                />
+              <FormItem
+                labelName="Bank Statement date:"
+                type="date"
+                value={statementData.selectedDate}
+                handleChange={(e) => handleFormDataChange('selectedDate', e.target.value)}
+                error={statementFormErrors.statementdate}
+              />
             </div>
             <button className='buton-main w-1/2' onClick={handleSubmit}>Save</button>
           </div>
+        </div>
       </div>
-      </div>
-  </div>
+    </div>
   );
 }

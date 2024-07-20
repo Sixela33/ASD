@@ -10,7 +10,7 @@ export default function Home() {
     { id: 2, label: 'Projects', url: '/projects', minPermissionLevel: 1 },
     { id: 3, label: 'Flowers', url: '/flowers', minPermissionLevel: 1 },
     { id: 4, label: 'Invoices', url: '/invoice', minPermissionLevel: 1000 },
-    { id: 5, label: 'BankStatement', url: '/bankStatement', minPermissionLevel: 1000 }
+    { id: 5, label: 'Bank Statements', url: '/bankStatements', minPermissionLevel: 1000 }
   ];
 
   return (
