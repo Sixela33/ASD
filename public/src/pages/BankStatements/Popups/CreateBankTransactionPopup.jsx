@@ -1,30 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react'
-import ConfirmationPopup from '../../../components/Popups/ConfirmationPopup'
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import useAlert from '../../../hooks/useAlert'
+import React, { useEffect, useState } from 'react';
+import Joi from 'joi';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+import useAlert from '../../../hooks/useAlert';
+import FormItem from '../../../components/Form/FormItem';
+import PopupBase from '../../../components/PopupBase';
 
-const CREATE_TRANSACTION_URL = '/api/banktransactions'
-const EDIT_TRANSACTION_URL = '/api/banktransactions'
+const CREATE_TRANSACTION_URL = '/api/banktransactions';
+const EDIT_TRANSACTION_URL = '/api/banktransactions';
 
 const DEFAULT_TRANSACTION_DATA = {
     transactiondate: '',
     transactionamount: '',
     bankid: ''
-}
+};
 
-export default function CreateBankTransactionPopup({showPopup, closePopup, editBanktransactionData, bankStatementData}) {
-    const [banktransactionData, setBanktransactionData] = useState(editBanktransactionData || DEFAULT_TRANSACTION_DATA)
-    const inputRef = useRef(null)
+const transactionSchema = Joi.object({
+    transactiondate: Joi.date().required().label('Transaction Date'),
+    transactionamount: Joi.number().required().label('Transaction Amount'),
+    bankid: Joi.string().required().label('Bank ID')
+}).unknown(true);
 
-    const axiosPrivate = useAxiosPrivate()
-    const {setMessage} = useAlert()
+export default function CreateBankTransactionPopup({ showPopup, closePopup, editBanktransactionData, bankStatementData }) {
+    const [banktransactionData, setBanktransactionData] = useState(editBanktransactionData || DEFAULT_TRANSACTION_DATA);
+    const [bankTransactionErrors, setErrors] = useState({})
+    const axiosPrivate = useAxiosPrivate();
+    const { setMessage } = useAlert();
 
     const handleClosePopup = (shouldRefresh) => {
         setBanktransactionData(DEFAULT_TRANSACTION_DATA)
+        setErrors({})
         closePopup(shouldRefresh)
-    }
+    };
+
+    const validateTransactionData = (data) => {
+        const { error } = transactionSchema.validate(data, { abortEarly: false })
+        if (error) {
+            const errors = error.details.reduce((acc, curr) => {
+                acc[curr.path[0]] = curr.message;
+                return acc
+            }, {})
+            setErrors(errors)
+            return false
+        }
+        setErrors({})
+        return true
+    };
 
     const addNewBanktransaction = async () => {
+        if (!validateTransactionData(banktransactionData)) {
+            return
+        }
+
         try {
             const transactionData = {
                 ...banktransactionData,
@@ -51,43 +77,57 @@ export default function CreateBankTransactionPopup({showPopup, closePopup, editB
         }
     }, [editBanktransactionData])
 
-    useEffect(() => {
-        if (showPopup && inputRef.current) {
-            inputRef.current.focus()
-            inputRef.current.select()
-        }
-    }, [showPopup])
-
     const handleChange = (e) => {
         const { name, value } = e.target
-  
-        setBanktransactionData({
-          ...banktransactionData,
-          [name]: value,
-        })
-      }
 
-  return (
-    <ConfirmationPopup
-    showPopup={showPopup}
-    closePopup={handleClosePopup}
-    confirm={addNewBanktransaction}>
-        <h2>{banktransactionData.banktransactionid ? "Edit bank transaction" : "Add New Bank Transaction"}</h2>
-        <br/>
-        <div>
-            <div className='flex flex-col items-center'>
-                <label>Bank transaction date: </label>
-                <input ref={inputRef} className='w-1/2' type='date' name='transactiondate' value={banktransactionData.transactiondate} onChange={handleChange}></input>
+        console.log({ name, value })
+        setBanktransactionData({
+            ...banktransactionData,
+            [name]: value,
+        })
+    }
+
+    return (
+        <PopupBase
+            showPopup={showPopup}
+
+        >
+            <h2>{banktransactionData.banktransactionid ? "Edit bank transaction" : "Add New Bank Transaction"}</h2>
+            <br/>
+            <div>
+                <FormItem
+                    labelName="Bank transaction date:"
+                    className='w-1/2'
+                    type='date'
+                    inputName='transactiondate'
+                    value={banktransactionData.transactiondate}
+                    handleChange={handleChange}
+                    error={bankTransactionErrors.transactiondate}
+                />
+                <FormItem
+                    labelName="Bank transaction ID:"
+                    type='text'
+                    className='w-1/2'
+                    inputName='bankid'
+                    value={banktransactionData.bankid}
+                    handleChange={handleChange}
+                    error={bankTransactionErrors.bankid}
+                />
+                <FormItem
+                    labelName="Bank transaction amount:"
+                    type='number'
+                    className='w-1/2'
+                    inputName='transactionamount'
+                    value={banktransactionData.transactionamount}
+                    handleChange={handleChange}
+                    error={bankTransactionErrors.transactionamount}
+                />
             </div>
-            <div className='flex flex-col items-center'>
-                <label>Bank transaction ID: </label>
-                <input type='text' className='w-1/2' name='bankid' value={banktransactionData.bankid} onChange={handleChange}></input>
+
+            <div className='buttons-holder'>
+                <button onClick={handleClosePopup} className='buton-secondary'>Cancel</button>
+                <button onClick={addNewBanktransaction} className='buton-main'>Confirm</button>
             </div>
-            <div className='flex flex-col items-center'>
-                <label>Bank transaction amount: </label>
-                <input type='number' className='w-1/2' name='transactionamount' value={banktransactionData.transactionamount} onChange={handleChange}></input>
-            </div>
-        </div>
-    </ConfirmationPopup>
-  )
+        </PopupBase>
+    );
 }

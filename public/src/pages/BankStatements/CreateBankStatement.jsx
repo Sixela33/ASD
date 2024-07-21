@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import useAlert from '../../hooks/useAlert';
 import useAxiosPrivateImage from '../../hooks/useAxiosPrivateImage';
 import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 import FormItem from '../../components/Form/FormItem';
 import FormError from '../../components/Form/FormError';
 import { useNavigate, useParams } from 'react-router-dom';
+import Joi from 'joi';
 
 const GET_VENDORS_URL = '/api/vendors';
 const GET_BANK_STATEMENT_URL = '/api/bankStatements/byID/'
@@ -15,6 +15,12 @@ const DEFAULT_STATEMENT_DATA = {
   selectedVendor: '',
   selectedDate: ''
 };
+
+const statementSchema = Joi.object({
+  vendorid: Joi.number().required().label('Vendor'),
+  statementdate: Joi.date().required().label('Date'),
+  statementid: Joi.number().optional()
+})
 
 export default function CreateBankStatement() {
   const { id } = useParams();
@@ -80,6 +86,24 @@ export default function CreateBankStatement() {
     setDisplayPdfFile(file ? URL.createObjectURL(file) + '#toolbar=0' : null);
   };
 
+  console.log("holaaa")
+
+  const validateStatementData = (data) => {
+    console.log("first")
+    const { error } = statementSchema.validate(data, { abortEarly: false });
+    console.log("data", data)
+    if (error) {
+        const errors = error.details.reduce((acc, curr) => {
+            acc[curr.path[0]] = curr.message;
+            return acc;
+        }, {});
+        setStatementFormErrors(errors);
+        return false;
+    }
+    setStatementFormErrors({});
+    return true;
+};
+
   const handleSubmit = async () => {
     if (isSendingRequest.current) return;
 
@@ -95,16 +119,17 @@ export default function CreateBankStatement() {
         formDataToSend.append('statementFile', fileToSend);
       }
 
-      
-
       const tempStatementData = {
         vendorid: statementData.selectedVendor.vendorid,
         statementdate: statementData.selectedDate,
         statementid: statementData.statementid
       };
 
+      if (!validateStatementData(tempStatementData)) {
+        return;
+    }
+
       if (tempStatementData.statementid) {
-        tempStatementData.statementid = tempStatementData.statementid;
         formDataToSend.append('statementData', JSON.stringify(tempStatementData));
         await axiosPrivate.patch(CREATE_BANK_STATEMENT_URL, formDataToSend);
         navigateTo('/bankStatement/' + tempStatementData.statementid)
@@ -152,7 +177,7 @@ export default function CreateBankStatement() {
                 placeholderText="Select vendor"
                 disabled={statementData.statementid}
               />
-              <FormError error={statementFormErrors.vendor} />
+              <FormError error={statementFormErrors.vendorid} />
             </div>
             <div className="flex flex-col">
               <FormItem
