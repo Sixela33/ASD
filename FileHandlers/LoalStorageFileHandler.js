@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
+import crypto from 'crypto'
 
 const FILES_BASE_PATH = process.env.LOCAL_FILES_LOCATION
 
@@ -34,15 +35,10 @@ class LocalStorageFileHandler {
             fs.mkdirSync(folder, { recursive: true });
         }
 
-        let number = 0;
-        let filename
-        let additive = ''
+        
+        let filename = crypto.randomBytes(32).toString('hex');
 
-        do {
-            filename = `${path.parse(file?.originalname).name.replace(/ /g, '_').replace(/[#?&]/g, '')}${additive}.${fileExtension}`;
-            additive = `(${number})`
-            number++;
-        } while (fs.existsSync(path.join(folder, filename)))
+        filename = `${filename}.${fileExtension}`;
 
         let buffer = file.buffer
 
@@ -69,7 +65,7 @@ class LocalStorageFileHandler {
 
         //removes old file
         if (newFile && filepath) {
-            await handleDeleteFile(filepath)
+            await this.handleDeleteFile(filepath)
         }
 
         return newFile

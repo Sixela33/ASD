@@ -9,7 +9,7 @@ import QuerySearchableDropdown from "./QuerySearchableDropdown";
     placeholderText : Text to show when no item is selected
   */
 
-const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText }) => {
+const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeholderText, disabled }) => {
   if(!label) label = ''
   if(!options) options = []
 
@@ -28,6 +28,7 @@ const SearchableDropdown = ({ options, label, selectedVal, handleChange, placeho
       selectedVal={selectedVal}
       handleChange={handleChange}
       placeholderText={placeholderText}
+      disabled={disabled}
       InViewRef={() => {}}
       query={query}
       setQuery ={setQuery}

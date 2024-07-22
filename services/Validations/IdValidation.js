@@ -83,6 +83,16 @@ const minMaxNumbersValidation = numbers => {
     return true
 }
 
+const validateBoolean = boolean => {
+    const { error } = schemas.validateBoolean.validate(boolean)
+
+    if (error) {
+        throw {message: error.details[0].message, status: 400}
+    } 
+
+    return true
+}
+
 export {
     validateId, 
     validateIdArray, 
@@ -91,5 +101,6 @@ export {
     validateQueryString, 
     validateRequiredQueryString, 
     startDateEndDateValidation,
-    minMaxNumbersValidation
+    minMaxNumbersValidation,
+    validateBoolean
 }

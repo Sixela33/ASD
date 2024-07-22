@@ -989,8 +989,22 @@ class ModelPostgres {
         const respone = await CnxPostgress.db.query(`SELECT DISTINCT projectID FROM flowerXInvoice WHERE invoiceID = $1;`, [invoiceID])
         return respone
     }
-
-    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount) => {
+    getInvoices = async (
+        offset, 
+        orderBy, 
+        order, 
+        invoiceNumber, 
+        invoiceID, 
+        specificVendor, 
+        onlyMissing, 
+        rows, 
+        startDate, 
+        endDate, 
+        minAmount, 
+        maxAmount, 
+        withoutTransaction = false
+    ) => {
+           
         this.validateDatabaseConnection()
         const LIMIT = rows || 50
     
@@ -1010,27 +1024,22 @@ class ModelPostgres {
                 i.invoiceamount, 
                 i.invoiceNumber,
                 TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-                CASE 
-                    WHEN it.invoiceID IS NOT NULL THEN TRUE 
-                    ELSE FALSE 
-                END AS hasTransaction
+                i.bankTransaction as hasTransaction
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
-            LEFT JOIN (
-                SELECT DISTINCT invoiceID FROM invoiceTransaction
-            ) it ON it.invoiceID = i.invoiceID`
+        `
     
         const queryParams = []
         let queryConditions = []
     
         if (onlyMissing == 'true') {
             queryBase += " LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID"
-            queryConditions.push('fxi.invoiceID IS NULL ')
+            queryConditions.push('fxi.invoiceID IS NULL')
         }
     
         if (specificVendor) {
-            queryConditions.push('i.vendorID = $1')
+            queryConditions.push(`i.vendorID = $${queryParams.length + 1}`)
             queryParams.push(specificVendor)
         }
     
@@ -1051,21 +1060,25 @@ class ModelPostgres {
         }
     
         if (invoiceID) {
-            queryConditions.push(`i.invoiceid::text LIKE $${queryParams.length + 1}`)
-            queryParams.push(`%${invoiceID}%`)
+            queryConditions.push(`i.invoiceid::text LIKE $${queryParams.length + 1}`);
+            queryParams.push(`%${invoiceID}%`);
         }
     
         if (minAmount && maxAmount) {
-            queryConditions.push(`i.invoiceamount BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`)
-            queryParams.push(minAmount, maxAmount)
+            queryConditions.push(`i.invoiceamount BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`);
+            queryParams.push(minAmount, maxAmount);
         } else if (minAmount) {
-            queryConditions.push(`i.invoiceamount >= $${queryParams.length + 1}`)
-            queryParams.push(minAmount)
+            queryConditions.push(`i.invoiceamount >= $${queryParams.length + 1}`);
+            queryParams.push(minAmount);
         } else if (maxAmount) {
-            queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`)
-            queryParams.push(maxAmount)
+            queryConditions.push(`i.invoiceamount <= $${queryParams.length + 1}`);
+            queryParams.push(maxAmount);
         }
-
+    
+        if (withoutTransaction) {
+            queryConditions.push(`i.bankTransaction IS NULL`)
+        }
+    
         queryConditions.push("i.isRemoved = false")
     
         if (queryConditions.length > 0) {
@@ -1134,11 +1147,6 @@ class ModelPostgres {
         await CnxPostgress.db.query(`CALL linkBankTx($1::VARCHAR(255), $2::INT[])`, [bankTransactionData, selectedInvoices])
     }
 
-    getInvoiceBankTransactions = async (id) => {
-        this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`SELECT * FROM invoiceTransaction WHERE invoiceID = $1`, [id])
-    }
-
     // -----------------------------------------------
     //                  SERVICES
     // -----------------------------------------------
@@ -1178,6 +1186,216 @@ class ModelPostgres {
         return res.rows
     }
 
+    // -----------------------------------------------
+    //                BANK STATEMENTS
+    // -----------------------------------------------
+    
+
+    addStatement = async (statementData, file, creatorid) => {
+        this.validateDatabaseConnection()
+        const result = await CnxPostgress.db.query(`
+            INSERT INTO bankStatements (vendorID, fileLocation, statementDate)
+            VALUES ($1, $2, $3)
+            RETURNING statementID;
+        `, [statementData.vendorid, file, statementData.statementdate])
+
+        return {
+            ...statementData,
+            fileLocation: file,
+            statementid: result.rows[0].statementid
+        };
+    }
+    
+    getStatements = async (offset, orderBy, order, specificVendor, startDate, endDate, withoutTransaction = false) => {
+        this.validateDatabaseConnection();
+    
+        let queryBase = `
+            SELECT 
+                bs.statementID,
+                fv.vendorName,
+                fv.vendorID,
+                bs.fileLocation,
+                TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate,
+                COALESCE(SUM(bt.transactionAmount), 0) AS StatementAmount,
+                COALESCE(SUM(i.invoiceAmount), 0) AS AmountRegistered
+            FROM bankStatements bs
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+            LEFT JOIN bankTransactions bt ON bt.statementID = bs.statementID
+            LEFT JOIN invoices i ON i.bankTransaction = bt.transactionID
+        `;
+    
+        const queryParams = [];
+        let queryConditions = [];
+    
+        if (specificVendor) {
+            queryConditions.push(`fv.vendorID = $${queryParams.length + 1}`);
+            queryParams.push(specificVendor);
+        }
+    
+        if (startDate && endDate) {
+            queryConditions.push(`bs.statementDate BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`);
+            queryParams.push(startDate, endDate);
+        } else if (startDate) {
+            queryConditions.push(`bs.statementDate >= $${queryParams.length + 1}`);
+            queryParams.push(startDate);
+        } else if (endDate) {
+            queryConditions.push(`bs.statementDate <= $${queryParams.length + 1}`);
+            queryParams.push(endDate);
+        }
+    
+        if (withoutTransaction) {
+            queryConditions.push(`bt.transactionID IS NULL`);
+        }
+    
+        if (queryConditions.length > 0) {
+            queryBase += ' WHERE ' + queryConditions.join(' AND ');
+        }
+    
+        queryBase += `
+            GROUP BY bs.statementID, fv.vendorName, fv.vendorID, bs.fileLocation, bs.statementDate
+        `;
+
+        if (orderBy) {
+            const validColumns = {
+                statementid: "bs.statementID",
+                vendorname: "fv.vendorName",
+                statementdate: "bs.statementDate",
+                statementamount: "StatementAmount",
+                amountregistered: "AmountRegistered"
+            };
+            
+            if (validColumns[orderBy]) {
+                queryBase += ` ORDER BY ${validColumns[orderBy]}`;
+                if (order && order.toLowerCase() === 'desc') {
+                    queryBase += ' DESC';
+                } else {
+                    queryBase += ' ASC';
+                }
+            }
+        }
+    
+        const LIMIT = 50;
+        const OFFSET = offset ? offset * LIMIT : 0;
+    
+        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        queryParams.push(LIMIT, OFFSET);
+    
+        const response = await CnxPostgress.db.query(queryBase, queryParams);
+        return response;
+    }
+    
+
+    getStatementDataByID = async (id) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            SELECT 
+                bs.statementID,
+                fv.vendorName,
+                fv.vendorID,
+                bs.fileLocation,
+                TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate
+            FROM bankStatements bs
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+            WHERE bs.statementID = $1;
+        `, [id])
+        
+        return response.rows[0]
+    }
+    
+    editStatement = async (statementData, file) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            UPDATE bankStatements 
+            SET 
+                vendorID=$1, 
+                fileLocation=$2, 
+                statementDate=$3
+            WHERE statementID=$4
+        `, [statementData.vendorid, file, statementData.statementdate, statementData.statementid])
+        return response.rows[0]
+    }
+
+    getStatementFileLocation = async (id) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(`
+            SELECT filelocation FROM bankStatements WHERE statementID = $1
+        `, [id])
+        return response.rows[0]
+    }
+    // -----------------------------------------------
+    //              BANK TRANSACTIONS
+    // -----------------------------------------------
+
+    addBankTransactions = async (transactionData) => {
+        console.log("transactionData", transactionData)
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`
+            INSERT INTO bankTransactions (statementID, bankID, transactionDate, transactionAmount, transactionCode)
+            VALUES ($1, $2, $3, $4, $5);
+        `, [transactionData.statementid, transactionData.bankid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
+    }
+
+    getBankTransactions = async () => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`SELECT * FROM bankTransactions`, )
+    }
+
+    getBankTransactionsByStatement = async (statementid) => {
+        this.validateDatabaseConnection()
+        return CnxPostgress.db.query(`
+        SELECT 
+            bt.*,
+            TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
+            COALESCE(SUM(i.invoiceAmount), 0) AS totalInvoiceAmount
+        FROM 
+            bankTransactions bt
+        LEFT JOIN 
+            invoices i ON bt.transactionID = i.bankTransaction
+        WHERE bt.statementID = $1
+        GROUP BY bt.transactionID
+        ;`, [statementid])
+    }
+
+    deleteBankTransaction = async (id) => {
+        this.validateDatabaseConnection();
+        return await CnxPostgress.db.query(`
+            CALL removeBankTransaction($1);
+        `, [id]);
+    }
+
+    editBankTransaction = async (transactionData) => {
+        this.validateDatabaseConnection();
+        return await CnxPostgress.db.query(`
+            UPDATE bankTransactions
+            SET 
+                bankID = $1,
+                transactionDate = $2,
+                transactionAmount = $3,
+                transactionCode = $4
+            WHERE transactionID = $5;
+        `, [transactionData.bankid, transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode, transactionData.transactionid]);
+    }
+
+    linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+            UPDATE invoices
+            SET bankTransaction = null
+            WHERE bankTransaction = $1
+            `, [selectedTransactionID])
+        return await CnxPostgress.db.query(`    
+            UPDATE invoices
+            SET bankTransaction = $1
+            WHERE invoiceID = ANY($2::int[])`, [selectedTransactionID, selectedInvoicesData ])
+
+    }
+
+    getTransactionInvoices = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT * FROM invoices 
+            WHERE bankTransaction = $1;`, [id])
+    }
 }
 
 export default ModelPostgres

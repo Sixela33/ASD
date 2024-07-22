@@ -3,7 +3,7 @@
 /node_modules
 .env
 .conda
-/SavedFiles/flowerImages
-/SavedFiles/InvoiceFiles
+/SavedFiles
 todo.txt
 FilesToLoad
+.vscode
