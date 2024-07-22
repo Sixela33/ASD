@@ -6,28 +6,17 @@ CREATE TABLE IF NOT EXISTS bankStatements (
     statementID SERIAL PRIMARY KEY,
     vendorID INT REFERENCES flowervendor(vendorID),
     fileLocation VARCHAR(255) NOT NULL,
-    statementDate DATE
+    statementDate DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS bankTransactions (
     transactionID SERIAL PRIMARY KEY,
-    statementID INT REFERENCES bankStatements(statementID),
-    transactionDate DATE,
-    transactionAmount DECIMAL,
-    transactionCode VARCHAR,
-    bankID VARCHAR
+    statementID INT REFERENCES bankStatements(statementID) ON DELETE CASCADE,
+    transactionDate DATE NOT NULL,
+    transactionAmount DECIMAL(10, 2) NOT NULL,
+    transactionCode VARCHAR(50) NOT NULL,
+    bankID VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS invoices (
-    invoiceID SERIAL PRIMARY KEY,
-    invoiceNumber VARCHAR(255) NOT NULL,
-    invoiceAmount FLOAT NOT NULL,
-    fileLocation VARCHAR(255) NOT NULL,
-    uploaderID INT REFERENCES users(userID),
-    vendorID INT REFERENCES flowervendor(vendorID),
-    invoiceDate DATE,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lastEdit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    isRemoved BOOLEAN DEFAULT false
-    bankTransaction INT REFERENCES bankTransactions(transactionID)
-);
+ALTER TABLE invoices
+ADD COLUMN bankTransaction INT REFERENCES bankTransactions(transactionID) ON DELETE SET NULL;
