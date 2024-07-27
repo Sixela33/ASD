@@ -1330,9 +1330,9 @@ class ModelPostgres {
         console.log("transactionData", transactionData)
         this.validateDatabaseConnection()
         return CnxPostgress.db.query(`
-            INSERT INTO bankTransactions (statementID, bankID, transactionDate, transactionAmount, transactionCode)
-            VALUES ($1, $2, $3, $4, $5);
-        `, [transactionData.statementid, transactionData.bankid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
+            INSERT INTO bankTransactions (statementID, transactionDate, transactionAmount, transactionCode)
+            VALUES ($1, $2, $3, $4);
+        `, [transactionData.statementid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
     }
 
     getBankTransactions = async () => {
@@ -1368,12 +1368,11 @@ class ModelPostgres {
         return await CnxPostgress.db.query(`
             UPDATE bankTransactions
             SET 
-                bankID = $1,
-                transactionDate = $2,
-                transactionAmount = $3,
-                transactionCode = $4
-            WHERE transactionID = $5;
-        `, [transactionData.bankid, transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode, transactionData.transactionid]);
+                transactionDate = $1,
+                transactionAmount = $2,
+                transactionCode = $3
+            WHERE transactionID = $4;
+        `, [transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode, transactionData.transactionid]);
     }
 
     linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {

@@ -17,7 +17,7 @@ const colData = {
     "Vendor": "vendorname", 
     "Statement Date": "statementdate",
     "Statement Amount": "statementamount", 
-    "Amount Registered": "amountregistered"
+    "Invoice Linked Amount": "amountregistered"
 }
 
 const defaultSortConfig = { key: 'statementid', direction: 'asc' }
@@ -116,11 +116,11 @@ export default function BankStatementsList() {
             <div className="grid grid-cols-3 mb-4">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Bank Statements</h1>
-                <Link className='buton-main col-span-1 mx-auto' to='/bankStatement/add'>Add New bank Statement</Link>
+                <Link className='buton-main col-span-1 mx-auto' to='/bankStatement/add'>Add New Bank Statement</Link>
             </div>
             <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
                 <div className='flex flex-col items-center space-x-1'>
-                    <span className='ml-4'>Filter by vendor: </span>
+                    <span className='ml-4'>Filter by Vendor: </span>
                     <SearchableDropdown
                         options={allVendors}
                         label='vendorname'

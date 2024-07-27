@@ -13,7 +13,6 @@ const DELETE_TRANSACTION_URL = '/api/bankTransactions/'
 const defaultSortConfig = { key: null, direction: 'asc' }
 
 const headers = {
-    'ID': 'bankTransactionid', 
     'Code': 'bankTransactioncode', 
     'Amount': 'amount',
     'Assigned Amount': '',
@@ -84,7 +83,7 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                     <h1>Bank Transactions</h1>
                 </div>
                 <div>
-                    <button className='buton-main' onClick={() => setShowNewBankTransactionPopup(true)}>Add new bankTransaction</button>
+                    <button className='buton-main' onClick={() => setShowNewBankTransactionPopup(true)}>Add New Bank Transaction</button>
                 </div>
                 <div className='table-container h-[40vh]'>
                     <TableHeaderSort
@@ -94,7 +93,6 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                         sortConfig={sortConfig}>
                         {sortData(bankTransactionsData, sortConfig).map((bankTransaction, index) => {
                             return <tr key={index} onClick={() => onSelection(bankTransaction)}>
-                                <td>{bankTransaction.bankid}</td>
                                 <td>{bankTransaction.transactioncode}</td>
                                 <td>{toCurrency(bankTransaction.transactionamount)}</td>
                                 <td>{toCurrency(bankTransaction.totalinvoiceamount)}</td>
@@ -106,7 +104,7 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                         })}
                     </TableHeaderSort>
                 </div>
-                <button className='buton-main' onClick={() => navigateTo('/bankStatements')}>Save</button>
+                <button className='buton-main' onClick={() => navigateTo('/bankStatements')}>Save & Close</button>
             </div>
     )
 }

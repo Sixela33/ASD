@@ -1,5 +1,3 @@
-
-
 DROP TABLE IF EXISTS invoiceTransaction;
 
 CREATE TABLE IF NOT EXISTS bankStatements (

@@ -11,13 +11,12 @@ const EDIT_TRANSACTION_URL = '/api/banktransactions';
 const DEFAULT_TRANSACTION_DATA = {
     transactiondate: '',
     transactionamount: '',
-    bankid: ''
 };
 
 const transactionSchema = Joi.object({
     transactiondate: Joi.date().required().label('Transaction Date'),
     transactionamount: Joi.number().required().label('Transaction Amount'),
-    bankid: Joi.string().required().label('Bank ID')
+    transactioncode: Joi.string().required().label('Transaction Code')
 }).unknown(true);
 
 export default function CreateBankTransactionPopup({ showPopup, closePopup, editBanktransactionData, bankStatementData }) {
@@ -39,6 +38,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 acc[curr.path[0]] = curr.message;
                 return acc
             }, {})
+            console.log(errors)
             setErrors(errors)
             return false
         }
@@ -47,16 +47,20 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
     };
 
     const addNewBanktransaction = async () => {
-        if (!validateTransactionData(banktransactionData)) {
+        
+        const transactionData = {
+            ...banktransactionData,
+            statementid: bankStatementData.statementid,
+            transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate,
+        }
+
+        if (!validateTransactionData(transactionData)) {
             return
         }
 
         try {
-            const transactionData = {
-                ...banktransactionData,
-                statementid: bankStatementData.statementid,
-                transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate
-            }
+
+            console.log(transactionData)
 
             if (!transactionData.transactionid) {
                 await axiosPrivate.post(CREATE_TRANSACTION_URL, JSON.stringify(transactionData))
@@ -96,7 +100,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
             <br/>
             <div>
                 <FormItem
-                    labelName="Bank transaction date:"
+                    labelName="Bank Transaction Date:"
                     className='w-1/2'
                     type='date'
                     inputName='transactiondate'
@@ -105,16 +109,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                     error={bankTransactionErrors.transactiondate}
                 />
                 <FormItem
-                    labelName="Bank transaction ID:"
-                    type='text'
-                    className='w-1/2'
-                    inputName='bankid'
-                    value={banktransactionData.bankid}
-                    handleChange={handleChange}
-                    error={bankTransactionErrors.bankid}
-                />
-                <FormItem
-                    labelName="Bank transaction amount:"
+                    labelName="Bank Transaction Amount:"
                     type='number'
                     className='w-1/2'
                     inputName='transactionamount'

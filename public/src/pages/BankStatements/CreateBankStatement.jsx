@@ -86,12 +86,8 @@ export default function CreateBankStatement() {
     setDisplayPdfFile(file ? URL.createObjectURL(file) + '#toolbar=0' : null);
   };
 
-  console.log("holaaa")
-
   const validateStatementData = (data) => {
-    console.log("first")
     const { error } = statementSchema.validate(data, { abortEarly: false });
-    console.log("data", data)
     if (error) {
         const errors = error.details.reduce((acc, curr) => {
             acc[curr.path[0]] = curr.message;
@@ -156,7 +152,7 @@ export default function CreateBankStatement() {
           <div className="w-1/2 px-6 py-8">
             <div className="flex flex-col space-y-4">
               <div className="flex flex-col">
-                <label className="mb-1">Select or drop file:</label>
+                <label className="mb-1">Upload File:</label>
                 <input type="file" name="statementFile" onChange={handleFileChange} className="w-full" required />
               </div>
               <div className="flex flex-row">
@@ -168,27 +164,27 @@ export default function CreateBankStatement() {
           </div>
           <div className="w-1/2 px-4 py-8">
             <div className="flex flex-col">
-              <label>Select vendor</label>
+              <label>Select Vendor</label>
               <SearchableDropdown
                 options={vendors || []}
                 label={'vendorname'}
                 selectedVal={statementData.selectedVendor}
                 handleChange={(vendor) => handleFormDataChange('selectedVendor', vendor)}
-                placeholderText="Select vendor"
+                placeholderText="Select Vendor"
                 disabled={statementData.statementid}
               />
               <FormError error={statementFormErrors.vendorid} />
             </div>
             <div className="flex flex-col">
               <FormItem
-                labelName="Bank Statement date:"
+                labelName="Bank Statement Date:"
                 type="date"
                 value={statementData.selectedDate}
                 handleChange={(e) => handleFormDataChange('selectedDate', e.target.value)}
                 error={statementFormErrors.statementdate}
               />
             </div>
-            <button className='buton-main w-1/2' onClick={handleSubmit}>Save</button>
+            <button className='buton-main w-1/2' onClick={handleSubmit}>Continue</button>
           </div>
         </div>
       </div>
