@@ -125,7 +125,7 @@ export default function ViewSingleBankStatement() {
                         <div className='table-container h-[60vh] mt-3'>
                             <TableHeaderSort
                                 headers={{
-                                    "Transaction ID": "transactionid", 
+                                    "Transaction ID": "transactioncode", 
                                     "Transaction Amount": "transactionamount",
                                     "Total Linked": "totalinvoiceamount",
                                     "Transaction Date": "transactiondate"
@@ -134,7 +134,7 @@ export default function ViewSingleBankStatement() {
                                 {linkedTransactions.map((tx, index) => {
                                     return (
                                         <tr key={index} onClick={() => navigateTo('/bankStatement/link/' + id)}>
-                                            <td>{tx.transactionid}</td>
+                                            <td>{tx.transactioncode}</td>
                                             <td>{toCurrency(tx.transactionamount)}</td>
                                             <td>{toCurrency(tx.totalinvoiceamount)}</td>
                                             <td>{tx.transactiondate}</td>

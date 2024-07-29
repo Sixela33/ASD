@@ -49,11 +49,18 @@ export default function SingleFlowerPage() {
         fetchData();
     }, []);
 
+    const handleChartClick = (event) => {
+        if (event && event.activePayload) {
+            const clickedData = event.activePayload[0].payload;
+            //navigateTo('/invoice/add/' + clickedData.invoiceid)
+        }
+    };
+
     if (loading) {
         return (
-        <div className="text-center mt-8">            
-            <img src='spinner.svg'/>
-        </div>
+            <div className="text-center mt-8">
+                <img src='spinner.svg' alt="Loading..." />
+            </div>
         )
     }
 
@@ -79,21 +86,20 @@ export default function SingleFlowerPage() {
             <div className="container mx-auto flex">
                 <div className="w-1/2">
                     <div className="flex flex-col items-center">
-                    <img src={`${newFlowerData.flowerimage}`} alt="Preview" loading='lazy' className="w-64 h-64 object-cover rounded-lg shadow-lg" />
-                    <div className="p-4 text-center">
-                        <div className="mb-4">
-                            <p>Name: {newFlowerData.flowername}</p>
+                        <img src={`${newFlowerData.flowerimage}`} alt="Preview" loading='lazy' className="w-64 h-64 object-cover rounded-lg shadow-lg" />
+                        <div className="p-4 text-center">
+                            <div className="mb-4">
+                                <p>Name: {newFlowerData.flowername}</p>
+                            </div>
+                            <div>
+                                <p>Colors:</p>
+                                <ul className='text-left list-disc'>
+                                    {newFlowerData.flowercolors.map((item, index) =>
+                                        <li key={index}>{item}</li>
+                                    )}
+                                </ul>
+                            </div>
                         </div>
-                        <div>
-                            <p>Colors: 
-                                </p>
-                            <ul className='text-left list-disc'>
-                            {newFlowerData.flowercolors.map((item, index) => 
-                                <li key={index}>{item}</li>
-                            )}
-                            </ul>
-                        </div>
-                    </div>
                     </div>
                     <div className='buttons-holder'>
                         <button className='buton-main' onClick={() => {
@@ -108,13 +114,25 @@ export default function SingleFlowerPage() {
                 </div>
                 <div className="w-1/2">
                     <div className="mt-8">
-                        <LineChart width={600} height={300} data={flowerPrices} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <LineChart
+                            width={600}
+                            height={300}
+                            data={flowerPrices}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            onClick={handleChartClick}
+                        >
                             <XAxis dataKey="createdat" />
                             <YAxis />
                             <CartesianGrid strokeDasharray="3 3" />
                             <Tooltip />
                             <Legend />
-                            <Line type="monotone" dataKey="unitprice" stroke="#1270ce" strokeWidth={3} isAnimationActive={false} />
+                            <Line
+                                type="monotone"
+                                dataKey="unitprice"
+                                stroke="#1270ce"
+                                strokeWidth={3}
+                                isAnimationActive={false}
+                            />
                         </LineChart>
                     </div>
                 </div>

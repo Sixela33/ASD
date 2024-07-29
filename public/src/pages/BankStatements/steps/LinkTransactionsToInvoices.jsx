@@ -179,32 +179,32 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
             <div className="text-center">
                 <h1 className='col-span-1'>Link Invoices</h1>
             </div>
-            <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
-                <div className='flex flex-col w-full items-center space-x-1'>
+            <div className='m-2 text-left flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0 justify-evenly'>
+                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
                     <label>Invoice Number</label>
-                    <input type='text' onChange={(e) =>setSearchByInvoiceNumber(e.target.value)}/>
+                    <input type='text' className='w-full p-2 ' onChange={(e) => setSearchByInvoiceNumber(e.target.value)} />
                 </div>
-                <div className='flex flex-col items-center space-x-1'>
+                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
                     <div className='flex w-full justify-between'>
                         <button className='text-purple-700 text-opacity-0' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
                         <label>Date Range</label> 
                         <button className='go-back-button' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
                     </div>
-                    <div className='flex flex-row'>
-                        <input type='date' value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        <input type='date' value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                    <div className='flex flex-row w-full justify-between space-x-2'>
+                        <input type='date' className='w-1/2 p-2 ' value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        <input type='date' className='w-1/2 p-2 ' value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
                 </div>
-                <div className='flex flex-col w-full items-center space-x-1'>
-                    <div className='flex w-full justify-center'>
+                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
+                    <div className='flex w-full justify-center text-center'>
                         <label>Amount Range</label> 
                     </div>
-                    <div className='flex flex-row'>
-                        <input className='w-1/2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
-                        <input className='w-1/2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+                    <div className='flex flex-row w-full space-x-2'>
+                        <input className='w-1/2 p-2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+                        <input className='w-1/2 p-2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
                     </div>
                 </div>
-            </div>
+        </div>
             <div className='table-container h-[30vh]'>
                 <TableHeaderSort
                     headers={colData} 

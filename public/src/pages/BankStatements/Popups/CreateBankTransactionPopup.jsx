@@ -111,11 +111,12 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 <FormItem
                     labelName="Bank Transaction Amount:"
                     type='number'
-                    className='w-1/2'
+                    className='w-1/2 no-spinner'
                     inputName='transactionamount'
                     value={banktransactionData.transactionamount}
                     handleChange={handleChange}
                     error={bankTransactionErrors.transactionamount}
+                    isCurrency={true}
                 />
             </div>
 

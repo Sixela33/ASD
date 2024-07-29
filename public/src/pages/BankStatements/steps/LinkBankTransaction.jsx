@@ -95,7 +95,7 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                             return <tr key={index} onClick={() => onSelection(bankTransaction)}>
                                 <td>{bankTransaction.transactioncode}</td>
                                 <td>{toCurrency(bankTransaction.transactionamount)}</td>
-                                <td>{toCurrency(bankTransaction.totalinvoiceamount)}</td>
+                                <td className={bankTransaction.transactionamount != bankTransaction.totalinvoiceamount ? 'bg-red-500': 'bg-green-500'}>{toCurrency(bankTransaction.totalinvoiceamount)}</td>
                                 <td onClick={e => e.stopPropagation()}>
                                     <button className='go-back-button px-1' onClick={() => handleEditBankTransaction(bankTransaction)}>Edit</button>
                                     <button className='go-back-button px-1' onClick={() => handleRemoveBankTrnansaction(bankTransaction.transactionid)}>Remove</button>

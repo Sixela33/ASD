@@ -98,7 +98,7 @@ export default function CreateBankStatement() {
     }
     setStatementFormErrors({});
     return true;
-};
+  };
 
   const handleSubmit = async () => {
     if (isSendingRequest.current) return;

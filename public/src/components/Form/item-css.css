@@ -1,0 +1,21 @@
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+  
+.currency-symbol {
+  position: absolute;
+  left: 10px;
+  color: #aaa; /* Adjust the color as needed */
+  pointer-events: none;
+}
+
+.input-field {
+  width: 100%;
+  padding-left: 20px; /* Add enough padding to make space for the currency symbol */
+}
+
+.error-field {
+  border-color: red; /* Adjust the error style as needed */
+}

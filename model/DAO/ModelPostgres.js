@@ -644,9 +644,11 @@ class ModelPostgres {
 
     getFlowerPrices = async (id) => {
         this.validateDatabaseConnection()
-        return await CnxPostgress.db.query(`SELECT 
-        fxi.unitPrice, 
-        TO_CHAR(i.createdAt , 'MM-DD-YYYY') AS createdAt
+        return await CnxPostgress.db.query(`
+        SELECT 
+            fxi.unitPrice, 
+            TO_CHAR(i.createdAt , 'MM-DD-YYYY') AS createdAt,
+            fxi.invoiceID
         FROM flowerXInvoice fxi 
         LEFT JOIN invoices i ON fxi.invoiceID = i.invoiceID
         WHERE fxi.flowerID = $1;`, [id])

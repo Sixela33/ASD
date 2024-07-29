@@ -63,7 +63,7 @@ class S3FileHandler {
         throw {message: 'Error loading file', status: 500}
     }
     
-    await handleDeleteFile(filepath)
+    await this.handleDeleteFile(filepath)
 
     return newFileKey;
   }

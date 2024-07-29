@@ -89,7 +89,7 @@ class Server {
         this.app.use('/api/invoices', staffuserReq, new InvoiceRouter(this.fileStorage).start())
         this.app.use('/api/extraServices', staffuserReq, new ExtraServicesRouter().start())
         this.app.use('/api/contacts', loginreq, new ContactRouter().start())
-        this.app.use('/api/bankStatements', staffuserReq, new BankStatementRouter().start())
+        this.app.use('/api/bankStatements', staffuserReq, new BankStatementRouter(this.fileStorage).start())
         this.app.use('/api/bankTransactions', staffuserReq, new BankTransactionRouter().start())
         
         // -----------------------------------------------
