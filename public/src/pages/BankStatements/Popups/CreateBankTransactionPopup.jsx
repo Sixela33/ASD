@@ -48,7 +48,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
 
     const addNewBanktransaction = async () => {
         
-        const transactionData = {
+        let transactionData = {
             ...banktransactionData,
             statementid: bankStatementData.statementid,
             transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate,
@@ -66,6 +66,12 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 await axiosPrivate.post(CREATE_TRANSACTION_URL, JSON.stringify(transactionData))
                 setMessage('Banktransaction created Successfully', false)
             } else {
+                transactionData = {
+                    transactionamount: transactionData.transactionamount,
+                    transactiondate: banktransactionData.transactiondate,
+                    transactionid: banktransactionData.transactionid,
+                    transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate,
+                }
                 await axiosPrivate.patch(EDIT_TRANSACTION_URL, JSON.stringify(transactionData))
                 setMessage('Banktransaction edited Successfully', false)
             }
