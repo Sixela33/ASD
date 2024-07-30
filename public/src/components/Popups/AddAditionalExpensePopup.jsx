@@ -80,7 +80,7 @@ export default function AddAditionalExpensePopup({showPopup, closePopup, submitF
             closePopup={handleClose}>
             <h2>{!editing ? 'Add new expense' : 'Edit expense'}</h2>
             <FormItem labelName='Description:' type='text' inputName='description' value={aditionalExpenseData.description} handleChange={handleDataChange} error={formErrors.description}/>
-            <FormItem labelName='Client cost:' type='number' inputName='clientcost' value={aditionalExpenseData.clientcost} handleChange={handleDataChange} error={formErrors.clientcost}/>
+            <FormItem labelName='Client cost:' type='number' inputName='clientcost' value={aditionalExpenseData.clientcost} handleChange={handleDataChange} error={formErrors.clientcost} isCurrency={true}/>
             <FormItem labelName='Quantity:' type='number' inputName='ammount' value={aditionalExpenseData.ammount} handleChange={handleDataChange} error={formErrors.ammount}/>
             <div className='buttons-holder'>
                 <button onClick={handleClose} className='buton-secondary'>Cancel</button>

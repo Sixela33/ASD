@@ -1,4 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import { validateId, validateIdArray } from "./Validations/IdValidation.js"
 
 class BankTransactionService {
 
@@ -17,11 +18,13 @@ class BankTransactionService {
     }
 
     getBankTransactionsByStatement = async (id) => {
+        await validateId(id)
         const result = await this.model.getBankTransactionsByStatement(id)
         return result.rows
     }
 
     deleteBankTransaction = async (id) => {
+        await validateId(id)
         const result = await this.model.deleteBankTransaction(id)
         return result.rows
     }
@@ -31,10 +34,15 @@ class BankTransactionService {
     }
 
     linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {
+        await validateId(selectedTransactionID)
+        await validateIdArray(selectedInvoicesData)
+
         const result = await this.model.linkInvoices(selectedInvoicesData, selectedTransactionID)
     }
 
     getTransactionInvoices = async (id) => {
+        await validateId(id)
+
         const result = await this.model.getTransactionInvoices(id)
         return result.rows
     }

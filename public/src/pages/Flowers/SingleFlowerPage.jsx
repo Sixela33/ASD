@@ -52,7 +52,7 @@ export default function SingleFlowerPage() {
     const handleChartClick = (event) => {
         if (event && event.activePayload) {
             const clickedData = event.activePayload[0].payload;
-            //navigateTo('/invoice/add/' + clickedData.invoiceid)
+            navigateTo('/invoice/add/' + clickedData.invoiceid)
         }
     };
 

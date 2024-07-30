@@ -1,6 +1,7 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
 import { validateStatement } from "./Validations/StatementValidations.js";
+import { validateId } from "./Validations/IdValidation.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'pdf'];
 
@@ -18,6 +19,8 @@ class StatementService {
         statementData = JSON.parse(statementData)
 
         await validateStatement(statementData)
+        await validateId(updaterID)
+
 
         let fileLocation = statementData.fileLocation
 
@@ -37,10 +40,10 @@ class StatementService {
 
     editStatement = async (statementData, file) => {
         statementData = JSON.parse(statementData)
-        console.log(statementData, file)
+        await validateStatement(statementData)
+
         let newFileLoc = await this.model.getStatementFileLocation(statementData.statementid)
-        console.log(newFileLoc)
-        
+
         if(newFileLoc){
             newFileLoc = newFileLoc.filelocation
         }
@@ -61,9 +64,22 @@ class StatementService {
     }
 
     getStatementDataByID = async (id) => {
+        await validateId(id)
+
         const response = await this.model.getStatementDataByID(id)
         if (response?.filelocation){
             response.filelocation = await this.fileHandler.processFileLocation(response.filelocation)
+        }
+        return response
+    }
+
+    removeBankStatement = async (id) => {
+        await validateId(id)
+
+        const response = await this.model.getStatementDataByID(id)
+        await this.model.removeBankStatement(id)
+        if (response?.filelocation){
+            response.filelocation = await this.fileHandler.handleDeleteFile(response.filelocation)
         }
         return response
     }

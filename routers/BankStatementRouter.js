@@ -16,9 +16,13 @@ class BankStatementRouter {
         // Upload statements
         this.router.post('/', this.uploads.single('statementFile'), this.controller.addStatement)
         this.router.patch('/', this.uploads.single('statementFile'), this.controller.editStatement)
+        this.router.delete('/:id', this.controller.removeBankStatement)
+
 
         this.router.get('/', this.controller.getStatements)
         this.router.get('/byID/:id', this.controller.getStatementDataByID)
+
+        
         return this.router
     }
     

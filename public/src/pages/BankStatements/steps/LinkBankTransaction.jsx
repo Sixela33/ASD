@@ -92,7 +92,7 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                         defaultSortConfig={defaultSortConfig}
                         sortConfig={sortConfig}>
                         {sortData(bankTransactionsData, sortConfig).map((bankTransaction, index) => {
-                            return <tr key={index} onClick={() => onSelection(bankTransaction)}>
+                            return <tr className='hover:cursor-pointer' key={index} onClick={() => onSelection(bankTransaction)}>
                                 <td>{bankTransaction.transactioncode}</td>
                                 <td>{toCurrency(bankTransaction.transactionamount)}</td>
                                 <td className={bankTransaction.transactionamount != bankTransaction.totalinvoiceamount ? 'bg-red-500': 'bg-green-500'}>{toCurrency(bankTransaction.totalinvoiceamount)}</td>

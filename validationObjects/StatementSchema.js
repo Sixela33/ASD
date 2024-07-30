@@ -9,7 +9,8 @@ const statementSchema = Joi.object({
         'number.base': 'Vendor ID is required.',
         'number.min': 'Vendor ID is required.',
         'any.required': 'Vendor ID is required.'
-    })
+    }),
+    statementid: Joi.number().optional()
 });
 
 export { statementSchema }

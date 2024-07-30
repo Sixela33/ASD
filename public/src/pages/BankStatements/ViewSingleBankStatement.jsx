@@ -58,9 +58,9 @@ export default function ViewSingleBankStatement() {
 
     const handleDeleteStatement = async () => {
         try {
-            // await axiosPrivate.delete(DELETE_STATEMENT_URL + '/' + id)
-            //navigateTo('/bankStatements')
-            setMessage("work in progress")
+            await axiosPrivate.delete(DELETE_STATEMENT_URL + '/' + id)
+            navigateTo('/bankStatements')
+            setMessage("Bank Statement removed successfully", false)
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data, true)
@@ -133,7 +133,7 @@ export default function ViewSingleBankStatement() {
                             >
                                 {linkedTransactions.map((tx, index) => {
                                     return (
-                                        <tr key={index} onClick={() => navigateTo('/bankStatement/link/' + id)}>
+                                        <tr className='hover:cursor-pointer' key={index} onClick={() => navigateTo('/bankStatement/link/' + id)}>
                                             <td>{tx.transactioncode}</td>
                                             <td>{toCurrency(tx.transactionamount)}</td>
                                             <td>{toCurrency(tx.totalinvoiceamount)}</td>

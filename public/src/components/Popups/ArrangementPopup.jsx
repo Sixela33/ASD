@@ -45,6 +45,7 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
             value={newArrangement.clientCost}
             handleChange={(e) => onInputChange('clientCost', e.target.value)}
             error={newArrangementErrors.clientCost}
+            isCurrency={true}
           />                      
         </div>
         <div>

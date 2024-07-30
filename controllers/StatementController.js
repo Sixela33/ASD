@@ -55,6 +55,17 @@ class StatementController {
             next(error)
         }
     }
+
+    removeBankStatement = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const response = await this.service.removeBankStatement(id)
+            res.json(response)
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    }
     
 }
 

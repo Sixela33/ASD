@@ -1312,7 +1312,7 @@ class ModelPostgres {
                 vendorID=$1, 
                 fileLocation=$2, 
                 statementDate=$3
-            WHERE statementID=$4
+            WHERE statementID=$4;
         `, [statementData.vendorid, file, statementData.statementdate, statementData.statementid])
         return response.rows[0]
     }
@@ -1320,10 +1320,18 @@ class ModelPostgres {
     getStatementFileLocation = async (id) => {
         this.validateDatabaseConnection()
         const response = await CnxPostgress.db.query(`
-            SELECT filelocation FROM bankStatements WHERE statementID = $1
+            SELECT filelocation FROM bankStatements WHERE statementID = $1;
         `, [id])
         return response.rows[0]
     }
+
+    removeBankStatement = async (id) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query(`
+            DELETE FROM bankStatements WHERE statementID = $1;
+            `, [id])
+    }
+
     // -----------------------------------------------
     //              BANK TRANSACTIONS
     // -----------------------------------------------
