@@ -101,7 +101,7 @@ export default function SingleFlowerPage() {
                             </div>
                         </div>
                     </div>
-                    <div className='buttons-holder'>
+                    <div className='butons-holder'>
                         <button className='buton-main' onClick={() => {
                             setShowEditFlowerPopup(true)
                             setBaseFlowerData(newFlowerData)

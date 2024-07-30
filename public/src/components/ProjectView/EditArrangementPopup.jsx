@@ -242,7 +242,7 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
         <p>Total profit: {toCurrency(newArrangementStats.totalProfit)}</p>
       </div>
       
-      <div className='buttons-holder'>
+      <div className='butons-holder'>
         <button onClick={handleClosePopup}className='buton-secondary'>Close</button>
         <button onClick={saveChanges} className='buton-main '>Submit</button>
       </div>

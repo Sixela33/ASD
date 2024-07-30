@@ -82,9 +82,6 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                 <div className='my-2'>
                     <h1>Bank Transactions</h1>
                 </div>
-                <div>
-                    <button className='buton-main' onClick={() => setShowNewBankTransactionPopup(true)}>Add New Bank Transaction</button>
-                </div>
                 <div className='table-container h-[40vh]'>
                     <TableHeaderSort
                         headers={headers}
@@ -98,13 +95,16 @@ export default function LinkBankTransaction({bankStatementData, onSelection}) {
                                 <td className={bankTransaction.transactionamount != bankTransaction.totalinvoiceamount ? 'bg-red-500': 'bg-green-500'}>{toCurrency(bankTransaction.totalinvoiceamount)}</td>
                                 <td onClick={e => e.stopPropagation()}>
                                     <button className='go-back-button px-1' onClick={() => handleEditBankTransaction(bankTransaction)}>Edit</button>
-                                    <button className='go-back-button px-1' onClick={() => handleRemoveBankTrnansaction(bankTransaction.transactionid)}>Remove</button>
+                                    <button className='text-red-500 hover:text-red-700 px-1' onClick={() => handleRemoveBankTrnansaction(bankTransaction.transactionid)}>Remove</button>
                                 </td>
                             </tr>
                         })}
                     </TableHeaderSort>
                 </div>
-                <button className='buton-main' onClick={() => navigateTo('/bankStatements')}>Save & Close</button>
+                <div className='butons-holder'>
+                    <button className='buton-secondary' onClick={() => setShowNewBankTransactionPopup(true)}>Add New Bank Transaction</button>
+                    <button className='buton-main' onClick={() => navigateTo('/bankStatements')}>Save & Close</button>
+                </div>
             </div>
     )
 }

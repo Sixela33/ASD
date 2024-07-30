@@ -101,7 +101,7 @@ export default function InvoiceAddFlowerToProjectPopup({showPopup, submitFunctio
                 query={searchQuery}
                 setQuery={setSearchQuery}/>
             <button onClick={() => {setShowPopup2(true)}} className='go-back-button'>Add new flower</button>
-            <div className='buttons-holder'>
+            <div className='butons-holder'>
                 <button className='buton-secondary' onClick={exitPopup}>close</button>
                 <button className='buton-main' onClick={submitSelection}>add flower</button>
             </div>

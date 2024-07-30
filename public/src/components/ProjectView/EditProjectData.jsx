@@ -192,7 +192,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
                 step={0.1}
             />
         </div>
-        <div className='buttons-holder'>
+        <div className='butons-holder'>
             <button onClick={() => {
                 closePopup()
                 setErrors({})

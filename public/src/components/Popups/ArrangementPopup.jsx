@@ -78,7 +78,7 @@ const ArrangementPopup = ({ showPopup, onClose, onSubmit, newArrangement, onInpu
             error={newArrangementErrors.timesBilled}
           />
         </div>
-        <div className='buttons-holder'>
+        <div className='butons-holder'>
           <button className='buton-secondary' onClick={onClose} >Close</button>
           <button className='buton-main' onClick={onSubmit} >Add arrangement</button>
         </div>

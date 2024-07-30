@@ -182,7 +182,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             />
         </div>
         <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
-        <div className='buttons-holder w-full'>
+        <div className='butons-holder w-full'>
           <button className='buton-secondary' onClick={handleCancel}>Cancel</button>
           <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>
         </div>

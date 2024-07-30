@@ -48,7 +48,7 @@ export default function InvoiceDataForm({ onSubmit, saveIncompleteInvoice, invoi
         <div className="flex flex-col">
           <FormItem isCurrency={true} labelName="Invoice Amount:" inputName="invoiceAmount" type="number" value={invoiceData.invoiceAmount} handleChange={handleChange} error={invoiceFormErrors.invoiceAmount} />
         </div>
-        <div className='buttons-holder'>
+        <div className='butons-holder'>
           <button className='buton-secondary' onClick={(e) =>  {e.preventDefault(); saveIncompleteInvoice()}} >Save Incomplete invoice</button>
           <button className='buton-main' onClick={onSubmit} >Continue</button> 
         </div>

@@ -126,7 +126,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 />
             </div>
 
-            <div className='buttons-holder'>
+            <div className='butons-holder'>
                 <button onClick={handleClosePopup} className='buton-secondary'>Cancel</button>
                 <button onClick={addNewBanktransaction} className='buton-main'>Confirm</button>
             </div>
