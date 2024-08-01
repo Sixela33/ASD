@@ -1218,14 +1218,27 @@ class ModelPostgres {
                 fv.vendorID,
                 bs.fileLocation,
                 TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate,
-                COALESCE(SUM(bt.transactionAmount), 0) AS StatementAmount,
-                COALESCE(SUM(i.invoiceAmount), 0) AS AmountRegistered
+                COALESCE(bt.totalAmount, 0) AS StatementAmount,
+                COALESCE(i.totalAmount, 0) AS AmountRegistered
             FROM bankStatements bs
             LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
-            LEFT JOIN bankTransactions bt ON bt.statementID = bs.statementID
-            LEFT JOIN invoices i ON i.bankTransaction = bt.transactionID
+            LEFT JOIN (
+                SELECT
+                    statementID,
+                    SUM(transactionAmount) AS totalAmount
+                FROM bankTransactions
+                GROUP BY statementID
+            ) bt ON bt.statementID = bs.statementID
+            LEFT JOIN (
+                SELECT
+                    bt.statementID,
+                    SUM(i.invoiceAmount) AS totalAmount
+                FROM invoices i
+                LEFT JOIN bankTransactions bt ON bt.transactionID = i.bankTransaction
+                GROUP BY bt.statementID
+            ) i ON i.statementID = bs.statementID
         `;
-    
+
         const queryParams = [];
         let queryConditions = [];
     
@@ -1246,7 +1259,7 @@ class ModelPostgres {
         }
     
         if (withoutTransaction) {
-            queryConditions.push(`bt.transactionID IS NULL`);
+            queryConditions.push(`bt.totalAmount IS NULL`);
         }
     
         if (queryConditions.length > 0) {
@@ -1254,7 +1267,7 @@ class ModelPostgres {
         }
     
         queryBase += `
-            GROUP BY bs.statementID, fv.vendorName, fv.vendorID, bs.fileLocation, bs.statementDate
+            GROUP BY bs.statementID, fv.vendorName, fv.vendorID, bs.fileLocation, bs.statementDate, bt.totalAmount, i.totalAmount
         `;
 
         if (orderBy) {
