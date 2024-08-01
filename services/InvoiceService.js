@@ -173,15 +173,6 @@ class InvoiceService {
         return {projects, flowers, invoiceData}
     }
 
-    linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {
-
-        await validateIdArray(selectedInvoices)
-        await validateBankTransaction(bankTransactionData)
-
-        await this.model.linkBaknTransaction(bankTransactionData, selectedInvoices)
-
-        return
-    }
 }
 
 export default InvoiceService

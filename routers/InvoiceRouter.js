@@ -23,7 +23,6 @@ class InvoiceRouter {
         this.router.get('/providedProjects/:id', this.controller.getProvidedProjects)
         this.router.get('/invoiceData/:id', this.controller.getInvoiceData)
         
-        this.router.post('/linkBankTransaction', this.controller.linkBaknTransaction)
         return this.router
     }
     

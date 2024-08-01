@@ -94,16 +94,6 @@ class InvoiceController {
         }
     }
 
-    linkBaknTransaction = async (req, res, next) => {
-        try {
-            const { bankTransactionData, selectedInvoices } = req.body
-            const response = await this.service.linkBaknTransaction(bankTransactionData, selectedInvoices)
-            req.logger.info(`[BANK TRANSACTION LINK] ${req.user.user.email} tx_data: ${bankTransactionData}, invoiceIDS: [${selectedInvoices}]`)
-            res.json(response)
-        } catch (error) {
-            next(error)
-        }
-    }
 }
 
 export default InvoiceController

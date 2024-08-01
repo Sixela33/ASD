@@ -5,13 +5,11 @@ import useAlert from '../../hooks/useAlert';
 import { useNavigate } from 'react-router-dom';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
-import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import { toCurrency } from '../../utls/toCurrency';
 import { useInView } from 'react-intersection-observer';
 import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
-const LINK_BAKK_TX_URL = '/api/invoices/linkBankTransaction';
 const GET_VENDORS_URL = '/api/vendors';
 
 const colData = {
@@ -28,9 +26,6 @@ const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
 export default function ViewInvoices() {
     const [sortConfig, setSortConfig] = useState(defaultSortConfig)
     const [invoiceData, setInvoiceData] = useState([])
-    const [bankTransactionData, setBankTransactionData] = useState('')
-    const [selectedInvoices, setSelectedInvoices] = useState([])
-    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
     const [showOnlyWithMissingLink, setShowOnlyWithMissingLink] = useState(false)
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -137,60 +132,9 @@ export default function ViewInvoices() {
         
     }, []);
 
-    const handleCheckboxClick = (e, invoiceID) => {
-        setSelectedInvoices(prevState => {
-            if (e.target.checked) {
-                return { ...prevState, [invoiceID]: true };
-            } else {
-                const { [invoiceID]: omit, ...rest } = prevState;
-                return rest;
-            }
-        });
-    }
-
-    const isInvoiceSelected = (invoiceID) => {
-        return selectedInvoices.hasOwnProperty(invoiceID);
-    }
-
-    const addBankTransactions = async () => {
-        try {
-            const selectedInvoicesTemp = Object.keys(selectedInvoices)
-
-            await axiosPrivate.post(LINK_BAKK_TX_URL, JSON.stringify({bankTransactionData, selectedInvoices: selectedInvoicesTemp}))
-            setMessage('Bank transaction added successfully.', false)
-            setBankTransactionData('')
-            setSelectedInvoices({})
-            page.current = page.current - 1;
-            fetchData(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
-       
-        } catch (error) {
-            console.log(error)
-            setMessage(error.response?.data)
-        }
-    }
-
-    const tryToAddBankTX = () => {
-        if (Object.keys(selectedInvoices).length == 0 ) {
-            setMessage('Please select the invoices you want to link with this bank transaction')
-            return
-        }
-        
-        if (!bankTransactionData || bankTransactionData == '') {
-            setMessage('Please fill the bank transaction information to proceed')
-            return
-        } 
-
-        setShowConfirmationPopup(true)
-
-    }
 
     return (
         <div className='container mx-auto pt-12 p-4 text-center page'>
-            <ConfirmationPopup showPopup={showConfirmationPopup} closePopup={() => setShowConfirmationPopup(false)} confirm={addBankTransactions}>
-                <p>You are about to link invoices: {JSON.stringify(Object.keys(selectedInvoices))} with the bank transaction "{bankTransactionData}".</p>
-                <br/>
-                <p>Do you want to procede?</p>
-            </ConfirmationPopup>
             <div className="grid grid-cols-3 mb-4">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Invoices</h1>
@@ -259,7 +203,6 @@ export default function ViewInvoices() {
                             className={`${invoice.hastransaction ? 'bg-green-500' : 'bg-red-500'} hover:cursor-default`}
                             onClick={e => {e.stopPropagation()}}>
                             {invoice.hastransaction ? "Yes": 'No'}
-                            <input className='ml-4' type='checkbox' checked={isInvoiceSelected(invoice.invoiceid)} onChange={(e) => {handleCheckboxClick(e, invoice.invoiceid)}} />
                         </td>
                      </tr>
                     })}
@@ -270,10 +213,6 @@ export default function ViewInvoices() {
                         </tr>
                     )}
                 </TableHeaderSort>                 
-            </div>
-            <div className='my-2'>
-                <input  type='text' value={bankTransactionData} onChange={e => setBankTransactionData(e.target.value)}></input>
-                <button onClick={tryToAddBankTX} className='buton-main ml-3'>Link bank transaction</button>
             </div>
         </div>
     );

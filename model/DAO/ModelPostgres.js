@@ -1149,11 +1149,6 @@ class ModelPostgres {
         return response
     }
 
-    linkBaknTransaction = async (bankTransactionData, selectedInvoices) => {
-        this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`CALL linkBankTx($1::VARCHAR(255), $2::INT[])`, [bankTransactionData, selectedInvoices])
-    }
-
     // -----------------------------------------------
     //                  SERVICES
     // -----------------------------------------------
