@@ -125,7 +125,6 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
 
   const saveChanges = async () => {
     let schemaErrors = null
-    console.log(newArrangementData)
     try {
         arrangementSchema.validateSync(newArrangementData, { abortEarly: false })
     } catch (err) {

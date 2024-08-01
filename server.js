@@ -23,8 +23,6 @@ import VendorRouter from "./routers/VendorRouter.js";
 import ClientRouter from "./routers/ClientRouter.js";
 import InvoiceRouter from "./routers/InvoiceRouter.js";
 
-import RecurrentProjectCheckpointer from "./scripts/createRecurentProjectCheckpoints.js";
-
 import ROLES_LIST from "./config/rolesList.js";
 import ExtraServicesRouter from "./routers/ExtraServicesRouter.js";
 import ContactRouter from "./routers/ContactRouter.js";
@@ -68,10 +66,6 @@ class Server {
             next()
         })
      
-        const checkpointer = new RecurrentProjectCheckpointer()
-
-        schedule.scheduleJob('checkpointer', '@weekly', checkpointer.createRecurentProjectCheckpoints)
-
         // -----------------------------------------------
         //                  ROUTES                        
         // -----------------------------------------------

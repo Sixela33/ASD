@@ -47,7 +47,6 @@ export default function CreateBankStatement() {
   const fetchStatementData = async () => {
     try {
       const response = await axiosPrivate.get(GET_BANK_STATEMENT_URL + id)
-      console.log(response.data)
       setStatementData({
         selectedVendor: {
           vendorid: response.data.vendorid,

@@ -15,8 +15,7 @@ const DEFAULT_TRANSACTION_DATA = {
 
 const transactionSchema = Joi.object({
     transactiondate: Joi.date().required().label('Transaction Date'),
-    transactionamount: Joi.number().required().label('Transaction Amount'),
-    transactioncode: Joi.string().required().label('Transaction Code')
+    transactionamount: Joi.number().required().label('Transaction Amount')
 }).unknown(true);
 
 export default function CreateBankTransactionPopup({ showPopup, closePopup, editBanktransactionData, bankStatementData }) {
@@ -38,7 +37,6 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 acc[curr.path[0]] = curr.message;
                 return acc
             }, {})
-            console.log(errors)
             setErrors(errors)
             return false
         }
@@ -50,8 +48,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
         
         let transactionData = {
             ...banktransactionData,
-            statementid: bankStatementData.statementid,
-            transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate,
+            statementid: bankStatementData.statementid
         }
 
         if (!validateTransactionData(transactionData)) {
@@ -59,9 +56,6 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
         }
 
         try {
-
-            console.log(transactionData)
-
             if (!transactionData.transactionid) {
                 await axiosPrivate.post(CREATE_TRANSACTION_URL, JSON.stringify(transactionData))
                 setMessage('Banktransaction created Successfully', false)
@@ -69,8 +63,7 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
                 transactionData = {
                     transactionamount: transactionData.transactionamount,
                     transactiondate: banktransactionData.transactiondate,
-                    transactionid: banktransactionData.transactionid,
-                    transactioncode: bankStatementData.vendorname + banktransactionData.transactiondate,
+                    transactionid: banktransactionData.transactionid
                 }
                 await axiosPrivate.patch(EDIT_TRANSACTION_URL, JSON.stringify(transactionData))
                 setMessage('Banktransaction edited Successfully', false)
@@ -89,8 +82,6 @@ export default function CreateBankTransactionPopup({ showPopup, closePopup, edit
 
     const handleChange = (e) => {
         const { name, value } = e.target
-
-        console.log({ name, value })
         setBanktransactionData({
             ...banktransactionData,
             [name]: value,

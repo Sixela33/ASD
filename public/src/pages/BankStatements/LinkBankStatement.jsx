@@ -20,7 +20,6 @@ export default function LinkBankStatement() {
 
   const handleNextStep =() => {
     setCurrentstep(step => step += 1)
-    console.log("aiaiai")
   }
 
   const handlePrevStep =() => {

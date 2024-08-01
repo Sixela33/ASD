@@ -13,10 +13,6 @@ const createTransactionSchema = Joi.object({
     transactionamount: Joi.number().required().messages({
         'number.base': 'Transaction amount must be a number.',
         'any.required': 'Transaction amount is required.'
-    }),
-    transactioncode: Joi.string().required().messages({
-        'string.base': 'Transaction code must be a string.',
-        'any.required': 'Transaction code is required.'
     })
 });
 
@@ -32,10 +28,6 @@ const editTransactionSchema = Joi.object({
     transactionamount: Joi.number().required().messages({
         'number.base': 'Transaction amount must be a number.',
         'any.required': 'Transaction amount is required.'
-    }), 
-    transactioncode: Joi.string().required().messages({
-        'string.base': 'Transaction code must be a string.',
-        'any.required': 'Transaction code is required.'
     })
 })
 

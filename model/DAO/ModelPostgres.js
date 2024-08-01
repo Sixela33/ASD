@@ -249,6 +249,12 @@ class ModelPostgres {
         }
     }
 
+    getVendorByID = async (id) => {
+        this.validateDatabaseConnection()
+
+        return await CnxPostgress.db.query('SELECT * FROM flowerVendor WHERE vendorid = $1;', [id])
+    }
+
     // -----------------------------------------------
     //                   PROJECTS
     // -----------------------------------------------
@@ -512,7 +518,6 @@ class ModelPostgres {
 
     editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
-        console.log("projectData", projectData)
         await CnxPostgress.db.query(`
         UPDATE projects SET 
             clientID = $1,
@@ -1294,6 +1299,7 @@ class ModelPostgres {
                 bs.statementID,
                 fv.vendorName,
                 fv.vendorID,
+                fv.vendorCode,
                 bs.fileLocation,
                 TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate
             FROM bankStatements bs
@@ -1337,22 +1343,28 @@ class ModelPostgres {
     // -----------------------------------------------
 
     addBankTransactions = async (transactionData) => {
-        console.log("transactionData", transactionData)
         this.validateDatabaseConnection()
         return CnxPostgress.db.query(`
-            INSERT INTO bankTransactions (statementID, transactionDate, transactionAmount, transactionCode)
-            VALUES ($1, $2, $3, $4);
-        `, [transactionData.statementid,transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode])
+            INSERT INTO bankTransactions (statementID, transactionDate, transactionAmount)
+            VALUES ($1, $2, $3);
+        `, [transactionData.statementid,transactionData.transactiondate, transactionData.transactionamount])
     }
 
     getBankTransactions = async () => {
         this.validateDatabaseConnection()
-        return CnxPostgress.db.query(`SELECT * FROM bankTransactions`, )
+        return CnxPostgress.db.query(`
+            SELECT 
+                bt.*,
+                fv.vendorCode,
+                fv.vendorID
+            FROM bankTransactions bt
+            LEFT JOIN bankStatements bs ON bs.statementID = bt.statementID
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID;` )
     }
 
     getBankTransactionsByStatement = async (statementid) => {
         this.validateDatabaseConnection()
-        return CnxPostgress.db.query(`
+        const result =  await CnxPostgress.db.query(`
         SELECT 
             bt.*,
             TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
@@ -1364,6 +1376,8 @@ class ModelPostgres {
         WHERE bt.statementID = $1
         GROUP BY bt.transactionID
         ;`, [statementid])
+
+        return result.rows
     }
 
     deleteBankTransaction = async (id) => {
@@ -1379,10 +1393,9 @@ class ModelPostgres {
             UPDATE bankTransactions
             SET 
                 transactionDate = $1,
-                transactionAmount = $2,
-                transactionCode = $3
-            WHERE transactionID = $4;
-        `, [transactionData.transactiondate, transactionData.transactionamount, transactionData.transactioncode, transactionData.transactionid]);
+                transactionAmount = $2
+            WHERE transactionID = $3;
+        `, [transactionData.transactiondate, transactionData.transactionamount, transactionData.transactionid]);
     }
 
     linkInvoices = async (selectedInvoicesData, selectedTransactionID) => {

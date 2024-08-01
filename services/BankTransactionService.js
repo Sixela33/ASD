@@ -22,11 +22,18 @@ class BankTransactionService {
     }
 
     getBankTransactionsByStatement = async (id) => {
-        await validateId(id)
+        await validateId(id);
+        const statement_result = await this.model.getStatementDataByID(id);
+        const transaction_result = await this.model.getBankTransactionsByStatement(id);
 
-        const result = await this.model.getBankTransactionsByStatement(id)
-        return result.rows
+        const tempArray = transaction_result?.map(transaction => ({
+            ...transaction,
+            transactioncode: statement_result.vendorcode + '-' + transaction.transactiondate
+        }));
+    
+        return tempArray;
     }
+    
 
     deleteBankTransaction = async (id) => {
         await validateId(id)
@@ -36,7 +43,6 @@ class BankTransactionService {
     }
 
     editBankTransaction = async (transactionData) => {
-        console.log(transactionData)
         await validateTransactionEdit(transactionData)
 
         await this.model.editBankTransaction(transactionData)

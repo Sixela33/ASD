@@ -115,7 +115,6 @@ export default function Vendors() {
                         sortConfig={sortConfig}>
                         {sortData(vendorsData, sortConfig).map((vendor, index) => {
                             return <tr key={index}>
-                                {console.log(vendor)}
                                 <td>{vendor.vendorid}</td>
                                 <td>{vendor.vendorname}</td>
                                 <td>{vendor.vendorcode}</td>

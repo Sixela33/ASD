@@ -44,7 +44,6 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
             if (!dataLeft.current) {
                 return;
             }
-            console.log("bankStatementData", bankStatementData)
 
             const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
                 params: {
@@ -164,7 +163,6 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
     const countExpenses = () => {
         let sum = 0
         for (const [key, value] of Object.entries(selectedInvoices)) {
-            console.log(key, value);
             sum+=value.amount
         }
         setTotalExpenses(sum)

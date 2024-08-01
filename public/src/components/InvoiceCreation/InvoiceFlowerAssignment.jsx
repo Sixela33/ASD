@@ -59,8 +59,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         
         let temp_flower_data = flowerData
         
-        console.log(loadedFlowers)
-
         if(loadedFlowers && loadedFlowers.length != 0) {
             let tempLoadedFlowers = loadedFlowers.filter(item => chosenProjects.includes(item.projectid));
             temp_flower_data = tempLoadedFlowers
@@ -88,7 +86,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         const { name, value } = e.target
 
         if(!displayFlowerData[selectedRow][flowerIndex]) {
-            console.log("ups")
             return
         }
 
@@ -210,8 +207,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
             formDataToSend.append('InvoiceFlowerData', JSON.stringify(temp));
             formDataToSend.append('invoiceFile', invoiceFile);
-
-            console.log(temp)
 
             if (!invoiceData.invoiceid) {
                 await axiosPrivateImage.post(ADD_INVOICE_URL, formDataToSend);

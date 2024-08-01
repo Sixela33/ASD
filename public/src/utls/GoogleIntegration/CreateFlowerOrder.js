@@ -9,7 +9,6 @@ export default async function CreateFlowerOrder(googleAccessToken, text) {
     };
 
     const folderId = await getOrCreateFolder(googleAccessToken, 'temp')
-    console.log("folderId", folderId)
     const driveResponse = await axios.post(
       "https://www.googleapis.com/drive/v3/files",
       {

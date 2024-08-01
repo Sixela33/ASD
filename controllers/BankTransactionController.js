@@ -9,7 +9,6 @@ class BankTransactionController {
     addBankTransaction = async (req, res, next) => {
         try {
             const transactionData = req.body
-            console.log(req.body)
             await this.service.addBankTransactions(transactionData)
             res.sendStatus(200)
         } catch (error) {
@@ -61,7 +60,6 @@ class BankTransactionController {
     linkInvoices = async (req, res, next) => {
         try {
             const {selectedInvoicesData, selectedTransactionID} = req.body
-            console.log(req.body)
             const result = await this.service.linkInvoices(selectedInvoicesData, selectedTransactionID)
             res.sendStatus(200)
         } catch (error) {
@@ -72,7 +70,6 @@ class BankTransactionController {
     getTransactionInvoices = async (req, res, next) => {
         try {
             const {id} = req.params
-            console.log(req.body)
             const result = await this.service.getTransactionInvoices(id)
             res.json(result)
         } catch (error) {

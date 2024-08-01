@@ -9,7 +9,6 @@ class VendorService {
     }
 
     addVendor = async (vendorname, vendorcode) => {
-        console.log(vendorname, vendorcode)
         await validateVendor({vendorname, vendorcode})
         await this.model.addVendor(vendorname, vendorcode)
     }
@@ -21,14 +20,12 @@ class VendorService {
     }
 
     editVendor = async (vendorname, vendorcode, vendorid) => {
-        console.log(vendorname, vendorcode)
         await validateVendor({vendorname, vendorcode})
         await validateId(vendorid)
         await this.model.editVendor(vendorname, vendorcode, vendorid)
     }
 
     removeVendor = async (id) => {
-        console.log(id)
         await validateId(id)
         await this.model.removeVendor(id)
     }
