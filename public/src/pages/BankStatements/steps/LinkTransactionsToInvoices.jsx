@@ -204,7 +204,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                 </div>
         </div>
             <div className='table-container h-[30vh]'>
-                {!invoiceData ? <TableHeaderSort
+                <TableHeaderSort
                     headers={colData} 
                     setSortConfig={setSortConfig} 
                     defaultSortConfig={defaultSortConfig} 
@@ -227,7 +227,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                             <></>
                         </tr>
                     )}
-                </TableHeaderSort>: <p>This vendor has no invoices left to link</p>}    
+                </TableHeaderSort>    
             </div>
             <div className='flex flex-row justify-evenly'>
                 <p className="mt-4">Transaction Amount: {toCurrency(selectedTransaction.transactionamount)}</p>
