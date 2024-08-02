@@ -1011,7 +1011,6 @@ class ModelPostgres {
         maxAmount, 
         withoutTransaction = false
     ) => {
-           
         this.validateDatabaseConnection()
         const LIMIT = rows || 50
     
@@ -1021,20 +1020,23 @@ class ModelPostgres {
             invoiceamount: " ORDER BY i.invoiceamount",
             invoicedate: " ORDER BY invoicedate",
             invoicenumber: " ORDER BY i.invoicenumber",
-            hastransaction: " ORDER BY hastransaction"
+            hastransaction: " ORDER BY bt.transactionid"
         }
     
         let queryBase = `
             SELECT 
                 i.invoiceid, 
                 fv.vendorname, 
+                fv.vendorcode,
                 i.invoiceamount, 
                 i.invoiceNumber,
                 TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
-                i.bankTransaction as hasTransaction
+                bt.transactionid,
+                TO_CHAR(bt.transactiondate, 'MM-DD-YYYY') AS transactiondate
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
+            LEFT JOIN bankTransactions bt ON bt.transactionID = i.bankTransaction
         `
     
         const queryParams = []

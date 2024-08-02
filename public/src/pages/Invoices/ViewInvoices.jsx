@@ -200,9 +200,9 @@ export default function ViewInvoices() {
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
                         <td 
-                            className={`${invoice.hastransaction ? 'bg-green-500' : 'bg-red-500'} hover:cursor-default`}
+                            className={`${invoice.transactionid ? 'bg-green-500' : 'bg-red-500'} hover:cursor-default`}
                             onClick={e => {e.stopPropagation()}}>
-                            {invoice.hastransaction ? "Yes": 'No'}
+                            {invoice.transactionid ? `${invoice.vendorcode} ${invoice.transactiondate}`: 'No'}
                         </td>
                      </tr>
                     })}
