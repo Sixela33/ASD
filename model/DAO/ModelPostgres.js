@@ -1360,16 +1360,87 @@ class ModelPostgres {
         `, [transactionData.statementid,transactionData.transactiondate, transactionData.transactionamount])
     }
 
-    getBankTransactions = async () => {
-        this.validateDatabaseConnection()
-        return CnxPostgress.db.query(`
+    getBankTransactions = async (offset, orderBy, order, specificVendor, startDate, endDate, minAmount, maxAmount, code) => {
+        this.validateDatabaseConnection();
+
+        let queryBase = `
             SELECT 
-                bt.*,
+                bt.transactionID,
+                bt.statementID,
+                TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
+                bt.transactionAmount,
                 fv.vendorCode,
-                fv.vendorID
+                fv.vendorname,
+                COALESCE(SUM(i.invoiceAmount), 0) AS totalAmount
             FROM bankTransactions bt
             LEFT JOIN bankStatements bs ON bs.statementID = bt.statementID
-            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID;` )
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+            LEFT JOIN invoices i ON i.bankTransaction = bt.transactionID
+        `;
+    
+        const queryParams = [];
+        let queryConditions = [];
+    
+        if (specificVendor) {
+            queryConditions.push(`fv.vendorID = $${queryParams.length + 1}`);
+            queryParams.push(specificVendor);
+        }
+    
+        if (startDate && endDate) {
+            queryConditions.push(`bt.transactionDate BETWEEN $${queryParams.length + 1} AND $${queryParams.length + 2}`);
+            queryParams.push(startDate, endDate);
+        } else if (startDate) {
+            queryConditions.push(`bt.transactionDate >= $${queryParams.length + 1}`);
+            queryParams.push(startDate);
+        } else if (endDate) {
+            queryConditions.push(`bt.transactionDate <= $${queryParams.length + 1}`);
+            queryParams.push(endDate);
+        }
+    
+        if (minAmount) {
+            queryConditions.push(`bt.transactionAmount >= $${queryParams.length + 1}`);
+            queryParams.push(minAmount);
+        }
+    
+        if (maxAmount) {
+            queryConditions.push(`bt.transactionAmount <= $${queryParams.length + 1}`);
+            queryParams.push(maxAmount);
+        }
+    
+        if (queryConditions.length > 0) {
+            queryBase += ' WHERE ' + queryConditions.join(' AND ');
+        }
+
+        queryBase += ' GROUP BY bt.transactionID, fv.vendorCode, fv.vendorname '
+
+    
+        if (orderBy) {
+            const validColumns = {
+                transactionid: "bt.transactionID",
+                transactiondate: "bt.transactionDate",
+                transactionamount: "bt.transactionAmount",
+                vendorname: "fv.vendorname",
+                totalamount: 'totalamount'
+            };
+    
+            if (validColumns[orderBy]) {
+                queryBase += ` ORDER BY ${validColumns[orderBy]}`;
+                if (order && order.toLowerCase() === 'desc') {
+                    queryBase += ' DESC';
+                } else {
+                    queryBase += ' ASC';
+                }
+            }
+        }
+    
+        const LIMIT = 50;
+        const OFFSET = offset ? offset * LIMIT : 0;
+    
+        queryBase += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        queryParams.push(LIMIT, OFFSET);
+    
+        const response = await CnxPostgress.db.query(queryBase, queryParams);
+        return response;
     }
 
     getBankTransactionsByStatement = async (statementid) => {

@@ -1,5 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
-import { validateId, validateIdArray } from "./Validations/IdValidation.js"
+import { minMaxNumbersValidation, startDateEndDateValidation, validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js"
 import { validateNewTransaction, validateTransactionEdit } from "./Validations/TransactionValidations.js"
 
 class BankTransactionService {
@@ -14,10 +14,13 @@ class BankTransactionService {
         await this.model.addBankTransactions(transactionData)
     }
 
-    getBankTransactions = async (searchByName) => {
-        await validateQueryString(searchByName)
+    getBankTransactions = async (offset, orderBy, order, specificVendor, startDate, endDate, minAmount, maxAmount, code) => {
+        await validateId(offset)
+        await validateQueryStringLength([orderBy, order, specificVendor, code])
+        await startDateEndDateValidation({startDate, endDate})
+        await minMaxNumbersValidation({minAmount, maxAmount})
 
-        const result = await this.model.getBankTransactions(searchByName)
+        const result = await this.model.getBankTransactions(offset, orderBy, order, specificVendor, startDate, endDate, minAmount, maxAmount, code)
         return result.rows
     }
 

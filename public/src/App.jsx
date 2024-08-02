@@ -27,6 +27,7 @@ import BankStatementsList from './pages/BankStatements/BankStatementsList';
 import CreateBankStatement from './pages/BankStatements/CreateBankStatement';
 import LinkBankStatement from './pages/BankStatements/LinkBankStatement';
 import ViewSingleBankStatement from './pages/BankStatements/ViewSingleBankStatement';
+import BankTransactionsList from './pages/BankTransactions/BankTransactionsList';
 
 function App() {
 
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/bankStatement/add/:id?" element={<CreateBankStatement/>}></Route>
                 <Route path="/bankStatement/link/:id" element={<LinkBankStatement/>}></Route>
                 <Route path='/bankStatement/:id' element={<ViewSingleBankStatement/>}></Route>
+                <Route path='/bankTransactions' element={<BankTransactionsList/>}></Route>
               </Route>
 
               <Route element={<RequireAuth allowedRoles={ROLES_LIST['Admin']} />}>

@@ -10,9 +10,10 @@ export default function Home() {
     { id: 2, label: 'Projects', url: '/projects', minPermissionLevel: 1 },
     { id: 3, label: 'Flowers', url: '/flowers', minPermissionLevel: 1 },
     { id: 4, label: 'Invoices', url: '/invoice', minPermissionLevel: 1000 },
-    { id: 5, label: 'Bank Statements', url: '/bankStatements', minPermissionLevel: 1000 }
+    { id: 5, label: 'Bank Statements', url: '/bankStatements', minPermissionLevel: 1000 },
+    { id: 6, label: 'Bank Transactions', url: '/bankTransactions', minPermissionLevel: 1000 }
   ];
-
+  
   return (
     <div className="container mx-auto p-8 flex justify-center">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 ">

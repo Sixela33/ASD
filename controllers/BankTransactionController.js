@@ -19,8 +19,8 @@ class BankTransactionController {
 
     getBankTransactions = async (req, res, next) => {
         try {
-            const {searchByName} = req.query
-            const result = await this.service.getBankTransactions(searchByName)
+            const {offset, orderBy, order, specificVendor, startDate, endDate, minAmount, maxAmount, code} = req.query
+            const result = await this.service.getBankTransactions(offset, orderBy, order, specificVendor, startDate, endDate, minAmount, maxAmount, code)
             res.json(result)
         } catch (error) {
             next(error)
