@@ -82,7 +82,7 @@ export default function ViewInvoices() {
         }
     };
 
-    const debounced = useCallback(debounce(fetchData, 200), []);
+    const debounced = useCallback(debounce(fetchData, 300), []);
 
     const fetchVendors = async () => {
         try {
@@ -97,12 +97,12 @@ export default function ViewInvoices() {
     useEffect(() => {
 
         if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.', false);
+            setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.');
             return;
         }
-        
-        if (minAmount && maxAmount && minAmount > maxAmount) {
-            setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.', false);
+
+        if (minAmount && maxAmount && parseInt(maxAmount) < parseInt(minAmount)) {
+            setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.');
             return;
         }
 
@@ -200,9 +200,9 @@ export default function ViewInvoices() {
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
                         <td 
-                            className={`${invoice.transactionid ? 'bg-green-500' : 'bg-red-500'} hover:cursor-default`}
-                            onClick={e => {e.stopPropagation()}}>
-                            {invoice.transactionid ? `${invoice.vendorcode} ${invoice.transactiondate}`: 'No'}
+                            className={`${invoice.transactionid ? 'bg-green-500' : 'bg-red-500'} hover:text-blue-700`}
+                            onClick={e => {e.stopPropagation(); navigateTo('/bankTransactions/' + invoice.transactionid)}}>
+                            {invoice.transactionid ? `${invoice.vendorcode}-${invoice.transactiondate}`: 'No'}
                         </td>
                      </tr>
                     })}

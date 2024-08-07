@@ -1461,6 +1461,21 @@ class ModelPostgres {
         return result.rows
     }
 
+    getBankTransactionDataByID = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT 
+                bt.*,
+                TO_CHAR(bt.transactiondate, 'MM-DD-YYYY') AS transactiondate,
+                fv.vendorcode,
+                fv.vendorID
+            FROM banktransactions bt
+            LEFT JOIN bankstatements bs ON bs.statementID = bt.transactionID 
+            LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
+            WHERE bt.transactionID = $1;
+        `, [id])
+    }
+
     deleteBankTransaction = async (id) => {
         this.validateDatabaseConnection();
         return await CnxPostgress.db.query(`
@@ -1496,9 +1511,30 @@ class ModelPostgres {
     getTransactionInvoices = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
-            SELECT * FROM invoices 
+            SELECT 
+                invoicenumber,
+                invoiceamount,
+                TO_CHAR(invoicedate, 'MM-DD-YYYY') AS invoicedate
+            FROM invoices 
             WHERE bankTransaction = $1;`, [id])
     }
+
+    getTransactionProjects = async (id) => {
+        this.validateDatabaseConnection();
+        return await CnxPostgress.db.query(`
+            SELECT 
+                p.projectid,
+                p.projectdescription,
+                SUM(fxi.boxprice * fxi.boxespurchased) AS tiedExpenses
+            FROM projects p
+            LEFT JOIN flowerXInvoice fxi ON p.projectid = fxi.projectid
+            LEFT JOIN invoices i ON fxi.invoiceid = i.invoiceid
+            LEFT JOIN bankTransactions bt ON i.banktransaction = bt.transactionid
+            WHERE bt.transactionid = $1
+            GROUP BY p.projectid, p.projectdescription;
+        `, [id]);
+    }
+    
 }
 
 export default ModelPostgres

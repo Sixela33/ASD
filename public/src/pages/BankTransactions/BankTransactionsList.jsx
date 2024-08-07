@@ -152,12 +152,12 @@ export default function BankTransactionsList() {
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
                 {transactionData.map((transaction, index) => {
-                    return <tr key={index}  onClick={() => navigateTo('/bankTransaction/' + transaction.transactionid)}>
-                        <td>{transaction?.transactionid}</td>
+                    return <tr key={index}  onClick={() => navigateTo('/bankTransactions/' + transaction.transactionid)}>
+                        <td>{transaction.vendorcode + transaction.transactiondate}</td>
                         <td>{transaction?.vendorname}</td>
                         <td>{transaction?.transactiondate}</td>
                         <td>{toCurrency(transaction?.transactionamount)}</td>
-                        <td>{toCurrency(transaction?.totalamount)}</td>
+                        <td className={transaction?.transactionamount != transaction?.totalamount ? 'bg-red-500': 'bg-green-500'}>{toCurrency(transaction?.totalamount)}</td>
                      </tr>
                     })}
 

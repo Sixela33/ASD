@@ -155,7 +155,7 @@ export default function BankStatementsList() {
                         <td>{statement?.vendorname}</td>
                         <td>{statement?.statementdate}</td>
                         <td>{toCurrency(statement?.statementamount)}</td>
-                        <td>{toCurrency(statement?.amountregistered)}</td>
+                        <td className={statement?.statementamount != statement?.amountregistered ? 'bg-red-500': 'bg-green-500'}>{toCurrency(statement?.amountregistered)}</td>
                      </tr>
                     })}
 

@@ -37,6 +37,16 @@ class BankTransactionController {
         }
     }
 
+    getSingleBankTransactionData = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const result = await this.service.getSingleBankTransactionData(id)
+            res.json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     deleteBankTransaction = async (req, res, next) => {
         try {
             const {id} = req.params

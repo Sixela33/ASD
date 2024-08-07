@@ -36,6 +36,43 @@ class BankTransactionService {
     
         return tempArray;
     }
+
+    getTransactionDataByID = async (id) => {
+        await validateId
+
+        let transaction_data = this.model.getBankTransactionDataByID(id)
+        transaction_data = await transaction_data
+        transaction_data = transaction_data?.rows
+
+        const tempArray = transaction_data?.map(transaction => ({
+            ...transaction,
+            transactioncode: transaction.vendorcode + '-' + transaction.transactiondate
+        }));
+
+        return tempArray
+
+    }
+
+    getSingleBankTransactionData = async (id) => {
+        await validateId(id)
+        let transaction_data = this.getTransactionDataByID(id)
+        let linked_invoices = this.model.getTransactionInvoices(id)
+        let linked_projects = this.model.getTransactionProjects(id)
+        
+        transaction_data = await transaction_data
+        linked_invoices = await linked_invoices
+        linked_projects = await linked_projects
+
+        linked_invoices = linked_invoices.rows
+        linked_projects = linked_projects.rows
+
+        return {
+            transaction_data,
+            linked_invoices,
+            linked_projects
+        }
+
+    }
     
 
     deleteBankTransaction = async (id) => {
