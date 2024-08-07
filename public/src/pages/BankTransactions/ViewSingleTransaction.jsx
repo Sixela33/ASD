@@ -56,7 +56,7 @@ export default function ViewSingleTransaction() {
                 {transactionData && <div className='flex md:flex-row justify-evenly md:my-5'>
                     <p><strong>Transaction ID:</strong> {transactionData.transactionid}</p>
                     <p><strong>Date:</strong> {new Date(transactionData.transactiondate).toLocaleDateString()}</p>
-                    <p><strong>Transaction Amount:</strong> ${transactionData.transactionamount}</p>
+                    <p><strong>Transaction Amount:</strong> ${toCurrency(transactionData.transactionamount)}</p>
                     <p><strong>Total Tied: </strong>$ {toCurrency(totalLinkedToProjects || 0)}</p>
                 </div>}
             </div>

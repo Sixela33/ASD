@@ -20,7 +20,7 @@ const colData = {
     "Linked Amount": "totalamount"
 }
 
-const defaultSortConfig = { key: 'transactionid', direction: 'asc' }
+const defaultSortConfig = { key: '', direction: 'asc' }
 
 export default function BankTransactionsList() {
     const [sortConfig, setSortConfig] = useState(defaultSortConfig)
