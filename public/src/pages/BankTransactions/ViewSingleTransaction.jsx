@@ -5,7 +5,8 @@ import TableHeaderSort from '../../components/Tables/TableHeaderSort'
 import { toCurrency } from '../../utls/toCurrency'
 import LoadingPage from '../LoadingPage'
 import useAlert from '../../hooks/useAlert'
-
+import LoadingPopup from '../../components/LoadingPopup'
+import RedirectToFilePopup from '../../components/Popups/RedirectToFilePopup'
 
 export default function ViewSingleTransaction() {
     const axiosPrivate = useAxiosPrivate()
@@ -16,12 +17,33 @@ export default function ViewSingleTransaction() {
     const [transactionData, setStatementData] = useState(null)
     const [linkedInvoices, setLinkedInvoices] = useState([])
     const [linkedProjects, setLinkedProjects] = useState([])
+
     const [loading, setLoading] = useState(true);
+    const [generatingCSV, setGeneratingCSV] = useState(false)
+    const [showRedirectPopup, setShowRedirectPopup] = useState(false)
+    const [fileRedirectUrl, setFileRedirectUrl] = useState('')
+
+    const exportToCSV = async () => {
+        try {
+            setGeneratingCSV(true)
+            const response = await axiosPrivate.post('/api/bankTransactions/generateExcelDoc/' + id)
+            const documentId = response.data 
+            console.log(response.data)
+            const url = 'https://docs.google.com/spreadsheets/d/' + documentId
+            
+            setShowRedirectPopup(true)
+            setFileRedirectUrl(url)
+            window.open(url, '_blank').focus()
+        } catch (error) {
+            
+        } finally {
+            setGeneratingCSV(false)
+        }
+    }
 
     const fetchTransactionData = async () => {
         try {
             setLoading(true)
-            await axiosPrivate.post('/api/bankTransactions/generateExcelDoc/' + id)
             const response = await axiosPrivate.get('/api/bankTransactions/' + id)
 
             setStatementData(response.data?.transaction_data?.[0])
@@ -49,6 +71,15 @@ export default function ViewSingleTransaction() {
 
     return (
         <div className='container mx-auto pt-8 p-4 text-center page'>
+            <LoadingPopup showPopup={generatingCSV}>
+                <h1>Creating your document</h1>
+                <p>Please wait and you will be redirected</p>
+            </LoadingPopup>
+            <RedirectToFilePopup
+                showPopup={showRedirectPopup && fileRedirectUrl}
+                closePopup={() => setShowRedirectPopup(false)}
+                url={fileRedirectUrl}>
+            </RedirectToFilePopup>
             <div className='grid grid-cols-3 mb-4'>
                 <button className='go-back-button col-span-1' onClick={() => navigateTo('/bankTransactions')} >Go Back</button>
                 <h1 className='col-span-1'>Transaction Details</h1>
@@ -104,6 +135,7 @@ export default function ViewSingleTransaction() {
                 </div>
             </div>
             <div className='text-right'>
+                <button className='buton-secondary' onClick={exportToCSV}>export to CSV</button>
                 <button className='buton-main mx-10' onClick={() => navigateTo('/bankStatement/link/' + transactionData.statementid)}> Edit Transaction</button>
             </div>
         </div>

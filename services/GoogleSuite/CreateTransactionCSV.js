@@ -97,7 +97,7 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
                             { userEnteredValue: { stringValue: row.transactiondate } },
                             { userEnteredValue: { stringValue: row.vendorname } },
                             { userEnteredValue: { numberValue: parseFloat(row.invoiceamount) } },
-                            { userEnteredValue: { stringValue: row.projectdescription } },
+                            { userEnteredValue: { stringValue: `${row.clientname}:${row.projectdescription}` } },
                             { userEnteredValue: { stringValue: row.invoicedate } },
                             { userEnteredValue: { numberValue: row.splitamm } }
                         ]
@@ -123,6 +123,8 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
                 headers: authHeaders
             }
         )
+
+        return spreadsheetId
     } catch (error) {
         console.log(error.response.data)
     }

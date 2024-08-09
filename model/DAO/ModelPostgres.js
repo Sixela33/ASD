@@ -1360,14 +1360,16 @@ class ModelPostgres {
                 TO_CHAR(bt.transactiondate, 'DD-MM-YYYY') AS transactiondate,
                 SUM(fxi.boxprice * fxi.boxespurchased) AS splitamm,
                 i.invoiceamount,
-                i.invoiceid
+                i.invoiceid,
+                c.clientname
             FROM bankTransactions bt
             LEFT JOIN invoices i ON i.banktransaction = bt.transactionid
             LEFT JOIN flowerxinvoice fxi ON fxi.invoiceid = i.invoiceid
             LEFT JOIN projects p ON p.projectid = fxi.projectid
-            LEFT JOIN flowervendor fv ON fv.vendorid = i.vendorid 
+            LEFT JOIN flowervendor fv ON fv.vendorid = i.vendorid
+            LEFT JOIN clients c ON c.clientid = p.clientid
             WHERE bt.transactionid = $1
-            GROUP BY p.projectid, bt.transactiondate, bt.transactionamount, fv.vendorname, i.invoicedate, i.invoiceamount, i.invoiceid;`, [id])
+            GROUP BY p.projectid, bt.transactiondate, bt.transactionamount, fv.vendorname, i.invoicedate, i.invoiceamount, i.invoiceid, c.clientname;`, [id])
     }
 
     // -----------------------------------------------

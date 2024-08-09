@@ -108,8 +108,8 @@ class BankTransactionService {
 
         const result = await this.model.getStatementStTransactionsForExcel(id)
         // console.log(result.rows)
-        await CreateTransactionCSV(googleAccessToken, result.rows)
-        return result.rows
+        const response = await CreateTransactionCSV(googleAccessToken, result.rows)
+        return response
     }
 }
 
