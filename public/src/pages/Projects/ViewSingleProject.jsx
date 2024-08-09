@@ -587,7 +587,7 @@ export default function ViewProject() {
                                 <div className='grid-col'>
                                     <p className='mr-4'>Total staff budget: {toCurrency(projectStats.totalStaffBudget)}</p>
                                     <p>Estimate spent in flowers {toCurrency(estimatedFlowerCost)}</p>
-                                    <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>${toCurrency(projectStats.totalProjectProfit)}</span> </p>
+                                    <p>Expected Project Profit: <span className={projectStats.totalProjectProfit>0? 'text-green-700' : 'text-red-700'}>{toCurrency(projectStats.totalProjectProfit)}</span> </p>
                                 </div>
                             </div>
                         </div>

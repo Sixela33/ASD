@@ -21,7 +21,7 @@ class BankTransactionRouter {
         this.router.patch('/invoices', this.controller.linkInvoices)
         this.router.get('/invoices/:id', this.controller.getTransactionInvoices)
 
-
+        this.router.post('/generateExcelDoc/:id', this.controller.generateExcelDoc)
         return this.router
     }
     

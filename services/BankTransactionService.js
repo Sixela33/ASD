@@ -1,4 +1,5 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
+import CreateTransactionCSV from "./GoogleSuite/CreateTransactionCSV.js"
 import { minMaxNumbersValidation, startDateEndDateValidation, validateId, validateIdArray, validateQueryStringLength } from "./Validations/IdValidation.js"
 import { validateNewTransaction, validateTransactionEdit } from "./Validations/TransactionValidations.js"
 
@@ -99,6 +100,15 @@ class BankTransactionService {
         await validateId(id)
 
         const result = await this.model.getTransactionInvoices(id)
+        return result.rows
+    }
+
+    generateExcelDoc = async (id, googleAccessToken) => {
+        await validateId(id)
+
+        const result = await this.model.getStatementStTransactionsForExcel(id)
+        // console.log(result.rows)
+        await CreateTransactionCSV(googleAccessToken, result.rows)
         return result.rows
     }
 }

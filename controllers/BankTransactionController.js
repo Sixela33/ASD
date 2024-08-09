@@ -86,6 +86,18 @@ class BankTransactionController {
             next(error)
         }
     }
+
+    generateExcelDoc = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const googleAccessToken = req.user.googleAccessToken
+
+            const result = await this.service.generateExcelDoc(id, googleAccessToken)
+            res.json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
     
 }
 

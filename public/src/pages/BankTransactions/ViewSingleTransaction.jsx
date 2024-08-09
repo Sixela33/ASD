@@ -21,6 +21,7 @@ export default function ViewSingleTransaction() {
     const fetchTransactionData = async () => {
         try {
             setLoading(true)
+            await axiosPrivate.post('/api/bankTransactions/generateExcelDoc/' + id)
             const response = await axiosPrivate.get('/api/bankTransactions/' + id)
 
             setStatementData(response.data?.transaction_data?.[0])
@@ -56,8 +57,8 @@ export default function ViewSingleTransaction() {
                 {transactionData && <div className='flex md:flex-row justify-evenly md:my-5'>
                     <p><strong>Transaction ID:</strong> {transactionData.transactionid}</p>
                     <p><strong>Date:</strong> {new Date(transactionData.transactiondate).toLocaleDateString()}</p>
-                    <p><strong>Transaction Amount:</strong> ${toCurrency(transactionData.transactionamount)}</p>
-                    <p><strong>Total Tied: </strong>$ {toCurrency(totalLinkedToProjects || 0)}</p>
+                    <p><strong>Transaction Amount:</strong> {toCurrency(transactionData.transactionamount)}</p>
+                    <p><strong>Total Tied: </strong>{toCurrency(totalLinkedToProjects || 0)}</p>
                 </div>}
             </div>
             <div className='flex flex-col md:flex-row md:p-10 items-start min-h-full'>
@@ -92,6 +93,7 @@ export default function ViewSingleTransaction() {
                         }}>
                             {linkedProjects && linkedProjects.map((project, index) => {
                                 return <tr key={index}>
+                                    {console.log(project)}
                                     <td>{project.projectid}</td>
                                     <td>{project.projectdescription}</td>
                                     <td>{toCurrency(project.tiedexpenses)}</td>

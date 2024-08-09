@@ -1348,6 +1348,28 @@ class ModelPostgres {
             `, [id])
     }
 
+    getStatementStTransactionsForExcel = async (id) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT 
+                p.projectid,
+                p.projectdescription,
+                bt.transactionamount,
+                fv.vendorname,
+                TO_CHAR(i.invoicedate, 'DD-MM-YYYY') AS invoicedate,
+                TO_CHAR(bt.transactiondate, 'DD-MM-YYYY') AS transactiondate,
+                SUM(fxi.boxprice * fxi.boxespurchased) AS splitamm,
+                i.invoiceamount,
+                i.invoiceid
+            FROM bankTransactions bt
+            LEFT JOIN invoices i ON i.banktransaction = bt.transactionid
+            LEFT JOIN flowerxinvoice fxi ON fxi.invoiceid = i.invoiceid
+            LEFT JOIN projects p ON p.projectid = fxi.projectid
+            LEFT JOIN flowervendor fv ON fv.vendorid = i.vendorid 
+            WHERE bt.transactionid = $1
+            GROUP BY p.projectid, bt.transactiondate, bt.transactionamount, fv.vendorname, i.invoicedate, i.invoiceamount, i.invoiceid;`, [id])
+    }
+
     // -----------------------------------------------
     //              BANK TRANSACTIONS
     // -----------------------------------------------
@@ -1525,13 +1547,19 @@ class ModelPostgres {
             SELECT 
                 p.projectid,
                 p.projectdescription,
+                p.staffbudget,
+                p.profitmargin,
+                SUM(axp.ammount * axp.clientcost) AS additionalscost,
+                SUM(a.clientcost * a.arrangementquantity * a.installationtimes) as arrangementscost,
                 SUM(fxi.boxprice * fxi.boxespurchased) AS tiedExpenses
             FROM projects p
             LEFT JOIN flowerXInvoice fxi ON p.projectid = fxi.projectid
             LEFT JOIN invoices i ON fxi.invoiceid = i.invoiceid
             LEFT JOIN bankTransactions bt ON i.banktransaction = bt.transactionid
+            LEFT JOIN additionalsxproejct axp ON axp.projectid = p.projectid
+            LEFT JOIN arrangements a ON a.projectid = p.projectid
             WHERE bt.transactionid = $1
-            GROUP BY p.projectid, p.projectdescription;
+            GROUP BY p.projectid, p.projectdescription, p.staffbudget, p.profitmargin;
         `, [id]);
     }
     
