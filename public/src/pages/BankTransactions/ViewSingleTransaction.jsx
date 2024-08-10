@@ -26,8 +26,8 @@ export default function ViewSingleTransaction() {
     const exportToCSV = async () => {
         try {
             setGeneratingCSV(true)
-            const response = await axiosPrivate.post('/api/bankTransactions/generateExcelDoc/' + id)
-            const documentId = response.data 
+            const response = await axiosPrivate.post('/api/bankTransactions/generateExcelDoc', JSON.stringify({ids: [id]}))
+            const documentId = response.data
             console.log(response.data)
             const url = 'https://docs.google.com/spreadsheets/d/' + documentId
             

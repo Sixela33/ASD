@@ -1348,8 +1348,8 @@ class ModelPostgres {
             `, [id])
     }
 
-    getStatementStTransactionsForExcel = async (id) => {
-        this.validateDatabaseConnection()
+    getStatementStTransactionsForExcel = async (ids) => {
+        this.validateDatabaseConnection();
         return await CnxPostgress.db.query(`
             SELECT 
                 p.projectid,
@@ -1368,8 +1368,10 @@ class ModelPostgres {
             LEFT JOIN projects p ON p.projectid = fxi.projectid
             LEFT JOIN flowervendor fv ON fv.vendorid = i.vendorid
             LEFT JOIN clients c ON c.clientid = p.clientid
-            WHERE bt.transactionid = $1
-            GROUP BY p.projectid, bt.transactiondate, bt.transactionamount, fv.vendorname, i.invoicedate, i.invoiceamount, i.invoiceid, c.clientname;`, [id])
+            WHERE bt.transactionid = ANY($1)
+            GROUP BY p.projectid, p.projectdescription, bt.transactionamount, fv.vendorname, i.invoicedate, bt.transactiondate, i.invoiceamount, i.invoiceid, c.clientname;`, 
+            [ids]
+        );
     }
 
     // -----------------------------------------------
@@ -1543,6 +1545,24 @@ class ModelPostgres {
             WHERE bankTransaction = $1;`, [id])
     }
 
+    getProjectsExpensesFromTx = async (ids) => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT
+                p.projectid,
+                p.projectdescription,
+                p.staffbudget,
+                p.profitmargin,
+                COALESCE(SUM(fxi.boxprice * fxi.boxespurchased), 0) AS tiedExpenses
+            FROM projects p
+            LEFT JOIN flowerXInvoice fxi ON p.projectid = fxi.projectid
+            INNER JOIN invoices i ON fxi.invoiceid = i.invoiceid
+            INNER JOIN bankTransactions bt ON i.banktransaction = bt.transactionid
+            WHERE bt.transactionid = ANY($1)
+            GROUP BY p.projectid, p.projectdescription, p.staffbudget, p.profitmargin;
+        `, [ids])
+    }
+
     getTransactionProjects = async (id) => {
         this.validateDatabaseConnection();
         return await CnxPostgress.db.query(`
@@ -1564,7 +1584,6 @@ class ModelPostgres {
             GROUP BY p.projectid, p.projectdescription, p.staffbudget, p.profitmargin;
         `, [id]);
     }
-    
 }
 
 export default ModelPostgres

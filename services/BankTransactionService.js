@@ -58,7 +58,7 @@ class BankTransactionService {
         await validateId(id)
         let transaction_data = this.getTransactionDataByID(id)
         let linked_invoices = this.model.getTransactionInvoices(id)
-        let linked_projects = this.model.getTransactionProjects(id)
+        let linked_projects = this.model.getProjectsExpensesFromTx([id])
         
         transaction_data = await transaction_data
         linked_invoices = await linked_invoices
@@ -103,10 +103,10 @@ class BankTransactionService {
         return result.rows
     }
 
-    generateExcelDoc = async (id, googleAccessToken) => {
-        await validateId(id)
-
-        const result = await this.model.getStatementStTransactionsForExcel(id)
+    generateExcelDoc = async (ids, googleAccessToken) => {
+        await validateIdArray(ids)
+        console.log("first")
+        const result = await this.model.getStatementStTransactionsForExcel(ids)
         // console.log(result.rows)
         const response = await CreateTransactionCSV(googleAccessToken, result.rows)
         return response

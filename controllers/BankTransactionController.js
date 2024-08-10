@@ -89,10 +89,10 @@ class BankTransactionController {
 
     generateExcelDoc = async (req, res, next) => {
         try {
-            const {id} = req.params
+            const {ids} = req.body
             const googleAccessToken = req.user.googleAccessToken
 
-            const result = await this.service.generateExcelDoc(id, googleAccessToken)
+            const result = await this.service.generateExcelDoc(ids, googleAccessToken)
             res.json(result)
         } catch (error) {
             next(error)

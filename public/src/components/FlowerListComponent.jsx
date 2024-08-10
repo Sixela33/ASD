@@ -99,17 +99,18 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     return (
         <div className="mx-auto my-4 px-10 w-full">
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-evenly'>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-evenly`}>
                 <div className="flex flex-col w-full md:w-auto">
                     <label className='mb-1 text-sm md:text-base'>Search by name: </label>
                     <input className='w-full px-3 py-2' type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
                 </div>
-                <div className="mb-3 mx-5 flex justify-start items-center">
+                <div className={`mb-3 mx-5 flex justify-start items-center ${!showToggleIncomplete && 'lg:col-span-2'}`}>
                     <label >Search by color: </label>
                     <MultipleFlowerColorSelector
                         options={flowerColors}
                         selectedColors={selectedColors} 
                         setSelectedColors={setSelectedColors}
+                        doubleColunms={!showToggleIncomplete}
                     />
                 </div>
                 {showToggleIncomplete && <div className='mb-3 flex justify-start items-center'>
