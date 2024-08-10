@@ -118,7 +118,6 @@ export default function BankTransactionsList() {
             <div className="grid grid-cols-1 md:grid-cols-3 mb-4">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Bank Transactions</h1>
-                <Link className='buton-main col-span-1 mx-auto' to='/bankTransaction/add'>Add New Bank Transaction</Link>
             </div>
             <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
                 <div className='flex flex-col items-center space-x-1'>

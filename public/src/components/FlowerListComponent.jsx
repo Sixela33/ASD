@@ -104,7 +104,7 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
                     <label className='mb-1 text-sm md:text-base'>Search by name: </label>
                     <input className='w-full px-3 py-2' type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
                 </div>
-                <div className="mb-3 flex justify-start items-center">
+                <div className="mb-3 mx-5 flex justify-start items-center">
                     <label >Search by color: </label>
                     <MultipleFlowerColorSelector
                         options={flowerColors}

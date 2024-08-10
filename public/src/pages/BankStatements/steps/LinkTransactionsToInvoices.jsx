@@ -177,12 +177,12 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
             <div className="text-center">
                 <h1 className='col-span-1'>Link Invoices</h1>
             </div>
-            <div className='m-2 text-left flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0 justify-evenly'>
-                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
+            <div className='m-2 text-left flex flex-col lg:flex-row items-center lg:space-x-4 space-y-4 lg:space-y-0 justify-evenly'>
+                <div className='flex flex-col w-full lg:w-1/3 items-center space-y-1'>
                     <label>Invoice Number</label>
                     <input type='text' className='w-full p-2 ' onChange={(e) => setSearchByInvoiceNumber(e.target.value)} />
                 </div>
-                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
+                <div className='flex flex-col w-full lg:w-1/3 items-center space-y-1'>
                     <div className='flex w-full justify-between'>
                         <button className='text-purple-700 text-opacity-0' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
                         <label>Date Range</label> 
@@ -193,7 +193,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                         <input type='date' className='w-1/2 p-2 ' value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
                 </div>
-                <div className='flex flex-col w-full md:w-1/3 items-center space-y-1'>
+                <div className='flex flex-col w-full lg:w-1/3 items-center space-y-1'>
                     <div className='flex w-full justify-center text-center'>
                         <label>Amount Range</label> 
                     </div>
