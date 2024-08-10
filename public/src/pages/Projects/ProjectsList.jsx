@@ -130,40 +130,41 @@ const ProjectsList = () => {
 
     return (
         <div className='container mx-auto pt-12 p-4 text-center flex flex-col page'>
-            <div  className="grid grid-cols-3 mb-4 ">
+            <div  className="grid grid-cols-1 md:grid-cols-3 mb-4 ">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Projects</h1>
                 <Link to="/project/create" className='buton-main col-span-1 mx-auto'>Create New Project</Link>
             </div>
-            <div className="flex items-center mb-4 space-x-4 justify-evenly">
-                <div className='flex items-center'>
-                    <label className="mr-2">Show Closed Projects:</label>
-                    <input type='checkbox' value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-6 w-6"></input>
+            <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 md:items-end lg:justify-evenly items-center">
+                <div className="flex items-center">
+                    <label className="mr-2 text-sm">Show Closed Projects:</label>
+                    <input type="checkbox" value={showOpenOnly} onClick={() => setShowOpenOnly(!showOpenOnly)} className="h-5 w-5 md:h-6 md:w-6" />
                 </div>
-                <div className='flex flex-col'>
-                    <label>Filter by Client:</label>
-                        <SearchableDropdown
-                            options={clientsList}
-                            label={'clientname'}
-                            selectedVal={selectedClient} 
-                            handleChange={(client) => setSelectedClient(client)} 
-                            placeholderText="Search By Client"
+                <div className="flex flex-col w-full md:w-auto">
+                    <label className="mb-1 text-sm md:text-base">Filter by Client:</label>
+                    <SearchableDropdown
+                        options={clientsList}
+                        label="clientname"
+                        selectedVal={selectedClient}
+                        handleChange={(client) => setSelectedClient(client)} 
+                        placeholderText="Search By Client"
                         />
-                </div>  
-                <div className='flex flex-col'>
-                    <label >Filter by Contact:</label>
+                </div>
+                
+                <div className="flex flex-col w-full md:w-auto">
+                    <label className="mb-1 text-sm md:text-base">Filter by Contact:</label>
                     <SearchableDropdown
                         options={contactsList}
-                        label={'contactname'}
-                        selectedVal={searchByContact} 
-                        handleChange={(contact) => setSearchByContact(contact)} 
+                        label="contactname"
+                        selectedVal={searchByContact}
+                        handleChange={(contact) => setSearchByContact(contact)}
                         placeholderText="Select Contact"
                     />
                 </div>
-
-                <div className='flex flex-col'>
-                    <label>Project Description:</label>
-                    <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)}/>
+                
+                <div className="flex flex-col w-full md:w-auto">
+                    <label className="mb-1 text-sm md:text-base">Project Description:</label>
+                    <input type="text" value={searchByDescription} onChange={(e) => setSearchByDescription(e.target.value)} className="w-full px-3 py-2" />
                 </div>
             </div>
             <div className='table-container h-[60vh]'>

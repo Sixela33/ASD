@@ -135,55 +135,66 @@ export default function ViewInvoices() {
 
     return (
         <div className='container mx-auto pt-12 p-4 text-center page'>
-            <div className="grid grid-cols-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 mb-4">
                 <button onClick={() => navigateTo('/')} className="go-back-button col-span-1">Go Back</button>
                 <h1 className='col-span-1'>Invoices</h1>
                 <Link to="/invoice/add/" className="buton-main col-span-1 mx-auto">Add New Invoice</Link>
             </div>
-            <div className='m-2 text-left flex items-center space-x-4 justify-evenly'>
-                <div className='flex flex-col w-full items-center space-x-1'>
-                    <label>Invoice ID</label>
-                    <input type='text' onChange={(e) =>setSearchByInvoiceID(e.target.value)}/>
-                </div>
-                <div className='flex flex-col w-full items-center space-x-1'>
-                    <label>Invoice Number</label>
-                    <input type='text' onChange={(e) =>setSearchByInvoiceNumber(e.target.value)}/>
-                </div>
-                <div className='flex flex-col w-full items-center space-x-1'>
-                    <span className='ml-4'>Filter by vendor: </span>
-                    <SearchableDropdown
-                        options={allVendors}
-                        label='vendorname'
-                        selectedVal={selectedVendor}
-                        handleChange={(vendor) => setSelectedVendor(vendor)}
-                        placeholderText={'Select Vendor'}
+        <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Invoice ID</label>
+                    <input
+                        type="text"
+                        onChange={(e) => setSearchByInvoiceID(e.target.value)}
+                        className="w-full px-3"
                     />
                 </div>
-                <div className='flex flex-col items-center space-x-1'>
-                    <div className='flex w-full justify-between'>
-                        <button className='text-purple-700 text-opacity-0' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
-                        <label>Date Range</label> 
-                        <button className='go-back-button' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
-                    </div>
-                    <div className='flex flex-row'>
-                        <input type='date' value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        <input type='date' value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Invoice Number</label>
+                <input
+                    type="text"
+                    onChange={(e) => setSearchByInvoiceNumber(e.target.value)}
+                    className="w-full px-3"
+                />
+                </div>
+                <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Filter by vendor</label>
+                <select value={selectedVendor} onChange={(e) => setSelectedVendor(e.target.value)} className="w-full px-3 py-2">
+                    <option value="">Select Vendor</option>
+                    {allVendors.map((vendor, index) => (
+                    <option key={index} value={vendor.id}>
+                        {vendor.vendorname}
+                    </option>
+                    ))}
+                </select>
+                </div>
+                <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                    <button className='text-purple-700 text-opacity-0' onClick={() => {setStartDate(''); setEndDate('')}}>Clear</button>
+                    <label className="text-sm font-medium text-gray-700">Date Range</label>
+                    <button onClick={() => { setStartDate(''); setEndDate(''); }} className="go-back-button" >Clear</button>
+                </div>
+                <div className="flex space-x-2">
+                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-1/2 px-3 py-2" />
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-1/2 px-3 py-2" />
+                </div>
+                </div>
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Amount Range</label>
+                    <div className="flex space-x-2">
+                        <input type="number" placeholder="Min" value={minAmount} onChange={(e) => setMinAmount(e.target.value)} className="w-1/2 px-3 py-2" />
+                        <input type="number" placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} className="w-1/2 px-3 py-2" />
                     </div>
                 </div>
-                <div className='flex flex-col w-full items-center space-x-1'>
-                    <div className='flex w-full justify-center'>
-                        <label>Amount Range</label> 
-                    </div>
-                    <div className='flex flex-row'>
-                        <input className='w-1/2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
-                        <input className='w-1/2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
-                    </div>
-                </div>
-                <div className='flex w-full items-center space-x-1'>
-                    <label className="mr-2">Only Incomplete: </label>
-                    <input type='checkbox' value={showOnlyWithMissingLink} onClick={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-6 w-6"></input>
+                <div className="flex items-center space-x-2">
+                <label htmlFor="showOnlyIncomplete" className="text-sm font-medium text-gray-700">
+                    Only Incomplete
+                </label>
+                <input type="checkbox" checked={showOnlyWithMissingLink} onChange={() => setShowOnlyWithMissingLink(!showOnlyWithMissingLink)} className="h-4 w-4" />
                 </div>
             </div>
+        </div>
             <div className='table-container h-[60vh]'>
                 <TableHeaderSort
                     headers={colData} 

@@ -99,11 +99,10 @@ export default function FlowerListComponent({onFlowerClick, styles, selectedFlow
 
     return (
         <div className="mx-auto my-4 px-10 w-full">
-            <div className='flex flex-cols justify-evenly'>
-
-                <div className="mb-3 flex justify-start items-center">
-                    <label >Search by name: </label>
-                    <input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-evenly'>
+                <div className="flex flex-col w-full md:w-auto">
+                    <label className='mb-1 text-sm md:text-base'>Search by name: </label>
+                    <input className='w-full px-3 py-2' type="text" placeholder="Search..." value={searchQuery} onChange={handleSearch}/>
                 </div>
                 <div className="mb-3 flex justify-start items-center">
                     <label >Search by color: </label>
