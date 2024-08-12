@@ -210,12 +210,12 @@ export default function ViewInvoices() {
                         <td>{toCurrency(invoice?.invoiceamount)}</td>
                         <td>{invoice?.invoicedate}</td>
                         <td>{invoice?.invoicenumber}</td>
+                        <td>{invoice.incomplete ? "No": "Yes"}</td>
                         <td 
-                            className={`${invoice.transactionid ? 'bg-green-500' : 'bg-red-500'} hover:text-blue-700`}
-                            onClick={e => {e.stopPropagation(); navigateTo('/bankTransactions/' + invoice.transactionid)}}>
+                            className={`${invoice.transactionid ? 'bg-green-500 hover:text-blue-700' : 'bg-red-500'} `}
+                            onClick={e => {e.stopPropagation(); if(invoice.transactionid) navigateTo('/bankTransactions/' + invoice.transactionid)}}>
                             {invoice.transactionid ? `${invoice.vendorcode}-${invoice.transactiondate}`: 'No'}
                         </td>
-                        <td>{invoice.incomplete ? "No": "Yes"}</td>
                      </tr>
                     })}
 
