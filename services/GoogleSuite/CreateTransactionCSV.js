@@ -19,11 +19,7 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
             }
         );
 
-        console.log("driveResponse", driveResponse)
-
         const spreadsheetId = driveResponse.data.spreadsheetId;
-
-        console.log("spreadsheetId", spreadsheetId)
 
         let requests = []
 

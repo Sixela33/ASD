@@ -70,7 +70,7 @@ export default function ViewSingleTransaction() {
     if (loading) return <LoadingPage/>
 
     return (
-        <div className='container mx-auto pt-8 p-4 text-center page'>
+        <div className='container mx-auto pt-12 p-4 text-center page'>
             <LoadingPopup showPopup={generatingCSV}>
                 <h1>Creating your document</h1>
                 <p>Please wait and you will be redirected</p>

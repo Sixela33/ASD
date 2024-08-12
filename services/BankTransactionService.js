@@ -107,8 +107,8 @@ class BankTransactionService {
         await validateIdArray(ids)
         console.log("first")
         const result = await this.model.getStatementStTransactionsForExcel(ids)
-        // console.log(result.rows)
-        const response = await CreateTransactionCSV(googleAccessToken, result.rows)
+        const filtered = result.rows.filter(tx => tx.projectid != null)
+        const response = await CreateTransactionCSV(googleAccessToken, filtered)
         return response
     }
 }
