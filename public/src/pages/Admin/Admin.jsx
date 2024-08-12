@@ -17,13 +17,13 @@ export default function Admin() {
   ];
 
   return (
-    <div>
-      <div className="bg-black p-4">
-        <ul className="flex flex-wrap justify-around  md:space-x-4">
+    <div className="flex min-h-[90vh]">
+      <div className="w-64 bg-black text-white p-4">
+        <ul className="space-y-2">
           {buttons.map((button) => (
-            <li key={button.id} className="my-2">
-              <button 
-                className="text-white py-2 px-4 md:px-5 rounded-md hover:underline" 
+            <li key={button.id}>
+              <button
+                className="w-full text-left py-2 px-4 rounded-md hover:bg-gray-700"
                 onClick={() => setComponentToShow(button.component)}
               >
                 {button.label}
@@ -33,7 +33,7 @@ export default function Admin() {
         </ul>
       </div>
 
-      <div className="container mx-auto my-8">
+      <div className="flex-1 p-8">
         {componentToShow}
       </div>
     </div>
