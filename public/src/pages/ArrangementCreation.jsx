@@ -99,7 +99,7 @@ export default function ArrangementCreation() {
         newSelectedFlowers[index].quantity = e.target.value
         setSelectedFlowers(newSelectedFlowers)
         
-        if(e.target.value <= 0) {
+        if(e.target.value < 0) {
             removeFlower(index)
         }
     }

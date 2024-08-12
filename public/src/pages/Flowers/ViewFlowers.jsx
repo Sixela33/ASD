@@ -26,7 +26,7 @@ export default function ViewFlowers() {
             return
         }
         setShowNewFlowerPupup(true)
-    } 
+    }
 
     return (
         <div className='container mx-auto pt-12 p-4 text-center page'>
