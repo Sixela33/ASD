@@ -11,17 +11,20 @@
     --link-hover-color: rgb(29 78 216); 
 }
 
+input[type="date"] {
+    position: relative;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
-    background: transparent;
-    bottom: 0;
+    background: none; 
     color: transparent;
     cursor: pointer;
-    height: auto;
-    left: 0;
+    height: 100%;
+    width: 100%;
     position: absolute;
-    right: 0;
     top: 0;
-    width: auto;
+    right: 0;
+    border: none;
 }
 
 .app {

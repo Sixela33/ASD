@@ -48,12 +48,11 @@ export default function ViewInvoices() {
 
 
     const fetchData = async (sortConfig, searchByInvoiceNumber, searchByInvoiceID, selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount) => {
-        
         try {
             if (!dataLeft.current) {
                 return;
             }
-            if(!selectedVendor?.vendorid) selectedVendor = {vendorid: ''}
+            if(!selectedVendor) selectedVendor = ''
 
             const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
                 params: {
@@ -61,7 +60,7 @@ export default function ViewInvoices() {
                     order: sortConfig.direction,
                     invoiceNumber: searchByInvoiceNumber,
                     invoiceID: searchByInvoiceID,
-                    specificVendor: selectedVendor.vendorid,
+                    specificVendor: selectedVendor,
                     onlyMissing: showOnlyWithMissingLink || false,
                     startDate: startDate,
                     endDate: endDate,
@@ -160,10 +159,10 @@ export default function ViewInvoices() {
                 </div>
                 <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Filter by vendor</label>
-                <select value={selectedVendor} onChange={(e) => setSelectedVendor(e.target.value)} className="w-full px-3 py-2">
-                    <option value="">Select Vendor</option>
+                <select value={selectedVendor} onChange={(e) => { setSelectedVendor(e.target.value)}} className="w-full px-3 py-2">
+                    <option value="">Clear selection</option>
                     {allVendors.map((vendor, index) => (
-                    <option key={index} value={vendor.id}>
+                    <option key={index} value={vendor.vendorid}>
                         {vendor.vendorname}
                     </option>
                     ))}
@@ -183,8 +182,8 @@ export default function ViewInvoices() {
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Amount Range</label>
                     <div className="flex space-x-2">
-                        <input type="number" placeholder="Min" value={minAmount} onChange={(e) => setMinAmount(e.target.value)} className="w-1/2 px-3 py-2" />
-                        <input type="number" placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} className="w-1/2 px-3 py-2" />
+                        <input type="number" placeholder="Min" value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} className="w-1/2 px-3 py-2" />
+                        <input type="number" placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} className="w-1/2 px-3 py-2" />
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">

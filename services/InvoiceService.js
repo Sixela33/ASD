@@ -118,7 +118,7 @@ class InvoiceService {
 
     getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction) => {
         await validateId(offset)
-        await validateQueryStringLength([orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing])
+        await validateQueryStringLength([orderBy, order, invoiceNumber, invoiceID, onlyMissing])
         await startDateEndDateValidation({startDate, endDate})
         await minMaxNumbersValidation({minAmount, maxAmount})
         await validateBoolean(withoutTransaction)

@@ -996,21 +996,7 @@ class ModelPostgres {
         const respone = await CnxPostgress.db.query(`SELECT DISTINCT projectID FROM flowerXInvoice WHERE invoiceID = $1;`, [invoiceID])
         return respone
     }
-    getInvoices = async (
-        offset, 
-        orderBy, 
-        order, 
-        invoiceNumber, 
-        invoiceID, 
-        specificVendor, 
-        onlyMissing, 
-        rows, 
-        startDate, 
-        endDate, 
-        minAmount, 
-        maxAmount, 
-        withoutTransaction = false
-    ) => {
+    getInvoices = async (offset, orderBy, order, invoiceNumber, invoiceID, specificVendor, onlyMissing, rows, startDate, endDate, minAmount, maxAmount, withoutTransaction = false) => {
         this.validateDatabaseConnection()
         const LIMIT = rows || 50
     
