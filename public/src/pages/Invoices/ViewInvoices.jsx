@@ -19,6 +19,7 @@ const colData = {
     "Invoice Date": "invoicedate", 
     "Invoice Number": "invoicenumber",
     "Has transaction": "hastransaction",
+    "Has been linked": "incomplete"
 }
 
 const defaultSortConfig = { key: 'invoiceid', direction: 'asc' }
@@ -214,6 +215,7 @@ export default function ViewInvoices() {
                             onClick={e => {e.stopPropagation(); navigateTo('/bankTransactions/' + invoice.transactionid)}}>
                             {invoice.transactionid ? `${invoice.vendorcode}-${invoice.transactiondate}`: 'No'}
                         </td>
+                        <td>{invoice.incomplete ? "No": "Yes"}</td>
                      </tr>
                     })}
 

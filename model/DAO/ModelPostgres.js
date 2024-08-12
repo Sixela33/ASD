@@ -1006,7 +1006,8 @@ class ModelPostgres {
             invoiceamount: " ORDER BY i.invoiceamount",
             invoicedate: " ORDER BY invoicedate",
             invoicenumber: " ORDER BY i.invoicenumber",
-            hastransaction: " ORDER BY bt.transactionid"
+            hastransaction: " ORDER BY bt.transactionid",
+            incomplete: " ORDER BY incomplete"
         }
     
         let queryBase = `
@@ -1018,18 +1019,19 @@ class ModelPostgres {
                 i.invoiceNumber,
                 TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
                 bt.transactionid,
-                TO_CHAR(bt.transactiondate, 'MM-DD-YYYY') AS transactiondate
+                TO_CHAR(bt.transactiondate, 'MM-DD-YYYY') AS transactiondate,
+                fxi.invoiceID IS NULL as incomplete
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
             LEFT JOIN bankTransactions bt ON bt.transactionID = i.bankTransaction
+            LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID
         `
     
         const queryParams = []
         let queryConditions = []
     
         if (onlyMissing == 'true') {
-            queryBase += " LEFT JOIN (SELECT DISTINCT invoiceID FROM flowerXInvoice) fxi ON fxi.invoiceID = i.invoiceID"
             queryConditions.push('fxi.invoiceID IS NULL')
         }
     
