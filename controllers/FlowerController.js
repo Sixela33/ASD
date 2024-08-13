@@ -70,7 +70,7 @@ class FlowerController {
     getFlowerData = async (req, res, next) => {
         try {
             const { id } = req.params
-            const response = await this.service.getFlowerData(id)
+            const response = await this.service.getFlowerData(id, req.user.googleAccessToken)
             res.json(response)
         } catch (error) {
             next(error)

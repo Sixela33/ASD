@@ -628,6 +628,23 @@ class ModelPostgres {
         GROUP BY f.flowerID;`, [id])
     }
 
+    getAllFlowerData = async () => {
+        this.validateDatabaseConnection()
+        return await CnxPostgress.db.query(`
+            SELECT
+                f.flowerID,
+                f.flowername, 
+                f.flowerimage, 
+                f.initialPrice,
+                ARRAY_AGG(fc.colorName) AS flowerColors
+            FROM flowers f
+            LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+            GROUP BY f.flowerID
+            ORDER BY f.flowerID;
+            `)
+    }
+
     getIncompleteFlowers = async () => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`

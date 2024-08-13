@@ -2,6 +2,7 @@ import ModelPostgres from "../model/DAO/ModelPostgres.js";
 import { validateId } from "./Validations/IdValidation.js";
 import { validateFlower } from "./Validations/FlowerValidations.js";
 import FileHandlerSelector from "../FileHandlers/FileHandlerSelector.js";
+import CreateFlowerListCSV from "./GoogleSuite/FlowerCSV.js";
 
 const ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", 'jpeg'];
 const FLOWER_IMAGE_PATH = 'flowerImages'
@@ -72,11 +73,16 @@ class FlowerService {
         return flowers
     }
 
-    getFlowerData = async (id) => {
+    getFlowerData = async (id, googleAccessToken) => {
         await validateId(id)
 
         let data = this.model.getFlowerData(id)
         let prices = this.model.getFlowerPrices(id)
+
+        let allFlowerData = await this.model.getAllFlowerData()
+        let fileUrl = await CreateFlowerListCSV(googleAccessToken, allFlowerData.rows)
+
+        console.log(fileUrl)
 
         data = await data
         prices = await prices
@@ -87,7 +93,7 @@ class FlowerService {
             flower.flowerimage = await this.fileHandler.processFileLocation(flower.flowerimage)
           }
 
-        return {flowerData: data, flowerPrices: prices.rows}
+        return {flowerData: data, flowerPrices: prices.rows, fileURL: fileUrl}
     }
 
     getLatestFlowerData = async (id) => {

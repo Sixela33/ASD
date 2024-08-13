@@ -25,6 +25,7 @@ export default function SingleFlowerPage() {
     const fetchData = async () => {
         try {
             const response = await axiosPrivate.get(FETCH_FLOWER_DATA_URL + id);
+            console.log(response.data)
             setNewFlowerData(response?.data.flowerData[0]);
             setFlowerPrices(response?.data.flowerPrices);
         } catch (error) {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import getOrCreateFolder from "./GetOrCreateFolder.js";
 
-export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
+export default async function CreateFlowerListCSV(googleAccessToken, CSVData) {
     try {
         const authHeaders = {
             Authorization: `Bearer ${googleAccessToken}`,
@@ -28,12 +28,11 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
                 rows: [
                     {
                     values: [
-                        { userEnteredValue: { stringValue: 'Transaction Date'} },
-                        { userEnteredValue: { stringValue: 'Vendor' } },
-                        { userEnteredValue: { stringValue: 'Transaction Amount' } },
-                        { userEnteredValue: { stringValue: 'Project Tag' } },
-                        { userEnteredValue: { stringValue: 'Purchase Date' } },
-                        { userEnteredValue: { stringValue: 'Split Amount' } }
+                        { userEnteredValue: { stringValue: 'Flower ID'} },
+                        { userEnteredValue: { stringValue: 'Flower Name'} },
+                        { userEnteredValue: { stringValue: 'Color' } },
+                        { userEnteredValue: { stringValue: 'Stem Price' } },
+                        { userEnteredValue: { stringValue: 'Image File' } }
                     ]
                     }
                 ],
@@ -48,17 +47,25 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
 
         // Add data rows
         CSVData.forEach((row, index) => {
+            let flowerColors = '';
+            row.flowercolors.forEach((color, index) => {
+                if (index === 0) {
+                    flowerColors = color;
+                } else {
+                    flowerColors = `${flowerColors}-${color}`;
+                }
+            });
+            
             requests.push({
                 updateCells: {
                     rows: [
                         {
                         values: [
-                            { userEnteredValue: { stringValue: row.transactiondate } },
-                            { userEnteredValue: { stringValue: row.vendorname } },
-                            { userEnteredValue: { numberValue: parseFloat(row.invoiceamount) } },
-                            { userEnteredValue: { stringValue: `${row.clientname}:${row.projectdescription}` } },
-                            { userEnteredValue: { stringValue: row.invoicedate } },
-                            { userEnteredValue: { numberValue: row.splitamm } }
+                            { userEnteredValue: { numberValue: row.flowerid } },
+                            { userEnteredValue: { stringValue: row.flowername } },
+                            { userEnteredValue: { stringValue: flowerColors } },
+                            { userEnteredValue: { numberValue: row.initialprice } },
+                            { userEnteredValue: { stringValue: row.flowerimage } },
                         ]
                         }
                     ],
@@ -71,6 +78,7 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
                 }
             });
         });
+
 
         await axios.post(
             
