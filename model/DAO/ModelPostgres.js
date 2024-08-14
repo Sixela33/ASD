@@ -635,11 +635,25 @@ class ModelPostgres {
                 f.flowerID,
                 f.flowername, 
                 f.flowerimage, 
-                f.initialPrice,
+                COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice,
                 ARRAY_AGG(fc.colorName) AS flowerColors
             FROM flowers f
             LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
             LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+            LEFT JOIN (
+                SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
+                FROM flowerXInvoice fx
+                JOIN (
+                    SELECT 
+                        MAX(loadedDate) AS max_loaded_date,
+                        flowerID
+                    FROM flowerXInvoice
+                    WHERE unitPrice > 0
+                    GROUP BY 
+                        flowerID
+                ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
+                GROUP BY fx.flowerID
+            ) FxI ON f.flowerID = FxI.flowerID 
             GROUP BY f.flowerID
             ORDER BY f.flowerID;
             `)
