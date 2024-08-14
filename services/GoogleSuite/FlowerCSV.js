@@ -64,7 +64,7 @@ export default async function CreateFlowerListCSV(googleAccessToken, CSVData) {
                             { userEnteredValue: { numberValue: row.flowerid } },
                             { userEnteredValue: { stringValue: row.flowername } },
                             { userEnteredValue: { stringValue: flowerColors } },
-                            { userEnteredValue: { numberValue: row.unitPrice } },
+                            { userEnteredValue: { numberValue: row.unitprice } },
                             { userEnteredValue: { stringValue: row.flowerimage } },
                         ]
                         }
