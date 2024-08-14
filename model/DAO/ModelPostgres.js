@@ -655,7 +655,7 @@ class ModelPostgres {
                 GROUP BY fx.flowerID
             ) FxI ON f.flowerID = FxI.flowerID 
             GROUP BY f.flowerID
-            ORDER BY f.flowerID;
+            ORDER BY f.flowerID, fxi.unitprice;
             `)
     }
 
