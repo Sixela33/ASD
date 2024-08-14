@@ -654,8 +654,8 @@ class ModelPostgres {
                 ) max_fx ON fx.flowerID = max_fx.flowerID AND fx.loadedDate = max_fx.max_loaded_date
                 GROUP BY fx.flowerID
             ) FxI ON f.flowerID = FxI.flowerID 
-            GROUP BY f.flowerID
-            ORDER BY f.flowerID, fxi.unitprice;
+            GROUP BY f.flowerID, fxi.unitprice
+            ORDER BY f.flowerID;
             `)
     }
 
