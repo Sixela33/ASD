@@ -66,6 +66,7 @@ export default function ViewSingleInvoice() {
     const handleDeleteInvoice = async () => {
         try {
             await axiosPrivate.delete(DELETE_INVOICE_URL + '/' + id)
+            setMessage('Invoice deleted successfully')
             navigateTo('/invoice')
         } catch (error) {
             console.log(error)
@@ -85,6 +86,12 @@ export default function ViewSingleInvoice() {
             text: 'Edit invoice', 
             action: () => navigateTo('/invoice/add/' + id),
             icon: <FiEdit/>,
+            minPermissionLevel: permissionsRequired['edit_invoice']
+        },
+        {
+            text: 'Delete Invoice', 
+            action: () => setShowDeleteInvoiceConfirmation(true),
+            icon: <FiTrash/>,
             minPermissionLevel: permissionsRequired['edit_invoice']
         }
     ]
