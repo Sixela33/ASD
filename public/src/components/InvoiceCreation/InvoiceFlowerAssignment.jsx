@@ -266,7 +266,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipe stems', 'Bought Stems','Unit price'].map((name, index) => (
+                        {['Flower name', 'Recipe stems', 'Stems Bought','Unit price'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                     </tr>
