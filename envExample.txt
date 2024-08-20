@@ -2,7 +2,7 @@
 PORT=8080
 HOST=http://localhost
 SCRIPTS_HOST=http://localhost #This variable is for the loadFLowers script (it doesent like https)
-NODE_ENV=production #production
+NODE_ENV=production # production / dev / test 
 DATABASE=postgres
 REFRESH_TOKEN_SECRET=secretisimo
 ACCESS_TOKEN_SECRET=secretisimo2

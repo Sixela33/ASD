@@ -453,9 +453,7 @@ class ModelPostgres {
             f.flowerName,
             ARRAY_AGG(fc.colorName) AS flowerColors,
             fxa.amount,
-            FxI.unitPrice,
-            FxI.boxPrice,
-            FxI.stemsPerBox
+            FxI.unitPrice
         FROM projects p
         JOIN arrangements a ON p.projectID = a.projectID
         LEFT JOIN flowerXarrangement fxa ON a.arrangementID = fxa.arrangementID
@@ -463,9 +461,7 @@ class ModelPostgres {
         LEFT JOIN (
             SELECT 
                 fx.flowerID, 
-                MAX(fx.unitPrice) AS unitPrice,
-                MAX(fx.boxPrice) AS boxPrice,
-                MAX(fx.stemsPerBox) AS stemsPerBox
+                MAX(fx.unitPrice) AS unitPrice
             FROM flowerXInvoice fx
             JOIN (
                 SELECT 
@@ -480,7 +476,7 @@ class ModelPostgres {
         LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
         LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
         WHERE p.projectID = ANY($1)
-        GROUP BY f.flowerID, p.projectid, a.arrangementid, fxa.amount, FxI.unitPrice,FxI.boxPrice,FxI.stemsPerBox;`, [ids])
+        GROUP BY f.flowerID, p.projectid, a.arrangementid, fxa.amount, FxI.unitPrice;`, [ids])
         return response
     }
 
@@ -725,15 +721,13 @@ class ModelPostgres {
                 f.flowername, 
                 f.flowerimage, 
                 COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice,
-                COALESCE(FxI.stemsPerBox, 0) AS stemsPerBox,
-                COALESCE(FxI.boxPrice, 0) AS boxPrice
+                COALESCE(FxI.numStems, 0) AS numStems
             FROM flowers f
             LEFT JOIN (
                 SELECT 
                     fx.flowerID, 
                     MAX(fx.unitPrice) AS unitPrice,
-                    MAX(fx.stemsPerBox) AS stemsPerBox,
-                    MAX(fx.boxPrice) AS boxPrice
+                    MAX(fx.numStems) AS numStems
                 FROM flowerXInvoice fx
                 JOIN (
                     SELECT 
@@ -845,7 +839,8 @@ class ModelPostgres {
         FROM flowerXarrangement FxA 
         LEFT JOIN flowers f ON FxA.flowerID = f.flowerID
         LEFT JOIN (
-            SELECT fx.flowerID, MAX(fx.unitPrice) AS unitPrice
+            SELECT fx.flowerID, 
+            MAX(fx.unitPrice) AS unitPrice
             FROM flowerXInvoice fx
             JOIN (
                 SELECT 
@@ -964,6 +959,8 @@ class ModelPostgres {
 
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
         this.validateDatabaseConnection()
+        console.log("InvoiceFlowerData", InvoiceFlowerData)
+        console.log("InvoiceFlowerData", invoiceData)
         await CnxPostgress.db.query('CALL editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
     }
 
@@ -983,7 +980,7 @@ class ModelPostgres {
             i.invoiceNumber,
             u.email,
             i.fileLocation,
-            TO_CHAR(i.invoicedate, 'YYYY-MM-DD') AS invoicedate
+            TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate
             FROM invoices i 
             LEFT JOIN flowerVendor fv ON fv.vendorID = i.vendorID
             LEFT JOIN users u ON u.userID = i.uploaderID
@@ -1127,9 +1124,7 @@ class ModelPostgres {
                 f.flowerid,
                 f.flowername,
                 FxI.unitPrice,
-                FxI.stemsPerBox,
-                FxI.boxPrice,
-                FxI.boxesPurchased,
+                FxI.numStems,
                 p.projectID
             FROM flowerXInvoice FxI
             LEFT JOIN flowers f ON f.flowerID = FxI.flowerID
@@ -1207,7 +1202,7 @@ class ModelPostgres {
                 fv.vendorName,
                 fv.vendorID,
                 bs.fileLocation,
-                TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate,
+                TO_CHAR(bs.statementDate, 'MM-DD-YYYY') AS statementDate,
                 COALESCE(bt.totalAmount, 0) AS StatementAmount,
                 COALESCE(i.totalAmount, 0) AS AmountRegistered
             FROM bankStatements bs
@@ -1299,7 +1294,7 @@ class ModelPostgres {
                 fv.vendorID,
                 fv.vendorCode,
                 bs.fileLocation,
-                TO_CHAR(bs.statementDate, 'YYYY-MM-DD') AS statementDate
+                TO_CHAR(bs.statementDate, 'MM-DD-YYYY') AS statementDate
             FROM bankStatements bs
             LEFT JOIN flowerVendor fv ON fv.vendorID = bs.vendorID
             WHERE bs.statementID = $1;
@@ -1344,9 +1339,9 @@ class ModelPostgres {
                 p.projectdescription,
                 bt.transactionamount,
                 fv.vendorname,
-                TO_CHAR(i.invoicedate, 'DD-MM-YYYY') AS invoicedate,
-                TO_CHAR(bt.transactiondate, 'DD-MM-YYYY') AS transactiondate,
-                SUM(fxi.boxprice * fxi.boxespurchased) AS splitamm,
+                TO_CHAR(i.invoicedate, 'MM-DD-YYYY') AS invoicedate,
+                TO_CHAR(bt.transactiondate, 'MM-DD-YYYY') AS transactiondate,
+                SUM(fxi.numStems * fxi.unitPrice) AS splitamm,
                 i.invoiceamount,
                 i.invoiceid,
                 c.clientname
@@ -1381,7 +1376,7 @@ class ModelPostgres {
             SELECT 
                 bt.transactionID,
                 bt.statementID,
-                TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
+                TO_CHAR(bt.transactionDate, 'MM-DD-YYYY') AS transactionDate,
                 bt.transactionAmount,
                 fv.vendorCode,
                 fv.vendorname,
@@ -1462,7 +1457,7 @@ class ModelPostgres {
         const result =  await CnxPostgress.db.query(`
         SELECT 
             bt.*,
-            TO_CHAR(bt.transactionDate, 'YYYY-MM-DD') AS transactionDate,
+            TO_CHAR(bt.transactionDate, 'MM-DD-YYYY') AS transactionDate,
             COALESCE(SUM(i.invoiceAmount), 0) AS totalInvoiceAmount
         FROM 
             bankTransactions bt
@@ -1541,7 +1536,7 @@ class ModelPostgres {
                 p.projectdescription,
                 p.staffbudget,
                 p.profitmargin,
-                COALESCE(SUM(fxi.boxprice * fxi.boxespurchased), 0) AS tiedExpenses
+                COALESCE(SUM(fxi.unitprice * fxi.numStems), 0) AS tiedExpenses
             FROM projects p
             LEFT JOIN flowerXInvoice fxi ON p.projectid = fxi.projectid
             INNER JOIN invoices i ON fxi.invoiceid = i.invoiceid
@@ -1561,7 +1556,7 @@ class ModelPostgres {
                 p.profitmargin,
                 SUM(axp.ammount * axp.clientcost) AS additionalscost,
                 SUM(a.clientcost * a.arrangementquantity * a.installationtimes) as arrangementscost,
-                SUM(fxi.boxprice * fxi.boxespurchased) AS tiedExpenses
+                SUM(fxi.unitprice * fxi.numStems) AS tiedExpenses
             FROM projects p
             LEFT JOIN flowerXInvoice fxi ON p.projectid = fxi.projectid
             LEFT JOIN invoices i ON fxi.invoiceid = i.invoiceid

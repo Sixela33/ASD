@@ -103,8 +103,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         for (var i = 0; i < formData.color.length; i++) {
           formDataToSend.append('colors[]', formData.color[i].colorid)
         }
-
-        let newFlowerData
         
         if(flowerToEdit) {
           formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage) 
@@ -114,7 +112,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
           setMessage("Flower Edited succesfully", false)
         } else {
           const response = await axiosPrivate.post(CREATE_FLOWER_URL, formDataToSend)
-          newFlowerData = response.data
           setMessage("Flower Added succesfully", false)
         }
 

@@ -36,11 +36,11 @@ export default function ViewSingleInvoice() {
             }
             const processedFlowerData = []
             flowers.map((flower) => {
-                let ix = processedFlowerData.findIndex((item) => (item.flowerid == flower.flowerid && flower.unitprice == item.unitprice && flower.stemsperbox == item.stemsperbox))
+                let ix = processedFlowerData.findIndex((item) => (item.flowerid == flower.flowerid && flower.unitprice == item.unitprice ))
                 if (ix == -1) {
                     processedFlowerData.push(flower)
                 } else {
-                    processedFlowerData[ix].boxespurchased = processedFlowerData[ix].boxespurchased + flower.boxespurchased
+                    processedFlowerData[ix].numstems = processedFlowerData[ix].numstems + flower.numstems
                 }
             })
 
@@ -142,18 +142,14 @@ export default function ViewSingleInvoice() {
                             headers = {{
                                 "Flower Name": "flowername", 
                                 "Stem Price": "unitprice",
-                                "Unit price": "boxprice" ,
-                                "Units Purchased": "boxespurchased",
-                                "Stems per Unit": "stemsperbox" ,
+                                "Stems Purchased": "numStems",
                             }}
                         >
                             {invoiceFlowers.map((item, index) => {
                                 return <tr key={index}  onClick={() => onRowClick(item)}>
                                     <td>{item.flowername}</td>
                                     <td>{toCurrency(item.unitprice)}</td>
-                                    <td>{toCurrency(item.boxprice)}</td>
-                                    <td>{item.boxespurchased}</td>
-                                    <td>{item.stemsperbox}</td>
+                                    <td>{item.numstems}</td>
                                 </tr>
                             })}
                         </TableHeaderSort>

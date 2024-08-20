@@ -114,10 +114,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             const newFlowerObject = {
                 flowerid: flowerData.flowerid,
                 projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
-                stemsperbox: getFlowerData?.stemsperbox || 0,
-                boxprice: getFlowerData?.unitprice || 0,
-                boxespurchased: 0,
-                totalstems: 0,
+                numstems: getFlowerData?.numstems || 0,
+                unitprice: getFlowerData?.unitprice || 0,
                 flowername: flowerData.flowername,
             }
         
@@ -138,7 +136,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         // Iterates through all the projects and its flowers and adds up how much spending is registered
         return displayFlowerData?.reduce((value, projects) => {
             let projectSum = projects.reduce((sum, flower) => {
-                return sum + (flower.boxprice * flower.boxespurchased)
+                return sum + (flower.unitprice * flower.numstems)
             }, 0)
             return value + projectSum
         }, 0) ?? 0
@@ -149,8 +147,8 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         // AND records wich flowers got added the "stemsperbox" property but with no "stemsperbox" specified
         return displayFlowerData?.reduce((value, project, projectIndex) => {
             let projectSum = project.reduce((sum, flower, flowerIndex) => {
-                sum.totalAdded += (flower.boxprice * flower.boxespurchased);
-                if (flower.boxespurchased != 0 && flower.stemsperbox == 0) {
+                sum.totalAdded += (flower.numstems * flower.unitprice);
+                if (flower.numstems && flower.unitprice == 0) {
                     sum.addedWIthNoStemInfo += 1;
                     if (!sum.noStemInfoFlowers[projectIndex]) {
                         sum.noStemInfoFlowers[projectIndex] = [];
@@ -172,6 +170,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         e.preventDefault();
         try {
             setLoading(true)
+            setErrorRows({})
             const formDataToSend = new FormData();
             
             
@@ -192,18 +191,17 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             
             let invoiceFlowerData = displayFlowerData.flat(Infinity)
 
+            
             let temp = invoiceFlowerData
-            .filter(item => item.boxespurchased && item.boxespurchased != 0)
+            .filter(item => item.numstems && item.numstems != 0)
             .map(item => {
-                let temp = {
-                    ...item,
-                    unitprice: parseFloat(item.boxprice / item.boxespurchased).toFixed(2),
-                }
+                let temp = {...item}
                 delete temp.totalstems
                 delete temp.flowername
                 return temp
             })
-
+            console.log("invoiceFlowerData", temp)
+            
             formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
             formDataToSend.append('InvoiceFlowerData', JSON.stringify(temp));
             formDataToSend.append('invoiceFile', invoiceFile);
@@ -268,7 +266,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipe stems', 'Bought Stems', 'Stems per Unit', 'Unit price', 'Units purchased'].map((name, index) => (
+                        {['Flower name', 'Recipe stems', 'Bought Stems','Unit price'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                     </tr>
@@ -278,16 +276,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                         return <tr key={index} className={errorRows[selectedRow]?.includes(index) && 'border-2 border-rose-500'}>
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
-                            <td>{flower.stemsperbox * flower.boxespurchased}</td>
                             <td>
-                                <input className='w-1/2 no-spinner' type='number' name='stemsperbox' min={0} value={flower.stemsperbox} onChange={(e) => modifyFlowerData(e, index)}></input> 
+                                <input className='w-1/2 no-spinner' type='number' name='numstems' value={flower.numstems} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
-                                $<input className='w-1/2 no-spinner' type='number' name='boxprice' value={flower.boxprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className='w-1/2 no-spinner' type='number' name='unitprice' value={flower.unitprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
-                            <td>
-                                <input className='w-1/2 no-spinner' type='number' name='boxespurchased' min={0} value={flower.boxespurchased} onChange={(e) => modifyFlowerData(e, index)}></input> 
-                            </td>
+                            
                         </tr>
                     })}
                     

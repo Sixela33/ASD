@@ -25,15 +25,13 @@ BEGIN
     LOOP
 
         -- INSERTAR LOS DETALLES DE LA FLOR EN LA TABLA CORRESPONDIENTE
-        INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, stemsPerBox, boxPrice, boxesPurchased)
+        INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, numstems)
         VALUES (
             p_uploaderId,
             (single_flower_price->>'flowerid')::INT,
             (single_flower_price->>'projectid')::INT,
             (single_flower_price->>'unitprice')::FLOAT,
-            (single_flower_price->>'stemsperbox')::FLOAT,
-            (single_flower_price->>'boxprice')::FLOAT,
-            (single_flower_price->>'boxespurchased')::FLOAT
+            (single_flower_price->>'numstems')::FLOAT
         );
     END LOOP;
 

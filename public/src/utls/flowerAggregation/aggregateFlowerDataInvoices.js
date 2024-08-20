@@ -2,7 +2,7 @@ const aggregateFlowerData = (flowerData) => {
     const aggregatedData = {}
 
     flowerData?.forEach(flower => {
-        let { flowerid, projectid, flowername, amount, unitprice, stemsperbox, boxprice, boxespurchased } = flower
+        let { flowerid, projectid, flowername, amount, unitprice, numstems } = flower
 
         if (flowerid && projectid) {
 
@@ -10,19 +10,18 @@ const aggregateFlowerData = (flowerData) => {
                 aggregatedData[projectid] = [];
             }
             
-            const existingFlowerIndex = aggregatedData[projectid].findIndex(item => item.flowerid === flowerid && item.boxprice == boxprice && item.stemsperbox == stemsperbox);
+            const existingFlowerIndex = aggregatedData[projectid].findIndex(item => item.flowerid === flowerid &&  item.numstems == numstems);
             if (existingFlowerIndex === -1) {
                 aggregatedData[projectid].push({
                     flowerid,
                     projectid,
-                    stemsperbox: stemsperbox || 0,
-                    boxprice: boxprice || 0,
-                    boxespurchased: boxespurchased || 0,
+                    unitprice: unitprice || 0,
+                    numstems: numstems || 0,
                     totalstems: amount || 0,
                     flowername,
                 });
             } else {
-                aggregatedData[projectid][existingFlowerIndex].boxespurchased += boxespurchased || 0;
+                aggregatedData[projectid][existingFlowerIndex].numstems += numstems || 0;
             }
         }
     });

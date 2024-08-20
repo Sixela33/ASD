@@ -92,7 +92,7 @@ export default async function CreateTransactionCSV(googleAccessToken, CSVData) {
                         values: [
                             { userEnteredValue: { stringValue: row.transactiondate } },
                             { userEnteredValue: { stringValue: row.vendorname } },
-                            { userEnteredValue: { numberValue: parseFloat(row.invoiceamount) } },
+                            { userEnteredValue: { numberValue: parseFloat(row.transactionamount) } },
                             { userEnteredValue: { stringValue: `${row.clientname}:${row.projectdescription}` } },
                             { userEnteredValue: { stringValue: row.invoicedate } },
                             { userEnteredValue: { numberValue: row.splitamm } }
