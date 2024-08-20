@@ -204,7 +204,7 @@ export default function BankTransactionsList() {
                             <td>{transaction?.vendorname}</td>
                             <td>{transaction?.transactiondate}</td>
                             <td>{toCurrency(transaction?.transactionamount)}</td>
-                            <td className={transaction?.transactionamount !== transaction?.totalamount ? 'bg-red-500' : 'bg-green-500'}>{toCurrency(transaction?.totalamount)}</td>
+                            <td className={transaction?.transactionamount != transaction?.totalamount ? 'bg-red-500' : 'bg-green-500'}>{toCurrency(transaction?.totalamount)}</td>
                             <td onClick={e => {e.stopPropagation(); handleCheckboxChange(transaction.transactionid)}}>
                                 <input
                                     type='checkbox'
