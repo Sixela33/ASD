@@ -563,8 +563,8 @@ class ModelPostgres {
     duplicateProject = async (id) => {
         this.validateDatabaseConnection()
         // console.log("id", id)
-        const res = await CnxPostgress.db.query('CALL duplicateProject($1::INT);', [id])
-        return res
+        const res = await CnxPostgress.db.query('SELECT duplicateProject($1::INT);', [id])
+        return res.rows
     }
 
     // -----------------------------------------------

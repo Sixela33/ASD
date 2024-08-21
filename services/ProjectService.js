@@ -163,7 +163,7 @@ class ProjectService {
         await validateId(id)
 
         const response = await this.model.duplicateProject(id)
-        return response
+        return response[0].duplicateproject
     }
 }
 

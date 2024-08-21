@@ -1,4 +1,5 @@
-CREATE OR REPLACE PROCEDURE duplicateProject(original_project_id INT) 
+CREATE OR REPLACE FUNCTION duplicateProject(original_project_id INT) 
+RETURNS INT
 AS $$
 DECLARE
     new_project_id INT;
@@ -37,6 +38,9 @@ BEGIN
         FROM flowerxarrangement
         WHERE arrangementID = old_arrangement_id;
     END LOOP;
+
+    -- Return the new project ID
+    RETURN new_project_id;
 
 END;
 $$ LANGUAGE plpgsql;

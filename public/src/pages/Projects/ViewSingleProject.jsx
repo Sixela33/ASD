@@ -120,6 +120,8 @@ export default function ViewProject() {
         try {
             console.log("duplicatin", id)
             const response = await axiosPrivate.post(DUPLICATE_PROJECT_URL, JSON.stringify({id}))
+            setMessage('Project copied successfully', false)
+            navigateTo('/projects/' + response.data)
         } catch (error) {
             setMessage(error.response?.data, true)
         }
