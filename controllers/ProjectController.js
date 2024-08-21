@@ -131,6 +131,17 @@ class ProjectController {
             next(error)
         }
     }
+
+    duplicateProject = async (req, res, next) => {
+        try {
+            const { id } = req.body
+            console.log("req.body", req.body)
+            const response = await this.service.duplicateProject(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default ProjectController

@@ -510,8 +510,6 @@ class ModelPostgres {
         return arrangementID;
     }
 
-    // TODO
-
     editProjectData = async (id, projectData) => {
         this.validateDatabaseConnection()
         await CnxPostgress.db.query(`
@@ -560,6 +558,13 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         const res = await CnxPostgress.db.query('SELECT isClosed FROM projects WHERE projectID = $1;', [id])
         return res.rows
+    }
+
+    duplicateProject = async (id) => {
+        this.validateDatabaseConnection()
+        // console.log("id", id)
+        const res = await CnxPostgress.db.query('CALL duplicateProject($1::INT);', [id])
+        return res
     }
 
     // -----------------------------------------------

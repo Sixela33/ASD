@@ -158,6 +158,13 @@ class ProjectService {
         const presentationid = await createPresentation(googleAccessToken, flowersByColor)
         return presentationid
     }
+
+    duplicateProject = async (id) => {
+        await validateId(id)
+
+        const response = await this.model.duplicateProject(id)
+        return response
+    }
 }
 
 export default ProjectService

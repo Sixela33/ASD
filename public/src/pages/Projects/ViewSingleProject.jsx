@@ -11,7 +11,7 @@ import ConfirmationPopup from '../../components/Popups/ConfirmationPopup'
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
 import EditProjectData from '../../components/ProjectView/EditProjectData';
 import InvoiceAddFlowerToProjectPopup from '../../components/InvoiceCreation/InvoiceAddFlowerToProjectPopup';
-import { FiDownload, FiEdit, FiTrash } from "react-icons/fi";
+import { FiCopy, FiDownload, FiEdit, FiTrash } from "react-icons/fi";
 import { RiFlowerLine } from "react-icons/ri";
 import useAuth from '../../hooks/useAuth';
 import { permissionsRequired } from '../../utls/permissions';
@@ -31,8 +31,10 @@ const ADD_NEW_EXPENSE_URL = '/api/extraServices'
 const EDIT_EXPENSE_URL = '/api/extraServices'
 const GENERATE_PPT_SLIDE_URL = '/api/projects/createFlowerPPT'
 const DELETE_PROJECT_URL = '/api/projects/remove/'
+const DUPLICATE_PROJECT_URL = '/api/projects/duplicateProject'
 
 const PROJECT_CLOSED_ERROR = "You can't edit a closed project"
+
 
 const baseProjectStats = {
     totalFlowerCost: 0,
@@ -113,6 +115,15 @@ export default function ViewProject() {
             setMessage(error.response?.data, true)
         }
     };
+
+    const duplicateProject = async () => {
+        try {
+            console.log("duplicatin", id)
+            const response = await axiosPrivate.post(DUPLICATE_PROJECT_URL, JSON.stringify({id}))
+        } catch (error) {
+            setMessage(error.response?.data, true)
+        }
+    }
 
     useEffect(() => {
         fetchFlowers();
@@ -429,6 +440,14 @@ export default function ViewProject() {
             icon: <FiTrash/>,
             minPermissionLevel: permissionsRequired['delete_project']
         },
+        {
+            text: "Duplicate Project",
+            action: duplicateProject,
+            icon: <FiCopy/>,
+            minPermissionLevel: permissionsRequired['edit_project_data']
+        },
+
+        
     ]
 
     return (

@@ -3,7 +3,6 @@ import cors from "cors";
 import corsOptions from "./config/corsOptions.js"
 import cookieParser from "cookie-parser";
 import messageLogger from "./loggers/messageLogger.js";
-import schedule from 'node-schedule'
 
 import errorHandler from "./middleware/ErrorHandler.js";
 import credentials from "./middleware/credentials.js";
@@ -47,6 +46,11 @@ class Server {
     }
 
     async start() {
+
+        // -----------------------------------------------
+        //                 MIDDLEWARES
+        // -----------------------------------------------
+        
         this.app.use(express.json({ limit: '20mb' }));
         this.app.use(credentials)
         this.app.use(express.urlencoded({ limit: '20mb', extended: true }));
@@ -69,6 +73,7 @@ class Server {
         // -----------------------------------------------
         //                  ROUTES                        
         // -----------------------------------------------
+
         const loginreq = new PermissionsMiddelware(ROLES_LIST['User']).call
         const staffuserReq = new PermissionsMiddelware(ROLES_LIST['Staff']).call
         const superuserReq = new PermissionsMiddelware(ROLES_LIST['Admin']).call
@@ -87,7 +92,7 @@ class Server {
         this.app.use('/api/bankTransactions', staffuserReq, new BankTransactionRouter().start())
         
         // -----------------------------------------------
-        //                 MIDDLEWARES
+        //                 ERROR HANDLERS
         // -----------------------------------------------
         
         this.app.use(errorLogger)

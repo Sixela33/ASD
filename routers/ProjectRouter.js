@@ -35,6 +35,7 @@ class ProjectRouter {
             
         this.router.post('/createFlowerPPT', staffuserReq, this.controller.createFlowerPPT)
 
+        this.router.post('/duplicateProject', staffuserReq, this.controller.duplicateProject)
         return this.router
         
     }
