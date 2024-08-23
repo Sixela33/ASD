@@ -48,7 +48,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       } catch (error) {
           setMessage(error.response.data, true)
       }
-  }
+    }
 
     useEffect(() => {
       fetchFlowerColors()
@@ -65,25 +65,18 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }
 
     useEffect(() => {
-
-      if(flowerToEdit?.flowercolors && flowerColorList) {
-        let temp = []
-
-        for(let i = 0; i < flowerToEdit.colorids.length; i++){
-          const flowerPos = flowerColorList.findIndex(item => item.colorname == flowerToEdit.flowercolors[i])
-          temp.push(flowerColorList[flowerPos])
-        }
-
+      
+      if (flowerToEdit) {
         setFormData({
           flower: defaultFormData.flower,
           name: flowerToEdit.flowername,
-          color: temp,
+          color: flowerToEdit.flowercolors,
           initialPrice: flowerToEdit.initialprice || '',
           clientName: flowerToEdit.clientname,
           seasons: flowerToEdit.seasons,
         })
-        
       }
+
     }, [flowerToEdit, flowerColorList])
   
     const handleImageChange = (e) => {
@@ -124,8 +117,6 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         for (var i = 0; i < formData.seasons.length; i++) {
           formDataToSend.append('seasons[]', formData.seasons[i].seasonsid)
         }
-
-        console.log("formDataToSend", formDataToSend)
         
         if(flowerToEdit) {
           formDataToSend.append('prevFlowerPath', flowerToEdit.flowerimage) 
@@ -203,11 +194,13 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
               selectedColors = {formData.color}
               setSelectedColors = {(newValues) => handleChange({target: {name: 'color', value: newValues}})}
               isListBelow={true}
+              placeholderText={'Add a color'}
             />
           </div>
           }
+          <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
 
-        {flowerSeasons && <div className="flex flex-col mb-4 w-full">
+          {flowerSeasons && <div className="flex flex-col mb-4 w-full">
             <label className="mb-1">Seasons:</label>
             <MultipleFlowerColorSelector
               options={flowerSeasons}
@@ -215,9 +208,9 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
               setSelectedColors = {(newValues) => handleChange({target: {name: 'seasons', value: newValues}})}
               isListBelow={true}
               label={'seasonname'}
+              placeholderText={'Add a season'}
             />
         </div>}
-        <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
         <div className='butons-holder w-full'>
           <button className='buton-secondary' onClick={handleCancel}>Cancel</button>
           <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>

@@ -588,11 +588,11 @@ class ModelPostgres {
         
     }
     
-    editFlower = async (name, colors, id, filepath, initialPrice) => {
+    editFlower = async (name, colors, id, filepath, initialPrice, clientName, seasons) => {
         this.validateDatabaseConnection()
         if(initialPrice) {
-            await CnxPostgress.db.query(`CALL editFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT, $5::FLOAT)`, 
-            [name, filepath, colors, id, initialPrice])
+            await CnxPostgress.db.query(`CALL editFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT, $5::FLOAT, $6::VARCHAR, $7::INT[])`, 
+            [name, filepath, colors, id, initialPrice, clientName, seasons])
         } else {
             await CnxPostgress.db.query(`CALL editFlower($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::INT)`, 
             [name, filepath, colors, id])
@@ -622,9 +622,8 @@ class ModelPostgres {
             f.flowerimage, 
             f.initialPrice,
             f.clientName,
-            ARRAY_AGG(fc.colorName) AS flowerColors,
-            ARRAY_AGG(fc.colorID) AS colorids,
-            ARRAY_AGG(s.seasonName) AS seasons
+            jsonb_agg(DISTINCT jsonb_build_object('colorname', fc.colorname, 'colorid', fc.colorid)) AS flowerColors,
+            jsonb_agg(DISTINCT jsonb_build_object('seasonname', s.seasonName, 'seasonsid', s.seasonsid)) AS seasons
         FROM flowers f
         LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
         LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 

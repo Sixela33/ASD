@@ -10,7 +10,7 @@ DECLARE
     temp_flowerid INT;
 BEGIN
 
-    INSERT INTO flowers (flowerName, flowerImage, initialPrice, flowerNameClient)
+    INSERT INTO flowers (flowerName, flowerImage, initialPrice, clientName)
     VALUES (p_flowerName, p_flowerImage, p_initialPrice, p_clientName) 
     RETURNING flowerID INTO temp_flowerid;
 

@@ -60,9 +60,9 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
   };
 
   return (
-    <div className="relative w-full z-20">
+    <div className="relative w-full">
       <div ref={inputRef}>
-        <div className="relative">
+        <div className="relative z-10">
           <div className="selected-value relative">
             <input disabled={disabled} placeholder={placeholderText} type="text" value={selectedVal[label] || ""} onClick={() => setIsOpen((actual) => !actual)} className="w-full cursor-pointer" readOnly/>
           </div>
@@ -70,7 +70,7 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
             <HiChevronDown />
           </div>
         </div>
-        <div className={`options absolute bg-white overflow-y-auto max-h-48 w-full ${isOpen ? "block" : "hidden"}`}>
+        <div className={`options absolute bg-white overflow-y-auto max-h-48 w-full ${isOpen ? "block" : "hidden"} z-20 `}>
           {isOpen && (
             <>
             <div className="flex items-center">
@@ -80,13 +80,13 @@ const QuerySearchableDropdown = ({ options, label, selectedVal, handleChange, pl
                 </div>
     
             </div>
-            <div className="z-20 ">
+            <div>
 
               <div className={`option cursor-pointer w-full text-left px-2 py-1 ${null === selectedVal ? "bg-gray-200" : ""}`} onClick={() => selectOption({label: ''})} >
                 Clear selection
               </div>
               {options.map((option, index) => (
-                <div value={option} key={index} className={`z-20 option cursor-pointer w-full text-left px-2 py-1`} onClick={() => selectOption(option)} >
+                <div value={option} key={index} className={`option cursor-pointer w-full text-left px-2 py-1`} onClick={() => selectOption(option)} >
                   {option[label]}
                 </div>
               ))}

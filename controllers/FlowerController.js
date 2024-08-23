@@ -23,8 +23,8 @@ class FlowerController {
     editFlower = async (req, res, next) => {
         try {
             const image = req.file
-            const { name, colors, id, initialPrice } = req.body
-            await this.service.editFlower(image, name, colors, id, initialPrice)
+            const { name, colors, id, initialPrice, clientName, seasons } = req.body
+            await this.service.editFlower(image, name, colors, id, initialPrice, clientName, seasons)
             req.logger.info(`[FLOWER EDIT] ${req.user.user.email} id: ${id}, name: ${name}`)
             res.sendStatus(200)
         } catch (error) {

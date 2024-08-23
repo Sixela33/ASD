@@ -96,7 +96,7 @@ export default function SingleFlowerPage() {
                                 <p>Colors:</p>
                                 <ul className='text-left list-disc'>
                                     {newFlowerData.flowercolors.map((item, index) =>
-                                        <li key={index}>{item}</li>
+                                        <li key={index}>{item.colorname}</li>
                                     )}
                                 </ul>
                             </div>
