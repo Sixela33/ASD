@@ -571,13 +571,14 @@ class ModelPostgres {
     //                   FLOWERS
     // -----------------------------------------------
 
-    addFlower = async (image, name, colors, initialPrice) => {
+    addFlower = async (image, name, colors, initialPrice, clientName, seasons) => {
         this.validateDatabaseConnection()
         let response
+        console.log({image, name, colors, initialPrice, clientName, seasons})
         if(initialPrice) {
             response = await CnxPostgress.db.query(`
-                CALL createFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::FLOAT);`, 
-                [name, image, colors, initialPrice]);
+                CALL createFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::FLOAT, $5::VARCHAR, $6::INT[]);`, 
+                [name, image, colors, initialPrice, clientName, seasons]);
         } else {
             response = await CnxPostgress.db.query(`
             CALL createFlower($1::VARCHAR, $2::VARCHAR, $3::INT[]);`, 
@@ -616,15 +617,19 @@ class ModelPostgres {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
         SELECT 
-        f.flowerid, 
-        f.flowername, 
-        f.flowerimage, 
-        f.initialPrice,
-        ARRAY_AGG(fc.colorName) AS flowerColors,
-        ARRAY_AGG(fc.colorID) AS colorids
+            f.flowerid, 
+            f.flowername, 
+            f.flowerimage, 
+            f.initialPrice,
+            f.clientName,
+            ARRAY_AGG(fc.colorName) AS flowerColors,
+            ARRAY_AGG(fc.colorID) AS colorids,
+            ARRAY_AGG(s.seasonName) AS seasons
         FROM flowers f
         LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
         LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+        LEFT JOIN seasonsXFlower sxf ON f.flowerID = sxf.flowerID
+        LEFT JOIN seasons s ON s.seasonsID = sxf.seasonsID
         WHERE f.flowerID = $1
         GROUP BY f.flowerID;`, [id])
     }
@@ -648,6 +653,12 @@ class ModelPostgres {
             f.flowerimage IS NULL;`)
     }
 
+    getAllSeasons = async () => {
+        this.validateDatabaseConnection()
+        const temp = await CnxPostgress.db.query(`SELECT * FROM seasons`)
+        return temp.rows
+    }
+
     getFlowerPrices = async (id) => {
         this.validateDatabaseConnection()
         return await CnxPostgress.db.query(`
@@ -669,6 +680,7 @@ class ModelPostgres {
                 f.flowername, 
                 f.flowerimage, 
                 ARRAY_AGG(fc.colorName) AS flowerColors,
+                ARRAY_AGG(s.seasonName) AS seasons,
                 COALESCE(FxI.unitPrice, f.initialPrice) AS unitPrice
             FROM flowers f
             LEFT JOIN (
@@ -686,7 +698,9 @@ class ModelPostgres {
                 GROUP BY fx.flowerID
             ) FxI ON f.flowerID = FxI.flowerID 
             LEFT JOIN colorsXFlower cxf ON f.flowerID = cxf.flowerID
-            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID `
+            LEFT JOIN flowerColors fc ON cxf.colorID = fc.colorID 
+            LEFT JOIN seasonsXFlower sxf ON f.flowerID = sxf.flowerID
+            LEFT JOIN seasons s ON s.seasonsID = sxf.seasonsID`
         const queryParams = []
         let queryConditions = []
     

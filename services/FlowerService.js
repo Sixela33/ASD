@@ -13,14 +13,14 @@ class FlowerService {
         this.fileHandler = new FileHandlerSelector(fileStorage).start()
     }
 
-    addFlower = async (image, name, colors, initialPrice) => {
-        await validateFlower({name, colors, initialPrice})
+    addFlower = async (image, name, colors, initialPrice, clientName, seasons) => {
+        await validateFlower({name, colors, initialPrice, clientName, seasons})
         let savePath = ''
         if (image) {
             savePath = await this.fileHandler.handleNewFile(image, ALLOWED_IMAGE_EXTENSIONS, FLOWER_IMAGE_PATH, true)
         }
         
-        const response = await this.model.addFlower(savePath, name, colors, initialPrice)
+        const response = await this.model.addFlower(savePath, name, colors, initialPrice, clientName, seasons)
         return response[0]
     };
 
@@ -108,6 +108,10 @@ class FlowerService {
           }
 
         return response
+    }
+
+    getAllSeasons = async () => {
+        return await this.model.getAllSeasons()
     }
 }
 

@@ -9,8 +9,9 @@ class FlowerController {
     addFlower = async (req, res, next) => {
         try {
             const image = req.file
-            const { name, colors, initialPrice } = req.body
-            const response = await this.service.addFlower(image, name, colors, initialPrice)
+            const { name, colors, initialPrice, clientName, seasons } = req.body
+            console.log("req.body", req.body)
+            const response = await this.service.addFlower(image, name, colors, initialPrice, clientName, seasons)
             req.logger.info(`[NEW FLOWER] ${req.user.user.email} name: ${name}`)
             res.json(response)
         } catch (error) {
@@ -90,6 +91,15 @@ class FlowerController {
     getIncompleteFlowers= async (req, res, next) => {
         try {
             const response = await this.service.getIncompleteFlowers()
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getAllSeasons = async (req, res, next) => {
+        try {
+            const response = await this.service.getAllSeasons()
             res.json(response)
         } catch (error) {
             next(error)

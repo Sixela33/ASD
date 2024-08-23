@@ -1,7 +1,3 @@
-
-ALTER TABLE invoices
-ADD COLUMN bankTransaction INT REFERENCES bankTransactions(transactionID) ON DELETE SET NULL;
-
 DROP TABLE IF EXISTS invoiceTransaction;
 
 CREATE TABLE IF NOT EXISTS bankStatements (
@@ -19,3 +15,6 @@ CREATE TABLE IF NOT EXISTS bankTransactions (
     transactionCode VARCHAR(50) NOT NULL,
     bankID VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE invoices
+ADD COLUMN bankTransaction INT REFERENCES bankTransactions(transactionID) ON DELETE SET NULL;
