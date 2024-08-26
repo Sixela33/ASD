@@ -2,6 +2,7 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
+import FormData from "form-data";
 
 const flowerDataLocation = './scripts/flowerData'
 const flowerDataCSV = 'dataCSV.csv'
@@ -57,6 +58,10 @@ async function readCSV() {
                     data.seasons = data.season.split('-')
                 }
 
+                if (data.seasons == []) {
+                    console.log(data)
+                }
+
                 data.color = data.color.split('-')
 
                 data.price = data.price.replace('$', '')
@@ -70,7 +75,6 @@ async function readCSV() {
 async function uploadFlowerData(flowerData) {
     for (const flower of flowerData) {
         const formData = new FormData();
-        if(!parseInt(flower.id)) continue
 
         formData.append('name', flower.internalName)
         formData.append('initialPrice', flower.price) 
@@ -85,7 +89,7 @@ async function uploadFlowerData(flowerData) {
                 }
             }
             let responseGetColor = await axiosInstance.get('/api/flowers/colors/colorid/' + color)
-            formData.append('colors[]', responseGetColor.data.colorid) // Changed .body to .data
+            formData.append('colors[]', responseGetColor.data.colorid)
         }
 
         for (const season of flower.seasons) {
@@ -108,7 +112,6 @@ async function uploadFlowerData(flowerData) {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             
-            //console.log(`Uploaded data for ${flower.name}`);
         } catch (error) {
             console.error(`Error uploading data for ${flower.internalName}:`, error.message);
         }

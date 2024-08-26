@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS arrangementTypes (
 
 CREATE TABLE IF NOT EXISTS flowers (
     flowerID SERIAL PRIMARY KEY,
-    flowerName VARCHAR(50) NOT NULL,
+    flowerName VARCHAR(100) NOT NULL,
     flowerDescription VARCHAR(50),
     flowerImage VARCHAR(255),
     isActive BOOLEAN DEFAULT true
