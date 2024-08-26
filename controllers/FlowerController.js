@@ -10,7 +10,6 @@ class FlowerController {
         try {
             const image = req.file
             const { name, colors, initialPrice, clientName, seasons } = req.body
-            console.log("req.body", req.body)
             const response = await this.service.addFlower(image, name, colors, initialPrice, clientName, seasons)
             req.logger.info(`[NEW FLOWER] ${req.user.user.email} name: ${name}`)
             res.json(response)

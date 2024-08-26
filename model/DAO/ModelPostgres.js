@@ -562,7 +562,6 @@ class ModelPostgres {
 
     duplicateProject = async (id) => {
         this.validateDatabaseConnection()
-        // console.log("id", id)
         const res = await CnxPostgress.db.query('SELECT duplicateProject($1::INT);', [id])
         return res.rows
     }
@@ -574,7 +573,6 @@ class ModelPostgres {
     addFlower = async (image, name, colors, initialPrice, clientName, seasons) => {
         this.validateDatabaseConnection()
         let response
-        console.log({image, name, colors, initialPrice, clientName, seasons})
         if(initialPrice) {
             response = await CnxPostgress.db.query(`
                 CALL createFlowerWithInitial($1::VARCHAR, $2::VARCHAR, $3::INT[], $4::FLOAT, $5::VARCHAR, $6::INT[]);`, 
@@ -977,8 +975,6 @@ class ModelPostgres {
 
     editInvoice = async (invoiceData, invoiceFileLocation, InvoiceFlowerData, editorID) => {
         this.validateDatabaseConnection()
-        console.log("InvoiceFlowerData", InvoiceFlowerData)
-        console.log("InvoiceFlowerData", invoiceData)
         await CnxPostgress.db.query('CALL editInvoice($1::JSONB, $2::INT, $3::VARCHAR(255), $4::JSONB[]);', [invoiceData, editorID, invoiceFileLocation, InvoiceFlowerData])
     }
 
