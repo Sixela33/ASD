@@ -31,6 +31,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const [flowerColorList, setFlowerColorList] = useState([])
     const [showNewColorPopup, setNewColorPopup] = useState(false)
     const [flowerSeasons, setFlowerSeasons] = useState([])
+    const [imagePreview, setImagePreview] = useState(null);
 
     const fetchFlowerColors = async () => {
       try {
@@ -85,6 +86,16 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         ...formData,
         flower: file,
       })
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setImagePreview(null);
+      }
     }
     
     const handleSubmit = async (e) => {
@@ -131,6 +142,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
 
         await refreshData()
         setFormData(defaultFormData)
+        setImagePreview()
         cancelButton()
 
       } catch (error) {
@@ -143,6 +155,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
   
     const handleCancel = () => {
       setFormData(defaultFormData)
+      setImagePreview()
       cancelButton()
 
     }
@@ -179,6 +192,15 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             onChange={handleImageChange}
             required
           />
+          <div className="mt-4">
+              {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-w-full h-auto"
+                  />
+                )}
+            </div>
         </div>
         <div className="flex flex-col mb-4">
           <label className="mb-1">Initial price:</label>
