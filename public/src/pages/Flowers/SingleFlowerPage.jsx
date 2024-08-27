@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'r
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
 import useAlert from '../../hooks/useAlert';
 import NewFlowerForm from '../../components/NewFlowerForm';
+import LoadingPage from '../LoadingPage';
 
 const FETCH_FLOWER_DATA_URL = '/api/flowers/single/';
 const REMOVE_FLOWER_URL = '/api/flowers/single/';
@@ -22,9 +23,11 @@ export default function SingleFlowerPage() {
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [showEditFlowerPopup, setShowEditFlowerPopup] = useState(false)
     
-    const fetchData = async () => {
+    const fetchFlowerData = async () => {
         try {
+            setLoading(true)
             const response = await axiosPrivate.get(FETCH_FLOWER_DATA_URL + id);
+            console.log("response", response)
             setNewFlowerData(response?.data.flowerData[0]);
             setFlowerPrices(response?.data.flowerPrices);
         } catch (error) {
@@ -46,8 +49,8 @@ export default function SingleFlowerPage() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchFlowerData();
+    }, [id]);
 
     const handleChartClick = (event) => {
         if (event && event.activePayload) {
@@ -58,9 +61,7 @@ export default function SingleFlowerPage() {
 
     if (loading) {
         return (
-            <div className="text-center mt-8">
-                <img src='spinner.svg' alt="Loading..." />
-            </div>
+            <LoadingPage/>
         )
     }
 
@@ -76,7 +77,7 @@ export default function SingleFlowerPage() {
                     setBaseFlowerData({})
                 }}
                 flowerToEdit={baseFlowerData}
-                refreshData={fetchData}
+                refreshData={fetchFlowerData}
                 />
 
             <div className="grid grid-cols-3 w-full text-center my-[3vh]">
@@ -95,7 +96,7 @@ export default function SingleFlowerPage() {
                                 <p>Colors:</p>
                                 <ul className='text-left list-disc'>
                                     {newFlowerData.flowercolors.map((item, index) =>
-                                        <li key={index}>{item}</li>
+                                        <li key={index}>{item.colorname}</li>
                                     )}
                                 </ul>
                             </div>

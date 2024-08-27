@@ -29,6 +29,10 @@ class FlowerRouter {
         this.router.delete('/single/:id', staffuserReq, this.controller.deleteFlower)
         
         this.router.use('/colors', new FlowerColorRouter().start())
+
+        //seasons
+        this.router.get('/seasons', this.controller.getAllSeasons)
+
         return this.router
     }
     

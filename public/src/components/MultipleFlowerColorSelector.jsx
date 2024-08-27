@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import SearchableDropdown from './Dropdowns/SearchableDropdown';
 
-export default function MultipleFlowerColorSelector({ options, selectedColors, setSelectedColors, isListBelow, doubleColunms }) {
+export default function MultipleFlowerColorSelector({ options, selectedColors, setSelectedColors, isListBelow, doubleColunms, label, placeholderText }) {
+    if(!label) label = 'colorname'  
+
     const [colorList, setColorList] = useState([]);
 
     useEffect(() => {
-        setColorList(options);
-    }, [options]);
+      setColorList(options);
+
+      selectedColors?.map(color => {
+        setColorList(list => list.filter((item) => item?.[label] != color?.[label]));
+      })
+    }, [options, selectedColors]);
 
     const handleColorSelect = (color) => {
 
@@ -16,11 +22,10 @@ export default function MultipleFlowerColorSelector({ options, selectedColors, s
           return
       }
 
-      if (!selectedColors.find((selected) => selected.colorname == color.colorname)) {
+      if (!selectedColors?.find((selected) => selected?.[label] == color?.[label])) {
         setSelectedColors([...selectedColors, color]);
-        setColorList(colorList.filter((item) => item.colorname != color.colorname));
       } else {
-        console.warn(`Color '${color.colorname}' already selected.`);
+        console.warn(`${color?.[label]}' already selected.`);
       }
     };
 
@@ -35,15 +40,15 @@ export default function MultipleFlowerColorSelector({ options, selectedColors, s
       <div className={`flex items-center ${isListBelow ? 'flex-col' : 'flex-row'}`}>
         <SearchableDropdown
           options={colorList}
-          label={'colorname'}
+          label={label}
           handleChange={handleColorSelect}
           selectedVal={{ flowerColor: '' }}
-          placeholderText={'Add a color'}
+          placeholderText={placeholderText}
         />
         <div className={`overflow-y-auto h-20 w-full mt-4 grid grid-cols-1 m-2 ${doubleColunms && 'lg:grid-cols-2'}`}>
-          {selectedColors.map((item) => (
-            <div onClick={() => handleRemoveColor(item)} key={item.colorname} className={`${isListBelow ? 'bg-gray-500': 'bg-white'} h-7 rounded-md m-2 px-2 py-1 flex items-center justify-between hover:cursor-pointer`}>
-              <p className="text-sm font-medium">{item.colorname}</p>
+          {selectedColors && selectedColors.map((item) => (
+            <div onClick={() => handleRemoveColor(item)} key={item?.[label]} className={`${isListBelow ? 'bg-gray-500': 'bg-white'} h-7 rounded-md m-2 px-2 py-1 flex items-center justify-between hover:cursor-pointer`}>
+              <p className="text-sm font-medium">{item?.[label]}</p>
               <button className="text-xs hover:text-red-700 ml-auto">X</button>
             </div>
           ))}

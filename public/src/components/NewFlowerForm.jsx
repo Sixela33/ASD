@@ -9,12 +9,15 @@ import AddColorPupup from './Popups/AddColorPupup';
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
 const GET_FLOWER_COLORS_URL = '/api/flowers/colors'
+const GET_SEASONS = '/api/flowers/seasons'
 
 const defaultFormData = {
   flower: null,
   name: '',
   color: [],
-  initialPrice: ''
+  initialPrice: '',
+  clientName: '',
+  seasons: []
 }
 
 export default function NewFlowerForm({showPopup, cancelButton, refreshData, flowerToEdit}) {
@@ -27,6 +30,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [flowerColorList, setFlowerColorList] = useState([])
     const [showNewColorPopup, setNewColorPopup] = useState(false)
+    const [flowerSeasons, setFlowerSeasons] = useState([])
 
     const fetchFlowerColors = async () => {
       try {
@@ -37,8 +41,18 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       }
     }
 
+    const fetchFlowerSeasons = async () => {
+      try {
+          const response = await axiosPrivate.get(GET_SEASONS)
+          setFlowerSeasons(response.data)
+      } catch (error) {
+          setMessage(error.response.data, true)
+      }
+    }
+
     useEffect(() => {
       fetchFlowerColors()
+      fetchFlowerSeasons()
     }, [])
 
     const handleChange = (e) => {
@@ -51,23 +65,18 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     }
 
     useEffect(() => {
-
-      if(flowerToEdit?.flowercolors && flowerColorList) {
-        let temp = []
-
-        for(let i = 0; i < flowerToEdit.colorids.length; i++){
-          const flowerPos = flowerColorList.findIndex(item => item.colorname == flowerToEdit.flowercolors[i])
-          temp.push(flowerColorList[flowerPos])
-        }
-
+      
+      if (flowerToEdit) {
         setFormData({
           flower: defaultFormData.flower,
           name: flowerToEdit.flowername,
-          color: temp,
-          initialPrice: flowerToEdit.initialprice || ''
+          color: flowerToEdit.flowercolors,
+          initialPrice: flowerToEdit.initialprice || '',
+          clientName: flowerToEdit.clientname,
+          seasons: flowerToEdit.seasons,
         })
-        
       }
+
     }, [flowerToEdit, flowerColorList])
   
     const handleImageChange = (e) => {
@@ -99,9 +108,14 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         formDataToSend.append('name', formData.name)
         formDataToSend.append('flower', formData.flower) 
         formDataToSend.append('initialPrice', formData.initialPrice) 
+        formDataToSend.append('clientName', formData.clientName) 
 
         for (var i = 0; i < formData.color.length; i++) {
           formDataToSend.append('colors[]', formData.color[i].colorid)
+        }
+
+        for (var i = 0; i < formData.seasons.length; i++) {
+          formDataToSend.append('seasons[]', formData.seasons[i].seasonsid)
         }
         
         if(flowerToEdit) {
@@ -160,8 +174,12 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         </div>
 
         <div className="flex flex-col mb-4 w-full ">
-            <label className="mb-1">Name:</label>
+            <label className="mb-1">Internal Name:</label>
             <input className='w-full' type="text" name="name" value={formData.name} onChange={handleChange} required />
+        </div>
+        <div className="flex flex-col mb-4 w-full ">
+            <label className="mb-1">Client Name:</label>
+            <input className='w-full' type="text" name="clientName" value={formData.clientName} onChange={handleChange} required />
         </div>
 
         <div className="flex flex-col mb-4 w-full ">
@@ -169,16 +187,30 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
             <input className='w-full' type="number" min={0} name="initialPrice" value={formData.initialPrice} onChange={handleChange}/>
         </div>
 
-        <div className="flex flex-col mb-4 w-full">
+        {flowerColorList && <div className="flex flex-col mb-4 w-full">
             <label className="mb-1">Color:</label>
             <MultipleFlowerColorSelector
               options={flowerColorList}
               selectedColors = {formData.color}
               setSelectedColors = {(newValues) => handleChange({target: {name: 'color', value: newValues}})}
               isListBelow={true}
+              placeholderText={'Add a color'}
             />
-        </div>
-        <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
+          </div>
+          }
+          <button className='go-back-button' onClick={()=>setNewColorPopup(true)}>add new color</button>
+
+          {flowerSeasons && <div className="flex flex-col mb-4 w-full">
+            <label className="mb-1">Seasons:</label>
+            <MultipleFlowerColorSelector
+              options={flowerSeasons}
+              selectedColors = {formData.seasons}
+              setSelectedColors = {(newValues) => handleChange({target: {name: 'seasons', value: newValues}})}
+              isListBelow={true}
+              label={'seasonname'}
+              placeholderText={'Add a season'}
+            />
+        </div>}
         <div className='butons-holder w-full'>
           <button className='buton-secondary' onClick={handleCancel}>Cancel</button>
           <button className='buton-main' onClick={handleSubmit}>{'Add Flower'}</button>
