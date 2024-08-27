@@ -1,7 +1,8 @@
 import React from 'react'
 
-export default function PopupBase({ showPopup, children, closePopup }) {
+export default function PopupBase({ showPopup, children, closePopup, maxw }) {
   if (!closePopup) closePopup = () => {}
+  if (!maxw) maxw = 'md'
   
   const handleClickOutside = (e) => {
     if (e.target === e.currentTarget) {
@@ -14,7 +15,7 @@ export default function PopupBase({ showPopup, children, closePopup }) {
       className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-30" 
       onClick={handleClickOutside}
     >
-      <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+      <div className={`bg-white p-6 rounded shadow-lg max-w-${maxw} w-full`}>
         {children}
       </div>
     </div>
