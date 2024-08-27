@@ -9,7 +9,7 @@ const flowerDataCSV = 'dataCSV.csv'
 const flowerImagesFolder = 'FlowerImages'
 let allSeasons = []
 
-const BASE_URL = 'http://localhost:8080'
+const BASE_URL = 'https://projects-angelsalazardesign.com'
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -77,7 +77,7 @@ async function uploadFlowerData(flowerData) {
         const formData = new FormData();
 
         formData.append('name', flower.internalName)
-        formData.append('initialPrice', flower.price) 
+        formData.append('initialPrice', flower.price || 0) 
         formData.append('clientName', flower.clientName) 
 
         for (const color of flower.color) {
