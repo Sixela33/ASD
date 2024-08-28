@@ -171,7 +171,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
     <PopupBase 
       showPopup={showPopup}
       closePopup={handleCancel}
-      maxw={'[50vw]'}>
+      maxw={'[50%]'}>
       <AddColorPupup
         showPopup={showNewColorPopup}
         closePopup={(shouldrefresh) => closeNewColorPopup(shouldrefresh)}

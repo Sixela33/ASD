@@ -178,7 +178,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             // if the user added stems but did not set the price
             const validationOutput = getTotalAddedAndWithNoStemData()
 
-            if (invoiceData.invoiceAmount != validationOutput.totalAdded) {
+            if (toCurrency(invoiceData.invoiceAmount) != toCurrency(validationOutput.totalAdded)) {
                 setMessage("The invoice ammount and Registered Expenses do not coincide", true)
                 return
             }
@@ -294,7 +294,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <p className="font-bold">Registered Expenses: {toCurrency(getTotalAdded())}</p>
                 <button className='buton-secondary ' onClick={() => toggleAddFlowerPopup(true)}>add flower to project</button>
             </div>
-            <button className='buton-main my-1 w-1/2 mx-auto' disabled={invoiceData.invoiceAmount != getTotalAdded()} onClick={submitInvoiceCreation}>Save Invoice</button>
+            <button className='buton-main my-1 w-1/2 mx-auto' disabled={toCurrency(invoiceData.invoiceAmount) != toCurrency(getTotalAdded())} onClick={submitInvoiceCreation}>Save Invoice</button>
         </div>
   )
 }
