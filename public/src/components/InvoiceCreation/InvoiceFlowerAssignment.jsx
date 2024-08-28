@@ -277,10 +277,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>
-                                <input className='w-1/2 no-spinner' type='number' name='numstems' value={flower.numstems} onChange={(e) => modifyFlowerData(e, index)}/>
+                                <input className='w-1/2 no-spinner' type='number' onWheel={event => event.currentTarget.blur()} name='numstems' value={flower.numstems} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             <td>
-                                $<input className='w-1/2 no-spinner' type='number' name='unitprice' value={flower.unitprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<input className='w-1/2 no-spinner' type='number' onWheel={event => event.currentTarget.blur()} name='unitprice' value={flower.unitprice} onChange={(e) => modifyFlowerData(e, index)}/>
                             </td>
                             
                         </tr>
