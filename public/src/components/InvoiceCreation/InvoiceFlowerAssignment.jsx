@@ -114,7 +114,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             const newFlowerObject = {
                 flowerid: flowerData.flowerid,
                 projectid: CHOSEN_PROJECTS_SORTED[selectedRow],
-                numstems: getFlowerData?.numstems || 0,
+                numstems: 0,
                 unitprice: getFlowerData?.unitprice || 0,
                 flowername: flowerData.flowername,
             }
