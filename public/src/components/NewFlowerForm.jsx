@@ -5,6 +5,7 @@ import PopupBase from './PopupBase';
 import LoadingPopup from './LoadingPopup';
 import MultipleFlowerColorSelector from './MultipleFlowerColorSelector';
 import AddColorPupup from './Popups/AddColorPupup';
+import NumberInputWithNoScroll from './NumberInputWithNoScroll';
 
 const CREATE_FLOWER_URL = '/api/flowers';
 const EDIT_FLOWER_URL = '/api/flowers/edit';
@@ -204,7 +205,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
         </div>
         <div className="flex flex-col mb-4">
           <label className="mb-1">Initial price:</label>
-          <input
+          <NumberInputWithNoScroll
             className="w-full"
             type="number"
             min={0}

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
 import { toCurrency } from '../../utls/toCurrency'
 import LoadingPopup from '../LoadingPopup'
+import NumberInputWithNoScroll from '../NumberInputWithNoScroll'
 
 const GET_PROJECTS_URL = '/api/projects/manyByID'
 const GET_SINGLE_FLOWER_DATA_URL = '/api/flowers/addToinvoice/'
@@ -277,10 +278,20 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                             <td>{flower?.flowername}</td>
                             <td>{flower?.totalstems}</td>
                             <td>
-                                <input className='w-1/2 no-spinner' type='number' onWheel={event => event.currentTarget.blur()} name='numstems' value={flower.numstems} onChange={(e) => modifyFlowerData(e, index)}/>
+                                <NumberInputWithNoScroll
+                                    className='w-1/2 no-spinner' 
+                                    name='numstems' 
+                                    value={flower.numstems} 
+                                    onChange={(e) => modifyFlowerData(e, index)}
+                                />
                             </td>
                             <td>
-                                $<input className='w-1/2 no-spinner' type='number' onWheel={event => event.currentTarget.blur()} name='unitprice' value={flower.unitprice} onChange={(e) => modifyFlowerData(e, index)}/>
+                                $<NumberInputWithNoScroll
+                                    className='w-1/2 no-spinner' 
+                                    name='unitprice' 
+                                    value={flower.unitprice} 
+                                    onChange={(e) => modifyFlowerData(e, index)}
+                                />
                             </td>
                             
                         </tr>

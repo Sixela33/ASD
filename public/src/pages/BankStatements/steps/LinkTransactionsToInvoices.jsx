@@ -198,8 +198,8 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                         <label>Amount Range</label> 
                     </div>
                     <div className='flex flex-row w-full space-x-2'>
-                        <input className='w-1/2 p-2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
-                        <input className='w-1/2 p-2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
+                        <NumberInputWithNoScroll className='w-1/2 p-2 no-spinner' placeholder='Min' type='number' value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} />
+                        <NumberInputWithNoScroll className='w-1/2 p-2 no-spinner' placeholder='Max' type='number' value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} />
                     </div>
                 </div>
         </div>

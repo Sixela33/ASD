@@ -1,6 +1,7 @@
 import React from 'react';
 import FormError from './FormError';
 import './item-css.css'; // Assuming you create a CSS file for styling
+import NumberInputWithNoScroll from '../NumberInputWithNoScroll';
 
 export default function FormItem({ labelName, type, inputName, value, handleChange, error, step, isCurrency }) {
   if (!handleChange) handleChange = () => {};
@@ -15,7 +16,7 @@ export default function FormItem({ labelName, type, inputName, value, handleChan
       <label className="mb-1">{labelName}</label>
       <div className='input-wrapper'>
         {isCurrency && <span className='currency-symbol'>$</span>}
-        <input
+        <NumberInputWithNoScroll
           type={type}
           name={inputName}
           value={value}

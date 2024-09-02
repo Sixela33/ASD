@@ -7,7 +7,7 @@ import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
 import { toCurrency } from '../../utls/toCurrency';
 import { useInView } from 'react-intersection-observer';
-import SearchableDropdown from '../../components/Dropdowns/SearchableDropdown';
+import NumberInputWithNoScroll from '../../components/NumberInputWithNoScroll';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const GET_VENDORS_URL = '/api/vendors';
@@ -183,8 +183,8 @@ export default function ViewInvoices() {
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Amount Range</label>
                     <div className="flex space-x-2">
-                        <input type="number" placeholder="Min" value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} className="w-1/2 px-3 py-2" />
-                        <input type="number" placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} className="w-1/2 px-3 py-2" />
+                        <NumberInputWithNoScroll type="number" placeholder="Min" value={minAmount} onChange={(e) => setMinAmmount(e.target.value)} className="w-1/2 px-3 py-2 no-spinner" />
+                        <NumberInputWithNoScroll type="number" placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmmount(e.target.value)} className="w-1/2 px-3 py-2 no-spinner" />
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">

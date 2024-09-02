@@ -6,6 +6,7 @@ import FlowerListComponent from '../components/FlowerListComponent';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toCurrency } from '../utls/toCurrency';
 import { toInteger } from 'lodash';
+import NumberInputWithNoScroll from '../components/NumberInputWithNoScroll';
 
 const FETCH_ARRANGEMENT_DATA_URL = '/api/arrangements/creation/';
 const SUBMIT_ARRANGEMENT_URL = '/api/arrangements/creation/'
@@ -156,7 +157,7 @@ export default function ArrangementCreation() {
                                             <tr key={index}  onClick={() => { }}>
                                                 <td >{flower.flowername}</td>
                                                 <td >
-                                                    <input type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
+                                                    <NumberInputWithNoScroll type='number' className='w-full' value={flower.quantity} onChange={(e) => changeFlowerAmm(e, index)}/>
                                                 </td>
                                                 <td >{toCurrency(flower.unitprice || 0)}</td>
                                                 <td ><button className='go-back-button' onClick={() => removeFlower(index)}>remove</button></td>
@@ -168,7 +169,7 @@ export default function ArrangementCreation() {
                             <div className='flex flex-row items-center justify-evenly'>
                                 <div>
                                     <p>unitPrice: {actualSelectedFlower ? toCurrency(actualSelectedFlower?.unitprice) : 'N/A'}</p>
-                                    <input ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />
+                                    <NumberInputWithNoScroll ref={quantityInputRef} value={quantityToAdd} onChange={(e) => { setQuantityToAdd(e.target.value) }} type="number" placeholder="Add" className="w-20" min='0' />
                                     <button onClick={() => addFlowerDrop(actualSelectedFlower, quantityToAdd)} className='buton-secondary'>Add</button>
                                 </div>
                                 <div>
