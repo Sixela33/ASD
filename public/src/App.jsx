@@ -16,7 +16,7 @@ import ProjectsList from './pages/Projects/ProjectsList';
 import ViewProject from './pages/Projects/ViewSingleProject';
 import ViewFlowers from './pages/Flowers/ViewFlowers';
 import SingleFlowerPage from './pages/Flowers/SingleFlowerPage';
-import AddInvoice from './pages/Invoices/AddInvoice';
+import AddInvoice from './pages/Invoices/2.0/AddInvoice';
 import ViewInvoices from './pages/Invoices/ViewInvoices';
 import LoadingPage from './pages/LoadingPage';
 import ViewSingleInvoice from './pages/Invoices/ViewSingleInvoice';
