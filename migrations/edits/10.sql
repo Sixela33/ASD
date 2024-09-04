@@ -1,0 +1,2 @@
+ALTER TABLE flowerXInvoice ADD COLUMN id SERIAL PRIMARY KEY;
+ALTER TABLE flowerXInvoice ADD COLUMN additionOrder INT;

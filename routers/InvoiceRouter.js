@@ -22,6 +22,9 @@ class InvoiceRouter {
         this.router.get('/invoices/:offset', this.controller.getInvoices)
         this.router.get('/providedProjects/:id', this.controller.getProvidedProjects)
         this.router.get('/invoiceData/:id', this.controller.getInvoiceData)
+
+        this.router.post('/linkFlowers', this.controller.linkFlowersToInvoice)
+        this.router.get('/flowers/:id', this.controller.getInvoiceFlowers)
         
         return this.router
     }

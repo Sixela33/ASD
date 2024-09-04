@@ -4,7 +4,7 @@ import NumberInputWithNoScroll from '../../../components/NumberInputWithNoScroll
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import useAlert from '../../../hooks/useAlert'
 
-const POST_FLOWERS_URL = "/api/invoices/flowers"
+const POST_FLOWERS_URL = "/api/invoices/linkFlowers"
 
 export default function AddFlowers({ invoiceID }) {
     const [invoiceFlowers, setInvoiceFlowers] = useState([])
@@ -12,23 +12,6 @@ export default function AddFlowers({ invoiceID }) {
 
     const axiosPrivate = useAxiosPrivate()
     const {setMessage} = useAlert()
-
-    useEffect(() => {
-        // Fetch existing flowers for this invoice when the component mounts
-        const fetchExistingFlowers = async () => {
-            try {
-                const response = await axiosPrivate.get(`/api/invoices/${invoiceID}/flowers`)
-                setInvoiceFlowers(response.data)
-            } catch (error) {
-                console.error('Error fetching existing flowers:', error)
-                setMessage('Failed to load existing flowers')
-            }
-        }
-
-        if (invoiceID) {
-            fetchExistingFlowers()
-        }
-    }, [invoiceID, axiosPrivate])
 
     const handleAddFlower = (flower) => {
         const newFlower = { ...flower, numstems: 0, unitprice: 0 }
@@ -48,6 +31,7 @@ export default function AddFlowers({ invoiceID }) {
 
     const handleSaveFlowers = async () => {
         try {
+            console.log("invoiceID", invoiceID)
             const tempInvoiceFlowers = invoiceFlowers.filter(flower => flower.numstems > 0).map((flower, index) => ({
                 flowerid: flower.flowerid,
                 numstems: flower.numstems, 
@@ -61,7 +45,7 @@ export default function AddFlowers({ invoiceID }) {
             }
 
             console.log(tempInvoiceFlowers)
-            //await axiosPrivate.post(POST_FLOWERS_URL, { invoiceID, flowers: tempInvoiceFlowers })
+            await axiosPrivate.post(POST_FLOWERS_URL, { invoiceID: invoiceID, flowers: tempInvoiceFlowers })
             setMessage('Flowers saved successfully')
         } catch (error) {
             console.error('Error saving flowers:', error)

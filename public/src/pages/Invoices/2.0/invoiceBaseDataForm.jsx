@@ -1,15 +1,12 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import useAlert from '../../../hooks/useAlert';
 import SearchableDropdown from '../../../components/Dropdowns/SearchableDropdown';
 import FormError from '../../../components/Form/FormError';
 import FormItem from '../../../components/Form/FormItem';
-import useAxiosPrivateImage from '../../../hooks/useAxiosPrivateImage';
 
 const GET_VENDORS_URL = '/api/vendors';
-const SAVE_INVOICE_DATA_URL = '/api/invoices/incomplete'
 
 const invoiceDataSchema = Yup.object().shape({
   invoiceNumber: Yup.string().required('Invoice number is required'),
@@ -20,16 +17,14 @@ const invoiceDataSchema = Yup.object().shape({
   fileLocation: Yup.string().optional(),
 })
 
-export default function InvoiceBaseDataForm({ invoiceData, setFormData, pdfFile, setShowLoading, handleContinue, handlePrevious }) {
+export default function InvoiceBaseDataForm({ invoiceData, setFormData, handleContinue, handlePrevious, saveInvoiceData }) {
     const [vendors, setVendors] = useState([]);
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
-    const axiosPrivateImage = useAxiosPrivateImage()
+
     const { setMessage } = useAlert();
-    const navigate = useNavigate();
 
     const fetchVendors = useCallback(async () => {
         try {
@@ -77,42 +72,6 @@ export default function InvoiceBaseDataForm({ invoiceData, setFormData, pdfFile,
             return false;
         }
     }, [invoiceData]);
-
-    const saveInvoiceData = useCallback(async (shouldContinue) => {
-      if (isSubmitting) return;
-      setIsSubmitting(true);
-  
-      const isValid = await validateForm();
-      if (!isValid) {
-          setMessage("Please correct the errors before saving.", true);
-          setIsSubmitting(false);
-          return;
-      }
-  
-      try {
-          setShowLoading(true);
-          const formDataToSend = new FormData();
-          console.log("pdfFile", pdfFile);
-          
-          formDataToSend.append('invoiceData', JSON.stringify(invoiceData));
-          formDataToSend.append('invoiceFile', pdfFile);
-          
-          await axiosPrivateImage.post(SAVE_INVOICE_DATA_URL, formDataToSend);
-          
-          setMessage('Invoice saved successfully', false);
-  
-          if (shouldContinue) {
-              handleContinue();
-          } else {
-              navigate('/invoice');
-          }
-      } catch (error) {
-          setMessage(error.response?.data || 'Error saving invoice', true);
-      } finally {
-          setShowLoading(false);
-          setIsSubmitting(false);
-      }
-  }, [isSubmitting, validateForm, setMessage, setShowLoading, invoiceData, pdfFile, axiosPrivate, navigate]);
 
   const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
@@ -167,20 +126,18 @@ export default function InvoiceBaseDataForm({ invoiceData, setFormData, pdfFile,
                   <button 
                     className='buton-secondary' 
                     onClick={(e) => { e.preventDefault(); saveInvoiceData(false)}}
-                    disabled={isSubmitting}
                   >
                     Save Incomplete Invoice
                   </button>
                   <button 
                     className='buton-main' 
                     type="submit"
-                    disabled={isSubmitting}
                     onClick={e => {
                       e.preventDefault(); 
                       saveInvoiceData(true)
                     }}
                   >
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                    {'Submit'}
                   </button> 
                 </div>
             </form>

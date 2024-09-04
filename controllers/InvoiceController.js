@@ -25,10 +25,10 @@ class InvoiceController {
             const file = req.file
             const {invoiceData} = req.body
             const creatorid = req.user.user.userid
-            await this.service.addIncompleteInvoice(invoiceData, file, creatorid)
+            const response = await this.service.addIncompleteInvoice(invoiceData, file, creatorid)
             if (invoiceData.fileLocation) delete invoiceData.fileLocation 
             req.logger.info(`[NEW INCOMPLETE INVOICE] ${req.user.user.email} ID: ${JSON.stringify(invoiceData)}`)
-            res.sendStatus(200)
+            res.json({id: response})
         } catch (error) {
             console.log(error)
             next(error)
@@ -88,6 +88,27 @@ class InvoiceController {
         try {
             const { id } = req.params
             const response = await this.service.getInvoiceData(id)
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    linkFlowersToInvoice = async (req, res, next) => {
+        try {
+            const {flowers, invoiceID} = req.body
+            console.log(req.body)
+            const response = await this.service.linkFlowersToInvoice(flowers, invoiceID)
+            res.sendStatus(200)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getInvoiceFlowers = async (req, res, next) => {
+        try {
+            const {id} = req.params
+            const response = await this.service.getInvoiceFlowers(id)
             res.json(response)
         } catch (error) {
             next(error)

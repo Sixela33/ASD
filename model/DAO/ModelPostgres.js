@@ -936,7 +936,7 @@ class ModelPostgres {
 
     addIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query(`
+        const result = await CnxPostgress.db.query(`
             INSERT INTO invoices (
                 fileLocation, 
                 invoiceAmount, 
@@ -944,8 +944,14 @@ class ModelPostgres {
                 vendorID, 
                 invoiceDate, 
                 invoiceNumber)
-            VALUES ($1, $2, $3, $4, $5, $6);`, 
-            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber])
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING invoiceID;`, 
+            [invoiceFileLocation, invoiceData.invoiceAmount, uploaderid, invoiceData.vendor, invoiceData.dueDate, invoiceData.invoiceNumber]
+        );
+    
+        // Extract and return the new invoice ID from the result
+        const newInvoiceId = result.rows[0].invoiceid;
+        return newInvoiceId;
     }
 
     editIncompleteInvoice = async (invoiceData, invoiceFileLocation, uploaderid, invoiceid) => {
@@ -1146,6 +1152,26 @@ class ModelPostgres {
             WHERE FxI.invoiceID = $1;`, [invoiceid])
     
         return response
+    }
+
+    getInvoiceFlowers = async (id) => {
+        this.validateDatabaseConnection()
+        const response = await CnxPostgress.db.query(
+            `
+            SELECT
+                *
+            FROM flowerXInvoice
+            WHERE invoiceid = $1;
+            `, [id]
+        )
+
+        return response.rows
+    } 
+
+    linkFlowersToInvoice = async (flowers, invoiceID) => {
+        this.validateDatabaseConnection()
+        await CnxPostgress.db.query('CALL linkFlowersToInvoice($1::JSONB[], $2::INT);', [flowers, invoiceID])
+
     }
 
     // -----------------------------------------------

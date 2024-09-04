@@ -66,15 +66,17 @@ class InvoiceService {
             throw {message: "A file is required to load an invoice", status: 400}
         }
 
+        let invoiceID = invoiceData.invoiceid
+
         if (invoiceData.invoiceid) {
             await this.model.editIncompleteInvoice(invoiceData, newFileLoc, updaterID, invoiceData.invoiceid)
 
         } else {
-            await this.model.addIncompleteInvoice(invoiceData, newFileLoc, updaterID)
+            invoiceID = await this.model.addIncompleteInvoice(invoiceData, newFileLoc, updaterID)
             
         }
 
-        return 
+        return invoiceID
     }
 
     editInvoice = async (invoiceData, invoiceFlowerData, file, editorID) => {
@@ -171,6 +173,20 @@ class InvoiceService {
         flowers = flowers.rows
 
         return {projects, flowers, invoiceData}
+    }
+
+    linkFlowersToInvoice = async (flowers, invoiceID) => {
+        await this.model.linkFlowersToInvoice(flowers, invoiceID)
+        console.log(flowers)
+        return flowers
+    }
+
+    getInvoiceFlowers = async (id) => {
+        await validateId(id)
+
+        const response = await this.model.getInvoiceFlowers(id)
+
+        return response
     }
 
 }
