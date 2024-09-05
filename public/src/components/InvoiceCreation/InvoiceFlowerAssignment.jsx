@@ -9,6 +9,7 @@ import { useCallback } from 'react'
 import { toCurrency } from '../../utls/toCurrency'
 import LoadingPopup from '../LoadingPopup'
 import NumberInputWithNoScroll from '../NumberInputWithNoScroll'
+import MoveFlowerFromProjectPopup from './MoveFlowerFromProjectPopup'
 
 const GET_PROJECTS_URL = '/api/projects/manyByID'
 const GET_SINGLE_FLOWER_DATA_URL = '/api/flowers/addToinvoice/'
@@ -224,10 +225,43 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         }
     }
 
+    const [showMovePopup, setShowMovePopup] = useState(false)
+    const [selectedFlowers, setSelectedFlowers] = useState([])
+
+    const setSelectedProjectRow = index => {
+        setSelectedRow(index)
+        setSelectedFlowers([])
+    }
+
+    const toggleFlowerSelection = (flowerIndex) => {
+        setSelectedFlowers(prevSelected => {
+            if (prevSelected.includes(flowerIndex)) {
+                // Remove flower from selection if already selected
+                return prevSelected.filter(index => index !== flowerIndex)
+            } else {
+                // Add flower to selection
+                return [...prevSelected, flowerIndex]
+            }
+        })
+    }
+
+    const toggleShowMovePopup = () => {
+        if (selectedFlowers.length > 0) {
+            setShowMovePopup(true)
+        }
+    }
 
     return (
         <div className='container mx-auto flex flex-col'>
             <LoadingPopup showPopup={showLoading}/>
+            <MoveFlowerFromProjectPopup
+                showPopup={showMovePopup} 
+                closePopup={() => setShowMovePopup(false)}
+                projectsList={projectsInfo}
+                flowerData={displayFlowerData}
+                selectedRow={selectedRow}
+                selectedIndexes={selectedFlowers}
+            />
             <InvoiceAddFlowerToProjectPopup 
                 showPopup={addFlowerPopup} 
                 submitFunction={flower => addFlowerToProject(flower)} 
@@ -249,7 +283,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 </thead>
                 <tbody>
                 {projectsInfo?.map((item, index) => (
-                    <tr key={index} onClick={() => setSelectedRow(index)} >
+                    <tr key={index} onClick={() => setSelectedProjectRow(index)} >
                         <td className='p-2 text-center'>{item?.projectid}</td>
                         <td className='p-2 text-center'>{item?.projectclient}</td>
                         <td className='p-2 text-center'>{item?.projectdate}</td>
@@ -270,6 +304,9 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                         {['Flower name', 'Recipe stems', 'Stems Bought','Unit price'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
+                        <th>
+                            <button className='go-back-button' onClick={toggleShowMovePopup}>change project</button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -293,7 +330,13 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                                     onChange={(e) => modifyFlowerData(e, index)}
                                 />
                             </td>
-                            
+                            <td>
+                                <input 
+                                    type='checkbox' 
+                                    checked={selectedFlowers.includes(index)} 
+                                    onChange={() => toggleFlowerSelection(index)}
+                                />
+                            </td>                        
                         </tr>
                     })}
                     
