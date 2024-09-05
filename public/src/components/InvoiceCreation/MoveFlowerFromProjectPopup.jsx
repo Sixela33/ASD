@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PopupBase from '../PopupBase'
 
 export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, projectsList, flowerData, selectedRow, selectedIndexes }) {
@@ -16,6 +16,10 @@ export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, proj
 
         closePopup()
     }
+
+    useEffect(() => {
+        setSelectedProject(selectedRow)
+    },[selectedRow])
 
     return (
         <PopupBase
@@ -65,7 +69,7 @@ export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, proj
                             </tr>
                         </thead>
                         <tbody className="max-h-64 overflow-y-auto">
-                            {flowerData[selectedRow]?.map((flower, index) => (
+                            {flowerData[selectedRow]?.filter((item, index) => selectedIndexes.includes(index)).map((flower, index) => (
                                 <tr key={index} className="hover:bg-gray-50">
                                     <td className="p-2">{flower?.flowername}</td>
                                     <td className="p-2">{flower?.totalstems}</td>
