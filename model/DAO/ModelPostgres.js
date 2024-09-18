@@ -343,7 +343,8 @@ class ModelPostgres {
             projectdescription : ' ORDER BY p.projectDescription',
             projectcontact : ' ORDER BY co.contactName',
             projectdate : ' ORDER BY p.projectDate',
-            projectstatus: ' ORDER BY projectstatus'
+            projectstatus: ' ORDER BY projectstatus',
+            projectenddate: ' ORDER BY projectEndDate'
         }
 
         let queryBase = `
@@ -356,6 +357,7 @@ class ModelPostgres {
             co.contactName, 
             c.clientName AS projectclient, 
             TO_CHAR(p.projectDate, 'MM-DD-YYYY') AS projectDate,
+            TO_CHAR(p.projectEndDate, 'MM-DD-YYYY') AS projectEndDate,
             CASE
                 WHEN num_arrangements IS NULL THEN 0
                 WHEN num_arrangements_with_no_flowers > 0 THEN 1

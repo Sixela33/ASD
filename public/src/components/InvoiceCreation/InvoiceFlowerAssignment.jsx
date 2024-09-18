@@ -274,7 +274,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table >
                 <thead>
                     <tr>
-                        {['Project id', 'Client', 'Date', 'Contact', 'selected'].map((name, index) => (
+                        {['Client', 'Description', 'Date', 'selected'].map((name, index) => (
                             <td key={index} >
                             {name}
                             </td>
@@ -284,10 +284,10 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <tbody>
                 {projectsInfo?.map((item, index) => (
                     <tr key={index} onClick={() => setSelectedProjectRow(index)} >
-                        <td className='p-2 text-center'>{item?.projectid}</td>
+                        {console.log(item)}
                         <td className='p-2 text-center'>{item?.projectclient}</td>
+                        <td className='p-2 text-center'>{item?.projectdescription}</td>
                         <td className='p-2 text-center'>{item?.projectdate}</td>
-                        <td className='p-2 text-center'>{item?.projectcontact}</td>
                         <td className='p-2 text-center'>
                         <input type='checkbox' value={index} checked={selectedRow == index} onChange={() => {}}></input>
                         </td>

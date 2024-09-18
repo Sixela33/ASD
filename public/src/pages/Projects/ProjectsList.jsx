@@ -16,7 +16,8 @@ const colData = {
     "Client": "projectclient",
     "Description": "projectdescription",
     "Contact": "projectcontact",
-    "Date": "projectdate",
+    "Start Date": "projectdate",
+    "End Date": "projectenddate",
     "Status": "projectstatus"
 }
 
@@ -81,7 +82,8 @@ const ProjectsList = () => {
                 '&showOpenOnly=' + showOpen +
                 '&searchByContact=' + searchByContact.contactname +
                 '&searchByDescription=' + searchByDescription + 
-                '&searchByClient=' + selectedClient.clientid)
+                '&searchByClient=' + selectedClient.clientid
+            )
             
             page.current = page.current + 1;
     
@@ -182,6 +184,7 @@ const ProjectsList = () => {
                         <td>{item.projectdescription}</td>
                         <td>{item.contactname}</td>
                         <td>{item.projectdate}</td>
+                        <td>{item.projectenddate}</td>
                         <td className={`${projectStatusStyles[item.projectstatus]}`}>{projectStatusText[item.projectstatus]}</td>
                     </tr>
                 ))}

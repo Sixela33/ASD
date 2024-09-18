@@ -76,7 +76,7 @@ export default function EditProjectData({showPopup, closePopup, projectData}) {
         if(clientList && contactsList && projectData) {
             handleProjectData()
         }
-    }, [projectData])
+    }, [projectData, clientList, contactsList])
 
     const confirmEdit = async () => {
         try {

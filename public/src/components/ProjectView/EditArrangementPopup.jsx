@@ -159,15 +159,18 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
   return (
     <PopupBase 
       showPopup={showPopup}
-      closePopup={handleClosePopup}>
-      {arrangementTypes && (
-        <div>
-          <label>Arrangement Type:</label>
-          <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangementData.arrangementType} handleChange={(obj) => handleChange('arrangementType', obj)} placeholderText='Select Arrangement Type' />
-          <FormError error={newArrangementErrors.arrangementType}/>
-        </div>
-      )}
-      <div>
+      closePopup={handleClosePopup}
+      maxw='[50%]'
+    >
+    <div className="flex flex-col md:flex-row md:space-x-4">
+      <div className="w-full md:w-1/2">
+        {arrangementTypes && (
+          <div>
+            <label>Arrangement Type:</label>
+            <SearchableDropdown options={arrangementTypes} label='typename' selectedVal={newArrangementData.arrangementType} handleChange={(obj) => handleChange('arrangementType', obj)} placeholderText='Select Arrangement Type' />
+            <FormError error={newArrangementErrors.arrangementType}/>
+          </div>
+        )}
         <div>
           <FormItem
             labelName="Arrangement Description:"
@@ -176,9 +179,9 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
             value={newArrangementData.arrangementDescription}
             handleChange={(e) => handleChange('arrangementDescription', e.target.value)}
             error={newArrangementErrors.arrangementDescription}
-            />
+          />
         </div>
-        <div >
+        <div>
           <FormItem
             labelName="Location:"
             type="text"
@@ -197,8 +200,11 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
             value={newArrangementData.arrangementQuantity}
             handleChange={(e) => handleChange('arrangementQuantity', e.target.value)}
             error={newArrangementErrors.arrangementQuantity}
-            />
+          />
         </div>
+      </div>
+      
+      <div className="w-full md:w-1/2">
         <div>
           <FormItem
             labelName="Client Cost:"
@@ -208,43 +214,43 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
             value={newArrangementData.clientCost}
             handleChange={(e) => handleChange('clientCost', e.target.value)}
             error={newArrangementErrors.clientCost}
-            />
+          />
         </div>
         <div>
           <FormItem
-              labelName="Quantity of Weeks per Billing Period:"
-              type="number"
-              min={1}
-              inputName="installationTimes"
-              value={newArrangementData.installationTimes}
-              handleChange={(e) => handleChange('installationTimes', e.target.value)}
-              error={newArrangementErrors.arrangementQuantity}
-            />
+            labelName="Quantity of Weeks per Billing Period:"
+            type="number"
+            min={1}
+            inputName="installationTimes"
+            value={newArrangementData.installationTimes}
+            handleChange={(e) => handleChange('installationTimes', e.target.value)}
+            error={newArrangementErrors.arrangementQuantity}
+          />
         </div>
         <div>
           <FormItem
-              labelName="Installation Quantity per Week:"
-              type="number"
-              min={1}
-              inputName="timesBilled"
-              value={newArrangementData.timesBilled}
-              handleChange={(e) => handleChange('timesBilled', e.target.value)}
-              error={newArrangementErrors.timesBilled}
-            />
+            labelName="Installation Quantity per Week:"
+            type="number"
+            min={1}
+            inputName="timesBilled"
+            value={newArrangementData.timesBilled}
+            handleChange={(e) => handleChange('timesBilled', e.target.value)}
+            error={newArrangementErrors.timesBilled}
+          />
         </div>
-        
+        <div className='text-start mt-2'>
+          <p>Total client cost: {toCurrency(newArrangementStats.totalClientCost)}</p>
+          <p>Individual flower budget: {toCurrency(newArrangementStats.individualFlowerBudget)}</p>
+          <p>Total flower budget: {toCurrency(newArrangementStats.totalFlowerBudget)}</p>
+          <p>Total profit: {toCurrency(newArrangementStats.totalProfit)}</p>
+        </div>
       </div>
-      <div className='text-start mt-2'>
-        <p>Total client cost: {toCurrency(newArrangementStats.totalClientCost)}</p>
-        <p>Individual flower budget: {toCurrency(newArrangementStats.individualFlowerBudget)}</p>
-        <p>Total flower budget: {toCurrency(newArrangementStats.totalFlowerBudget)}</p>
-        <p>Total profit: {toCurrency(newArrangementStats.totalProfit)}</p>
-      </div>
-      
-      <div className='butons-holder'>
-        <button onClick={handleClosePopup}className='buton-secondary'>Close</button>
-        <button onClick={saveChanges} className='buton-main '>Submit</button>
-      </div>
-    </PopupBase>
+    </div>
+    
+    <div className='butons-holder mt-4'>
+      <button onClick={handleClosePopup} className='buton-secondary'>Close</button>
+      <button onClick={saveChanges} className='buton-main'>Submit</button>
+    </div>
+  </PopupBase>
   )
 }
