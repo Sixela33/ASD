@@ -251,6 +251,22 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
         }
     }
 
+    const handleRemoveFlower = index => {
+        console.log(index)
+        const updatedFlowerData = [...displayFlowerData[selectedRow]];
+        updatedFlowerData.splice(index, 1);
+        
+        const newDisplayFlowerData = [...displayFlowerData];
+        newDisplayFlowerData[selectedRow] = updatedFlowerData;
+        
+        // Assuming you have a state setter for displayFlowerData
+        setDisplayFlowerData(newDisplayFlowerData);
+        
+        // If you're using selectedFlowers state, you might want to update it as well
+        const newSelectedFlowers = selectedFlowers.filter(i => i !== index).map(i => i > index ? i - 1 : i);
+        setSelectedFlowers(newSelectedFlowers);
+    }
+
     return (
         <div className='container mx-auto flex flex-col'>
             <LoadingPopup showPopup={showLoading}/>
@@ -284,7 +300,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 <tbody>
                 {projectsInfo?.map((item, index) => (
                     <tr key={index} onClick={() => setSelectedProjectRow(index)} >
-                        {console.log(item)}
                         <td className='p-2 text-center'>{item?.projectclient}</td>
                         <td className='p-2 text-center'>{item?.projectdescription}</td>
                         <td className='p-2 text-center'>{item?.projectdate}</td>
@@ -293,7 +308,6 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                         </td>
                     </tr>
                 ))}
-                
                 </tbody>
             </table>
             </div>
@@ -301,7 +315,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipe stems', 'Stems Bought','Unit price'].map((name, index) => (
+                        {['Flower name', 'Recipe stems', 'Stems Bought', 'Unit price', 'Remove'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                         <th>
@@ -331,15 +345,19 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                                 />
                             </td>
                             <td>
+                                <button onClick={() => handleRemoveFlower(index)} className="text-red-500">
+                                    Remove
+                                </button>
+                            </td>
+                            <td>
                                 <input 
                                     type='checkbox' 
                                     checked={selectedFlowers.includes(index)} 
                                     onChange={() => toggleFlowerSelection(index)}
                                 />
-                            </td>                        
+                            </td>
                         </tr>
                     })}
-                    
                 </tbody>
             </table>
             </div>
