@@ -60,10 +60,12 @@ export default function AddInvoice() {
         
         invoiceData = invoiceData[0]
 
+        const formatedDate = invoiceData.invoicedate.replace(/(..).(..).(....)/, "$3-$1-$2");
+    
         setFormData({
           invoiceNumber: invoiceData.invoicenumber,
           vendor: invoiceData.vendorid,
-          dueDate: invoiceData.invoicedate,
+          dueDate: formatedDate,
           invoiceAmount: invoiceData.invoiceamount,
           invoiceid: id,
           fileLocation: invoiceData.filelocation,
@@ -227,9 +229,10 @@ export default function AddInvoice() {
                   </ul>
                 </div>
                 <div className="flex flex-row">
+                  {console.log("prevInvoiceFile", prevInvoiceFile)}
                   {DisplayPdfFile ? (
                     <embed src={DisplayPdfFile} type="application/pdf" width="100%" height="500vh" />
-                  ): prevInvoiceFile && <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/> && 'file not found'}
+                  ): prevInvoiceFile ? <embed src={`${prevInvoiceFile}#toolbar=0`} type="application/pdf" width="100%" height="500vh"/> : 'file not found'}
                 </div>
               </div>
             </div>
