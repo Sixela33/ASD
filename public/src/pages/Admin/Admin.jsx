@@ -4,6 +4,7 @@ import Users from './Users';
 import Clients from './Clients';
 import FlowerColors from './FlowerColors';
 import Contacts from './Contact';
+import ArrangementTypes from './ArrangementTypes';
 
 export default function Admin() {
   const [componentToShow, setComponentToShow] = useState(<Users />);
@@ -14,6 +15,7 @@ export default function Admin() {
     { id: 3, label: 'Clients', component: <Clients /> },
     { id: 4, label: 'Contacts', component: <Contacts /> },
     { id: 5, label: 'Flower Colors', component: <FlowerColors /> },
+    { id: 6, label: 'Arrangement Types', component: <ArrangementTypes /> },
   ];
 
   return (

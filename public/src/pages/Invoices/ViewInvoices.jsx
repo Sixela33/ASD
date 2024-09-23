@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAlert from '../../hooks/useAlert';
-import { useNavigate } from 'react-router-dom';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
 import { toCurrency } from '../../utls/toCurrency';
@@ -42,42 +41,25 @@ export default function ViewInvoices() {
     const page = useRef(0)
     const dataLeft = useRef(true)
 
-    const {setMessage} = useAlert()
+    const { setMessage } = useAlert()
     const axiosPrivate = useAxiosPrivate()
     const navigateTo = useNavigate()
-    const [ref, inView] = useInView({});
+    const location = useLocation()
+    const [ref, inView] = useInView({})
 
-
-    const fetchData = async (sortConfig, searchByInvoiceNumber, searchByInvoiceID, selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount) => {
+    const fetchData = async (params) => {
         try {
-            if (!dataLeft.current) {
-                return;
-            }
-            if(!selectedVendor) selectedVendor = ''
+            if (!dataLeft.current) return;
 
-            const response = await axiosPrivate.get(GET_INVOICES_URL + page.current , {
-                params: {
-                    orderBy: sortConfig.key,
-                    order: sortConfig.direction,
-                    invoiceNumber: searchByInvoiceNumber,
-                    invoiceID: searchByInvoiceID,
-                    specificVendor: selectedVendor,
-                    onlyMissing: showOnlyWithMissingLink || false,
-                    startDate: startDate,
-                    endDate: endDate,
-                    minAmount: minAmount,
-                    maxAmount: maxAmount
-                }})
-                
-            page.current = page.current + 1;
-            
+        const response = await axiosPrivate.get(GET_INVOICES_URL + page.current, { params });
+        page.current += 1;
+
             if (response.data?.length === 0) {
                 dataLeft.current = false;
                 return;
             }
-            setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
+            setInvoiceData((prevInvoices) => [...prevInvoices, ...response.data]);
         } catch (error) {
-            console.log(error)
             setMessage(error.response?.data);
         }
     };
@@ -87,51 +69,96 @@ export default function ViewInvoices() {
     const fetchVendors = async () => {
         try {
             const response = await axiosPrivate.get(GET_VENDORS_URL);
-            setAllVendors(response?.data);
+            setAllVendors(response.data);
         } catch (error) {
             setMessage(error.response?.data, true);
-            console.error('Error fetching data:', error);
         }
     }
 
+    // Update URL query params when any filter changes
+    const updateQueryParams = () => {
+        const queryParams = new URLSearchParams(location.search);
+
+        queryParams.set('invoiceID', searchByInvoiceID || '');
+        queryParams.set('invoiceNumber', searchByInvoiceNumber || '');
+        queryParams.set('vendor', selectedVendor || '');
+        queryParams.set('onlyMissing', showOnlyWithMissingLink ? 'true' : 'false');
+        queryParams.set('startDate', startDate || '');
+        queryParams.set('endDate', endDate || '');
+        queryParams.set('minAmount', minAmount || '');
+        queryParams.set('maxAmount', maxAmount || '');
+
+        navigateTo({ pathname: location.pathname, search: queryParams.toString() });
+    };
+
+    // Load filters from URL query parameters on mount
     useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
 
-        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            setMessage('Invalid date range: Start date cannot be later than the end date. Please select a valid range.');
-            return;
-        }
+        setSearchByInvoiceID(queryParams.get('invoiceID') || '');
+        setSearchByInvoiceNumber(queryParams.get('invoiceNumber') || '');
+        setSelectedVendor(queryParams.get('vendor') || '');
+        setShowOnlyWithMissingLink(queryParams.get('onlyMissing') === 'true');
+        setStartDate(queryParams.get('startDate') || '');
+        setEndDate(queryParams.get('endDate') || '');
+        setMinAmmount(queryParams.get('minAmount') || '');
+        setMaxAmmount(queryParams.get('maxAmount') || '');
 
-        if (minAmount && maxAmount && parseInt(maxAmount) < parseInt(minAmount)) {
-            setMessage('Invalid amount range: Minimum amount cannot be greater than maximum amount.');
-            return;
-        }
+        debounced({
+        orderBy: sortConfig.key,
+        order: sortConfig.direction,
+        invoiceID: queryParams.get('invoiceID') || '',
+        invoiceNumber: queryParams.get('invoiceNumber') || '',
+        specificVendor: queryParams.get('vendor') || '',
+        onlyMissing: queryParams.get('onlyMissing') === 'true',
+        startDate: queryParams.get('startDate') || '',
+        endDate: queryParams.get('endDate') || '',
+        minAmount: queryParams.get('minAmount') || '',
+        maxAmount: queryParams.get('maxAmount') || '',
+        });
 
-        setInvoiceData([])
-        page.current = 0
-        dataLeft.current=true
+        fetchVendors();
+    }, []);
 
-        debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
-        
-        
-    }, [sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount])
+    useEffect(() => {
+        updateQueryParams();
+        setInvoiceData([]);
+        page.current = 0;
+        dataLeft.current = true;
+        debounced({
+        orderBy: sortConfig.key,
+        order: sortConfig.direction,
+        invoiceID: searchByInvoiceID,
+        invoiceNumber: searchByInvoiceNumber,
+        specificVendor: selectedVendor,
+        onlyMissing: showOnlyWithMissingLink,
+        startDate,
+        endDate,
+        minAmount,
+        maxAmount
+        })
+    }, [sortConfig, searchByInvoiceID, searchByInvoiceNumber, selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount])
 
     useEffect(() => {
         if (inView) {
-
-            debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount)
+        debounced({
+            orderBy: sortConfig.key,
+            order: sortConfig.direction,
+            invoiceID: searchByInvoiceID,
+            invoiceNumber: searchByInvoiceNumber,
+            specificVendor: selectedVendor,
+            onlyMissing: showOnlyWithMissingLink,
+            startDate,
+            endDate,
+            minAmount,
+            maxAmount
+        });
         }
     }, [inView])
 
     const handleInvoiceSelection = (invoiceData) => {
         navigateTo(`/invoice/view/${invoiceData.invoiceid}`)
     }
-
-    useEffect(() => {
-        debounced(sortConfig, searchByInvoiceNumber, searchByInvoiceID,  selectedVendor, showOnlyWithMissingLink, startDate, endDate, minAmount, maxAmount);
-        fetchVendors()
-        
-    }, []);
-
 
     return (
         <div className='container mx-auto pt-12 p-4 text-center page'>
@@ -147,6 +174,7 @@ export default function ViewInvoices() {
                     <input
                         type="text"
                         onChange={(e) => setSearchByInvoiceID(e.target.value)}
+                        value={searchByInvoiceID}
                         className="w-full px-3"
                     />
                 </div>
@@ -155,6 +183,7 @@ export default function ViewInvoices() {
                 <input
                     type="text"
                     onChange={(e) => setSearchByInvoiceNumber(e.target.value)}
+                    value={searchByInvoiceNumber}
                     className="w-full px-3"
                 />
                 </div>

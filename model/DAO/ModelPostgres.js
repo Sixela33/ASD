@@ -920,10 +920,16 @@ class ModelPostgres {
         await CnxPostgress.db.query("INSERT INTO arrangementTypes (typeName) VALUES ($1);", [typeName])
     }
 
-    getArrangementTypes = async () => {
+    getArrangementTypes = async (searchByName) => {
         this.validateDatabaseConnection()
         const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes ORDER BY typename;")
         return response
+    }
+
+    editArrangementType = async (typename, arrangementtypeid) => {
+        this.validateDatabaseConnection()
+        const respone = await CnxPostgress.db.query('UPDATE arrangementTypes SET typeName = $1 WHERE arrangementTypeID=$2', [typename, arrangementtypeid])
+        return respone
     }
 
     // -----------------------------------------------

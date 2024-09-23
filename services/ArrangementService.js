@@ -1,6 +1,6 @@
 import ModelPostgres from "../model/DAO/ModelPostgres.js"
 import { validateSingleArrangement, validateFlowersToPopulateArrangement } from "./Validations/ArrangementValidations.js"
-import { validateId } from "./Validations/IdValidation.js"
+import { validateId, validateQueryString } from "./Validations/IdValidation.js"
 import ProjectService from "./ProjectService.js"
 
 class ArrangementService {
@@ -31,13 +31,18 @@ class ArrangementService {
         await this.model.populateArrangement(arrangementid, flowers)
     }
 
-    getArrangementTypes = async () => {
-        const response = await this.model.getArrangementTypes()
+    getArrangementTypes = async (searchByName) => {
+        await validateQueryString(searchByName)
+        const response = await this.model.getArrangementTypes(searchByName)
         return response.rows
     }
 
     createArrangementType = async (name) => {
         await this.model.loadArrangementType(name)
+    }
+
+    editArrangementType = async (typename, arrangementtypeid) => {
+        await this.model.editArrangementType(typename, arrangementtypeid)
     }
 
     getArrangementData = async (id) => {

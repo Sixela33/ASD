@@ -21,8 +21,8 @@ class ArrangementController {
 
     getArrangementTypes = async (req, res, next) => {
         try {
-            
-            const response = await this.service.getArrangementTypes()
+            const { searchByName } = req.params
+            const response = await this.service.getArrangementTypes(searchByName)
                 
             res.json(response)
         } catch (error) {
@@ -32,8 +32,19 @@ class ArrangementController {
 
     createArrangementType = async (req, res, next) => {
         try {
-            const {name} = req.body
-            const response = await this.service.createArrangementType(name)
+            const {typename} = req.body
+            const response = await this.service.createArrangementType(typename)
+                
+            res.json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    editArrangementType = async (req, res, next) => {
+        try {
+            const {typename, arrangementtypeid} = req.body
+            const response = await this.service.editArrangementType(typename, arrangementtypeid)
                 
             res.json(response)
         } catch (error) {
