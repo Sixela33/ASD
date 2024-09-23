@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import PopupBase from '../PopupBase'
 
-export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, projectsList, flowerData, selectedRow, selectedIndexes }) {
+export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, projectsList, flowerData, selectedRow, selectedIndexes, CHOSEN_PROJECTS_SORTED}) {
     const [selectedProject, setSelectedProject] = useState(selectedRow)
 
     const moveFlowersFromProject = () => {
@@ -11,8 +11,13 @@ export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, proj
         // Remove the flowers from the original project
         flowerData[selectedRow] = flowerData[selectedRow].filter((item, index) => !selectedIndexes.includes(index))
 
+        const updatedFlowers = flowersToMove.map(flower => ({
+            ...flower,
+            projectid: CHOSEN_PROJECTS_SORTED[selectedProject] // Assuming projectId is what you meant
+        }))
+
         // Add the flowers to the new selected project
-        flowerData[selectedProject] = [...flowerData[selectedProject], ...flowersToMove]
+        flowerData[selectedProject] = [...flowerData[selectedProject], ...updatedFlowers]
 
         closePopup()
     }

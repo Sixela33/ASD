@@ -220,13 +220,10 @@ export default function AddInvoice() {
               <div className="flex flex-col space-y-4">
                 <div className="flex flex-col">
                   <label className="mb-1">Select or drop file:</label>
-                  <input type="file" name="flower" onChange={handleFileChange} className="w-full" required />
+                <div className="text-sm text-gray-500">
+                  Press Ctrl and scroll to zoom in or out
                 </div>
-                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md">
-                  <ul className="">
-                    <li>Press Ctrl (or Cmd on Mac) and scroll to zoom in or out</li>
-
-                  </ul>
+                  <input type="file" name="flower" onChange={handleFileChange} className="w-full" required />
                 </div>
                 <div className="flex flex-row">
                   {console.log("prevInvoiceFile", prevInvoiceFile)}

@@ -277,6 +277,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 flowerData={displayFlowerData}
                 selectedRow={selectedRow}
                 selectedIndexes={selectedFlowers}
+                CHOSEN_PROJECTS_SORTED={CHOSEN_PROJECTS_SORTED}
             />
             <InvoiceAddFlowerToProjectPopup 
                 showPopup={addFlowerPopup} 
