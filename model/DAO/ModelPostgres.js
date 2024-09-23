@@ -145,7 +145,7 @@ class ModelPostgres {
             queryParams.push(`${searchByName}%`)
         }
     
-        baseQuery += ' ORDER BY clientID;'
+        baseQuery += ' ORDER BY clientName;'
         return CnxPostgress.db.query(baseQuery, queryParams)
     }
 
@@ -182,7 +182,7 @@ class ModelPostgres {
             queryParams.push(`${searchByName}%`)
         }
     
-        baseQuery += ' ORDER BY contactID;'
+        baseQuery += ' ORDER BY contactname;'
         return CnxPostgress.db.query(baseQuery, queryParams)
     }
 
