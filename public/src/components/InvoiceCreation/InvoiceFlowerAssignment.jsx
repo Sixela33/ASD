@@ -316,7 +316,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table> 
                 <thead>
                     <tr>
-                        {['Flower name', 'Recipe stems', 'Stems Bought', 'Unit price', 'Remove'].map((name, index) => (
+                        {['Flower name', 'Recipe stems', 'Stems Bought', 'Unit price', 'Total', 'Remove'].map((name, index) => (
                             <th key={index} >{name}</th>
                         ))}
                         <th>
@@ -345,6 +345,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                                     onChange={(e) => modifyFlowerData(e, index)}
                                 />
                             </td>
+                            <td>{toCurrency(flower.unitprice * flower.numstems)}  </td>
                             <td>
                                 <button onClick={() => handleRemoveFlower(index)} className="text-red-500">
                                     Remove

@@ -38,7 +38,7 @@ export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, proj
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-100">
-                                {['Project id', 'Client', 'Date', 'Contact', 'Selected'].map((name, index) => (
+                                {['Client', 'Description', 'Date', 'selected'].map((name, index) => (
                                     <th key={index} className="p-2">{name}</th>
                                 ))}
                             </tr>
@@ -46,10 +46,9 @@ export default function MoveFlowerFromProjectPopup({ showPopup, closePopup, proj
                         <tbody className="max-h-64 overflow-y-auto">
                             {projectsList?.map((item, index) => (
                                 <tr key={index} onClick={() => setSelectedProject(index)} className="hover:bg-gray-50 cursor-pointer">
-                                    <td className="p-2">{item?.projectid}</td>
                                     <td className="p-2">{item?.projectclient}</td>
+                                    <td className="p-2">{item?.projectdescription}</td>
                                     <td className="p-2">{item?.projectdate}</td>
-                                    <td className="p-2">{item?.projectcontact}</td>
                                     <td className="p-2">
                                         <input 
                                             type="checkbox" 
