@@ -34,7 +34,7 @@ class ArrangementService {
     getArrangementTypes = async (searchByName) => {
         await validateQueryString(searchByName)
         const response = await this.model.getArrangementTypes(searchByName)
-        return response.rows
+        return response
     }
 
     createArrangementType = async (name) => {
@@ -42,7 +42,11 @@ class ArrangementService {
     }
 
     editArrangementType = async (typename, arrangementtypeid) => {
-        await this.model.editArrangementType(typename, arrangementtypeid)
+        await this.model.editArrangementType(typename,arrangementtypeid)
+    }
+
+    deleteArrangementType = async (arrangementtypeid) => {
+        await this.model.deleteArrangementType(arrangementtypeid)
     }
 
     getArrangementData = async (id) => {

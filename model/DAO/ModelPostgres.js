@@ -917,19 +917,60 @@ class ModelPostgres {
 
     loadArrangementType = async (typeName) => {
         this.validateDatabaseConnection()
-        await CnxPostgress.db.query("INSERT INTO arrangementTypes (typeName) VALUES ($1);", [typeName])
+
+        // Check if the arrangement exists
+        const existingType = await CnxPostgress.db.query("SELECT * FROM arrangementTypes WHERE typeName = $1;", [typeName]);
+
+        if (existingType.rows && existingType.rows.length > 0) {
+            // If the arrangement exists and is disabled, enable it
+            console.log("existingType", existingType.rows)
+            if (existingType.rows[0].isremoved) {
+                await CnxPostgress.db.query(
+                    "UPDATE arrangementTypes SET isRemoved = false WHERE arrangementtypeid = $1;",
+                    [existingType.rows[0].arrangementtypeid]
+                );
+                return true
+            }
+            return false
+        }
+
+        // If it does not exist, create it
+        await CnxPostgress.db.query(
+            "INSERT INTO arrangementTypes (typeName) VALUES ($1);",
+            [typeName]
+        );
+        return true
     }
 
-    getArrangementTypes = async (searchByName) => {
-        this.validateDatabaseConnection()
-        const response = await CnxPostgress.db.query("SELECT * FROM arrangementTypes ORDER BY typename;")
-        return response
+    getArrangementTypes = async (searchByName = '') => {
+        this.validateDatabaseConnection();
+        console.log(searchByName)
+        const response = await CnxPostgress.db.query(
+            "SELECT * FROM arrangementTypes WHERE typeName ILIKE $1 AND isRemoved = false ORDER BY typeName;",
+            [`%${searchByName}%`]
+        );
+        return response.rows;
     }
 
     editArrangementType = async (typename, arrangementtypeid) => {
         this.validateDatabaseConnection()
         const respone = await CnxPostgress.db.query('UPDATE arrangementTypes SET typeName = $1 WHERE arrangementTypeID=$2', [typename, arrangementtypeid])
         return respone
+    }
+
+    deleteArrangementType = async (arrangementtypeid) => {
+        this.validateDatabaseConnection();
+        console.log("arrangementtypeid", arrangementtypeid)
+        const response = await CnxPostgress.db.query(
+            'UPDATE arrangementTypes SET isRemoved = true WHERE arrangementTypeID = $1',
+            [arrangementtypeid]
+        );
+
+        if (response.rowCount === 0) {
+            return { success: false, message: 'Arrangement type not found.' };
+        }
+
+        return { success: true, message: 'Arrangement type marked as removed.' };
     }
 
     // -----------------------------------------------

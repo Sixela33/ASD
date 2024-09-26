@@ -16,7 +16,8 @@ class ArrangementRouter {
         this.router.get('/types', this.controller.getArrangementTypes)
         this.router.post('/types', this.controller.createArrangementType)
         this.router.patch('/types', this.controller.editArrangementType)
-        
+        this.router.delete('/types', this.controller.deleteArrangementType)
+
         this.router.post('/creation', this.controller.populateArrangement)
         this.router.get('/creation/:id', this.controller.getArrangementData)
         this.router.patch('/edit/:id', staffuserReq, this.controller.editArrangement)

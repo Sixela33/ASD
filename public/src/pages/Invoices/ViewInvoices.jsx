@@ -170,15 +170,6 @@ export default function ViewInvoices() {
         <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Invoice ID</label>
-                    <input
-                        type="text"
-                        onChange={(e) => setSearchByInvoiceID(e.target.value)}
-                        value={searchByInvoiceID}
-                        className="w-full px-3"
-                    />
-                </div>
-                <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Invoice Number</label>
                 <input
                     type="text"

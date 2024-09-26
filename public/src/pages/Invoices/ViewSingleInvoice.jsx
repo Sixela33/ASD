@@ -107,7 +107,7 @@ export default function ViewSingleInvoice() {
                 Are you sure you want to Delete this invoice from the database?
             </ConfirmationPopup>
             <div className='grid grid-cols-3 mb-4'>
-                <button className='go-back-button col-span-1' onClick={() => navigateTo('/invoice')} >Go Back</button>
+                <button className='go-back-button col-span-1' onClick={() => navigateTo(-1)} >Go Back</button>
                 <h1 className='col-span-1'>Invoice Overview</h1>
             </div>
             <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">

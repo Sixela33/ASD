@@ -41,7 +41,7 @@ export default function ArrangementTypes() {
     const deleteArrangementType = async (id) => {
         try {
             await axiosPrivate.delete(DELETE_TYPE_URL, {params: {
-                id: id
+                arrangementtypeid: id
             }})
             fetchArrangementTypes(searchByName)
         } catch (error) {
@@ -114,7 +114,7 @@ export default function ArrangementTypes() {
                             <td>
                                 <button onClick={() => handleEditArrangementType(arrangementType)} className='go-back-button mx-4'>Edit</button>
                                 <button onClick={() => {
-                                    setSelectedForRemoval(arrangementType.arrangementTypeid)
+                                    setSelectedForRemoval(arrangementType.arrangementtypeid)
                                     setShowConfirmation(true)
                                 }} className='go-back-button mx-4'>Remove</button>
                             </td>
