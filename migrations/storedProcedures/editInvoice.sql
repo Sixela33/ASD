@@ -27,13 +27,15 @@ BEGIN
         stems_purchased := single_flower_price->>'numstems';
 
         IF NOT(stems_purchased = '' OR stems_purchased::NUMERIC <= 0) THEN
-        INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, numstems)
+        INSERT INTO flowerXInvoice (invoiceID, flowerID, projectID, unitPrice, numstems, addedOrder)
             VALUES (
             (p_invoiceData->>'invoiceid')::INT,
             (single_flower_price->>'flowerid')::INT,
             (single_flower_price->>'projectid')::INT,
             (single_flower_price->>'unitprice')::FLOAT,
-            (single_flower_price->>'numstems')::FLOAT
+            (single_flower_price->>'numstems')::FLOAT,
+            (single_flower_price->>'addedorder')::INT
+
             );
         END IF;
     END LOOP;

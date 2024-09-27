@@ -192,14 +192,14 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             }
             
             let invoiceFlowerData = displayFlowerData.flat(Infinity)
-
             
             let temp = invoiceFlowerData
             .filter(item => item.numstems && item.numstems != 0)
-            .map(item => {
+            .map((item, index) => {
                 let temp = {...item}
                 delete temp.totalstems
                 delete temp.flowername
+                temp.addedorder = index
                 return temp
             })
             console.log("invoiceFlowerData", temp)

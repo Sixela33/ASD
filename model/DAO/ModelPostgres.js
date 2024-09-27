@@ -1188,6 +1188,7 @@ class ModelPostgres {
                 f.flowername,
                 FxI.unitPrice,
                 FxI.numStems,
+                FxI.addedOrder,
                 p.projectID
             FROM flowerXInvoice FxI
             LEFT JOIN flowers f ON f.flowerID = FxI.flowerID

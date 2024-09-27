@@ -39,6 +39,9 @@ const invoiceFlowerSchema = Joi.object({
     numstems: Joi.number().required().messages({
         'number.base': 'Bought Stems must be a number.',
         'any.required': 'Bought Stems is required.'
+    }),
+    addedorder: Joi.number().optional().messages({
+        'number.base': 'Bought Stems must be a number.',
     })
 });
 
