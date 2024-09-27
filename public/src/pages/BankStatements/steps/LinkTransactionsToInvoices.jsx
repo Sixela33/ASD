@@ -6,6 +6,7 @@ import TableHeaderSort from '../../../components/Tables/TableHeaderSort';
 import { debounce } from 'lodash';
 import { toCurrency } from '../../../utls/toCurrency';
 import { useInView } from 'react-intersection-observer';
+import NumberInputWithNoScroll from '../../../components/NumberInputWithNoScroll';
 
 const GET_INVOICES_URL = '/api/invoices/invoices/';
 const LINK_INVOICES_URL = '/api/bankTransactions/invoices'
