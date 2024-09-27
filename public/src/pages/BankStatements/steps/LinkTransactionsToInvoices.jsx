@@ -146,6 +146,10 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
     const handleSubmit = async () => {
         try {
             const selectedInvoicesData = Object.keys(selectedInvoices)
+            if(selectedInvoicesData.length == 0) {
+                setMessage("Select at least 1 invoice to continue", true)
+                return
+            }
             await axiosPrivate.patch(LINK_INVOICES_URL, JSON.stringify({selectedInvoicesData, selectedTransactionID: selectedTransaction.transactionid}))   
             onSubmit()
         } catch (error) {
