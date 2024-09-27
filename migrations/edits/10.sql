@@ -2,7 +2,7 @@
 ALTER TABLE arrangementTypes 
 ADD COLUMN isRemoved boolean DEFAULT false;
 
-to order the flowers on the invoice page
+-- to order the flowers on the invoice page
 ALTER TABLE flowerXInvoice
 ADD COLUMN addedOrder INT DEFAULT 0;
  
