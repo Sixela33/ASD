@@ -270,6 +270,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
               isListBelow={true}
               label={"seasonname"}
               placeholderText={"Add a season"}
+              selectAllButton={true}
             />
           </div>
         )}
