@@ -112,7 +112,8 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
         dataLeft.current=true
 
         debounced(sortConfig, searchByInvoiceNumber, startDate, endDate, minAmount, maxAmount)
-        
+        fetch_already_linked_debounced(selectedTransaction.transactionid)
+
         
     }, [sortConfig, searchByInvoiceNumber, startDate, endDate, minAmount, maxAmount])
 

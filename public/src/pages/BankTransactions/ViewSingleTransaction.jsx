@@ -95,42 +95,45 @@ export default function ViewSingleTransaction() {
             <div className='flex flex-col md:flex-row md:p-10 items-start min-h-full'>
                 <div className='md:w-1/2 mb-8 px-5 md:mb-0'>
                     <h2>Invoices Selected</h2>
-                    <TableHeaderSort
-                        headers={{
-                            "Invoice Number": "invoicenumber", 
-                            "Amount": "invoiceamount",
-                            "Date": "invoicedate",
-                        }}
-                    >
-                        {linkedInvoices && linkedInvoices.map((invoice, index) => {
-                            return <tr key={index}>
-                                <td>{invoice.invoicenumber}</td>
-                                <td>{toCurrency(invoice.invoiceamount)}</td>
-                                <td>{invoice.invoicedate}</td>
-                            </tr>
-                        })}
+                        <div className='table-container h-[55vh]'>
+                            <TableHeaderSort
+                                headers={{
+                                    "Invoice Number": "invoicenumber", 
+                                    "Amount": "invoiceamount",
+                                    "Date": "invoicedate",
+                                }}
+                            >
+                                {linkedInvoices && linkedInvoices.map((invoice, index) => {
+                                    return <tr key={index}>
+                                        <td>{invoice.invoicenumber}</td>
+                                        <td>{toCurrency(invoice.invoiceamount)}</td>
+                                        <td>{invoice.invoicedate}</td>
+                                    </tr>
+                                })}
 
-                    </TableHeaderSort>
+                            </TableHeaderSort>
+                        </div>
                 </div>
                 <div className='md:w-1/2 mb-8 px-5 md:mb-0'>
                     <div className=''>
                         <h2>Project Breakdown</h2>
-
-                        <TableHeaderSort
-                        headers={{
-                            "ID": "projectid", 
-                            "Description": "projectdescription",
-                            "Tied Expenses": "tiedexpenses",
-                        }}>
-                            {linkedProjects && linkedProjects.map((project, index) => {
-                                return <tr key={index}>
-                                    {console.log(project)}
-                                    <td>{project.projectid}</td>
-                                    <td>{project.projectdescription}</td>
-                                    <td>{toCurrency(project.tiedexpenses)}</td>
-                                </tr>
-                            })}
-                        </TableHeaderSort>
+                        <div className='table-container h-[50vh]'>
+                            <TableHeaderSort
+                            headers={{
+                                "ID": "projectid", 
+                                "Description": "projectdescription",
+                                "Tied Expenses": "tiedexpenses",
+                            }}>
+                                {linkedProjects && linkedProjects.map((project, index) => {
+                                    return <tr key={index}>
+                                        {console.log(project)}
+                                        <td>{project.projectid}</td>
+                                        <td>{project.projectdescription}</td>
+                                        <td>{toCurrency(project.tiedexpenses)}</td>
+                                    </tr>
+                                })}
+                            </TableHeaderSort>
+                        </div>
                     </div>
                 </div>
             </div>

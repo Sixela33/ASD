@@ -200,7 +200,7 @@ export default function BankTransactionsList() {
                 >
                     {transactionData.map((transaction, index) => (
                         <tr key={index} onClick={() => navigateTo('/bankTransactions/' + transaction.transactionid)}>
-                            <td>{transaction.vendorcode + transaction.transactiondate}</td>
+                            <td>{transaction.vendorcode + " " + transaction.transactiondate}</td>
                             <td>{transaction?.vendorname}</td>
                             <td>{transaction?.transactiondate}</td>
                             <td>{toCurrency(transaction?.transactionamount)}</td>
