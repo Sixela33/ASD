@@ -1587,7 +1587,8 @@ class ModelPostgres {
             SELECT 
                 invoicenumber,
                 invoiceamount,
-                TO_CHAR(invoicedate, 'MM-DD-YYYY') AS invoicedate
+                TO_CHAR(invoicedate, 'MM-DD-YYYY') AS invoicedate,
+                invoiceID
             FROM invoices 
             WHERE bankTransaction = $1;`, [id])
     }

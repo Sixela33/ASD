@@ -277,7 +277,7 @@ export default function NewFlowerForm({showPopup, cancelButton, refreshData, flo
       </div>
       <div className="flex justify-between mt-4">
         <button className="buton-secondary" onClick={handleCancel}>Cancel</button>
-        <button className="buton-main" onClick={handleSubmit}>Add Flower</button>
+        <button className="buton-main" onClick={handleSubmit}>{flowerToEdit ? "Save Flower" : "Add Flower"}</button>
       </div>
     </div>
     </PopupBase>

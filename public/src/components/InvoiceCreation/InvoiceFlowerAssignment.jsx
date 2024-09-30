@@ -291,7 +291,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
             <table >
                 <thead>
                     <tr>
-                        {['Client', 'Description', 'Date', 'selected'].map((name, index) => (
+                        {['Client', 'Description', 'Date', 'Selected'].map((name, index) => (
                             <td key={index} >
                             {name}
                             </td>
@@ -312,7 +312,7 @@ export default function InvoiceFlowerAssignment({goBack, chosenProjects, invoice
                 </tbody>
             </table>
             </div>
-            <div className='table-container h-[30vh]'>
+            <div className='table-container h-[50vh]'>
             <table> 
                 <thead>
                     <tr>

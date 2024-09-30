@@ -5,7 +5,7 @@ import useAlert from '../../hooks/useAlert';
 import LocalDataSortTable from '../../components/Tables/LocalDataSortTable';
 import TableHeaderSort from '../../components/Tables/TableHeaderSort';
 import FloatingMenuButton from '../../components/FloatingMenuButton/FloatingMenuButton';
-import { FiEdit, FiDownload, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiDownload, FiTrash, FiX } from 'react-icons/fi';
 import { permissionsRequired } from '../../utls/permissions';
 import { toCurrency } from '../../utls/toCurrency';
 import ConfirmationPopup from '../../components/Popups/ConfirmationPopup';
@@ -22,8 +22,10 @@ export default function ViewSingleInvoice() {
     const [projectsProvided, setProjectsProvided] = useState([])
     const [invoiceData, setInvoiceData] = useState([])
     const [invoiceFlowers, setInvoiceFlowers] = useState([])
+    const [filteredFlowers, setFilteredFlowers] = useState([])
     const [bankTxs, setBankTxs] = useState([])
     const [showDeleteInvoiceConfirmation, setShowDeleteInvoiceConfirmation] = useState(false)
+    const [selectedProject, setSelectedProject] = useState(null)
 
     const fetchProjectsProvided = async () => {
         try {
@@ -32,7 +34,7 @@ export default function ViewSingleInvoice() {
             
             if (!flowers || !invoiceData || !projects){
                 setMessage("Server Error")
-                useNavigate('/invoice')
+                navigateTo('/invoice')
             }
             let processedFlowerData = []
             flowers.map((flower) => {
@@ -49,6 +51,7 @@ export default function ViewSingleInvoice() {
             setProjectsProvided(projects)
             setInvoiceData(invoiceData[0])
             setInvoiceFlowers(processedFlowerData)
+            setFilteredFlowers(processedFlowerData)
             setBankTxs(bankTransactions)
         } catch (error) {
             setMessage(error.response?.data, true);
@@ -60,6 +63,23 @@ export default function ViewSingleInvoice() {
             fetchProjectsProvided()
         }
     }, [])
+
+    useEffect(() => {
+        filterFlowers()
+    }, [selectedProject, invoiceFlowers])
+
+    const filterFlowers = () => {
+        if (selectedProject) {
+            const filtered = invoiceFlowers.filter(flower => flower.projectid === selectedProject)
+            setFilteredFlowers(filtered)
+        } else {
+            setFilteredFlowers(invoiceFlowers)
+        }
+    }
+
+    const handleProjectSelect = (projectId) => {
+        setSelectedProject(prevSelected => prevSelected === projectId ? null : projectId)
+    }
 
     const downloadFile = () => {
         window.open(`${invoiceData.filelocation}`, '_blank', 'noreferrer')
@@ -127,17 +147,42 @@ export default function ViewSingleInvoice() {
                             <p>Loaded By: {invoiceData.email}</p>
                         </div>
                     </div>
-                    <div className='table-container h-[20vh] '>
-                        <LocalDataSortTable
-                            headers = {{
-                                "Project ID": "projectid",
-                                "Project Client": "projectclient", 
-                                "Project Contact": "contactname", 
-                                "Project Description": "projectdescription", 
-                                "Project Date": "projectdate"}
-                            }
-                            data={projectsProvided}
-                            />
+                    {selectedProject && (
+                        <div onClick={() => setSelectedProject(null)} className="px-2 py-1 rounded-md flex items-center">
+                            Project {selectedProject} selected
+                            <button className="ml-2 text-blue-600 hover:text-blue-800">
+                                <FiX />
+                            </button>
+                        </div>
+                    )}
+                    <div className='relative'>
+                        <div className='table-container h-[20vh] '>
+                            <TableHeaderSort
+                                headers = {{
+                                    "Project ID": "projectid",
+                                    "Project Client": "projectclient", 
+                                    "Project Contact": "contactname", 
+                                    "Project Description": "projectdescription", 
+                                    "Project Date": "projectdate"}
+                                }> 
+                                {projectsProvided.map((item, index) => {
+                                    const isSelected = item.projectid === selectedProject;
+                                    return (
+                                        <tr 
+                                            key={index} 
+                                            onClick={() => handleProjectSelect(item.projectid)}
+                                            className={`cursor-pointer ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                                        >
+                                            <td>{item.projectid}</td>
+                                            <td>{item.projectclient}</td>
+                                            <td>{item.contactname}</td>
+                                            <td>{item.projectdescription}</td>
+                                            <td>{item.projectdate}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </TableHeaderSort>
+                        </div>
                     </div>
                     <div className='table-container h-[20vh] mt-3'>
                         <TableHeaderSort
@@ -147,8 +192,8 @@ export default function ViewSingleInvoice() {
                                 "Stems Purchased": "numStems",
                             }}
                         >
-                            {invoiceFlowers.map((item, index) => {
-                                return <tr key={index}  onClick={() => onRowClick(item)}>
+                            {filteredFlowers.map((item, index) => {
+                                return <tr key={index}>
                                     <td>{item.flowername}</td>
                                     <td>{toCurrency(item.unitprice)}</td>
                                     <td>{item.numstems}</td>
@@ -156,16 +201,8 @@ export default function ViewSingleInvoice() {
                             })}
                         </TableHeaderSort>
                     </div>
-                    {bankTxs && <div className='h-[10vh] overflow-y-auto'>
-                            <h3>Bank Transactions</h3>
-                            {bankTxs.map((tx, index) => {
-                                return <p key={index}>{tx.transactionnumber}</p>
-                            })}
-                    </div>}
-                                   
                 </div>
             </div>
         </div>
-
     );
 }
