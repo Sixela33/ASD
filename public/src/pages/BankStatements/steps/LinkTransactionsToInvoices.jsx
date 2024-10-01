@@ -209,7 +209,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                     </div>
                 </div>
         </div>
-            <div className='table-container h-[30vh]'>
+            <div className='table-container h-[50vh]'>
                 <TableHeaderSort
                     headers={colData} 
                     setSortConfig={setSortConfig} 

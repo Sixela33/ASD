@@ -523,7 +523,7 @@ export default function ViewProject() {
                     
                 </div>
             </div>
-            <div className='table-container h-[20vh]'>
+            <div className='table-container h-[40vh]'>
                 <TableHeaderSort
                     headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','"Installation Quantity per Week': ' ', 'Quantity of Weeks per Billing Period': ' ' , 'Status': ' ', 'Admin': ' '}}
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}

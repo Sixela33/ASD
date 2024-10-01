@@ -58,6 +58,7 @@ nav {
 
 table {
     width: 100%;
+    min-width: 600px; /* Prevent shrinking */
     table-layout: fixed;
     border-collapse: collapse;
 }
@@ -86,8 +87,9 @@ td {
 }
 
 .table-container {
-    overflow: auto;
     width: 100%;
+    overflow-x: auto;
+    display: block;
 }
 
 .sortingArrow {
