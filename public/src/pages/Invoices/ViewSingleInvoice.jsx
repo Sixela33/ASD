@@ -132,12 +132,7 @@ export default function ViewSingleInvoice() {
                 <button className='go-back-button col-span-1' onClick={() => navigateTo(-1)} >Go Back</button>
                 <h1 className='col-span-1'>Invoice Overview</h1>
             </div>
-            <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
-                <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
-                {invoiceData.filelocation ? <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />:'file not found'}
-                </div>
-                <div className='mx-10 w-full md:w-2/4 grid grid-col'>
-                    <div className="items-center grid grid-row md:grid-cols-2 gap-8 my-4 mx-auto text-left font-bold ">
+            <div className="items-center grid grid-row md:grid-cols-2 gap-8 my-4 mx-auto text-left font-bold ">
                         <div className='grid-row'>
                             <p>Vendor Name: {invoiceData.vendorname}</p>
                             <p>Invoice amount: {toCurrency(invoiceData.invoiceamount)}</p>
@@ -147,6 +142,11 @@ export default function ViewSingleInvoice() {
                             <p>Loaded By: {invoiceData.email}</p>
                         </div>
                     </div>
+            <div className="mt-8 w-full flex flex-col md:flex-row items-start md:items-center">
+                <div className='w-full md:w-2/4 mb-8 md:mb-0'> 
+                {invoiceData.filelocation ? <embed src={`${invoiceData.filelocation}#toolbar=0`} type="application/pdf" width="100%" height="600vh" />:'file not found'}
+                </div>
+                <div className='mx-10 w-full md:w-2/4 grid grid-col'>
                     {selectedProject && (
                         <div onClick={() => setSelectedProject(null)} className="px-2 py-1 rounded-md flex items-center">
                             Project {selectedProject} selected
@@ -184,7 +184,7 @@ export default function ViewSingleInvoice() {
                             </TableHeaderSort>
                         </div>
                     </div>
-                    <div className='table-container h-[20vh] mt-3'>
+                    <div className='table-container h-[40vh] mt-3'>
                         <TableHeaderSort
                             headers = {{
                                 "Flower Name": "flowername", 
