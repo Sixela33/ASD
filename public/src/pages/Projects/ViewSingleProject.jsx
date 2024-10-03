@@ -68,8 +68,6 @@ export default function ViewProject() {
     const [showArrangementEditPopup, setShowArrangementEditPopup] = useState(false)
     const [editArrangementPopupData, setEditArrangementPopupData] = useState(null)
 
-    const [deletePopupData, setDeletePopupData] = useState({show: false, deleteID: null})
-
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
@@ -245,13 +243,6 @@ export default function ViewProject() {
         setShowArrangementEditPopup(true)
     }
 
-    const handleCLickReemoveArrangement = (e, item) =>  {
-        if(!(userData.permissionlevel >= permissionsRequired['remove_arrangement'])) return
-        if(!validateProjectIsOpen()) return
-        e.stopPropagation() 
-        setDeletePopupData({show: true, deleteID:item.arrangementid})
-    }
-
     const handleCreateArrangement = () => {
         if(!validateProjectIsOpen()) return
         setEditArrangementPopupData(undefined)
@@ -270,18 +261,6 @@ export default function ViewProject() {
         setShowEditProjectPopup(false)
         if (refreshData == true) {
             fetchFlowers()
-        }
-    }
-
-    const handleArrangementDelete = async () => {
-        try {
-            await axiosPrivate.delete(DELETE_ARRANGEMENT_URL + deletePopupData.deleteID)
-            setDeletePopupData({show: false, deleteID: null})
-            setMessage("Arrangement deleted successfully", false)
-            fetchFlowers();
-        } catch (error) {
-            setMessage(error.response?.data, true)
-
         }
     }
 
@@ -459,9 +438,6 @@ export default function ViewProject() {
                 return <p key={index}>{flower.flowername} x {flower.amount}</p> })}
             </Tooltip>
             {projectData?.projectid && <FloatingMenuButton options={buttonOptions}/>}
-            <ConfirmationPopup showPopup={deletePopupData.show} closePopup={() => setDeletePopupData({show: false, deleteID: null})} confirm={handleArrangementDelete}> 
-                Are you sure you want to Delete this arrangement from the database?
-            </ConfirmationPopup>
             <ConfirmationPopup showPopup={showDeleteProjectPopup} closePopup={() => setShowDeleteProjectPopup(false)} confirm={removeProject}>
                 <h1>Are you sure you want to delete this project?</h1>
                 <p>this changes cannot be reverted</p>
@@ -525,12 +501,12 @@ export default function ViewProject() {
             </div>
             <div className='table-container h-[40vh]'>
                 <TableHeaderSort
-                    headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','"Installation Quantity per Week': ' ', 'Quantity of Weeks per Billing Period': ' ' , 'Status': ' ', 'Admin': ' '}}
+                    headers={{'Type': ' ', 'Description': ' ','Location': ' ', 'Quantity': ' ', 'Flower Budget': ' ', 'Assigned Budget': ' ','"Installation Quantity per Week': ' ', 'Quantity of Weeks per Billing Period': ' ' , 'Status': ' '}}
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
                     {arrangementData?.map((item, index) => (
-                        <tr key={index}  
-                            onClick={() => handleArrangement(item)}      
+                        <tr key={index}
+                            onClick={(e) => handleArrangementEdit(e, item)}        
                             onMouseMove={handleMouseMove}
                             onMouseEnter={() => handleMouseEnter(item.arrangementid)}
                             onMouseLeave={handleMouseLeave}>
@@ -542,12 +518,8 @@ export default function ViewProject() {
                             <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
                             <td>{item.timesbilled}</td>
-                            <td className={item?.hasFlowers ? 'bg-green-500' : 'bg-yellow-500'}>
+                            <td className={item?.hasFlowers ? 'bg-green-500' : 'bg-yellow-500'} onClick={() => handleArrangement(item)}>
                                 {item?.hasFlowers ? 'Created' : 'Design Needed'}
-                            </td>
-                            <td className='border-b p-2 text-center'>
-                                <button onMouseEnter={handleMouseLeave} className='go-back-button' onClick={(e) => handleArrangementEdit(e, item)}>Edit</button>
-                                <button onMouseEnter={handleMouseLeave} className='go-back-button ml-2' onClick={(e) => handleCLickReemoveArrangement(e, item)}>Remove</button>
                             </td>
                         </tr>
                     ))}

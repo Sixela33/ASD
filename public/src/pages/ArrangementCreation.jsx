@@ -7,9 +7,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toCurrency } from '../utls/toCurrency';
 import { toInteger } from 'lodash';
 import NumberInputWithNoScroll from '../components/NumberInputWithNoScroll';
+import ConfirmationPopup from '../components/Popups/ConfirmationPopup';
 
 const FETCH_ARRANGEMENT_DATA_URL = '/api/arrangements/creation/';
 const SUBMIT_ARRANGEMENT_URL = '/api/arrangements/creation/'
+const DELETE_ARRANGEMENT_URL = 'api/arrangements/'
 
 export default function ArrangementCreation() {
     const { id } = useParams();
@@ -118,10 +120,32 @@ export default function ArrangementCreation() {
         addFlowerDrop(flower, quantityToAdd)
     }
 
+    const handleArrangementDelete = async () => {
+        try {
+            await axiosPrivate.delete(DELETE_ARRANGEMENT_URL + id)
+            setShowDeletePopup(false)
+            setMessage("Arrangement deleted successfully", false)
+            navigateTo('/projects')
+        } catch (error) {
+            setMessage(error.response?.data, true)
+    
+        }
+    }
+
+    const [showDeletePopup, setShowDeletePopup] = useState(false)
+
     return (
         <>
             {arrangementData && (
                 <div className="mx-auto my-8 text-center page p-6">
+                     <ConfirmationPopup
+                        showPopup={showDeletePopup}
+                        closePopup={() => setShowDeletePopup(false)}
+                        confirm={handleArrangementDelete}
+                    >
+                        <p>Are you sure you want to delete this arrangement?</p>
+
+                    </ConfirmationPopup>
                     <div className="grid grid-cols-3 mb-4">
                         <button onClick={() => navigateTo(-1)} className='go-back-button col-span-1'>Go Back</button>
                         <h2 className='col-span-1'>Create Arrangement</h2>
@@ -176,6 +200,7 @@ export default function ArrangementCreation() {
                                     <p className="mt-4">Flower Budget: {toCurrency(arrangementData.clientcost * arrangementData.profitmargin)}</p>
                                     <p className="mt-4">Spent Budget: <span className={(arrangementData.clientcost * arrangementData.profitmargin < sum) ? 'text-red-500' : ''}>{toCurrency(sum)}</span></p>
                                     <button className='buton-main' onClick={submitArrangement}>Save</button>
+                                    <button className='buton-main' onClick={() => setShowDeletePopup(true)}>Remove</button>
                                 </div>
                                 <div>
                                 </div>
