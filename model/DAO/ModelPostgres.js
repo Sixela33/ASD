@@ -1112,7 +1112,7 @@ class ModelPostgres {
         }
     
         if (invoiceNumber) {
-            queryConditions.push(`i.invoicenumber::text LIKE $${queryParams.length + 1}`)
+            queryConditions.push(`i.invoicenumber::text ILIKE $${queryParams.length + 1}`)
             queryParams.push(`%${invoiceNumber}%`)
         }
     
