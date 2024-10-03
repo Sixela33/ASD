@@ -36,22 +36,10 @@ export default function ViewSingleInvoice() {
                 setMessage("Server Error")
                 navigateTo('/invoice')
             }
-            let processedFlowerData = []
-            flowers.map((flower) => {
-                let ix = processedFlowerData.findIndex((item) => (item.flowerid == flower.flowerid && flower.unitprice == item.unitprice ))
-                if (ix == -1) {
-                    processedFlowerData.push(flower)
-                } else {
-                    processedFlowerData[ix].numstems = processedFlowerData[ix].numstems + flower.numstems
-                }
-            })
-            processedFlowerData = processedFlowerData.sort((a, b) => {
-                return a.addedorder - b.addedorder
-            })
+
             setProjectsProvided(projects)
             setInvoiceData(invoiceData[0])
-            setInvoiceFlowers(processedFlowerData)
-            setFilteredFlowers(processedFlowerData)
+            setInvoiceFlowers(flowers)
             setBankTxs(bankTransactions)
         } catch (error) {
             setMessage(error.response?.data, true);
@@ -73,7 +61,16 @@ export default function ViewSingleInvoice() {
             const filtered = invoiceFlowers.filter(flower => flower.projectid === selectedProject)
             setFilteredFlowers(filtered)
         } else {
-            setFilteredFlowers(invoiceFlowers)
+            let processedFlowerData = invoiceFlowers.reduce((acc, flower) => {
+                const existingFlower = acc.find(item => item.flowerid === flower.flowerid && item.unitprice === flower.unitprice);
+                if (existingFlower) {
+                  existingFlower.numstems += flower.numstems;
+                } else {
+                  acc.push({ ...flower });
+                }
+                return acc;
+              }, []).sort((a, b) => a.addedorder - b.addedorder);
+            setFilteredFlowers(processedFlowerData)
         }
     }
 
