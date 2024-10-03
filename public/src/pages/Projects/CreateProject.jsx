@@ -36,7 +36,7 @@ const initialState = {
   endDate: '',
   contact: '',
   staffBudget: 0.3,
-  profitMargin: 0.7,
+  profitMargin: 0.3,
   isRecurrent: false
 }
 
@@ -116,7 +116,7 @@ export default function CreateProject() {
         
         tempProjectStats.totalFlowerCost = totalFlowerCost
         tempProjectStats.totalExtrasCost = totalAditional
-        tempProjectStats.totalFlowerBudget = totalFlowerCost * (1-profitMargin)
+        tempProjectStats.totalFlowerBudget = totalFlowerCost * profitMargin
         tempProjectStats.totalProjectCost = totalFlowerCost + totalAditional
         tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * staffBudget
         tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget
@@ -220,7 +220,8 @@ export default function CreateProject() {
             let newData = {
                 ...formState,
                 client: formState.client.clientid,
-                contact: formState.contact.contactid
+                contact: formState.contact.contactid,
+                profitMargin: formState.profitMargin
 
             };
     
@@ -392,7 +393,7 @@ export default function CreateProject() {
                             </div>
 
                             <div className={formColClass}>
-                            <FormItem labelName="Profit Margin:" step='0.1' type="number" inputName="profitMargin" value={profitMargin} handleChange={(e) => handleFormEdit('profitMargin', e.target.value)} error={errors.profitMargin} />
+                            <FormItem labelName="Flower Budget:" step='0.1' type="number" inputName="profitMargin" value={profitMargin} handleChange={(e) => handleFormEdit('profitMargin', e.target.value)} error={errors.profitMargin} />
                             </div>
                         </div>
                         </div>
@@ -423,12 +424,12 @@ export default function CreateProject() {
                                                 <td>{arrangement?.arrangementType.typename}</td>
                                                 <td>{arrangement.arrangementDescription}</td>
                                                 <td>{toCurrency(arrangement.clientCost)}</td>
-                                                <td>{toCurrency((arrangement.clientCost) *  (1-formState.profitMargin))}</td>
+                                                <td>{toCurrency((arrangement.clientCost) *  formState.profitMargin)}</td>
                                                 <td>{arrangement.arrangementQuantity}</td>
                                                 <td>{arrangement.installationTimes}</td>
                                                 <td>{arrangement.timesBilled}</td>
                                                 <td>{toCurrency(arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled)}</td>
-                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled) *  (1-formState.profitMargin))}</td>
+                                                <td>{toCurrency((arrangement.clientCost * arrangement.arrangementQuantity * arrangement.installationTimes * arrangement.timesBilled) *  formState.profitMargin)}</td>
                                             </tr>
                             
                                         ))}

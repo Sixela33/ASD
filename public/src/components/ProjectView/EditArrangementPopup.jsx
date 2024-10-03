@@ -88,8 +88,8 @@ export default function EditArrangementPopup({showPopup, closePopup, arrangement
 
   useEffect(() => {
     const totalClientCost = newArrangementData.clientCost * newArrangementData.arrangementQuantity * newArrangementData.installationTimes * newArrangementData.timesBilled
-    const individualFlowerBudget = newArrangementData.clientCost * (1 - projectData.profitmargin)
-    const totalFlowerBudget = totalClientCost * (1-projectData.profitmargin)
+    const individualFlowerBudget = newArrangementData.clientCost * projectData.profitmargin
+    const totalFlowerBudget = totalClientCost * projectData.profitmargin
     const totalProfit = totalClientCost - totalFlowerBudget
 
     setNewArrangementStats({

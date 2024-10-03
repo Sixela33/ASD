@@ -22,7 +22,7 @@ const projectGenerator = () => ({
     projectEndDate: faker.date.between('2025-1-31', '2026-1-31'),
     projectDescription: faker.commerce.department(),
     clientid: 1,
-    profitMargin: 0.7,
+    profitMargin: 0.3,
     creatorid: 1,
     isRecurrent: false
 })

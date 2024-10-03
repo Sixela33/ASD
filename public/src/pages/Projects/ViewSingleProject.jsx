@@ -104,7 +104,7 @@ export default function ViewProject() {
             }
             
             const totalBudget = arrangements.reduce((value, arrangement) => {
-                return value + (arrangement.clientcost * (1 - project[0]?.profitmargin))
+                return value + (arrangement.clientcost * project[0]?.profitmargin)
               }, 0)
 
             setTotalBudget(totalBudget)
@@ -150,7 +150,7 @@ export default function ViewProject() {
             tempProjectStats.totalFlowerCost = totalClientFlowerCost
             tempProjectStats.totalExtrasCost = totalAditional
             tempProjectStats.totalProjectCost = tempProjectStats.totalFlowerCost + tempProjectStats.totalExtrasCost
-            tempProjectStats.totalFlowerBudget = tempProjectStats.totalFlowerCost * (1-projectData.profitmargin)
+            tempProjectStats.totalFlowerBudget = tempProjectStats.totalFlowerCost * projectData.profitmargin
             tempProjectStats.totalStaffBudget = tempProjectStats.totalProjectCost * projectData.staffbudget
             tempProjectStats.totalProjectProfit = tempProjectStats.totalProjectCost - tempProjectStats.totalFlowerBudget - tempProjectStats.totalStaffBudget - estimate.totalFlowerCost
 
@@ -538,7 +538,7 @@ export default function ViewProject() {
                             <td>{item?.arrangementdescription}</td>
                             <td>{item?.arrangementlocation}</td>
                             <td>{item?.arrangementquantity}</td>
-                            <td>{toCurrency((item?.clientcost) * (1 - projectData.profitmargin))}</td>
+                            <td>{toCurrency((item?.clientcost) * projectData.profitmargin)}</td>
                             <td>{toCurrency(item?.assignedBudget)}</td>
                             <td>{item.installationtimes}</td>
                             <td>{item.timesbilled}</td>
