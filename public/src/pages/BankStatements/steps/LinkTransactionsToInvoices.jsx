@@ -30,6 +30,8 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
     const [searchByInvoiceNumber, setSearchByInvoiceNumber] = useState('')
     const [minAmount, setMinAmmount] = useState('')
     const [maxAmount, setMaxAmmount] = useState('')
+    const [displayInvoiceData, setDisplayInvoicedata] = useState([])
+
 
     const page = useRef(0)
     const dataLeft = useRef(true)
@@ -59,8 +61,9 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                     minAmount: minAmount,
                     maxAmount: maxAmount,
                     withoutTransaction: true
-                }})
-                
+                }
+            });
+
             page.current = page.current + 1;
             
             if (response.data?.length === 0) {
@@ -77,20 +80,36 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
     const fetchAlreadyLinked = async (id) => {
         try {
             const response = await axiosPrivate.get(GET_LINKED_INVOICES + id)
-            response.data.map(invoice => {
-                setSelectedInvoices(prevState => {
-                    return { ...prevState, [invoice.invoiceid]: {amount: invoice.invoiceamount} };
+            const linkedInvoices = response.data
 
+            setSelectedInvoices(prevState => {
+                const updatedState = { ...prevState }
+                linkedInvoices.forEach(invoice => {
+                    updatedState[invoice.invoiceid] = { amount: invoice.invoiceamount };
                 })
+                return updatedState
             })
-            setInvoiceData((prevInvoices) => [...prevInvoices, ...response?.data]);
 
+            setInvoiceData(prevInvoices => [...prevInvoices, ...linkedInvoices]);
 
         } catch (error) {
             console.log(error)
             setMessage(error.response?.data);
         }
-    }
+    };
+
+    const sortInvoices = (invoices) => {
+        const sortedInvoices = [...invoices].sort((a, b) => {
+            if (a[sortConfig.key] < b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? -1 : 1;
+            }
+            if (a[sortConfig.key] > b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        return sortedInvoices;
+    };
 
     const debounced = useCallback(debounce(fetchData, 200), []);
     const fetch_already_linked_debounced = useCallback(debounce(fetchAlreadyLinked, 200), []);
@@ -107,9 +126,9 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
             return;
         }
 
-        setInvoiceData([])
-        page.current = 0
-        dataLeft.current=true
+        setInvoiceData([]);
+        page.current = 0;
+        dataLeft.current = true;
 
         debounced(sortConfig, searchByInvoiceNumber, startDate, endDate, minAmount, maxAmount)
         fetch_already_linked_debounced(selectedTransaction.transactionid)
@@ -128,6 +147,11 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
         debounced(sortConfig, searchByInvoiceNumber,  startDate, endDate, minAmount, maxAmount);   
         fetch_already_linked_debounced(selectedTransaction.transactionid)
     }, [selectedTransaction]);
+
+    useEffect(() => {
+        const sortedInvoices = sortInvoices(invoiceData);
+        setDisplayInvoicedata(sortedInvoices);
+    }, [invoiceData]);
 
     const handleCheckboxClick = (e, invoice) => {
         setSelectedInvoices(prevState => {
@@ -168,7 +192,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
 
     const countExpenses = () => {
         let sum = 0
-        for (const [key, value] of Object.entries(selectedInvoices)) {
+        for (const value of Object.values(selectedInvoices)) {
             sum+=value.amount
         }
         setTotalExpenses(sum)
@@ -217,7 +241,7 @@ export default function LinkTransactionsToInvoices({bankStatementData, goBack, o
                     sortConfig={sortConfig} 
                     styles={{"tbodyStyles": 'hover:cursor-pointer'}}
                 >
-                {invoiceData.map((invoice, index) => {
+                {displayInvoiceData.map((invoice, index) => {
                     return <tr key={index} onClick={(e) => {handleCheckboxClick(e, invoice)}}>
                         <td>{invoice?.invoicenumber}</td>
                         <td>{invoice?.invoicedate}</td>
